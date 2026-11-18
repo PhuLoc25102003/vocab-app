@@ -82,7 +82,7 @@ Mỗi tính năng là một module độc lập; thêm chế độ học mới c
 ```ts
 export interface StudyModeStrategy {
   readonly mode: StudyMode; // 'FLASHCARD' | 'WRITE' | 'DICTATION' | 'MCQ' | ...
-  buildQuestions(cards: Card[], opts: StudyOptions): Question[];
+  buildQuestions(cards: StudyCard[], options: StudyOptions): Question[];
   grade(question: Question, answer: UserAnswer): GradeResult;
 }
 
