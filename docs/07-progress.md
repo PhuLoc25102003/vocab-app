@@ -1,6 +1,6 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-18
+Cập nhật lần cuối: 2026-11-19
 
 **Đang ở:** Giai đoạn 1, phần học bằng Flashcard.
 
@@ -85,7 +85,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** có một luồng hoàn chỉnh từ chọn bộ từ, học, lưu tiến độ đến xem kết quả.
 
 - [x] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test (#69).
-- [x] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress`.
+- [x] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress` (#73).
 - [ ] **1.15** Web: `study-shell`, session store, tiến độ trong phiên, màn hình kết quả.
 - [ ] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ.
 - [ ] **1.17** Phát âm: `lib/speech.ts` và `audio-button`.
