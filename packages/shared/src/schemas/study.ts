@@ -63,6 +63,8 @@ export const submitAnswersResponseSchema = z.object({
   }),
 });
 
+export type StartedSession = z.infer<typeof startSessionResponseSchema>['data'];
+
 export const finishSessionResponseSchema = z.object({
   data: z.object({ session: studySessionSchema, wrongCardIds: z.array(z.string()) }),
 });
