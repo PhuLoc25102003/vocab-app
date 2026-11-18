@@ -90,7 +90,10 @@ Migration chỉ "thêm" an toàn (thêm cột cho phép null, thêm bảng); đ�
 | `GOOGLE_CLIENT_ID`                                                       | API                                 | Client ID để kiểm tra Google ID token. Để trống thì tắt đăng nhập Google              |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | API                                 | Chưa dùng. Lưu ảnh, âm thanh                                                          |
 | `SENTRY_DSN`                                                             | API + Web                           | Chưa dùng. Giám sát lỗi                                                               |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`                                           | Web                                 | Trùng `GOOGLE_CLIENT_ID`. Để trống thì ẩn nút Google                                  |
 | `NEXT_PUBLIC_API_URL`                                                    | Web                                 | URL backend; tiền tố `NEXT_PUBLIC_` nghĩa là lộ ra trình duyệt, không để secret ở đây |
+
+Khi deploy đăng nhập Google: thêm địa chỉ web `https` vào **Authorized JavaScript origins** của Google OAuth Client, đặt hai biến Client ID trên API và web rồi deploy lại, sau đó bấm **Publish app** trong mục Audience. Google không nhận origin có dấu `*`, nên link preview phải thêm từng cái nếu cần.
 
 Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi app. Biến mới phải được thêm vào đó, biến của API còn phải khai báo trong `apps/api/src/config/env.ts`.
 

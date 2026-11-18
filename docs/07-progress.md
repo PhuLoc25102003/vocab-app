@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-18
 
-**Đang ở:** Giai đoạn 1, phần bộ từ và thẻ từ. Việc 1.6 chờ Google OAuth Client.
+**Đang ở:** Giai đoạn 1, phần bộ từ và thẻ từ.
 
 **Việc tiếp theo:**
 
@@ -17,11 +17,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      6 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      7 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **19** | **71** | **27%**      |
+| **Toàn dự án**          |                                            | **20** | **71** | **28%**      |
 
 ## Cách cập nhật
 
@@ -67,7 +67,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.3** `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard` (#34).
 - [x] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản (#36, #37).
 - [x] **1.5** Web: đăng ký, đăng nhập, auth store, tự refresh trong `lib/http.ts`, `proxy.ts`, component `Can` (#39, #40, #41, #42).
-- [ ] **1.6** Đăng nhập Google trên API và web.
+- [x] **1.6** Đăng nhập Google trên API và web (#48, #49).
 
 ### 1B. Bộ từ và thẻ từ
 
