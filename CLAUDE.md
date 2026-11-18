@@ -71,15 +71,16 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 
 ## Khi làm việc gì
 
-| Khi làm                            | Đọc                                             | Dùng skill     |
-| ---------------------------------- | ----------------------------------------------- | -------------- |
-| Tính năng trọn vẹn FE + BE         | `docs/00-overview.md`, `01`, `03`, `04`         | `new-feature`  |
-| Thêm hoặc sửa endpoint             | `docs/03-api.md`, `docs/04-security.md`         | `api-endpoint` |
-| Thêm chế độ học                    | `docs/00-overview.md`, `docs/05-ui-tokens.md`   | `study-mode`   |
-| Component, trang, form, style      | `docs/05-ui-tokens.md`                          | `ui-component` |
-| Đổi Prisma schema                  | `docs/02-database.md`                           | `db-migration` |
-| Auth, phân quyền, dữ liệu nhạy cảm | `docs/04-security.md`                           | `api-endpoint` |
-| Đặt tên, test, Git, CI, env        | `docs/06-conventions.md`                        | Không có       |
-| Sắp xếp thư mục, tái sử dụng code  | `docs/01-code-structure.md`                     | Không có       |
-| Quyết định kiến trúc mới           | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
-| Trước khi commit hoặc mở PR        | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |
+| Khi làm                             | Đọc                                             | Dùng skill     |
+| ----------------------------------- | ----------------------------------------------- | -------------- |
+| Tính năng trọn vẹn FE + BE          | `docs/00-overview.md`, `01`, `03`, `04`         | `new-feature`  |
+| Thêm hoặc sửa endpoint              | `docs/03-api.md`, `docs/04-security.md`         | `api-endpoint` |
+| Thêm chế độ học                     | `docs/00-overview.md`, `docs/05-ui-tokens.md`   | `study-mode`   |
+| Component, trang, form, style       | `docs/05-ui-tokens.md`                          | `ui-component` |
+| Đổi Prisma schema                   | `docs/02-database.md`                           | `db-migration` |
+| Auth, phân quyền, dữ liệu nhạy cảm  | `docs/04-security.md`                           | `api-endpoint` |
+| Đặt tên, test, Git, CI, env         | `docs/06-conventions.md`                        | Không có       |
+| Sắp xếp thư mục, tái sử dụng code   | `docs/01-code-structure.md`                     | Không có       |
+| Quyết định kiến trúc mới            | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
+| Tạo issue, nhánh, commit, PR, merge | `docs/06-conventions.md`                        | `git-workflow` |
+| Trước khi commit hoặc mở PR         | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |
