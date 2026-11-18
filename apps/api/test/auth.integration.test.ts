@@ -109,7 +109,10 @@ describe('auth', () => {
 
       const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
       expect(response.body).toEqual({
-        data: { user: { id: user.id, email: account.email, displayName: 'An', role: 'STUDENT' } },
+        data: {
+          user: { id: user.id, email: account.email, displayName: 'An', role: 'STUDENT' },
+          accessToken: expect.any(String),
+        },
       });
     });
 

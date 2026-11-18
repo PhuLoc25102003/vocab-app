@@ -46,3 +46,9 @@ export const authUserSchema = z.object({
   role: roleSchema,
 });
 export type AuthUser = z.infer<typeof authUserSchema>;
+
+export const authSessionSchema = z.object({
+  user: authUserSchema,
+  accessToken: z.string(),
+});
+export type AuthSession = z.infer<typeof authSessionSchema>;

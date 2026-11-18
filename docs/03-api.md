@@ -65,12 +65,12 @@ Lỗi (do `AllExceptionsFilter` trả về):
 ## Đăng ký và đăng nhập
 
 - `POST /auth/register` nhận `{ email, password, displayName }`, luôn trả 202 `{ "data": { "status": "accepted" } }` khi dữ liệu hợp lệ, kể cả khi email đã có. Tài khoản cũ không bị đổi. Giao diện chuyển người dùng sang trang đăng nhập.
-- `POST /auth/login` nhận `{ email, password }`, trả 200 `{ "data": { "user": { id, email, displayName, role } } }`. Mọi trường hợp sai trả 401 `INVALID_CREDENTIALS` với cùng thông báo.
+- `POST /auth/login` nhận `{ email, password }`, trả 200 `{ "data": { "user": { id, email, displayName, role }, "accessToken": "..." } }`. Mọi trường hợp sai trả 401 `INVALID_CREDENTIALS` với cùng thông báo.
 - Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
 
 ## Khác biệt đang có trong code
 
-- `POST /auth/login` chưa trả access token và chưa đặt cookie refresh. Phần này thuộc việc 1.2.
+- `POST /auth/login` chưa đặt cookie refresh. Phần này thuộc việc 1.2.
 - `GET /health` trả trực tiếp `{ "status": "ok", "db": "up" }`, không bọc `data`. Đây là ngoại lệ có chủ đích và `healthResponseSchema` đang kiểm tra đúng dạng này.
 - Khi database lỗi, `/health` trả 503 với mã `DB_UNAVAILABLE`.
 - Chưa có interceptor bọc response. Endpoint nghiệp vụ tự trả `{ data }` hoặc `{ data, meta }` qua helper `ok()` và `paginated()` trong `common/base/pagination.ts` (mẫu trong skill `api-endpoint`).

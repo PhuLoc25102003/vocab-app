@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ERROR_CODES, type AuthUser, type LoginInput, type RegisterInput } from '@vocab/shared';
+import { AccessTokenService } from '../../common/auth/access-token.service';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { UsersRepository } from '../users/users.repository';
@@ -10,6 +11,7 @@ export class AuthService {
   constructor(
     private readonly users: UsersRepository,
     private readonly passwords: PasswordService,
+    private readonly accessTokens: AccessTokenService,
   ) {}
 
   /** Email đã có hay chưa đều hash và trả cùng kết quả, để không lộ email đã đăng ký. */
@@ -36,6 +38,6 @@ export class AuthService {
       displayName: account.displayName,
       role: account.role,
     };
-    return ok({ user });
+    return ok({ user, accessToken: await this.accessTokens.sign(account) });
   }
 }
