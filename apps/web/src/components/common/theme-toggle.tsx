@@ -16,7 +16,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-pressed={isDark}
-      className="rounded-md border border-border bg-surface px-3 py-2 text-sm transition-colors duration-fast hover:bg-primary-soft"
+      className="min-h-11 rounded-md border border-border-strong bg-surface px-3 py-2 text-small transition-colors duration-fast ease-standard hover:bg-primary-soft"
     >
       Giao diện tối
     </button>

@@ -6,9 +6,9 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Đổi nhánh mặc định và bật branch protection trên GitHub (việc 0.8).
-2. Áp dụng design tokens mới vào web (việc 0.9).
-3. Dựng nền API: mã lỗi, `AppError`, phân trang, Swagger (việc 0.10).
+1. Dựng nền API: mã lỗi, `AppError`, phân trang, Swagger (việc 0.10).
+2. Cài bộ test: Vitest, Supertest, database test trong CI (việc 0.11).
+3. Dựng nền giao diện: shadcn/ui, layout app, điều hướng, các trạng thái dùng chung (việc 0.12).
 
 ## Tổng quan
 
@@ -16,12 +16,12 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 | Giai đoạn               | Mục tiêu                                   |  Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | ----: | -----: | ------------ |
-| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     7 |     13 | Đang làm     |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     9 |     13 | Đang làm     |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     0 |     35 | Chưa bắt đầu |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |     0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |     0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **7** | **71** | **10%**      |
+| **Toàn dự án**          |                                            | **9** | **71** | **13%**      |
 
 ## Cách cập nhật
 
@@ -47,8 +47,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** có thể bắt đầu module auth mà không phải dựng thêm hạ tầng chung.
 
 - [x] **0.7** Thêm `onDelete: Cascade` cho dữ liệu học và dữ liệu của người dùng (#3).
-- [ ] **0.8** Cấu hình GitHub: nhánh mặc định `develop`, branch protection yêu cầu `Verify`, cài `gh`.
-- [ ] **0.9** Áp dụng design tokens và font mới vào web theo `docs/05-ui-tokens.md`.
+- [x] **0.8** Cấu hình GitHub: nhánh mặc định `develop`, branch protection yêu cầu `Verify`, cài `gh`.
+- [x] **0.9** Áp dụng design tokens và font mới vào web theo `docs/05-ui-tokens.md` (#7).
 - [ ] **0.10** Nền API: mã lỗi trong shared, `AppError`, `paginationSchema`, `ok()`, `paginated()`, Swagger.
 - [ ] **0.11** Bộ test: Vitest cho shared, API, web; Supertest; database test trong CI.
 - [ ] **0.12** Nền giao diện: shadcn/ui, layout app, điều hướng, `page-header`, `empty-state`, `error-state`, skeleton, thông báo, lưu lựa chọn theme.
