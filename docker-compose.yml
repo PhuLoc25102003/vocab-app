@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: vocab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vocab
+      POSTGRES_PASSWORD: vocab
+      POSTGRES_DB: vocab
+    ports:
+      # Mặc định 5432. Nếu máy đã có Postgres chiếm cổng này, đặt POSTGRES_PORT trong .env ở gốc.
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - vocab_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vocab -d vocab']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  vocab_pgdata:

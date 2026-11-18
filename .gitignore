@@ -1,0 +1,21 @@
+node_modules
+dist
+.next
+.turbo
+out
+coverage
+*.tsbuildinfo
+next-env.d.ts
+
+# Env: chỉ commit file mẫu
+.env
+.env.*
+!.env.example
+
+# Prisma client sinh tự động
+apps/api/src/generated
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
