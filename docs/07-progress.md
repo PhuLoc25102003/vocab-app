@@ -2,12 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1, phần chế độ học còn lại và ôn tập.
+**Đang ở:** Giai đoạn 1, phần hoàn thiện MVP. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
 
 **Việc tiếp theo:**
 
-1. Làm thống kê (việc 1.28).
-2. Làm trang giới thiệu sản phẩm (việc 1.29).
+1. Làm trang giới thiệu sản phẩm (việc 1.29).
+2. Làm cron xoá hẳn bộ từ đã xoá mềm (việc 1.30).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     22 |     36 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     23 |     36 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **35** | **72** | **49%**      |
+| **Toàn dự án**          |                                            | **36** | **72** | **50%**      |
 
 ## Cách cập nhật
 
@@ -114,7 +114,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.25** Chế độ Nghe viết (#84).
 - [x] **1.26** Chế độ Trắc nghiệm (#86).
 - [x] **1.27** `GET /review/due` và trang "Ôn hôm nay" (#88).
-- [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.
+- [x] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai (#90).
 
 ### 1G. Hoàn thiện và phát hành MVP
 
