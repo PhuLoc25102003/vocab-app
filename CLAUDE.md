@@ -66,7 +66,7 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 12. TypeScript strict, không dùng `any`. Dùng `unknown` rồi thu hẹp kiểu.
 13. Thay đổi database theo kiểu "thêm". Đổi tên hoặc xoá cột chia hai lần deploy.
 14. Không commit `.env`. Biến mới phải có trong `.env.example`, biến của API phải có trong `apps/api/src/config/env.ts`.
-15. Commit theo Conventional Commits. Đổi API, database hoặc token thì cập nhật `docs/` cùng commit.
+15. Commit theo Conventional Commits. Đổi API, database hoặc token thì cập nhật `docs/` cùng commit, xong một việc thì đánh dấu trong `docs/07-progress.md`.
 
 **Lưu ý:** `docs/05-ui-tokens.md` đã có bộ token mới nhưng `globals.css` chưa được cập nhật. Làm mục "Áp dụng vào code" trong tài liệu đó trước khi xây giao diện thật.
 
@@ -83,5 +83,6 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 | Đặt tên, test, Git, CI, env         | `docs/06-conventions.md`                        | Không có       |
 | Sắp xếp thư mục, tái sử dụng code   | `docs/01-code-structure.md`                     | Không có       |
 | Quyết định kiến trúc mới            | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
+| Xem tiến độ, chọn việc tiếp theo    | `docs/07-progress.md`                           | `git-workflow` |
 | Tạo issue, nhánh, commit, PR, merge | `docs/06-conventions.md`                        | `git-workflow` |
 | Trước khi commit hoặc mở PR         | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |

@@ -101,6 +101,7 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 - [ ] Hiển thị tốt ở màn hình 360 px
 - [ ] Test unit/integration xanh trong CI
 - [ ] Cập nhật Swagger và `docs/` nếu đổi API, database hoặc token
+- [ ] Đánh dấu việc trong `docs/07-progress.md`
 
 ## Hiện trạng công cụ
 

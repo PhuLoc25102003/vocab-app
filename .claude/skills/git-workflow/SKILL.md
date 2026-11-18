@@ -30,7 +30,7 @@ develop → PR phát hành vào main → Merge commit → Deploy
 
 ## 1. Issue
 
-Mỗi việc có một issue, đủ nhỏ để xong trong một PR. Ngoại lệ: sửa tài liệu hoặc cấu hình nhỏ dưới khoảng 20 dòng có thể bỏ qua issue.
+Chọn việc từ `docs/07-progress.md`, theo mục "Việc tiếp theo". Mỗi việc có một issue, đủ nhỏ để xong trong một PR. Ngoại lệ: sửa tài liệu hoặc cấu hình nhỏ dưới khoảng 20 dòng có thể bỏ qua issue.
 
 Tiêu đề viết tiếng Việt theo dạng `<type>(<scope>): <kết quả mong muốn>`:
 
@@ -168,6 +168,7 @@ Nếu `develop` có migration mới, rebase rồi kiểm tra thứ tự migratio
 - Tiêu đề PR là commit sẽ vào `develop`, nên phải đúng định dạng commit ở trên.
 - Một PR giải quyết một việc, khoảng dưới 400 dòng, không tính lockfile và migration sinh tự động.
 - Chưa xong thì mở Draft.
+- Trong PR, cập nhật `docs/07-progress.md` theo mục "Cách cập nhật" của file đó.
 - `Closes #12` chỉ tự đóng issue khi PR vào nhánh mặc định của repo. Nếu nhánh mặc định không phải `develop`, đóng issue thủ công sau khi merge.
 
 ```markdown
