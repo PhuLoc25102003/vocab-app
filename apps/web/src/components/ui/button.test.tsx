@@ -30,4 +30,33 @@ describe('Button', () => {
 
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it('khoá bấm và giữ tên nút khi đang gửi', async () => {
+    const onClick = vi.fn();
+    render(
+      <Button loading onClick={onClick}>
+        Lưu bộ từ
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Lưu bộ từ' });
+
+    await userEvent.click(button);
+
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('dùng được cho liên kết qua asChild', () => {
+    render(
+      <Button asChild variant="secondary">
+        <a href="/sets">Xem bộ từ</a>
+      </Button>,
+    );
+    const link = screen.getByRole('link', { name: 'Xem bộ từ' });
+
+    expect(link).toHaveAttribute('href', '/sets');
+    expect(link).toHaveClass('border-border-strong');
+    expect(link).not.toHaveAttribute('type');
+  });
 });
