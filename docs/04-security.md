@@ -94,4 +94,4 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 - `JwtAuthGuard` đổi thành `AuthGuard`, đúng tên trong `common/guards/auth.guard.ts`. Module auth sẽ bổ sung xác thực JWT vào guard này.
 - Thêm mục hiện trạng. Các ô trong checklist vẫn để trống để kiểm tra theo từng tính năng.
-- "Xoá tài khoản xoá hẳn dữ liệu" phụ thuộc quyết định về `onDelete` trong `02-database.md`.
+- "Xoá tài khoản xoá hẳn dữ liệu" được hỗ trợ ở database bằng `onDelete: Cascade`, xem `02-database.md`.

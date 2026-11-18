@@ -70,7 +70,7 @@ model Folder {
   ownerId String
   name    String
 
-  owner User       @relation(fields: [ownerId], references: [id])
+  owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   sets  StudySet[]
 
   @@index([ownerId])
@@ -90,7 +90,7 @@ model StudySet {
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
 
-  owner         User           @relation(fields: [ownerId], references: [id])
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   folder        Folder?        @relation(fields: [folderId], references: [id])
   cards         Card[]
   studySessions StudySession[]
@@ -130,8 +130,8 @@ model CardProgress {
   lastResult Boolean?
   updatedAt  DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  card Card @relation(fields: [cardId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@id([userId, cardId])
   @@index([userId, dueAt])
@@ -147,8 +147,8 @@ model StudySession {
   correct    Int       @default(0)
   total      Int       @default(0)
 
-  user     User      @relation(fields: [userId], references: [id])
-  set      StudySet  @relation(fields: [setId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  set      StudySet  @relation(fields: [setId], references: [id], onDelete: Cascade)
   attempts Attempt[]
 
   @@index([userId, startedAt])
@@ -164,7 +164,7 @@ model Attempt {
   createdAt DateTime @default(now())
 
   session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  card    Card         @relation(fields: [cardId], references: [id])
+  card    Card         @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@index([cardId])
 }
