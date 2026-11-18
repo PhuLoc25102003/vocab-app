@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
 import { AuthFormSkeleton } from '@/features/auth/components/auth-form-skeleton';
+import { GoogleSignIn } from '@/features/auth/components/google-sign-in';
 import { RegisterForm } from '@/features/auth/components/register-form';
 
 export const metadata: Metadata = { title: 'Đăng ký' };
@@ -11,6 +12,7 @@ export default function RegisterPage() {
     <>
       <PageHeader title="Tạo tài khoản" description="Lưu bộ từ và tiến độ học của bạn." />
       <Suspense fallback={<AuthFormSkeleton />}>
+        <GoogleSignIn text="signup_with" />
         <RegisterForm />
       </Suspense>
     </>
