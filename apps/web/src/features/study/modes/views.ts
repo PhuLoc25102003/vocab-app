@@ -2,6 +2,7 @@ import type { Question, StudyLanguages, StudyMode, UserAnswer } from '@vocab/sha
 import type { ComponentType } from 'react';
 import { DictationModeView } from './dictation/dictation-mode';
 import { FlashcardMode } from './flashcard/flashcard-mode';
+import { McqModeView } from './mcq/mcq-mode';
 import { WriteModeView } from './write/write-mode';
 
 export interface StudyModeProps {
@@ -16,4 +17,5 @@ export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps
   FLASHCARD: FlashcardMode,
   WRITE: WriteModeView,
   DICTATION: DictationModeView,
+  MCQ: McqModeView,
 };

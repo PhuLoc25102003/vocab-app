@@ -22,4 +22,5 @@ export const STUDY_ENTRIES = [
   { slug: 'flashcard', label: 'Bắt đầu học', guestLabel: 'Học thử' },
   { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết' },
   { slug: 'dictation', label: 'Nghe viết', guestLabel: 'Nghe viết' },
+  { slug: 'mcq', label: 'Trắc nghiệm', guestLabel: 'Trắc nghiệm' },
 ] as const;
