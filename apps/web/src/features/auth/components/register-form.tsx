@@ -11,8 +11,8 @@ import { FormField } from '@/components/common/form-field';
 import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
 import { registerAccount } from '../api';
-import { applyFormError } from '../form-errors';
-import { FormError } from './form-message';
+import { applyFormError } from '@/lib/form-errors';
+import { FormError } from '@/components/common/form-message';
 
 const FIELDS = ['displayName', 'email', 'password'] as const;
 

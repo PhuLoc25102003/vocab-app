@@ -38,6 +38,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
       />
     );
   }
+  return <AuthGateLoading />;
+}
+
+export function AuthGateLoading() {
   return (
     <LoadingState label="Đang kiểm tra phiên đăng nhập">
       <Skeleton className="h-10 w-48" />

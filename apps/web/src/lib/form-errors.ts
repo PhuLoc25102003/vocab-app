@@ -1,6 +1,6 @@
 import { ERROR_CODES } from '@vocab/shared';
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
-import { HttpError } from '@/lib/http';
+import { HttpError } from './http';
 
 interface FieldIssue {
   path: string;

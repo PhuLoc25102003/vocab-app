@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
-import { AppNav } from '@/components/common/app-nav';
+import { Suspense, type ReactNode } from 'react';
+import { AppNav, AppNavFallback } from '@/components/common/app-nav';
 import { ThemeToggle } from '@/components/common/theme-toggle';
-import { AuthGate } from '@/features/auth/components/auth-gate';
+import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
 import { LogoutButton } from '@/features/auth/components/logout-button';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -19,7 +19,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <Link href="/dashboard" className="flex min-h-11 items-center font-card text-h3">
             Vocab
           </Link>
-          <AppNav />
+          <Suspense fallback={<AppNavFallback />}>
+            <AppNav />
+          </Suspense>
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <LogoutButton />
@@ -31,7 +33,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         tabIndex={-1}
         className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 py-8 md:px-6 lg:px-8"
       >
-        <AuthGate>{children}</AuthGate>
+        <Suspense fallback={<AuthGateLoading />}>
+          <AuthGate>{children}</AuthGate>
+        </Suspense>
       </main>
     </div>
   );

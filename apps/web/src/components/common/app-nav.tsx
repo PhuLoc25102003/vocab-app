@@ -17,8 +17,15 @@ function isCurrent(pathname: string, href: string): boolean {
 }
 
 export function AppNav() {
-  const pathname = usePathname();
+  return <NavLinks pathname={usePathname()} />;
+}
 
+/** Hiện trong lúc chờ đường dẫn ở các route có tham số, chưa đánh dấu mục nào. */
+export function AppNavFallback() {
+  return <NavLinks pathname="" />;
+}
+
+function NavLinks({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Điều hướng chính"

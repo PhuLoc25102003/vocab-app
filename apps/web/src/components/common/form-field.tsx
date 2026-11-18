@@ -2,16 +2,26 @@
 
 import { useId, type ComponentProps, type ReactNode } from 'react';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
-interface FormFieldProps extends ComponentProps<typeof Input> {
+interface FieldText {
   label: string;
   hint?: string;
   error?: string;
-  /** Nút nằm trong ô nhập, đặt `absolute` ở mép phải. */
-  trailing?: ReactNode;
 }
 
-export function FormField({ label, hint, error, trailing, ...inputProps }: FormFieldProps) {
+interface ControlProps {
+  id: string;
+  'aria-invalid': true | undefined;
+  'aria-describedby': string | undefined;
+}
+
+interface FieldShellProps extends FieldText {
+  children: (control: ControlProps) => ReactNode;
+}
+
+function FieldShell({ label, hint, error, children }: FieldShellProps) {
   const id = useId();
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
@@ -21,15 +31,11 @@ export function FormField({ label, hint, error, trailing, ...inputProps }: FormF
       <label htmlFor={id} className="text-small font-medium">
         {label}
       </label>
-      <div className="relative">
-        <Input
-          id={id}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
-          {...inputProps}
-        />
-        {trailing}
-      </div>
+      {children({
+        id,
+        'aria-invalid': error ? true : undefined,
+        'aria-describedby': [hintId, errorId].filter(Boolean).join(' ') || undefined,
+      })}
       {hint ? (
         <p id={hintId} className="text-small text-text-muted">
           {hint}
@@ -41,5 +47,49 @@ export function FormField({ label, hint, error, trailing, ...inputProps }: FormF
         </p>
       ) : null}
     </div>
+  );
+}
+
+interface FormFieldProps extends FieldText, ComponentProps<typeof Input> {
+  /** Nút nằm trong ô nhập, đặt `absolute` ở mép phải. */
+  trailing?: ReactNode;
+}
+
+export function FormField({ label, hint, error, trailing, ...inputProps }: FormFieldProps) {
+  return (
+    <FieldShell label={label} hint={hint} error={error}>
+      {(control) => (
+        <div className="relative">
+          <Input {...control} {...inputProps} />
+          {trailing}
+        </div>
+      )}
+    </FieldShell>
+  );
+}
+
+export function TextareaField({
+  label,
+  hint,
+  error,
+  ...props
+}: FieldText & ComponentProps<typeof Textarea>) {
+  return (
+    <FieldShell label={label} hint={hint} error={error}>
+      {(control) => <Textarea {...control} {...props} />}
+    </FieldShell>
+  );
+}
+
+export function SelectField({
+  label,
+  hint,
+  error,
+  ...props
+}: FieldText & ComponentProps<typeof Select>) {
+  return (
+    <FieldShell label={label} hint={hint} error={error}>
+      {(control) => <Select {...control} {...props} />}
+    </FieldShell>
   );
 }
