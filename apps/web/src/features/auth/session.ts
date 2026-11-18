@@ -1,0 +1,75 @@
+import { ERROR_CODES, type AuthSession } from '@vocab/shared';
+import { configureHttpAuth, HttpError } from '@/lib/http';
+import { getQueryClient } from '@/lib/query-client';
+import { clearSessionMarker, setSessionMarker } from '@/lib/session-marker';
+import * as authApi from './api';
+import { useAuthStore } from './store';
+
+const MAX_REFRESH_ATTEMPTS = 3;
+const REFRESH_RETRY_DELAY_MS = 300;
+
+let refreshing: Promise<string | null> | null = null;
+
+export function startSession(session: AuthSession): void {
+  useAuthStore.getState().setSession(session);
+  setSessionMarker();
+}
+
+function endSession(): void {
+  useAuthStore.getState().clearSession();
+  clearSessionMarker();
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runRefresh(): Promise<string | null> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      const session = await authApi.refresh();
+      startSession(session);
+      return session.accessToken;
+    } catch (error) {
+      if (error instanceof HttpError) {
+        // Tab khác vừa làm mới phiên, cookie mới sẽ có sau giây lát.
+        if (error.code === ERROR_CODES.REFRESH_IN_PROGRESS && attempt < MAX_REFRESH_ATTEMPTS) {
+          await wait(REFRESH_RETRY_DELAY_MS);
+          continue;
+        }
+        if (error.status === 401 || error.status === 403) {
+          endSession();
+          return null;
+        }
+      }
+      // Lỗi mạng hoặc máy chủ không có nghĩa là phiên đã mất.
+      const { user, setStatus } = useAuthStore.getState();
+      setStatus(user ? 'authenticated' : 'unavailable');
+      return null;
+    }
+  }
+}
+
+/** Các request cùng lúc dùng chung một lần refresh. */
+export function refreshSession(): Promise<string | null> {
+  refreshing ??= runRefresh().finally(() => {
+    refreshing = null;
+  });
+  return refreshing;
+}
+
+export async function signOut(): Promise<void> {
+  try {
+    await authApi.logout();
+  } catch {
+    // Vẫn rời phiên trên thiết bị này dù máy chủ không phản hồi.
+  }
+  clearSessionMarker();
+  getQueryClient().clear();
+  useAuthStore.getState().clearSession('signed-out');
+}
+
+configureHttpAuth({
+  getAccessToken: () => useAuthStore.getState().accessToken,
+  refreshAccessToken: refreshSession,
+});
