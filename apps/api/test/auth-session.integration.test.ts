@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { ok } from '../src/common/base/pagination';
 import { CurrentUser, type CurrentUserData } from '../src/common/decorators/current-user.decorator';
 import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
+import { hashRefreshToken } from '../src/modules/auth/auth-session.service';
 import { createTestApp } from './support/app';
 import { resetDatabase } from './support/database';
 
@@ -31,14 +32,29 @@ describe('phiên đăng nhập', () => {
   let ip: string;
 
   const auth = (path: string, body: object) =>
-    request(app.getHttpServer()).post(`/api/v1/auth/${path}`).set('X-Forwarded-For', ip).send(body);
+    request(app.getHttpServer())
+      .post(`/api/v1/auth/${path}`)
+      .set('X-Forwarded-For', ip)
+      .set('User-Agent', 'vitest')
+      .send(body);
   const me = (token?: string) => {
     const call = request(app.getHttpServer()).get('/api/v1/probe-auth/me');
     return token ? call.set('Authorization', `Bearer ${token}`) : call;
   };
+  const refreshCookieOf = (headers: Record<string, unknown>): string => {
+    const cookies = headers['set-cookie'] as string[];
+    const cookie = cookies.find((value) => value.startsWith('refresh_token='));
+    if (!cookie) {
+      throw new Error('Thiếu cookie refresh');
+    }
+    return cookie;
+  };
   const login = async () => {
     const response = await auth('login', credentials).expect(200);
-    return response.body.data.accessToken as string;
+    return {
+      accessToken: response.body.data.accessToken as string,
+      cookie: refreshCookieOf(response.headers),
+    };
   };
 
   beforeAll(async () => {
@@ -58,8 +74,24 @@ describe('phiên đăng nhập', () => {
     await app.close();
   });
 
+  it('đăng nhập đặt cookie httpOnly và chỉ lưu hash của refresh token', async () => {
+    const { cookie } = await login();
+
+    expect(cookie).toMatch(/; HttpOnly/i);
+    expect(cookie).toMatch(/; Path=\/api\/v1\/auth/i);
+    expect(cookie).toMatch(/; SameSite=Lax/i);
+
+    const token = cookie.slice('refresh_token='.length, cookie.indexOf(';'));
+    const session = await prisma.refreshSession.findFirstOrThrow();
+    expect(session.tokenHash).toBe(hashRefreshToken(token));
+    expect(session.tokenHash).not.toBe(token);
+    expect(session.userAgent).toBe('vitest');
+    expect(session.ip).toBe(ip);
+    expect(session.expiresAt.getTime()).toBeGreaterThan(Date.now() + 29 * 86_400_000);
+  });
+
   it('access token hợp lệ vào được route cần đăng nhập', async () => {
-    const accessToken = await login();
+    const { accessToken } = await login();
     const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
 
     const response = await me(accessToken).expect(200);
@@ -68,7 +100,7 @@ describe('phiên đăng nhập', () => {
   });
 
   it('dùng vai trò mới nhất trong database', async () => {
-    const accessToken = await login();
+    const { accessToken } = await login();
     await prisma.user.update({ where: { email: account.email }, data: { role: 'TEACHER' } });
 
     const response = await me(accessToken).expect(200);
@@ -88,7 +120,9 @@ describe('phiên đăng nhập', () => {
     expect(response.body.error.code).toBe(ERROR_CODES.TOKEN_EXPIRED);
   });
 
-  it('từ chối khi thiếu token, token sai hoặc ký bằng secret khác', async () => {
+  it('từ chối khi thiếu token, token sai hoặc dùng refresh token', async () => {
+    const { cookie } = await login();
+    const refreshToken = cookie.slice('refresh_token='.length, cookie.indexOf(';'));
     const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
     const unsigned = [
       Buffer.from('{"alg":"none","typ":"JWT"}').toString('base64url'),
@@ -100,14 +134,14 @@ describe('phiên đăng nhập', () => {
       { secret: refreshSecret, algorithm: 'HS256', expiresIn: 60 },
     );
 
-    for (const token of [undefined, 'rac', unsigned, wrongSecret]) {
+    for (const token of [undefined, 'rac', refreshToken, unsigned, wrongSecret]) {
       const response = await me(token).expect(401);
       expect(response.body.error.code).toBe(ERROR_CODES.UNAUTHORIZED);
     }
   });
 
   it('từ chối token cũ sau khi tokenVersion tăng hoặc tài khoản bị xoá', async () => {
-    const accessToken = await login();
+    const { accessToken } = await login();
     const where = { email: account.email };
 
     await prisma.user.update({ where, data: { tokenVersion: { increment: 1 } } });
