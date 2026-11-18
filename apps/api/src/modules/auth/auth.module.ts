@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { UsersModule } from '../users/users.module';
+import { UsersDataModule } from '../users/users-data.module';
 import { AUTH_THROTTLE_OPTIONS } from './auth-throttler.guard';
 import { AuthSessionService } from './auth-session.service';
 import { AuthController } from './auth.controller';
@@ -10,7 +10,7 @@ import { RefreshCookie } from './refresh-cookie';
 import { RefreshSessionRepository } from './refresh-session.repository';
 
 @Module({
-  imports: [ThrottlerModule.forRoot(AUTH_THROTTLE_OPTIONS), UsersModule],
+  imports: [ThrottlerModule.forRoot(AUTH_THROTTLE_OPTIONS), UsersDataModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -19,5 +19,6 @@ import { RefreshSessionRepository } from './refresh-session.repository';
     RefreshCookie,
     RefreshSessionRepository,
   ],
+  exports: [AuthSessionService, PasswordService, RefreshCookie],
 })
 export class AuthModule {}

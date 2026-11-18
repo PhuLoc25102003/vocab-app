@@ -32,6 +32,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: parseCorsOrigins(config.get('CORS_ORIGINS', { infer: true })),
     credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
   });
 
   if (config.get('NODE_ENV', { infer: true }) !== 'production') {

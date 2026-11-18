@@ -9,7 +9,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { InvalidRefreshTokenError, type SessionClient } from './auth-session.service';
+import { InvalidRefreshTokenError } from './auth-session.service';
 import {
   AuthThrottlerGuard,
   ONE_MINUTE_MS,
@@ -17,11 +17,7 @@ import {
   REGISTER_LIMIT_PER_IP,
 } from './auth-throttler.guard';
 import { AuthService } from './auth.service';
-import { RefreshCookie } from './refresh-cookie';
-
-function clientOf(request: FastifyRequest): SessionClient {
-  return { userAgent: request.headers['user-agent'], ip: request.ip };
-}
+import { RefreshCookie, sessionClientOf } from './refresh-cookie';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -53,7 +49,7 @@ export class AuthController {
     @Req() request: FastifyRequest,
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
-    const result = await this.auth.login(dto, clientOf(request));
+    const result = await this.auth.login(dto, sessionClientOf(request));
     this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
     return result.body;
   }
@@ -68,7 +64,7 @@ export class AuthController {
     this.refreshCookie.assertTrustedOrigin(request);
     try {
       const token = this.refreshCookie.read(request);
-      const result = await this.auth.refresh(token, clientOf(request));
+      const result = await this.auth.refresh(token, sessionClientOf(request));
       this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
       return result.body;
     } catch (error) {

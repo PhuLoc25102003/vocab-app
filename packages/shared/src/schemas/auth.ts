@@ -14,30 +14,51 @@ export const emailSchema = z
   .max(254, 'Email quá dài')
   .pipe(z.email('Email không hợp lệ'));
 
+const newPasswordSchema = z
+  .string('Hãy nhập mật khẩu')
+  .min(PASSWORD_MIN_LENGTH, `Mật khẩu cần ít nhất ${PASSWORD_MIN_LENGTH} ký tự`)
+  .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`);
+
+/** Mật khẩu đã có: không áp độ dài tối thiểu, để đổi quy tắc sau này không khoá tài khoản cũ. */
+const existingPasswordSchema = z
+  .string('Hãy nhập mật khẩu')
+  .min(1, 'Hãy nhập mật khẩu')
+  .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`);
+
+const displayNameSchema = z
+  .string('Hãy nhập tên hiển thị')
+  .trim()
+  .min(1, 'Hãy nhập tên hiển thị')
+  .max(100, 'Tên hiển thị tối đa 100 ký tự')
+  .regex(/^\P{Cc}+$/u, 'Tên hiển thị chứa ký tự không hợp lệ');
+
 export const registerSchema = z.object({
   email: emailSchema,
-  password: z
-    .string('Hãy nhập mật khẩu')
-    .min(PASSWORD_MIN_LENGTH, `Mật khẩu cần ít nhất ${PASSWORD_MIN_LENGTH} ký tự`)
-    .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`),
-  displayName: z
-    .string('Hãy nhập tên hiển thị')
-    .trim()
-    .min(1, 'Hãy nhập tên hiển thị')
-    .max(100, 'Tên hiển thị tối đa 100 ký tự')
-    .regex(/^\P{Cc}+$/u, 'Tên hiển thị chứa ký tự không hợp lệ'),
+  password: newPasswordSchema,
+  displayName: displayNameSchema,
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
-/** Không áp độ dài tối thiểu, để đổi quy tắc mật khẩu sau này không khoá tài khoản cũ. */
 export const loginSchema = z.object({
   email: emailSchema,
-  password: z
-    .string('Hãy nhập mật khẩu')
-    .min(1, 'Hãy nhập mật khẩu')
-    .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`),
+  password: existingPasswordSchema,
 });
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const updateAccountSchema = z
+  .object({
+    displayName: displayNameSchema.optional(),
+    currentPassword: existingPasswordSchema.optional(),
+    newPassword: newPasswordSchema.optional(),
+  })
+  .refine(({ displayName, newPassword }) => displayName !== undefined || newPassword, {
+    message: 'Chưa có thay đổi nào',
+  })
+  .refine(({ currentPassword, newPassword }) => !newPassword || currentPassword, {
+    path: ['currentPassword'],
+    message: 'Hãy nhập mật khẩu hiện tại',
+  });
+export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;
 
 export const authUserSchema = z.object({
   id: z.string(),

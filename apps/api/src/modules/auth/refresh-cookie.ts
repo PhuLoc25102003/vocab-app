@@ -5,11 +5,16 @@ import { ERROR_CODES } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AppError } from '../../common/errors/app-error';
 import { parseCorsOrigins, type Env } from '../../config/env';
+import type { SessionClient } from './auth-session.service';
 
 export const REFRESH_COOKIE_NAME = 'refresh_token';
 
 /** Trình duyệt chỉ gửi cookie này tới các route auth. */
 const REFRESH_COOKIE_PATH = '/api/v1/auth';
+
+export function sessionClientOf(request: FastifyRequest): SessionClient {
+  return { userAgent: request.headers['user-agent'], ip: request.ip };
+}
 
 @Injectable()
 export class RefreshCookie {
