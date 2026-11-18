@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import Link from 'next/link';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from './button';
 
@@ -50,7 +51,7 @@ describe('Button', () => {
   it('dùng được cho liên kết qua asChild', () => {
     render(
       <Button asChild variant="secondary">
-        <a href="/sets">Xem bộ từ</a>
+        <Link href="/sets">Xem bộ từ</Link>
       </Button>,
     );
     const link = screen.getByRole('link', { name: 'Xem bộ từ' });

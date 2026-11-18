@@ -39,6 +39,15 @@ export async function updateSet(id: string, input: UpdateSetDto): Promise<SetSum
   return setResponseSchema.parse(body).data;
 }
 
+export async function deleteSet(id: string): Promise<void> {
+  await http(`/sets/${encodeURIComponent(id)}`, { method: 'DELETE' });
+}
+
+export async function duplicateSet(id: string): Promise<SetSummary> {
+  const body = await http(`/sets/${encodeURIComponent(id)}/duplicate`, { method: 'POST' });
+  return setResponseSchema.parse(body).data;
+}
+
 export async function replaceCards(id: string, input: ReplaceCardsDto): Promise<void> {
   await http(`/sets/${encodeURIComponent(id)}/cards`, {
     method: 'PUT',

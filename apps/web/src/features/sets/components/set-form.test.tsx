@@ -54,7 +54,7 @@ describe('CreateSet', () => {
     await userEvent.selectOptions(screen.getByLabelText('Ai xem được'), 'PUBLIC');
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
     expect(vi.mocked(createSet).mock.calls[0]?.[0]).toEqual({
       title: 'Trái cây',
       description: undefined,
@@ -132,7 +132,7 @@ describe('EditSet', () => {
     await userEvent.clear(description);
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
     expect(updateSet).toHaveBeenCalledWith('s1', {
       title: 'Trái cây',
       description: null,
