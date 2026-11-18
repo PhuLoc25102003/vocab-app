@@ -53,4 +53,12 @@ export class AuthService {
     const { user, issued } = await this.sessions.refresh(token, client);
     return toSessionResult(user, issued);
   }
+
+  logout(userId: string, token: string | undefined): Promise<void> {
+    return this.sessions.end(userId, token);
+  }
+
+  logoutAll(userId: string): Promise<void> {
+    return this.sessions.endAll(userId);
+  }
 }

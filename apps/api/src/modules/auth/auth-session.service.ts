@@ -108,6 +108,16 @@ export class AuthSessionService {
     return { user, issued };
   }
 
+  async end(userId: string, token: string | undefined): Promise<void> {
+    if (token) {
+      await this.sessions.deleteFamilyOfToken(userId, hashRefreshToken(token));
+    }
+  }
+
+  endAll(userId: string): Promise<void> {
+    return this.sessions.endAllForUser(userId);
+  }
+
   private async hasValidSignature(token: string): Promise<boolean> {
     try {
       await this.jwt.verifyAsync<object>(token, {

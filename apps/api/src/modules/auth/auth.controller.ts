@@ -1,10 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { loginSchema, registerSchema } from '@vocab/shared';
 import type { LoginInput, RegisterInput } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { InvalidRefreshTokenError, type SessionClient } from './auth-session.service';
@@ -75,5 +77,32 @@ export class AuthController {
       }
       throw error;
     }
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @SkipThrottle({ ip: true, account: true })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Đăng xuất khỏi thiết bị hiện tại' })
+  async logout(
+    @CurrentUser() user: CurrentUserData,
+    @Req() request: FastifyRequest,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<void> {
+    await this.auth.logout(user.id, this.refreshCookie.read(request));
+    this.refreshCookie.clear(reply);
+  }
+
+  @Post('logout-all')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @SkipThrottle({ ip: true, account: true })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Đăng xuất khỏi mọi thiết bị' })
+  async logoutAll(
+    @CurrentUser() user: CurrentUserData,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<void> {
+    await this.auth.logoutAll(user.id);
+    this.refreshCookie.clear(reply);
   }
 }
