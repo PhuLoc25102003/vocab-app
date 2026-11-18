@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { config as loadEnvFile } from 'dotenv';
 import { AppModule } from './app.module';
+import { applyBodyLimits } from './config/body-limit';
 import { Env, parseCorsOrigins, parseTrustedProxies, validateEnv } from './config/env';
 import { setupSwagger } from './config/swagger';
 
@@ -16,13 +17,13 @@ async function bootstrap(): Promise<void> {
   loadEnvFile({ quiet: true });
   const { TRUSTED_PROXIES } = validateEnv(process.env);
 
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({
-      genReqId: () => randomUUID(),
-      trustProxy: parseTrustedProxies(TRUSTED_PROXIES),
-    }),
-  );
+  const adapter = new FastifyAdapter({
+    genReqId: () => randomUUID(),
+    trustProxy: parseTrustedProxies(TRUSTED_PROXIES),
+  });
+  applyBodyLimits(adapter);
+
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, adapter);
   const config = app.get<ConfigService<Env, true>>(ConfigService);
 
   app.setGlobalPrefix('api/v1');

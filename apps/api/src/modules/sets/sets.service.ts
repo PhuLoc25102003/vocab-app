@@ -4,6 +4,7 @@ import {
   type CreateSetDto,
   type Pagination,
   type PublicSetQuery,
+  type ReplaceCardsDto,
   type UpdateSetDto,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
@@ -42,6 +43,14 @@ export class SetsService {
 
   async update(id: string, dto: UpdateSetDto) {
     const set = await this.sets.update(id, dto);
+    if (!set) {
+      throw setNotFound();
+    }
+    return ok(set);
+  }
+
+  async replaceCards(id: string, dto: ReplaceCardsDto) {
+    const set = await this.sets.replaceCards(id, dto);
     if (!set) {
       throw setNotFound();
     }

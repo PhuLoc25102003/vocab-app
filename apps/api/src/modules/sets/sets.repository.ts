@@ -4,6 +4,7 @@ import {
   type CreateSetDto,
   type Pagination,
   type PublicSetQuery,
+  type ReplaceCardsDto,
   type Role,
   type UpdateSetDto,
 } from '@vocab/shared';
@@ -41,6 +42,9 @@ const CARD_SELECT = {
   imageUrl: true,
   audioUrl: true,
 } as const;
+
+/** Lưu 2.000 thẻ có thể lâu hơn mức mặc định 5 giây của transaction. */
+const REPLACE_CARDS_TIMEOUT_MS = 30_000;
 
 export interface SetViewer {
   id: string;
@@ -132,6 +136,104 @@ export class SetsRepository extends BaseRepository {
       });
       return created;
     });
+  }
+
+  /**
+   * Giữ `id` của thẻ còn lại để không mất tiến độ học. Cập nhật bộ từ trước để khoá dòng,
+   * nhờ đó hai lần lưu cùng lúc chạy lần lượt. Trả `null` nếu bộ từ không còn.
+   */
+  replaceCards(setId: string, { cards }: ReplaceCardsDto) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        const { count } = await tx.studySet.updateMany({
+          where: { id: setId, deletedAt: null },
+          data: { cardCount: cards.length },
+        });
+        if (count === 0) {
+          return null;
+        }
+
+        const existing = await tx.card.findMany({ where: { setId }, select: { id: true } });
+        const existingIds = new Set(existing.map(({ id }) => id));
+        const rows = cards.map(({ id, term, definition, phonetic, example }, position) => ({
+          id,
+          position,
+          term,
+          definition,
+          phonetic: phonetic ?? null,
+          example: example ?? null,
+        }));
+
+        const unknown = rows.flatMap(({ id }, index) =>
+          id && !existingIds.has(id)
+            ? [
+                {
+                  path: `cards.${index}.id`,
+                  code: 'not_in_set',
+                  message: 'Thẻ không còn trong bộ từ',
+                },
+              ]
+            : [],
+        );
+        if (unknown.length > 0) {
+          throw new AppError(
+            ERROR_CODES.CARD_NOT_IN_SET,
+            'Có thẻ không thuộc bộ từ này. Hãy tải lại rồi thử lại.',
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            unknown,
+          );
+        }
+
+        const kept = rows.flatMap(({ id, ...row }) => (id ? [{ ...row, id }] : []));
+        const keptIds = new Set(kept.map(({ id }) => id));
+        const removedIds = [...existingIds].filter((id) => !keptIds.has(id));
+        if (removedIds.length > 0) {
+          await tx.card.deleteMany({ where: { setId, id: { in: removedIds } } });
+        }
+
+        // Một câu lệnh cho mọi thẻ, chỉ ghi thẻ thật sự thay đổi.
+        if (kept.length > 0) {
+          await tx.$executeRaw`
+            UPDATE "Card" AS card
+            SET "position" = input."position",
+                "term" = input."term",
+                "definition" = input."definition",
+                "phonetic" = input."phonetic",
+                "example" = input."example",
+                "updatedAt" = now() AT TIME ZONE 'UTC'
+            FROM unnest(
+              ${kept.map(({ id }) => id)}::text[],
+              ${kept.map(({ position }) => position)}::int[],
+              ${kept.map(({ term }) => term)}::text[],
+              ${kept.map(({ definition }) => definition)}::text[],
+              ${kept.map(({ phonetic }) => phonetic)}::text[],
+              ${kept.map(({ example }) => example)}::text[]
+            ) AS input("id", "position", "term", "definition", "phonetic", "example")
+            WHERE card."id" = input."id"
+              AND card."setId" = ${setId}
+              AND (card."position", card."term", card."definition", card."phonetic", card."example")
+                IS DISTINCT FROM
+                (input."position", input."term", input."definition", input."phonetic", input."example")
+          `;
+        }
+
+        const added = rows.filter(({ id }) => !id);
+        if (added.length > 0) {
+          await tx.card.createMany({
+            data: added.map(({ id: _id, ...row }) => ({ ...row, setId })),
+          });
+        }
+
+        return tx.studySet.findUniqueOrThrow({
+          where: { id: setId },
+          select: {
+            ...SET_SUMMARY_SELECT,
+            cards: { select: CARD_SELECT, orderBy: { position: 'asc' } },
+          },
+        });
+      },
+      { timeout: REPLACE_CARDS_TIMEOUT_MS },
+    );
   }
 
   /** Trả `null` nếu bộ từ không tồn tại hoặc đã xoá mềm. */

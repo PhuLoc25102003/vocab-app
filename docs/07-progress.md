@@ -6,9 +6,9 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Làm `PUT /sets/:id/cards` (việc 1.8).
-2. Làm `POST /sets/:id/duplicate` (việc 1.9).
-3. Làm dashboard và danh sách bộ từ trên web (việc 1.10).
+1. Làm `POST /sets/:id/duplicate` (việc 1.9).
+2. Làm dashboard và danh sách bộ từ trên web (việc 1.10).
+3. Làm trang tạo, sửa bộ từ và soạn thẻ trên web (việc 1.11).
 
 ## Tổng quan
 
@@ -17,11 +17,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      7 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      8 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **20** | **71** | **28%**      |
+| **Toàn dự án**          |                                            | **21** | **71** | **30%**      |
 
 ## Cách cập nhật
 
@@ -74,7 +74,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** người dùng tạo, sửa, xoá, sao chép bộ từ và khách xem được bộ công khai.
 
 - [x] **1.7** API bộ từ: danh sách, tìm bộ công khai, tạo, xem, sửa, xoá mềm (#44, #45, #46).
-- [ ] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài.
+- [x] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài (#53).
 - [ ] **1.9** `POST /sets/:id/duplicate`.
 - [ ] **1.10** Web: dashboard và danh sách bộ từ.
 - [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ.
