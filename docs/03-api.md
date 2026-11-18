@@ -6,35 +6,35 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 
 ## Danh sách endpoint
 
-| Method | Path                        | Quyền              | Mô tả                                                      |
-| ------ | --------------------------- | ------------------ | ---------------------------------------------------------- |
-| POST   | /auth/register              | Công khai          | Đăng ký email + mật khẩu, trả 202                          |
-| POST   | /auth/login                 | Công khai          | Trả access token, đặt cookie refresh                       |
-| POST   | /auth/google                | Công khai          | Đăng nhập bằng Google ID token                             |
-| POST   | /auth/refresh               | Cookie refresh     | Cấp cặp token mới (rotation)                               |
-| POST   | /auth/logout                | Đã đăng nhập       | Thu hồi refresh session hiện tại                           |
-| POST   | /auth/logout-all            | Đã đăng nhập       | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
-| GET    | /users/me                   | Đã đăng nhập       | Thông tin tài khoản                                        |
-| PATCH  | /users/me                   | Đã đăng nhập       | Sửa tên, mật khẩu                                          |
-| DELETE | /users/me                   | Đã đăng nhập       | Xoá hẳn tài khoản và dữ liệu                               |
-| GET    | /sets                       | Đã đăng nhập       | Bộ từ của tôi, phân trang                                  |
-| GET    | /sets/public                | Công khai          | Tìm bộ từ công khai                                        |
-| POST   | /sets                       | STUDENT+           | Tạo bộ từ kèm danh sách thẻ                                |
-| GET    | /sets/:id                   | Chủ hoặc bộ PUBLIC | Chi tiết + thẻ                                             |
-| PATCH  | /sets/:id                   | Chủ                | Sửa thông tin                                              |
-| DELETE | /sets/:id                   | Chủ, ADMIN         | Xoá mềm                                                    |
-| POST   | /sets/:id/duplicate         | Đã đăng nhập       | Sao chép bộ công khai về tài khoản                         |
-| PUT    | /sets/:id/cards             | Chủ                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
-| POST   | /import/preview             | Đã đăng nhập       | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
-| POST   | /sets/:id/import            | Chủ                | Lưu kết quả đã xem trước                                   |
-| POST   | /uploads/presign            | Đã đăng nhập       | URL ký sẵn để tải ảnh lên R2                               |
-| POST   | /study/sessions             | Đã đăng nhập       | Bắt đầu phiên, trả câu hỏi theo mode                       |
-| POST   | /study/sessions/:id/answers | Chủ phiên          | Gửi đáp án theo lô, cập nhật SRS                           |
-| PATCH  | /study/sessions/:id/finish  | Chủ phiên          | Kết thúc, trả kết quả                                      |
-| GET    | /review/due                 | Đã đăng nhập       | Thẻ đến hạn ôn hôm nay                                     |
-| GET    | /stats/overview             | Đã đăng nhập       | Streak, số từ đã thuộc, từ hay sai                         |
-| GET    | /health                     | Công khai          | Kiểm tra API + kết nối DB                                  |
-| GET    | /admin/users                | ADMIN              | Quản lý người dùng                                         |
+| Method | Path                        | Quyền                     | Mô tả                                                      |
+| ------ | --------------------------- | ------------------------- | ---------------------------------------------------------- |
+| POST   | /auth/register              | Công khai                 | Đăng ký email + mật khẩu, trả 202                          |
+| POST   | /auth/login                 | Công khai                 | Trả access token, đặt cookie refresh                       |
+| POST   | /auth/google                | Công khai                 | Đăng nhập bằng Google ID token                             |
+| POST   | /auth/refresh               | Cookie refresh            | Cấp cặp token mới (rotation)                               |
+| POST   | /auth/logout                | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
+| POST   | /auth/logout-all            | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
+| GET    | /users/me                   | Đã đăng nhập              | Thông tin tài khoản                                        |
+| PATCH  | /users/me                   | Đã đăng nhập              | Sửa tên, mật khẩu                                          |
+| DELETE | /users/me                   | Đã đăng nhập              | Xoá hẳn tài khoản và dữ liệu                               |
+| GET    | /sets                       | Đã đăng nhập              | Bộ từ của tôi, phân trang                                  |
+| GET    | /sets/public                | Công khai                 | Tìm bộ từ công khai                                        |
+| POST   | /sets                       | STUDENT+                  | Tạo bộ từ kèm danh sách thẻ                                |
+| GET    | /sets/:id                   | Chủ, ADMIN hoặc bộ PUBLIC | Chi tiết + thẻ                                             |
+| PATCH  | /sets/:id                   | Chủ, ADMIN                | Sửa thông tin                                              |
+| DELETE | /sets/:id                   | Chủ, ADMIN                | Xoá mềm                                                    |
+| POST   | /sets/:id/duplicate         | Đã đăng nhập              | Sao chép bộ từ xem được về tài khoản                       |
+| PUT    | /sets/:id/cards             | Chủ, ADMIN                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
+| POST   | /import/preview             | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
+| POST   | /sets/:id/import            | Chủ                       | Lưu kết quả đã xem trước                                   |
+| POST   | /uploads/presign            | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
+| POST   | /study/sessions             | Đã đăng nhập              | Bắt đầu phiên, trả câu hỏi theo mode                       |
+| POST   | /study/sessions/:id/answers | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
+| PATCH  | /study/sessions/:id/finish  | Chủ phiên                 | Kết thúc, trả kết quả                                      |
+| GET    | /review/due                 | Đã đăng nhập              | Thẻ đến hạn ôn hôm nay                                     |
+| GET    | /stats/overview             | Đã đăng nhập              | Streak, số từ đã thuộc, từ hay sai                         |
+| GET    | /health                     | Công khai                 | Kiểm tra API + kết nối DB                                  |
+| GET    | /admin/users                | ADMIN                     | Quản lý người dùng                                         |
 
 ## Chuẩn request / response
 

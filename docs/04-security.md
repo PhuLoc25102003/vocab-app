@@ -8,14 +8,14 @@ Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refre
 
 ## JWT: thiết kế token
 
-|              | Access token                                              | Refresh token                                                     |
-| ------------ | --------------------------------------------------------- | ----------------------------------------------------------------- |
-| Thời hạn     | 15 phút                                                   | 30 ngày                                                           |
-| Nơi lưu (FE) | Biến trong bộ nhớ (Zustand), không lưu localStorage       | Cookie `httpOnly`, `Secure`, `SameSite=None`, `Path=/api/v1/auth` |
-| Gửi đi       | Header `Authorization: Bearer <token>`                    | Trình duyệt tự gửi khi gọi `/auth/refresh`                        |
-| Nội dung     | `sub` (userId), `role`, `tv` (tokenVersion), `iat`, `exp` | `sub`, `sid` (id phiên), `fam` (familyId)                         |
-| Ký           | `JWT_ACCESS_SECRET` (HS256, ≥ 32 byte ngẫu nhiên)         | `JWT_REFRESH_SECRET` khác hoàn toàn                               |
-| Lưu DB       | Không                                                     | Chỉ lưu hash SHA-256 trong `RefreshSession`                       |
+|              | Access token                                              | Refresh token                                                                                                                                       |
+| ------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Thời hạn     | 15 phút                                                   | 30 ngày                                                                                                                                             |
+| Nơi lưu (FE) | Biến trong bộ nhớ (Zustand), không lưu localStorage       | Cookie `httpOnly`, `Path=/api/v1/auth`, `SameSite` theo `REFRESH_COOKIE_SAME_SITE` (mặc định `lax`), `Secure` ở production hoặc khi `SameSite=none` |
+| Gửi đi       | Header `Authorization: Bearer <token>`                    | Trình duyệt tự gửi khi gọi `/auth/refresh`                                                                                                          |
+| Nội dung     | `sub` (userId), `role`, `tv` (tokenVersion), `iat`, `exp` | `sub`, `sid` (id phiên), `fam` (familyId)                                                                                                           |
+| Ký           | `JWT_ACCESS_SECRET` (HS256, ≥ 32 byte ngẫu nhiên)         | `JWT_REFRESH_SECRET` khác hoàn toàn                                                                                                                 |
+| Lưu DB       | Không                                                     | Chỉ lưu hash SHA-256 trong `RefreshSession`                                                                                                         |
 
 **Vì FE (Vercel) và BE (Render) khác domain**, cookie là cookie bên thứ ba và có thể bị Safari chặn. Cách xử lý, chọn một:
 
@@ -93,6 +93,6 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 ## Đã điều chỉnh so với spec gốc
 
-- `JwtAuthGuard` đổi thành `AuthGuard`, đúng tên trong `common/guards/auth.guard.ts`. Module auth sẽ bổ sung xác thực JWT vào guard này.
+- `JwtAuthGuard` đổi thành `AuthGuard`, đúng tên trong `common/guards/auth.guard.ts`. Guard này đã xác thực JWT.
 - Thêm mục hiện trạng. Các ô trong checklist vẫn để trống để kiểm tra theo từng tính năng.
 - "Xoá tài khoản xoá hẳn dữ liệu" được hỗ trợ ở database bằng `onDelete: Cascade`, xem `02-database.md`.

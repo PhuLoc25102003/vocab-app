@@ -48,7 +48,7 @@ docs/                  Tài liệu kỹ thuật và ADR
 .claude/skills/        Quy trình làm việc của dự án
 ```
 
-Dự án mới có khung. Trước khi dùng một thành phần được nhắc trong docs, xem mục Hiện trạng ở `docs/01-code-structure.md`.
+Dự án đang làm MVP, nhiều phần chưa có. Trước khi dùng một thành phần được nhắc trong docs, xem mục Hiện trạng ở `docs/01-code-structure.md`.
 
 ## Quy tắc bắt buộc
 
