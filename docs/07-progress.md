@@ -78,7 +78,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
 - [x] **1.11** Web: tạo, sửa bộ từ và soạn thẻ (#60, #61, #63).
 - [x] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache` (#65, #67).
-- [x] **1.36** Web: trang Khám phá có tìm kiếm, nút quay lại, tên Nhớ Từ và logo.
+- [x] **1.36** Web: trang Khám phá có tìm kiếm, nút quay lại, tên Nhớ Từ và logo (#71).
 
 ### 1C. Học bằng Flashcard
 
