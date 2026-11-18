@@ -67,7 +67,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.3** `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard` (#34).
 - [x] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản (#36, #37).
 - [x] **1.5** Web: đăng ký, đăng nhập, auth store, tự refresh trong `lib/http.ts`, `proxy.ts`, component `Can` (#39, #40, #41, #42).
-- [x] **1.6** Đăng nhập Google trên API và web.
+- [x] **1.6** Đăng nhập Google trên API và web (#48, #49).
 
 ### 1B. Bộ từ và thẻ từ
 
