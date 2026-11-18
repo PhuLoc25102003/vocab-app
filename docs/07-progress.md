@@ -62,7 +62,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** người dùng đăng nhập được, giữ phiên qua refresh token, route được bảo vệ đúng theo vai trò và quyền sở hữu.
 
-- [x] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung.
+- [x] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung (#26, #27).
 - [ ] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard`.
 - [ ] **1.3** `@CurrentUser`, `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard`.
 - [ ] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản.
