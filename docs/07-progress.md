@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Làm chế độ Nghe viết (việc 1.25).
-2. Làm chế độ Trắc nghiệm (việc 1.26).
+1. Làm chế độ Trắc nghiệm (việc 1.26).
+2. Làm trang "Ôn hôm nay" (việc 1.27).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     19 |     36 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     20 |     36 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **32** | **72** | **44%**      |
+| **Toàn dự án**          |                                            | **33** | **72** | **46%**      |
 
 ## Cách cập nhật
 
@@ -111,7 +111,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** đủ 4 chế độ MVP, có danh sách từ đến hạn và thống kê cơ bản.
 
 - [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng (#82).
-- [ ] **1.25** Chế độ Nghe viết.
+- [x] **1.25** Chế độ Nghe viết.
 - [ ] **1.26** Chế độ Trắc nghiệm.
 - [ ] **1.27** `GET /review/due` và trang "Ôn hôm nay".
 - [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.

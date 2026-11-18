@@ -115,18 +115,18 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 
 ## Hiện trạng
 
-| Thành phần trong tài liệu                                                                         | Hiện trạng                                                           |
-| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `common/guards/auth.guard.ts`                                                                     | Có. Xác thực JWT, từ chối route không có `@Public()` nếu thiếu token |
-| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                                   |
-| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                   |
-| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                   |
-| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
-| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS, strategy Flashcard và Viết        |
-| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
-| `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
-| `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study` có code, còn lại rỗng     |
+| Thành phần trong tài liệu                                                                         | Hiện trạng                                                             |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `common/guards/auth.guard.ts`                                                                     | Có. Xác thực JWT, từ chối route không có `@Public()` nếu thiếu token   |
+| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                                     |
+| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                     |
+| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                     |
+| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                     |
+| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS, strategy Flashcard, Viết, Nghe viết |
+| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                     |
+| `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                    |
+| `AudioButton`                                                                                     | Có, dùng Web Speech API                                                |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study` có code, còn lại rỗng       |
 
 ## Đã điều chỉnh so với spec gốc
 
