@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { paginationSchema } from './pagination';
 
 export const SET_TITLE_MAX_LENGTH = 200;
 export const SET_DESCRIPTION_MAX_LENGTH = 2_000;
@@ -59,6 +60,11 @@ export const createSetSchema = z.object({
 export type CreateSetDto = z.infer<typeof createSetSchema>;
 /** Dữ liệu đầu vào từ form/client (các trường default là tuỳ chọn). */
 export type CreateSetInput = z.input<typeof createSetSchema>;
+
+export const publicSetQuerySchema = paginationSchema.extend({
+  q: z.string().trim().max(100, 'Từ khoá tối đa 100 ký tự').optional(),
+});
+export type PublicSetQuery = z.infer<typeof publicSetQuerySchema>;
 
 export const updateSetSchema = z
   .object({

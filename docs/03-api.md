@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets` trừ `duplicate` và `cards`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -80,6 +80,14 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Xoá tài khoản xoá luôn bộ từ của người đó, kèm tiến độ và phiên học của người khác trên các bộ từ này.
 - `PATCH` và `DELETE` giới hạn 5 lần/phút cho mỗi tài khoản.
 
+## Bộ từ
+
+- `GET /sets` và `GET /sets/public` sắp xếp theo `updatedAt`, `createdAt`, `title`, thêm `-` để giảm dần. `GET /sets/public` nhận thêm `q` để tìm theo tên.
+- `POST /sets` nhận `{ title, description?, termLang?, defLang?, visibility?, cards? }`, trả 201. Mỗi thẻ gồm `term`, `definition`, `phonetic?`, `example?`. Body theo giới hạn mặc định 1 MB.
+- `GET /sets/:id` trả bộ từ kèm `owner.displayName` và `cards`. Khách và người dùng khác xem được bộ `PUBLIC`. Bộ không được xem trả 404 như bộ không tồn tại. Bộ `CLASS` hiện chỉ chủ và ADMIN xem được, cho đến việc 3.4.
+- `PATCH` và `DELETE /sets/:id` dành cho chủ hoặc ADMIN. `DELETE` là xoá mềm, trả 204.
+- `folderId` chưa được nhận, sẽ thêm cùng API thư mục ở việc 2.4.
+
 ## Khác biệt đang có trong code
 
 - `GET /health` trả trực tiếp `{ "status": "ok", "db": "up" }`, không bọc `data`. Đây là ngoại lệ có chủ đích và `healthResponseSchema` đang kiểm tra đúng dạng này.
@@ -87,7 +95,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Chưa có interceptor bọc response. Endpoint nghiệp vụ tự trả `{ data }` hoặc `{ data, meta }` qua helper `ok()` và `paginated()` trong `common/base/pagination.ts` (mẫu trong skill `api-endpoint`).
 - `details` là `null` khi lỗi không có chi tiết. `requestId` là UUID, đồng thời nằm trong header `x-request-id`.
 - `lib/http.ts` trả nguyên body, nên `features/*/api.ts` tự lấy `.data`. Nó tự gắn access token, gặp 401 thì refresh một lần rồi gửi lại request. Route của phiên đăng nhập dùng `skipAuth`.
-- `GET /sets/public` phải khai báo trước `GET /sets/:id`. `GET /sets/:id` cho khách xem bộ PUBLIC nên cần `@Public()` kèm xác thực tuỳ chọn.
+- `GET /sets/public` phải khai báo trước `GET /sets/:id`. `GET /sets/:id` dùng `@OptionalAuth()`: không có token là khách, token sai trả 401.
 
 ## Đã điều chỉnh so với spec gốc
 

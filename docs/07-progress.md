@@ -2,13 +2,13 @@
 
 Cập nhật lần cuối: 2026-11-18
 
-**Đang ở:** Giai đoạn 1, phần tài khoản và phân quyền.
+**Đang ở:** Giai đoạn 1, phần bộ từ và thẻ từ. Việc 1.6 chờ Google OAuth Client.
 
 **Việc tiếp theo:**
 
-1. Thêm đăng nhập Google (việc 1.6, cần tạo Google OAuth Client).
-2. Làm API bộ từ (việc 1.7).
-3. Làm `PUT /sets/:id/cards` (việc 1.8).
+1. Làm `PUT /sets/:id/cards` (việc 1.8).
+2. Làm `POST /sets/:id/duplicate` (việc 1.9).
+3. Làm dashboard và danh sách bộ từ trên web (việc 1.10).
 
 ## Tổng quan
 
@@ -17,11 +17,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      5 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      6 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **18** | **71** | **25%**      |
+| **Toàn dự án**          |                                            | **19** | **71** | **27%**      |
 
 ## Cách cập nhật
 
@@ -73,7 +73,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** người dùng tạo, sửa, xoá, sao chép bộ từ và khách xem được bộ công khai.
 
-- [ ] **1.7** API bộ từ: danh sách, tìm bộ công khai, tạo, xem, sửa, xoá mềm.
+- [x] **1.7** API bộ từ: danh sách, tìm bộ công khai, tạo, xem, sửa, xoá mềm.
 - [ ] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài.
 - [ ] **1.9** `POST /sets/:id/duplicate`.
 - [ ] **1.10** Web: dashboard và danh sách bộ từ.
