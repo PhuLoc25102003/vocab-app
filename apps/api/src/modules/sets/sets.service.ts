@@ -41,6 +41,14 @@ export class SetsService {
     return ok(await this.sets.create(ownerId, dto));
   }
 
+  async duplicate(id: string, viewer: SetViewer) {
+    const copy = await this.sets.duplicate(id, viewer);
+    if (!copy) {
+      throw setNotFound();
+    }
+    return ok(copy);
+  }
+
   async update(id: string, dto: UpdateSetDto) {
     const set = await this.sets.update(id, dto);
     if (!set) {
