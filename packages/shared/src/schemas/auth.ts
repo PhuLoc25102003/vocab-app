@@ -25,7 +25,7 @@ const existingPasswordSchema = z
   .min(1, 'Hãy nhập mật khẩu')
   .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`);
 
-const displayNameSchema = z
+export const displayNameSchema = z
   .string('Hãy nhập tên hiển thị')
   .trim()
   .min(1, 'Hãy nhập tên hiển thị')
@@ -44,6 +44,11 @@ export const loginSchema = z.object({
   password: existingPasswordSchema,
 });
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const googleLoginSchema = z.object({
+  credential: z.string('Thiếu thông tin từ Google').min(1, 'Thiếu thông tin từ Google').max(4096),
+});
+export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
 
 export const updateAccountSchema = z
   .object({

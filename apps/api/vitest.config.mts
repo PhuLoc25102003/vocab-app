@@ -16,6 +16,7 @@ export default defineConfig({
       DATABASE_URL: toTestDatabaseUrl(process.env.DATABASE_URL),
       JWT_ACCESS_SECRET: 'test-only-access-secret-at-least-32-chars',
       JWT_REFRESH_SECRET: 'test-only-refresh-secret-at-least-32-chars',
+      GOOGLE_CLIENT_ID: 'test-google-client-id',
     },
   },
 });

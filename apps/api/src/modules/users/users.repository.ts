@@ -15,6 +15,7 @@ const ACCOUNT_SELECT = {
 } as const;
 
 type NewUser = Pick<RegisterInput, 'email' | 'displayName'> & { passwordHash: string };
+type NewGoogleUser = Pick<RegisterInput, 'email' | 'displayName'> & { googleId: string };
 export type Account = AuthUser & { tokenVersion: number };
 export type UserCredentials = Account & { passwordHash: string | null };
 
@@ -26,15 +27,30 @@ export class UsersRepository extends BaseRepository {
 
   /** Trả `false` nếu email đã tồn tại. */
   async createIfEmailFree(data: NewUser): Promise<boolean> {
+    return (await this.createUnlessTaken(data)) !== null;
+  }
+
+  /** Trả `null` nếu email hoặc Google ID đã được dùng. */
+  createGoogleUserIfFree(data: NewGoogleUser): Promise<Account | null> {
+    return this.createUnlessTaken(data);
+  }
+
+  findByGoogleId(googleId: string): Promise<Account | null> {
+    return this.prisma.user.findFirst({
+      where: { googleId, deletedAt: null },
+      select: ACCOUNT_SELECT,
+    });
+  }
+
+  private async createUnlessTaken(data: NewUser | NewGoogleUser): Promise<Account | null> {
     try {
-      await this.prisma.user.create({ data, select: { id: true } });
-      return true;
+      return await this.prisma.user.create({ data, select: ACCOUNT_SELECT });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === UNIQUE_VIOLATION
       ) {
-        return false;
+        return null;
       }
       throw error;
     }

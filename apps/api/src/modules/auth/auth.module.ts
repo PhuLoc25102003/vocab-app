@@ -5,6 +5,7 @@ import { AUTH_THROTTLE_OPTIONS } from './auth-throttler.guard';
 import { AuthSessionService } from './auth-session.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { GoogleIdentityService } from './google-identity.service';
 import { PasswordService } from './password.service';
 import { RefreshCookie } from './refresh-cookie';
 import { RefreshSessionRepository } from './refresh-session.repository';
@@ -15,6 +16,7 @@ import { RefreshSessionRepository } from './refresh-session.repository';
   providers: [
     AuthService,
     AuthSessionService,
+    GoogleIdentityService,
     PasswordService,
     RefreshCookie,
     RefreshSessionRepository,
