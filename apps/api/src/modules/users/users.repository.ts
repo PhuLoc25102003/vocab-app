@@ -42,6 +42,28 @@ export class UsersRepository extends BaseRepository {
     });
   }
 
+  /**
+   * Gắn Google vào tài khoản cùng email. Đăng ký bằng mật khẩu chưa xác minh email, nên
+   * mật khẩu và các phiên cũ có thể thuộc người khác và phải hết hiệu lực.
+   */
+  linkGoogleByEmail(email: string, googleId: string): Promise<Account | null> {
+    return this.prisma.$transaction(async (tx) => {
+      const { count } = await tx.user.updateMany({
+        where: { email, googleId: null, deletedAt: null },
+        data: { googleId, passwordHash: null, tokenVersion: { increment: 1 } },
+      });
+      if (count === 0) {
+        return null;
+      }
+      const account = await tx.user.findUniqueOrThrow({
+        where: { email },
+        select: ACCOUNT_SELECT,
+      });
+      await tx.refreshSession.deleteMany({ where: { userId: account.id } });
+      return account;
+    });
+  }
+
   private async createUnlessTaken(data: NewUser | NewGoogleUser): Promise<Account | null> {
     try {
       return await this.prisma.user.create({ data, select: ACCOUNT_SELECT });

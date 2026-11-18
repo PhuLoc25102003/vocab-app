@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormField } from '@/components/common/form-field';
+import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
 import { login } from '../api';
 import { applyFormError } from '../form-errors';
@@ -61,9 +62,8 @@ export function LoginForm() {
         error={errors.email?.message}
         {...register('email')}
       />
-      <FormField
+      <PasswordField
         label="Mật khẩu"
-        type="password"
         autoComplete="current-password"
         error={errors.password?.message}
         {...register('password')}
