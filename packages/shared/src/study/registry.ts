@@ -6,6 +6,10 @@ export function registerMode(strategy: StudyModeStrategy): void {
   registry.set(strategy.mode, strategy);
 }
 
+export function isModeAvailable(mode: StudyMode): boolean {
+  return registry.has(mode);
+}
+
 export function getMode(mode: StudyMode): StudyModeStrategy {
   const strategy = registry.get(mode);
   if (!strategy) {

@@ -54,7 +54,7 @@ export interface SetViewer {
 }
 
 /** Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại. */
-function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
+export function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
   if (viewer?.role === 'ADMIN') {
     return {};
   }
