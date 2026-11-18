@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PASSWORD_MAX_LENGTH, registerSchema } from './auth';
+import { loginSchema, PASSWORD_MAX_LENGTH, registerSchema } from './auth';
 
 const valid = { email: 'an@example.com', password: 'mat-khau-dai', displayName: 'An' };
 
@@ -30,5 +30,11 @@ describe('registerSchema', () => {
     ['tên có ký tự điều khiển', { displayName: 'A\u0000B' }],
   ])('từ chối %s', (_name, change) => {
     expect(registerSchema.safeParse({ ...valid, ...change }).success).toBe(false);
+  });
+});
+
+describe('loginSchema', () => {
+  it('nhận mật khẩu ngắn hơn quy tắc đăng ký', () => {
+    expect(loginSchema.safeParse({ email: valid.email, password: 'a' }).success).toBe(true);
   });
 });

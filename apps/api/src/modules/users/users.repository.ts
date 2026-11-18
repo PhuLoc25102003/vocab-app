@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { RegisterInput } from '@vocab/shared';
+import type { AuthUser, RegisterInput } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -7,6 +7,7 @@ import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 const UNIQUE_VIOLATION = 'P2002';
 
 type NewUser = Pick<RegisterInput, 'email' | 'displayName'> & { passwordHash: string };
+export type UserCredentials = AuthUser & { passwordHash: string | null };
 
 @Injectable()
 export class UsersRepository extends BaseRepository {
@@ -28,5 +29,12 @@ export class UsersRepository extends BaseRepository {
       }
       throw error;
     }
+  }
+
+  findCredentialsByEmail(email: string): Promise<UserCredentials | null> {
+    return this.prisma.user.findFirst({
+      where: { email, deletedAt: null },
+      select: { id: true, email: true, displayName: true, role: true, passwordHash: true },
+    });
   }
 }
