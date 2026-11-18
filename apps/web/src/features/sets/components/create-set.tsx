@@ -10,8 +10,12 @@ export function CreateSet() {
   const router = useRouter();
   const createSet = useCreateSet();
 
-  const save = async ({ description, ...values }: SetFormValues) => {
-    await createSet.mutateAsync({ ...values, description: description || undefined });
+  const save = async ({ description, cards, ...details }: SetFormValues) => {
+    await createSet.mutateAsync({
+      ...details,
+      description: description || undefined,
+      cards: cards.map(({ id: _id, ...card }) => card),
+    });
     toast.success('Đã lưu bộ từ');
     router.push('/sets');
   };

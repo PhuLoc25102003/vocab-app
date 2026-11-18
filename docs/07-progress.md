@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Làm trang tạo, sửa bộ từ và soạn thẻ trên web (việc 1.11).
-2. Làm chi tiết bộ từ và trang công khai cho khách (việc 1.12).
+1. Làm chi tiết bộ từ và trang công khai cho khách (việc 1.12).
+2. Làm nền cho chế độ học trong `packages/shared/src/study` (việc 1.13).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     10 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     11 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **23** | **71** | **32%**      |
+| **Toàn dự án**          |                                            | **24** | **71** | **34%**      |
 
 ## Cách cập nhật
 
@@ -76,7 +76,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài (#53).
 - [x] **1.9** `POST /sets/:id/duplicate` (#55).
 - [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
-- [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ. Đang làm: feat/59-set-form
+- [x] **1.11** Web: tạo, sửa bộ từ và soạn thẻ (#60, #61, #63).
 - [ ] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache`.
 
 ### 1C. Học bằng Flashcard

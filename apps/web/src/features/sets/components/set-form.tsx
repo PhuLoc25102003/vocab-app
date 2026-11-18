@@ -1,25 +1,32 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { setFormSchema, type SetFormValues, type Visibility } from '@vocab/shared';
+import {
+  setFormSchema,
+  type SetFormInput,
+  type SetFormValues,
+  type Visibility,
+} from '@vocab/shared';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 import { LANGUAGE_LABELS, VISIBILITY_LABELS } from '../labels';
+import { CardFields, EMPTY_CARD } from './card-fields';
 
 const FIELDS = ['title', 'description', 'termLang', 'defLang', 'visibility'] as const;
 const SELECTABLE_VISIBILITY: readonly Visibility[] = ['PRIVATE', 'PUBLIC'];
 
-export const EMPTY_SET_FORM: SetFormValues = {
+export const EMPTY_SET_FORM: SetFormInput = {
   title: '',
   description: '',
   termLang: 'en',
   defLang: 'vi',
   visibility: 'PRIVATE',
+  cards: [EMPTY_CARD, EMPTY_CARD],
 };
 
 /** Giữ giá trị đang lưu trong danh sách, kể cả khi form không cho chọn giá trị đó. */
@@ -35,20 +42,70 @@ function languageOptions(current: string) {
   ));
 }
 
+interface SetDetailsFieldsProps {
+  initialValues: SetFormInput;
+  register: UseFormRegister<SetFormInput>;
+  errors: FieldErrors<SetFormInput>;
+}
+
+function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsProps) {
+  return (
+    <>
+      <FormField label="Tên bộ từ" error={errors.title?.message} {...register('title')} />
+      <TextareaField
+        label="Mô tả (không bắt buộc)"
+        error={errors.description?.message}
+        {...register('description')}
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SelectField
+          label="Ngôn ngữ của từ"
+          error={errors.termLang?.message}
+          {...register('termLang')}
+        >
+          {languageOptions(initialValues.termLang)}
+        </SelectField>
+        <SelectField
+          label="Ngôn ngữ của nghĩa"
+          error={errors.defLang?.message}
+          {...register('defLang')}
+        >
+          {languageOptions(initialValues.defLang)}
+        </SelectField>
+      </div>
+      <SelectField
+        label="Ai xem được"
+        hint="Bộ từ công khai ai cũng xem được, kể cả người chưa đăng nhập."
+        error={errors.visibility?.message}
+        {...register('visibility')}
+      >
+        {withCurrent(SELECTABLE_VISIBILITY, initialValues.visibility).map((visibility) => (
+          <option key={visibility} value={visibility}>
+            {VISIBILITY_LABELS[visibility]}
+          </option>
+        ))}
+      </SelectField>
+    </>
+  );
+}
+
 interface SetFormProps {
-  defaultValues: SetFormValues;
+  defaultValues: SetFormInput;
   onSubmit: (values: SetFormValues) => Promise<void>;
 }
 
 export function SetForm({ defaultValues, onSubmit }: SetFormProps) {
   const [initialValues] = useState(defaultValues);
+  const hasMounted = useRef(false);
   const {
+    control,
     register,
     handleSubmit,
     reset,
     setError,
+    setFocus,
     formState: { errors, isDirty, isSubmitting },
-  } = useForm<SetFormValues>({
+  } = useForm<SetFormInput, unknown, SetFormValues>({
     resolver: zodResolver(setFormSchema),
     defaultValues: initialValues,
   });
@@ -56,7 +113,10 @@ export function SetForm({ defaultValues, onSubmit }: SetFormProps) {
   // Next giữ trang đã rời ở trạng thái ẩn. Effect chạy lại khi trang hiện ra,
   // nên người dùng không thấy dữ liệu của lần nhập trước.
   useEffect(() => {
-    reset(initialValues);
+    if (hasMounted.current) {
+      reset(initialValues);
+    }
+    hasMounted.current = true;
   }, [initialValues, reset]);
 
   useEffect(() => {
@@ -82,40 +142,8 @@ export function SetForm({ defaultValues, onSubmit }: SetFormProps) {
   return (
     <form onSubmit={submit} noValidate className="flex max-w-[720px] flex-col gap-6">
       {errors.root?.message ? <FormError>{errors.root.message}</FormError> : null}
-      <FormField label="Tên bộ từ" error={errors.title?.message} {...register('title')} />
-      <TextareaField
-        label="Mô tả (không bắt buộc)"
-        error={errors.description?.message}
-        {...register('description')}
-      />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField
-          label="Ngôn ngữ của từ"
-          error={errors.termLang?.message}
-          {...register('termLang')}
-        >
-          {languageOptions(defaultValues.termLang)}
-        </SelectField>
-        <SelectField
-          label="Ngôn ngữ của nghĩa"
-          error={errors.defLang?.message}
-          {...register('defLang')}
-        >
-          {languageOptions(defaultValues.defLang)}
-        </SelectField>
-      </div>
-      <SelectField
-        label="Ai xem được"
-        hint="Bộ từ công khai ai cũng xem được, kể cả người chưa đăng nhập."
-        error={errors.visibility?.message}
-        {...register('visibility')}
-      >
-        {withCurrent(SELECTABLE_VISIBILITY, defaultValues.visibility).map((visibility) => (
-          <option key={visibility} value={visibility}>
-            {VISIBILITY_LABELS[visibility]}
-          </option>
-        ))}
-      </SelectField>
+      <SetDetailsFields initialValues={initialValues} register={register} errors={errors} />
+      <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />
       <div className="flex flex-wrap gap-2">
         <Button type="submit" loading={isSubmitting}>
           Lưu bộ từ
