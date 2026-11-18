@@ -112,17 +112,17 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 
 ## Hiện trạng
 
-| Thành phần trong tài liệu                                                                         | Hiện trạng                                                    |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `common/guards/auth.guard.ts`                                                                     | Có. Từ chối mọi route không có `@Public()`, chưa xác thực JWT |
-| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                            |
-| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Chưa có, tạo khi làm module auth                              |
-| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                            |
-| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                            |
-| `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                |
-| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                            |
-| `apps/web/src/proxy.ts`, `AudioButton`                                                            | Chưa có                                                       |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users` có code, còn lại là module rỗng     |
+| Thành phần trong tài liệu                                                                         | Hiện trạng                                                           |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `common/guards/auth.guard.ts`                                                                     | Có. Xác thực JWT, từ chối route không có `@Public()` nếu thiếu token |
+| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                                   |
+| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                   |
+| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                   |
+| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
+| `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                       |
+| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
+| `apps/web/src/proxy.ts`, `AudioButton`                                                            | Chưa có                                                              |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users` có code, còn lại là module rỗng            |
 
 ## Đã điều chỉnh so với spec gốc
 

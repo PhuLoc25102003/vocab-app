@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()` đã có. Phần `RolesGuard`, `OwnershipGuard` và giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
@@ -36,7 +36,7 @@ Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refre
 Hai lớp kiểm tra, đều là guard dùng chung, không viết lại trong service:
 
 - **Vai trò (RBAC):** `@Roles('TEACHER', 'ADMIN')` + `RolesGuard` — ai được gọi loại endpoint này.
-- **Sở hữu (resource-based):** `@CheckOwnership('set')` + `OwnershipGuard` — bộ từ này có phải của bạn không. ADMIN được bỏ qua.
+- **Sở hữu (resource-based):** `@CheckOwnership('set')` + `OwnershipGuard` — bộ từ này có phải của bạn không. ADMIN được bỏ qua với bộ từ, không được bỏ qua với phiên học (`@CheckOwnership('session')`). Tham số đường dẫn mặc định là `id`, đổi bằng đối số thứ hai. Không phải chủ trả 403, không tồn tại hoặc đã xoá mềm trả 404.
 
 | Hành động           | Khách | STUDENT      | TEACHER      | ADMIN |
 | ------------------- | ----- | ------------ | ------------ | ----- |
