@@ -87,7 +87,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test (#69).
 - [x] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress` (#73).
 - [x] **1.15** Web: `study-shell`, session store, tiến độ trong phiên, màn hình kết quả (#75, #76).
-- [x] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ.
+- [x] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ (#78).
 - [ ] **1.17** Phát âm: `lib/speech.ts` và `audio-button`.
 
 ### 1D. Đưa lên môi trường thật
