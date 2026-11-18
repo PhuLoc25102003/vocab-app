@@ -5,11 +5,14 @@ import { parseStudyMode } from '@/features/study/modes/parse-mode';
 
 export const metadata: Metadata = { title: 'Học bộ từ' };
 
-export default async function StudyPage({ params }: PageProps<'/sets/[id]/study/[mode]'>) {
-  const { id, mode: modeParam } = await params;
+export default async function StudyPage({
+  params,
+  searchParams,
+}: PageProps<'/sets/[id]/study/[mode]'>) {
+  const [{ id, mode: modeParam }, { due }] = await Promise.all([params, searchParams]);
   const mode = parseStudyMode(modeParam);
   if (!mode) {
     notFound();
   }
-  return <AccountStudy setId={id} mode={mode} />;
+  return <AccountStudy setId={id} mode={mode} dueOnly={due === '1'} />;
 }

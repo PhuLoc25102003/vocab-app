@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Làm trang "Ôn hôm nay" (việc 1.27).
-2. Làm thống kê (việc 1.28).
+1. Làm thống kê (việc 1.28).
+2. Làm trang giới thiệu sản phẩm (việc 1.29).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     21 |     36 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     22 |     36 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **34** | **72** | **47%**      |
+| **Toàn dự án**          |                                            | **35** | **72** | **49%**      |
 
 ## Cách cập nhật
 
@@ -113,7 +113,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng (#82).
 - [x] **1.25** Chế độ Nghe viết (#84).
 - [x] **1.26** Chế độ Trắc nghiệm (#86).
-- [ ] **1.27** `GET /review/due` và trang "Ôn hôm nay".
+- [x] **1.27** `GET /review/due` và trang "Ôn hôm nay".
 - [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.
 
 ### 1G. Hoàn thiện và phát hành MVP
