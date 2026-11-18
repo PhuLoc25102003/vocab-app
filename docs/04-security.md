@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Phần JWT, rate limit, `RolesGuard` và `OwnershipGuard` chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký đã có argon2id và rate limit. Phần JWT, `RolesGuard`, `OwnershipGuard` và giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
@@ -73,9 +73,9 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 ## Checklist bảo mật
 
-- [ ] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
-- [ ] Rate limit: `/auth/login` 5 lần/phút/IP+email, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/user (`@nestjs/throttler`).
-- [ ] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại.
+- [x] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
+- [ ] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/user (`@nestjs/throttler`). Còn thiếu giới hạn của `/auth/login` và giới hạn chung, phần sau cần có user từ JWT. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance. Sau proxy phải đặt `TRUSTED_PROXIES`.
+- [ ] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại. Đăng ký bằng email đã có trả cùng kết quả với email mới.
 - [ ] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
 - [ ] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
 - [ ] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.

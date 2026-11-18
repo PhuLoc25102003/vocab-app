@@ -122,7 +122,7 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                |
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                            |
 | `apps/web/src/proxy.ts`, `AudioButton`                                                            | Chưa có                                                       |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | Chỉ `health` có code, các module khác là `@Module({})` rỗng   |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users` có code, còn lại là module rỗng     |
 
 ## Đã điều chỉnh so với spec gốc
 

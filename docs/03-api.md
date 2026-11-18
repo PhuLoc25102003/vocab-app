@@ -2,13 +2,13 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Hiện chỉ `GET /health` đã có.** Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
 | Method | Path                        | Quyền              | Mô tả                                                      |
 | ------ | --------------------------- | ------------------ | ---------------------------------------------------------- |
-| POST   | /auth/register              | Công khai          | Đăng ký email + mật khẩu                                   |
+| POST   | /auth/register              | Công khai          | Đăng ký email + mật khẩu, trả 202                          |
 | POST   | /auth/login                 | Công khai          | Trả access token, đặt cookie refresh                       |
 | POST   | /auth/google                | Công khai          | Đăng nhập bằng Google ID token                             |
 | POST   | /auth/refresh               | Cookie refresh     | Cấp cặp token mới (rotation)                               |
@@ -61,6 +61,11 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Phân trang: `?page=1&limit=20&sort=-updatedAt`, `limit` tối đa 100.
 - Tài liệu API sinh tự động bằng `@nestjs/swagger` tại `/api/docs`, bản JSON tại `/api/docs-json`. Hai đường dẫn này nằm ngoài `/api/v1` và tắt khi `NODE_ENV=production`.
 - Khi cần đổi hợp đồng API, tạo `/api/v2`, không sửa ngầm `/v1`.
+
+## Đăng ký
+
+- `POST /auth/register` nhận `{ email, password, displayName }`, luôn trả 202 `{ "data": { "status": "accepted" } }` khi dữ liệu hợp lệ, kể cả khi email đã có. Tài khoản cũ không bị đổi. Giao diện chuyển người dùng sang trang đăng nhập.
+- Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
 
 ## Khác biệt đang có trong code
 

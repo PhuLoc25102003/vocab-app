@@ -9,6 +9,8 @@ const envSchema = z.object({
   JWT_ACCESS_TTL: z.string().min(1).default('15m'),
   JWT_REFRESH_TTL: z.string().min(1).default('30d'),
   CORS_ORIGINS: z.string().min(1).default('http://localhost:3000'),
+  /** IP hoặc CIDR của proxy đứng trước API. Thiếu thì rate limit gộp mọi người vào IP của proxy. */
+  TRUSTED_PROXIES: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -25,9 +27,19 @@ export function validateEnv(config: Record<string, unknown>): Env {
   return result.data;
 }
 
-export function parseCorsOrigins(value: string): string[] {
+function parseList(value: string): string[] {
   return value
     .split(',')
-    .map((origin) => origin.trim())
+    .map((item) => item.trim())
     .filter(Boolean);
+}
+
+export function parseCorsOrigins(value: string): string[] {
+  return parseList(value);
+}
+
+/** Không có proxy thì trả `false`, để Fastify bỏ qua header `X-Forwarded-For`. */
+export function parseTrustedProxies(value: string): string[] | false {
+  const proxies = parseList(value);
+  return proxies.length > 0 ? proxies : false;
 }

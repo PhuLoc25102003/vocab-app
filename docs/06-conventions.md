@@ -85,6 +85,7 @@ Migration chỉ "thêm" an toàn (thêm cột cho phép null, thêm bảng); đ�
 | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                | API                                 | Hai chuỗi ngẫu nhiên khác nhau, ≥ 32 byte                                             |
 | `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`                                      | API                                 | `15m`, `30d`                                                                          |
 | `CORS_ORIGINS`                                                           | API                                 | Domain FE, phân cách bằng dấu phẩy                                                    |
+| `TRUSTED_PROXIES`                                                        | API                                 | IP hoặc CIDR của proxy trước API, để rate limit đọc đúng IP. Local để trống           |
 | `GOOGLE_CLIENT_ID`                                                       | API + Web                           | Chưa dùng. Đăng nhập Google                                                           |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | API                                 | Chưa dùng. Lưu ảnh, âm thanh                                                          |
 | `SENTRY_DSN`                                                             | API + Web                           | Chưa dùng. Giám sát lỗi                                                               |
