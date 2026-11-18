@@ -51,6 +51,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Chỉ chặn lỗ hổng của code chạy ở production. Công cụ phát triển do Dependabot theo dõi.
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Apply migrations
         run: npm run prisma:deploy -w @vocab/api
 

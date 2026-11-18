@@ -2,13 +2,13 @@
 
 Cập nhật lần cuối: 2026-11-18
 
-**Đang ở:** Giai đoạn 0, phần nền cho tính năng.
+**Đang ở:** Giai đoạn 1, phần tài khoản và phân quyền.
 
 **Việc tiếp theo:**
 
-1. Thêm kỷ luật code: Husky, lint-staged, kiểm tra ranh giới module, Dependabot (việc 0.13).
-2. Làm API đăng ký và đăng nhập (việc 1.1).
-3. Làm JWT, refresh token và đăng xuất (việc 1.2).
+1. Làm API đăng ký và đăng nhập (việc 1.1).
+2. Làm JWT, refresh token và đăng xuất (việc 1.2).
+3. Thêm `@CurrentUser`, `@Roles` và guard kiểm tra quyền (việc 1.3).
 
 ## Tổng quan
 
@@ -16,12 +16,12 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
-| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     12 |     13 | Đang làm     |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      0 |     35 | Chưa bắt đầu |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      0 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **12** | **71** | **17%**      |
+| **Toàn dự án**          |                                            | **13** | **71** | **18%**      |
 
 ## Cách cập nhật
 
@@ -52,7 +52,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **0.10** Nền API: mã lỗi trong shared, `AppError`, `paginationSchema`, `ok()`, `paginated()`, Swagger (#11).
 - [x] **0.11** Bộ test: Vitest cho shared, API, web; Supertest; database test trong CI (#13, #14).
 - [x] **0.12** Nền giao diện: shadcn/ui, layout app, điều hướng, `page-header`, `empty-state`, `error-state`, skeleton, thông báo, lưu lựa chọn theme (#16, #17).
-- [ ] **0.13** Kỷ luật code: Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot và `npm audit` trong CI.
+- [x] **0.13** Kỷ luật code: Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot và `npm audit` trong CI.
 
 ## Giai đoạn 1: MVP
 

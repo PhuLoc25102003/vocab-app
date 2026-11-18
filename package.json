@@ -11,7 +11,8 @@
     "format:check": "prettier --check .",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
-    "db:migrate": "npm run prisma:migrate -w @vocab/api"
+    "db:migrate": "npm run prisma:migrate -w @vocab/api",
+    "prepare": "node .husky/install.mjs"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,8 @@
     "packages/*"
   ],
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "turbo": "^2.11.12",
     "typescript": "~5.9.3"
