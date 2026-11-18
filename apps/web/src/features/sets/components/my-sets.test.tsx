@@ -134,7 +134,7 @@ describe('RecentSets', () => {
     renderWithQuery(<RecentSets />);
 
     await screen.findByText('Trái cây');
-    expect(screen.getByRole('link', { name: 'Trái cây' })).toHaveAttribute('href', '/sets/s1/edit');
+    expect(screen.getByRole('link', { name: 'Trái cây' })).toHaveAttribute('href', '/sets/s1');
     expect(screen.queryByRole('link', { name: /Xem tất cả/ })).not.toBeInTheDocument();
   });
 

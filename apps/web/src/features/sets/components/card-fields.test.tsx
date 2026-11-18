@@ -74,7 +74,7 @@ describe('CardFields', () => {
     await userEvent.type(cardGroup(2).getByLabelText('Nghĩa'), 'quả táo');
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
     expect(vi.mocked(createSet).mock.calls[0]?.[0].cards).toEqual([
       { term: 'apple', definition: 'quả táo' },
     ]);
@@ -99,7 +99,7 @@ describe('CardFields', () => {
     await userEvent.type(cardGroup(3).getByLabelText('Nghĩa'), 'quả kiwi');
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
     expect(savedCards()).toEqual([
       { id: 'c2', term: 'pear', definition: 'quả lê' },
       { id: 'c1', term: 'apple', definition: 'quả táo' },
@@ -112,7 +112,7 @@ describe('CardFields', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ 1' }));
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
     expect(savedCards()).toEqual([{ id: 'c2', term: 'pear', definition: 'quả lê' }]);
   });
 

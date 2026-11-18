@@ -21,7 +21,7 @@ export function SetRows({ sets }: { sets: SetSummary[] }) {
         >
           <div className="min-w-0 flex-1 basis-56">
             <Link
-              href={`/sets/${id}/edit` as Route}
+              href={`/sets/${id}` as Route}
               className="block text-h3 break-words after:absolute after:inset-0"
             >
               {title}

@@ -7,6 +7,7 @@ import {
   type SetFormValues,
   type Visibility,
 } from '@vocab/shared';
+import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
@@ -90,11 +91,12 @@ function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsP
 }
 
 interface SetFormProps {
+  cancelHref: Route;
   defaultValues: SetFormInput;
   onSubmit: (values: SetFormValues) => Promise<void>;
 }
 
-export function SetForm({ defaultValues, onSubmit }: SetFormProps) {
+export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
   const [initialValues] = useState(defaultValues);
   const hasMounted = useRef(false);
   const {
@@ -149,7 +151,7 @@ export function SetForm({ defaultValues, onSubmit }: SetFormProps) {
           Lưu bộ từ
         </Button>
         <Button asChild variant="secondary">
-          <Link href="/sets">Huỷ</Link>
+          <Link href={cancelHref}>Huỷ</Link>
         </Button>
       </div>
     </form>
