@@ -121,3 +121,34 @@ export const updateSetSchema = z
     message: 'Chưa có thay đổi nào',
   });
 export type UpdateSetDto = z.infer<typeof updateSetSchema>;
+
+/** Dữ liệu của form bộ từ. Mô tả để trống nghĩa là không có mô tả. */
+export const setFormSchema = z.object({
+  title: titleSchema,
+  description: descriptionSchema,
+  termLang: languageSchema,
+  defLang: languageSchema,
+  visibility: visibilitySchema,
+});
+export type SetFormValues = z.infer<typeof setFormSchema>;
+
+export const cardSchema = z.object({
+  id: z.string(),
+  position: z.number(),
+  term: z.string(),
+  definition: z.string(),
+  phonetic: z.string().nullable(),
+  example: z.string().nullable(),
+  imageUrl: z.string().nullable(),
+  audioUrl: z.string().nullable(),
+});
+export type Card = z.infer<typeof cardSchema>;
+
+export const setDetailSchema = setSummarySchema.extend({
+  owner: z.object({ displayName: z.string() }),
+  cards: z.array(cardSchema),
+});
+export type SetDetail = z.infer<typeof setDetailSchema>;
+
+export const setResponseSchema = z.object({ data: setSummarySchema });
+export const setDetailResponseSchema = z.object({ data: setDetailSchema });
