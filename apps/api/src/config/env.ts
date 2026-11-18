@@ -14,6 +14,8 @@ const envSchema = z.object({
   CORS_ORIGINS: z.string().min(1).default('http://localhost:3000'),
   /** IP hoặc CIDR của proxy đứng trước API. Thiếu thì rate limit gộp mọi người vào IP của proxy. */
   TRUSTED_PROXIES: z.string().default(''),
+  REFRESH_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
+  REFRESH_COOKIE_DOMAIN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

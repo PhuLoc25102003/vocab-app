@@ -14,6 +14,7 @@
     "test": "prisma generate && vitest run"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
     "@fastify/helmet": "^13.0.2",
     "@fastify/static": "^10.1.11",
     "@nestjs/common": "^11.1.6",

@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ERROR_CODES, type AuthUser, type LoginInput, type RegisterInput } from '@vocab/shared';
-import { AccessTokenService } from '../../common/auth/access-token.service';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { UsersRepository } from '../users/users.repository';
+import { AuthSessionService, type SessionClient } from './auth-session.service';
 import { PasswordService } from './password.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AuthService {
   constructor(
     private readonly users: UsersRepository,
     private readonly passwords: PasswordService,
-    private readonly accessTokens: AccessTokenService,
+    private readonly sessions: AuthSessionService,
   ) {}
 
   /** Email đã có hay chưa đều hash và trả cùng kết quả, để không lộ email đã đăng ký. */
@@ -21,7 +21,7 @@ export class AuthService {
     return ok({ status: 'accepted' as const });
   }
 
-  async login({ email, password }: LoginInput) {
+  async login({ email, password }: LoginInput, client: SessionClient) {
     const account = await this.users.findCredentialsByEmail(email);
     const matches = await this.passwords.verify(account?.passwordHash ?? null, password);
     if (!account || !matches) {
@@ -38,6 +38,11 @@ export class AuthService {
       displayName: account.displayName,
       role: account.role,
     };
-    return ok({ user, accessToken: await this.accessTokens.sign(account) });
+    const session = await this.sessions.start(account, client);
+    return {
+      body: ok({ user, accessToken: session.accessToken }),
+      refreshToken: session.refreshToken,
+      refreshExpiresAt: session.refreshExpiresAt,
+    };
   }
 }

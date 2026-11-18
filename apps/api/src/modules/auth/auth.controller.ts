@@ -1,19 +1,24 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { loginSchema, registerSchema } from '@vocab/shared';
 import type { LoginInput, RegisterInput } from '@vocab/shared';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { AuthThrottlerGuard, ONE_MINUTE_MS, REGISTER_LIMIT_PER_IP } from './auth-throttler.guard';
 import { AuthService } from './auth.service';
+import { RefreshCookie } from './refresh-cookie';
 
 @ApiTags('auth')
 @Controller('auth')
 @UseGuards(AuthThrottlerGuard)
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly refreshCookie: RefreshCookie,
+  ) {}
 
   @Public()
   @Post('register')
@@ -31,7 +36,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Đăng nhập bằng email và mật khẩu' })
   @ApiZodBody(loginSchema)
-  login(@Body(new ZodValidationPipe(loginSchema)) dto: LoginInput) {
-    return this.auth.login(dto);
+  async login(
+    @Body(new ZodValidationPipe(loginSchema)) dto: LoginInput,
+    @Req() request: FastifyRequest,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    const { body, refreshToken, refreshExpiresAt } = await this.auth.login(dto, {
+      userAgent: request.headers['user-agent'],
+      ip: request.ip,
+    });
+    this.refreshCookie.set(reply, refreshToken, refreshExpiresAt);
+    return body;
   }
 }
