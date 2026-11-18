@@ -47,11 +47,11 @@ export class StudyService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const cards = await this.study.findCards(setId, viewer);
-    if (!cards) {
+    const set = await this.study.findSet(setId, viewer);
+    if (!set) {
       throw setNotFound();
     }
-    if (cards.length === 0) {
+    if (set.cards.length === 0) {
       throw new AppError(
         ERROR_CODES.SET_HAS_NO_CARDS,
         'Bộ từ này chưa có thẻ',
@@ -59,9 +59,10 @@ export class StudyService {
       );
     }
 
-    const questions = getMode(mode).buildQuestions(cards, { limit });
+    const questions = getMode(mode).buildQuestions(set.cards, { limit });
     const session = await this.study.createSession(viewer.id, setId, mode, questions.length);
-    return ok({ session, questions });
+    const languages = { term: set.termLang, definition: set.defLang };
+    return ok({ session, questions, languages });
   }
 
   async submitAnswers(id: string, viewer: SetViewer, { answers }: SubmitAnswersDto) {
@@ -76,13 +77,13 @@ export class StudyService {
         HttpStatus.CONFLICT,
       );
     }
-    const cards = await this.study.findCards(session.setId, viewer);
-    if (!cards) {
+    const set = await this.study.findSet(session.setId, viewer);
+    if (!set) {
       throw setNotFound();
     }
 
     const strategy = getMode(session.mode);
-    const questions = new Map(strategy.buildQuestions(cards, {}).map((q) => [q.id, q]));
+    const questions = new Map(strategy.buildQuestions(set.cards, {}).map((q) => [q.id, q]));
     const graded: GradedAnswer[] = [];
     const results = [];
     // Thẻ có thể bị xoá khi đang học. Bỏ qua để lô đáp án còn lại vẫn được lưu.

@@ -31,17 +31,18 @@ export class StudyRepository extends BaseRepository {
   }
 
   /** Trả `null` nếu bộ từ không tồn tại hoặc người xem không có quyền. */
-  async findCards(setId: string, viewer: SetViewer) {
-    const set = await this.prisma.studySet.findFirst({
+  findSet(setId: string, viewer: SetViewer) {
+    return this.prisma.studySet.findFirst({
       where: { id: setId, deletedAt: null, ...visibleTo(viewer) },
       select: {
+        termLang: true,
+        defLang: true,
         cards: {
           orderBy: { position: 'asc' },
           select: { id: true, term: true, definition: true },
         },
       },
     });
-    return set?.cards ?? null;
   }
 
   createSession(userId: string, setId: string, mode: StudyMode, total: number) {

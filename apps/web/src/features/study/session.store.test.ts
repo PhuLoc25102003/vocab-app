@@ -13,6 +13,7 @@ const started: StartedSession = {
     total: 1,
   },
   questions: [{ id: 'c1', cardId: 'c1', mode: 'FLASHCARD', prompt: 'a', expected: 'b' }],
+  languages: { term: 'en', definition: 'vi' },
 };
 const answer = { questionId: 'c1', value: 'known', timeMs: 1 };
 const store = () => useStudyStore.getState();

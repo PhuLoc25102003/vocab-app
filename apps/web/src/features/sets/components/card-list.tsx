@@ -1,4 +1,5 @@
 import type { Card } from '@vocab/shared';
+import { AudioButton } from '@/components/common/audio-button';
 
 interface CardListProps {
   cards: Card[];
@@ -15,9 +16,12 @@ export function CardList({ cards, termLang, defLang }: CardListProps) {
           className="grid gap-x-6 gap-y-1 border-b border-border py-4 [contain-intrinsic-size:auto_80px] [content-visibility:auto] sm:grid-cols-2"
         >
           <div className="min-w-0">
-            <p lang={termLang} className="font-card text-h3 break-words">
-              {term}
-            </p>
+            <div className="flex items-center gap-1">
+              <p lang={termLang} className="min-w-0 font-card text-h3 break-words">
+                {term}
+              </p>
+              <AudioButton text={term} lang={termLang} label={`Nghe phát âm ${term}`} />
+            </div>
             {phonetic ? (
               <p className="font-phonetic text-small break-words text-text-muted">{phonetic}</p>
             ) : null}

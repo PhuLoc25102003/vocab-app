@@ -78,6 +78,7 @@ describe('study sessions', () => {
 
       expect(body.data.session).toMatchObject({ setId, mode: 'FLASHCARD', total: 2, correct: 0 });
       expect(body.data.session.finishedAt).toBeNull();
+      expect(body.data.languages).toEqual({ term: 'en', definition: 'vi' });
       expect(body.data.questions.map((q: { prompt: string }) => q.prompt)).toEqual([
         'apple',
         'pear',

@@ -1,5 +1,6 @@
 import type {
   Question,
+  StudyLanguages,
   SessionResult,
   StartedSession,
   StudySession,
@@ -10,6 +11,7 @@ import { create } from 'zustand';
 interface StudyState {
   session: StudySession | null;
   questions: Question[];
+  languages: StudyLanguages;
   position: number;
   /** Đáp án chưa được lưu. Chỉ xoá sau khi server đã nhận. */
   pending: UserAnswer[];
@@ -23,11 +25,12 @@ interface StudyState {
 export const useStudyStore = create<StudyState>((set) => ({
   session: null,
   questions: [],
+  languages: { term: 'en', definition: 'vi' },
   position: 0,
   pending: [],
   result: null,
-  begin: ({ session, questions }) =>
-    set({ session, questions, position: 0, pending: [], result: null }),
+  begin: ({ session, questions, languages }) =>
+    set({ session, questions, languages, position: 0, pending: [], result: null }),
   answer: (answer) =>
     set(({ position, pending }) => ({ position: position + 1, pending: [...pending, answer] })),
   acknowledge: (sessionId, count) =>
