@@ -18,7 +18,7 @@
   "license": "ISC",
   "description": "",
   "private": true,
-  "packageManager": "npm@10.8.2",
+  "packageManager": "npm@11.19.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -29,6 +29,6 @@
     "typescript": "~5.9.3"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": "^24.11.0"
   }
 }

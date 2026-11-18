@@ -5,7 +5,7 @@ Monorepo npm workspaces + Turborepo gồm Next.js 16, NestJS 11 + Fastify, Prism
 
 ## Lệnh thường dùng
 
-Chỉ dùng npm. Chạy ở gốc repo, cần Node 20.19 trở lên.
+Chỉ dùng npm. Chạy ở gốc repo, dùng Node 24 (`.nvmrc`, `nvm use 24.22.3`).
 
 ```bash
 npm run dev          # web :3000, api :4000, shared watch

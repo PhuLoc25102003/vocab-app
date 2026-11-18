@@ -106,7 +106,9 @@ Dự án mới có khung. Bảng tech stack ở trên là đích đến, trạng
 | Đã có      | npm workspaces, Turborepo, Next.js 16, React 19, Tailwind v4, TanStack Query, Zustand, React Hook Form, NestJS 11 + Fastify, Prisma 7, PostgreSQL 17 trong Docker, Zod 4, helmet, Prettier, ESLint 9 |
 | Chưa có    | shadcn/ui, Swagger, JWT, Redis, R2, Vitest, Testing Library, Supertest, Playwright test, Sentry, log Pino có cấu hình, CI, cấu hình deploy                                                           |
 
-Phiên bản bị giới hạn có chủ đích (Node 20.19): NestJS 11 vì Nest 12 chỉ hỗ trợ ESM, TypeScript 5.9 vì `typescript-eslint` cần dưới 6.1, tsup 8.5 vì tsup 9 cần Node 22, Prisma 7 theo quyết định dự án.
+Runtime: Node 24 LTS (`^24.11.0`, bản dùng khi phát triển ghi trong `.nvmrc`), npm 11. Môi trường deploy cũng phải đặt Node 24.
+
+Phiên bản bị giới hạn có chủ đích: NestJS 11 vì Nest 12 chỉ hỗ trợ ESM, TypeScript 5.9 vì `typescript-eslint` cần dưới 6.1, ESLint 9 vì `eslint-plugin-react`, `jsx-a11y` và `import` chưa hỗ trợ ESLint 10, Prisma 7 theo quyết định dự án. tsup đang ở 8.5 và có thể nâng lên 9 khi cần.
 
 ## Đã điều chỉnh so với spec gốc
 
@@ -114,3 +116,4 @@ Phiên bản bị giới hạn có chủ đích (Node 20.19): NestJS 11 vì Nest
 - `middleware` đổi thành `proxy`, vì Next.js 16 đã đổi tên quy ước này.
 - Giá trị `StudyMode` viết hoa theo enum trong Prisma.
 - Đường dẫn study đổi thành `packages/shared/src/study`.
+- Runtime nâng từ Node 20 (đã hết hỗ trợ) lên Node 24 LTS.

@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@vocab/eslint-config": "*",
     "eslint": "^9.39.0",
     "prisma": "^7.10.1",
