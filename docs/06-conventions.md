@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, build) mới được merge vào `main`; merge vào `main` là tự deploy.
+Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, build) mới được merge vào `develop` hoặc `main`; merge vào `main` là tự deploy.
 
 ## Quy ước đặt tên
 
@@ -32,10 +32,12 @@ Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, b
 
 ## Git workflow
 
-- Nhánh: `main` (production), `feat/<tên>`, `fix/<tên>`, `chore/<tên>`. Không push thẳng `main`.
+- Flow: issue → nhánh từ `develop` → commit → PR vào `develop` → review → squash merge. Phát hành bằng PR từ `develop` vào `main`. Chi tiết trong skill `git-workflow`.
+- Nhánh: `main` (production), `develop` (tích hợp), `<type>/<số-issue>-<mô-tả>`, ví dụ `feat/12-dictation-mode`. Type gồm `feat`, `fix`, `refactor`, `docs`, `test`, `chore`. Không push thẳng `main` hay `develop`.
 - Commit theo Conventional Commits: `feat(study): add dictation mode`, `fix(auth): handle refresh race`.
 - PR nhỏ (dưới ~400 dòng), mô tả gồm: làm gì, vì sao, cách test, ảnh chụp nếu đổi UI.
-- Squash merge để lịch sử `main` gọn.
+- PR vào `develop` dùng squash merge. PR phát hành từ `develop` vào `main` dùng merge commit để hai nhánh giữ chung lịch sử.
+- Hotfix tách từ `main`, merge vào `main`, rồi đưa ngược về `develop`.
 - Quyết định kiến trúc quan trọng ghi thành ADR ngắn trong `docs/adr/NNNN-ten.md`.
 
 ## Testing
@@ -104,7 +106,7 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
 | TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app | Vitest, Testing Library, Supertest, Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, GitHub Actions, `constants.ts` |
 
-Chưa có package nào khai báo script `test`, nên `npm test` hiện không chạy test nào. Nhánh hiện tại của repo là `master`, cần đổi hoặc tạo `main` trước khi bật quy trình PR.
+Chưa có package nào khai báo script `test`, nên `npm test` hiện không chạy test nào.
 
 ## Lệnh Prisma
 
