@@ -1,5 +1,6 @@
 import { HealthStatus } from '@/components/common/health-status';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 const swatches = [
@@ -33,7 +34,15 @@ export default function HomePage() {
           <h1 className="text-h1">Vocab App</h1>
           <p className="text-text-muted">Trang tạm để kiểm tra design token và kết nối API.</p>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild variant="secondary">
+            <Link href="/login">Đăng nhập</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Đăng ký</Link>
+          </Button>
+        </div>
       </header>
 
       <section aria-labelledby="health-title" className="flex flex-col gap-2">
