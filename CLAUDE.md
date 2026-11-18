@@ -19,6 +19,7 @@ npm run db:up        # docker compose up -d
 npm run db:down      # docker compose down
 npm run prisma:migrate -w @vocab/api -- --name ten_migration
 npm run prisma:generate -w @vocab/api
+npm run prisma:deploy -w @vocab/api   # áp dụng migration, không tạo migration mới
 npm run build -w @vocab/shared
 npm i <pkg> -w <workspace>
 ```
