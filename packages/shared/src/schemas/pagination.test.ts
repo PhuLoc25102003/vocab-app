@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { paginationSchema } from './pagination';
+import { MAX_PAGE, paginationSchema } from './pagination';
 
 describe('paginationSchema', () => {
   it('dùng giá trị mặc định khi không truyền tham số', () => {
@@ -26,5 +26,12 @@ describe('paginationSchema', () => {
     ['sort quá dài', { sort: 'a'.repeat(51) }],
   ])('từ chối %s', (_name, input) => {
     expect(paginationSchema.safeParse(input).success).toBe(false);
+  });
+});
+
+describe('giới hạn số trang', () => {
+  it('từ chối số trang quá lớn', () => {
+    expect(paginationSchema.safeParse({ page: MAX_PAGE }).success).toBe(true);
+    expect(paginationSchema.safeParse({ page: MAX_PAGE + 1 }).success).toBe(false);
   });
 });

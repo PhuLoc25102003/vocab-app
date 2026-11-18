@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { paginationSchema } from './pagination';
+import { paginationMetaSchema, paginationSchema } from './pagination';
 
 export const SET_TITLE_MAX_LENGTH = 200;
 export const SET_DESCRIPTION_MAX_LENGTH = 2_000;
@@ -60,6 +60,26 @@ export const createSetSchema = z.object({
 export type CreateSetDto = z.infer<typeof createSetSchema>;
 /** Dữ liệu đầu vào từ form/client (các trường default là tuỳ chọn). */
 export type CreateSetInput = z.input<typeof createSetSchema>;
+
+export const setSummarySchema = z.object({
+  id: z.string(),
+  ownerId: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  termLang: z.string(),
+  defLang: z.string(),
+  visibility: visibilitySchema,
+  cardCount: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type SetSummary = z.infer<typeof setSummarySchema>;
+
+export const setListSchema = z.object({
+  data: z.array(setSummarySchema),
+  meta: paginationMetaSchema,
+});
+export type SetList = z.infer<typeof setListSchema>;
 
 /** Thẻ có `id` là thẻ đang có, thẻ không có `id` là thẻ mới. Thứ tự trong mảng là thứ tự thẻ. */
 export const replaceCardsSchema = z.object({

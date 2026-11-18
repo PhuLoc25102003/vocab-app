@@ -59,7 +59,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 - Mã HTTP: 400 sai dữ liệu, 401 chưa đăng nhập / token hết hạn, 403 không đủ quyền, 404 không tìm thấy, 409 trùng, 422 lỗi nghiệp vụ, 429 quá giới hạn, 503 dịch vụ phụ thuộc không sẵn sàng.
 - `code` viết hoa, định nghĩa trong `packages/shared/src/errors.ts` để FE dịch thành thông báo.
-- Phân trang: `?page=1&limit=20&sort=-updatedAt`, `limit` tối đa 100.
+- Phân trang: `?page=1&limit=20&sort=-updatedAt`, `page` tối đa 100.000, `limit` tối đa 100.
 - Tài liệu API sinh tự động bằng `@nestjs/swagger` tại `/api/docs`, bản JSON tại `/api/docs-json`. Hai đường dẫn này nằm ngoài `/api/v1` và tắt khi `NODE_ENV=production`.
 - Khi cần đổi hợp đồng API, tạo `/api/v2`, không sửa ngầm `/v1`.
 
