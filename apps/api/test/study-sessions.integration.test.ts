@@ -85,6 +85,12 @@ describe('study sessions', () => {
       ]);
     });
 
+    it('trả đáp án lựa chọn cho chế độ Trắc nghiệm', async () => {
+      const { body } = await start(owner.token, { setId, mode: 'MCQ' }).expect(201);
+
+      expect([...body.data.questions[0].choices].sort()).toEqual(['quả lê', 'quả táo']);
+    });
+
     it('giới hạn số câu hỏi', async () => {
       const { body } = await start(owner.token, { setId, mode: 'FLASHCARD', limit: 1 }).expect(201);
 

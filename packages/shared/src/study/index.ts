@@ -1,6 +1,7 @@
 export * from './grading';
 export * from './modes/dictation';
 export * from './modes/flashcard';
+export * from './modes/mcq';
 export * from './modes/write';
 export * from './registry';
 export * from './srs';
