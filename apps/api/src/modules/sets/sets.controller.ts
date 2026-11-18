@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -15,9 +16,16 @@ import {
   createSetSchema,
   paginationSchema,
   publicSetQuerySchema,
+  replaceCardsSchema,
   updateSetSchema,
 } from '@vocab/shared';
-import type { CreateSetDto, Pagination, PublicSetQuery, UpdateSetDto } from '@vocab/shared';
+import type {
+  CreateSetDto,
+  Pagination,
+  PublicSetQuery,
+  ReplaceCardsDto,
+  UpdateSetDto,
+} from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CheckOwnership } from '../../common/decorators/check-ownership.decorator';
 import { CurrentUser, OptionalUser } from '../../common/decorators/current-user.decorator';
@@ -72,6 +80,17 @@ export class SetsController {
   @ApiZodBody(updateSetSchema)
   update(@Param('id') id: string, @Body(new ZodValidationPipe(updateSetSchema)) dto: UpdateSetDto) {
     return this.sets.update(id, dto);
+  }
+
+  @Put(':id/cards')
+  @CheckOwnership('set')
+  @ApiOperation({ summary: 'Lưu toàn bộ thẻ của bộ từ' })
+  @ApiZodBody(replaceCardsSchema)
+  replaceCards(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(replaceCardsSchema)) dto: ReplaceCardsDto,
+  ) {
+    return this.sets.replaceCards(id, dto);
   }
 
   @Delete(':id')

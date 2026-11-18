@@ -61,6 +61,29 @@ export type CreateSetDto = z.infer<typeof createSetSchema>;
 /** Dữ liệu đầu vào từ form/client (các trường default là tuỳ chọn). */
 export type CreateSetInput = z.input<typeof createSetSchema>;
 
+/** Thẻ có `id` là thẻ đang có, thẻ không có `id` là thẻ mới. Thứ tự trong mảng là thứ tự thẻ. */
+export const replaceCardsSchema = z.object({
+  cards: z
+    .array(cardInputSchema.extend({ id: z.string().min(1).max(64).optional() }))
+    .max(MAX_CARDS_PER_SET, `Một bộ từ tối đa ${MAX_CARDS_PER_SET} thẻ`)
+    .superRefine((cards, context) => {
+      const seen = new Set<string>();
+      cards.forEach(({ id }, index) => {
+        if (id && seen.has(id)) {
+          context.addIssue({
+            code: 'custom',
+            path: [index, 'id'],
+            message: 'Thẻ bị trùng trong danh sách',
+          });
+        }
+        if (id) {
+          seen.add(id);
+        }
+      });
+    }),
+});
+export type ReplaceCardsDto = z.infer<typeof replaceCardsSchema>;
+
 export const publicSetQuerySchema = paginationSchema.extend({
   q: z.string().trim().max(100, 'Từ khoá tối đa 100 ký tự').optional(),
 });

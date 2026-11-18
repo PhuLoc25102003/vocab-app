@@ -4,6 +4,7 @@ import type { ModuleMetadata } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
+import { applyBodyLimits } from '../../src/config/body-limit';
 
 /**
  * Dựng AppModule thật, kèm guard, filter và database test.
@@ -17,10 +18,10 @@ export async function createTestApp(
     ...extra,
   }).compile();
 
-  const app = moduleRef.createNestApplication<NestFastifyApplication>(
-    new FastifyAdapter({ genReqId: () => randomUUID(), trustProxy: 'loopback' }),
-    { logger: false },
-  );
+  const adapter = new FastifyAdapter({ genReqId: () => randomUUID(), trustProxy: 'loopback' });
+  applyBodyLimits(adapter);
+
+  const app = moduleRef.createNestApplication<NestFastifyApplication>(adapter, { logger: false });
   app.setGlobalPrefix('api/v1');
   await app.register(cookie);
   await app.init();
