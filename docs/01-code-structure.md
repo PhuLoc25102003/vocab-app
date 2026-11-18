@@ -122,7 +122,7 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                   |
 | `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                   |
 | `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
-| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS và strategy Flashcard              |
+| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS, strategy Flashcard và Viết        |
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
 | `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
 | `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |

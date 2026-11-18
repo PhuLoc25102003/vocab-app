@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
 import { SessionLink } from '@/components/common/session-link';
+import { STUDY_ENTRIES } from '../labels';
 import { getPublicSet } from '../public-set';
 import { CardList } from './card-list';
 import { SetMeta } from './set-meta';
@@ -32,11 +33,15 @@ export async function PublicSet({ id }: { id: string }) {
       <SetMeta set={set} />
       {set.cards.length > 0 ? (
         <>
-          <div>
-            <SessionLink
-              guest={{ href: `/public/sets/${id}/study/flashcard` as Route, label: 'Học thử' }}
-              member={{ href: `${detailPath}/study/flashcard` as Route, label: 'Bắt đầu học' }}
-            />
+          <div className="flex flex-wrap gap-2">
+            {STUDY_ENTRIES.map(({ slug, label, guestLabel }, index) => (
+              <SessionLink
+                key={slug}
+                variant={index === 0 ? 'primary' : 'secondary'}
+                guest={{ href: `/public/sets/${id}/study/${slug}` as Route, label: guestLabel }}
+                member={{ href: `${detailPath}/study/${slug}` as Route, label }}
+              />
+            ))}
           </div>
           <CardList cards={set.cards} termLang={set.termLang} defLang={set.defLang} />
         </>
