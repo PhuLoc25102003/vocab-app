@@ -126,7 +126,7 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
 | `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
 | `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study` có code, còn lại rỗng     |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study`, `progress` có code       |
 
 ## Đã điều chỉnh so với spec gốc
 
