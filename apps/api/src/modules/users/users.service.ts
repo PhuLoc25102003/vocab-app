@@ -1,5 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type AuthUser, type UpdateAccountInput } from '@vocab/shared';
+import {
+  ERROR_CODES,
+  type AuthUser,
+  type DeleteAccountInput,
+  type UpdateAccountInput,
+} from '@vocab/shared';
 import { unauthorizedError } from '../../common/auth/access-token.service';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -44,6 +49,15 @@ export class UsersService {
       body: ok({ user: toAuthUser(account), accessToken: session.accessToken }),
       session,
     };
+  }
+
+  async deleteMe(userId: string, { password }: DeleteAccountInput): Promise<void> {
+    const account = await this.requireAccount(userId);
+    // Tài khoản chỉ đăng nhập bằng Google không có mật khẩu để xác nhận.
+    if (account.passwordHash) {
+      await this.assertPassword(account, password);
+    }
+    await this.users.delete(userId);
   }
 
   private async requireAccount(userId: string): Promise<UserCredentials> {

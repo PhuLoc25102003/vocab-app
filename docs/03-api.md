@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH /users/me`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -16,6 +16,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /auth/logout-all            | Đã đăng nhập       | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
 | GET    | /users/me                   | Đã đăng nhập       | Thông tin tài khoản                                        |
 | PATCH  | /users/me                   | Đã đăng nhập       | Sửa tên, mật khẩu                                          |
+| DELETE | /users/me                   | Đã đăng nhập       | Xoá hẳn tài khoản và dữ liệu                               |
 | GET    | /sets                       | Đã đăng nhập       | Bộ từ của tôi, phân trang                                  |
 | GET    | /sets/public                | Công khai          | Tìm bộ từ công khai                                        |
 | POST   | /sets                       | STUDENT+           | Tạo bộ từ kèm danh sách thẻ                                |
@@ -75,7 +76,9 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 - `GET /users/me` trả `{ "data": { "user": { id, email, displayName, role } } }`.
 - `PATCH /users/me` nhận `displayName`, hoặc `currentPassword` cùng `newPassword`. Khi đổi mật khẩu, mọi phiên cũ kết thúc, response có thêm `accessToken` và cookie refresh mới cho thiết bị đang dùng. Sai mật khẩu hiện tại trả 422 `WRONG_PASSWORD`.
-- `PATCH` giới hạn 5 lần/phút cho mỗi tài khoản.
+- `DELETE /users/me` nhận `{ password }`, trả 204 và xoá cookie. Tài khoản không có mật khẩu không cần gửi `password`.
+- Xoá tài khoản xoá luôn bộ từ của người đó, kèm tiến độ và phiên học của người khác trên các bộ từ này.
+- `PATCH` và `DELETE` giới hạn 5 lần/phút cho mỗi tài khoản.
 
 ## Khác biệt đang có trong code
 
