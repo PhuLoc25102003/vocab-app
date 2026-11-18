@@ -81,6 +81,7 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 | Đặt tên, test, Git, CI, env         | `docs/06-conventions.md`                        | Không có       |
 | Sắp xếp thư mục, tái sử dụng code   | `docs/01-code-structure.md`                     | Không có       |
 | Quyết định kiến trúc mới            | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
+| Người dùng ra lệnh làm một task     | `docs/07-progress.md`                           | `ship-task`    |
 | Xem tiến độ, chọn việc tiếp theo    | `docs/07-progress.md`                           | `git-workflow` |
 | Tạo issue, nhánh, commit, PR, merge | `docs/06-conventions.md`                        | `git-workflow` |
 | Trước khi commit hoặc mở PR         | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |
