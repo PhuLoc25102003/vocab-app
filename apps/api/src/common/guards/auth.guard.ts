@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ERROR_CODES } from '@vocab/shared';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
@@ -18,6 +19,9 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       return true;
     }
-    throw new UnauthorizedException({ code: 'UNAUTHORIZED', message: 'Bạn cần đăng nhập' });
+    throw new UnauthorizedException({
+      code: ERROR_CODES.UNAUTHORIZED,
+      message: 'Bạn cần đăng nhập',
+    });
   }
 }

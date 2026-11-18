@@ -117,8 +117,8 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `common/guards/auth.guard.ts`                                                                     | Có. Từ chối mọi route không có `@Public()`, chưa xác thực JWT |
 | `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                            |
 | `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Chưa có, tạo khi làm module auth                              |
-| `AppError`, `packages/shared/src/errors.ts`                                                       | Chưa có, tạo theo mẫu trong skill `api-endpoint`              |
-| `paginationSchema`, `common/base/pagination.ts`                                                   | Chưa có, tạo theo mẫu trong skill `api-endpoint`              |
+| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                            |
+| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                            |
 | `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                |
 | `apps/web/src/proxy.ts`, shadcn/ui, `EmptyState`, `ErrorState`, `PageHeader`, `AudioButton`       | Chưa có                                                       |
 | Module nghiệp vụ trong `apps/api/src/modules`                                                     | Chỉ `health` có code, các module khác là `@Module({})` rỗng   |

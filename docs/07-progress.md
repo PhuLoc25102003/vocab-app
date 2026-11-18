@@ -6,22 +6,22 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Dựng nền API: mã lỗi, `AppError`, phân trang, Swagger (việc 0.10).
-2. Cài bộ test: Vitest, Supertest, database test trong CI (việc 0.11).
-3. Dựng nền giao diện: shadcn/ui, layout app, điều hướng, các trạng thái dùng chung (việc 0.12).
+1. Cài bộ test: Vitest, Supertest, database test trong CI (việc 0.11).
+2. Dựng nền giao diện: shadcn/ui, layout app, điều hướng, các trạng thái dùng chung (việc 0.12).
+3. Thêm kỷ luật code: Husky, lint-staged, kiểm tra ranh giới module, Dependabot (việc 0.13).
 
 ## Tổng quan
 
 Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng của từng việc.
 
-| Giai đoạn               | Mục tiêu                                   |  Xong |   Tổng | Trạng thái   |
-| ----------------------- | ------------------------------------------ | ----: | -----: | ------------ |
-| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     9 |     13 | Đang làm     |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     0 |     35 | Chưa bắt đầu |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     0 |     12 | Chưa bắt đầu |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |     0 |      8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |     0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **9** | **71** | **13%**      |
+| Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
+| ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     10 |     13 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      0 |     35 | Chưa bắt đầu |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
+| **Toàn dự án**          |                                            | **10** | **71** | **14%**      |
 
 ## Cách cập nhật
 
@@ -49,7 +49,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **0.7** Thêm `onDelete: Cascade` cho dữ liệu học và dữ liệu của người dùng (#3).
 - [x] **0.8** Cấu hình GitHub: nhánh mặc định `develop`, branch protection yêu cầu `Verify`, cài `gh`.
 - [x] **0.9** Áp dụng design tokens và font mới vào web theo `docs/05-ui-tokens.md` (#7).
-- [ ] **0.10** Nền API: mã lỗi trong shared, `AppError`, `paginationSchema`, `ok()`, `paginated()`, Swagger.
+- [x] **0.10** Nền API: mã lỗi trong shared, `AppError`, `paginationSchema`, `ok()`, `paginated()`, Swagger (#11).
 - [ ] **0.11** Bộ test: Vitest cho shared, API, web; Supertest; database test trong CI.
 - [ ] **0.12** Nền giao diện: shadcn/ui, layout app, điều hướng, `page-header`, `empty-state`, `error-state`, skeleton, thông báo, lưu lựa chọn theme.
 - [ ] **0.13** Kỷ luật code: Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot và `npm audit` trong CI.
