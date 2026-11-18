@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -67,6 +67,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /auth/register` nhận `{ email, password, displayName }`, luôn trả 202 `{ "data": { "status": "accepted" } }` khi dữ liệu hợp lệ, kể cả khi email đã có. Tài khoản cũ không bị đổi. Giao diện chuyển người dùng sang trang đăng nhập.
 - `POST /auth/login` nhận `{ email, password }`, trả 200 `{ "data": { "user": { id, email, displayName, role }, "accessToken": "..." } }` và đặt cookie `refresh_token`. Mọi trường hợp sai trả 401 `INVALID_CREDENTIALS` với cùng thông báo.
 - `POST /auth/refresh` đọc cookie, trả 200 cùng dạng với đăng nhập và đặt cookie mới. Cookie sai hoặc phiên đã thu hồi trả 401 `REFRESH_TOKEN_INVALID` và xoá cookie. Request khác vừa xoay vòng cùng token trả 409 `REFRESH_IN_PROGRESS`, cookie giữ nguyên, client gửi lại một lần. `Origin` ngoài `CORS_ORIGINS` trả 403.
+- `POST /auth/logout` và `POST /auth/logout-all` cần access token, trả 204 và xoá cookie.
 - Route cần đăng nhập trả 401 `TOKEN_EXPIRED` khi access token hết hạn, 401 `UNAUTHORIZED` khi thiếu hoặc sai token.
 - Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
 

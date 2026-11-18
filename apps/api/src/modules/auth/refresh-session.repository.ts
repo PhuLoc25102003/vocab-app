@@ -66,4 +66,27 @@ export class RefreshSessionRepository extends BaseRepository {
   async deleteFamily(familyId: string): Promise<void> {
     await this.prisma.refreshSession.deleteMany({ where: { familyId } });
   }
+
+  /** Chỉ xoá khi token thuộc đúng người dùng đang đăng xuất. */
+  async deleteFamilyOfToken(userId: string, tokenHash: string): Promise<void> {
+    const session = await this.prisma.refreshSession.findFirst({
+      where: { userId, tokenHash },
+      select: { familyId: true },
+    });
+    if (session) {
+      await this.deleteFamily(session.familyId);
+    }
+  }
+
+  /** Xoá mọi phiên và làm mọi access token cũ mất hiệu lực. */
+  async endAllForUser(userId: string): Promise<void> {
+    await this.prisma.$transaction([
+      this.prisma.refreshSession.deleteMany({ where: { userId } }),
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { tokenVersion: { increment: 1 } },
+        select: { id: true },
+      }),
+    ]);
+  }
 }

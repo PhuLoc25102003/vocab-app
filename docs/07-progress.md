@@ -6,9 +6,9 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Làm JWT, refresh token và đăng xuất (việc 1.2).
-2. Thêm `@CurrentUser`, `@Roles` và guard kiểm tra quyền (việc 1.3).
-3. Làm API tài khoản (việc 1.4).
+1. Thêm `@Roles` và guard kiểm tra quyền (việc 1.3).
+2. Làm API tài khoản (việc 1.4).
+3. Làm đăng ký, đăng nhập trên web (việc 1.5).
 
 ## Tổng quan
 
@@ -17,11 +17,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      1 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      2 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **14** | **71** | **20%**      |
+| **Toàn dự án**          |                                            | **15** | **71** | **21%**      |
 
 ## Cách cập nhật
 
@@ -63,8 +63,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** người dùng đăng nhập được, giữ phiên qua refresh token, route được bảo vệ đúng theo vai trò và quyền sở hữu.
 
 - [x] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung (#26, #27).
-- [ ] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard`.
-- [ ] **1.3** `@CurrentUser`, `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard`.
+- [x] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard`.
+- [ ] **1.3** `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard`.
 - [ ] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản.
 - [ ] **1.5** Web: đăng ký, đăng nhập, auth store, tự refresh trong `lib/http.ts`, `proxy.ts`, component `Can`.
 - [ ] **1.6** Đăng nhập Google trên API và web.
