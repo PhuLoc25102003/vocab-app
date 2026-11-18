@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthCoreModule } from './common/auth/auth-core.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { AuthGuard } from './common/guards/auth.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
@@ -19,6 +20,7 @@ import { UsersModule } from './modules/users/users.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     PrismaModule,
+    AuthCoreModule,
     AuthModule,
     UsersModule,
     SetsModule,
