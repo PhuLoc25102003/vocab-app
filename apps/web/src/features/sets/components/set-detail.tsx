@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
 import { useSet } from '../hooks/use-set';
+import { STUDY_ENTRIES } from '../labels';
 import { CardList } from './card-list';
 import { SetDetailSkeleton } from './set-detail-skeleton';
 import { SetLoadFailure } from './set-load-failure';
@@ -53,9 +54,13 @@ export function SetDetail({ id, renderActions, renderBack }: SetDetailProps) {
       </SetMeta>
       {cards.length > 0 ? (
         <>
-          <Button asChild className="self-start">
-            <Link href={`/sets/${id}/study/flashcard` as Route}>Bắt đầu học</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {STUDY_ENTRIES.map(({ slug, label }, index) => (
+              <Button key={slug} asChild variant={index === 0 ? 'primary' : 'secondary'}>
+                <Link href={`/sets/${id}/study/${slug}` as Route}>{label}</Link>
+              </Button>
+            ))}
+          </div>
           <CardList cards={cards} termLang={termLang} defLang={defLang} />
         </>
       ) : (

@@ -167,6 +167,20 @@ describe('study sessions', () => {
       expect(progress.reps).toBe(0);
     });
 
+    it('chấm lại đáp án chế độ Viết ở server', async () => {
+      const started = await start(owner.token, { setId, mode: 'WRITE' }).expect(201);
+
+      const { body } = await submit(started.body.data.session.id, owner.token, [
+        answer(cardIds[0]!, ' APPLE '),
+        answer(cardIds[1]!, 'peach'),
+      ]).expect(200);
+
+      expect(body.data.results.map((r: { isCorrect: boolean }) => r.isCorrect)).toEqual([
+        true,
+        false,
+      ]);
+    });
+
     it('bỏ qua câu hỏi không còn trong bộ từ', async () => {
       const id = await startSession();
 

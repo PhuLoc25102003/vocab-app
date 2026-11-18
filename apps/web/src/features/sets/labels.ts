@@ -16,3 +16,9 @@ export const LANGUAGE_LABELS: Record<string, string> = {
   de: 'Tiếng Đức',
   es: 'Tiếng Tây Ban Nha',
 };
+
+/** Các chế độ đã có giao diện, chế độ đầu tiên là nút chính. */
+export const STUDY_ENTRIES = [
+  { slug: 'flashcard', label: 'Bắt đầu học', guestLabel: 'Học thử' },
+  { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết' },
+] as const;

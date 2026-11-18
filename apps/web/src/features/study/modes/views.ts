@@ -1,6 +1,7 @@
 import type { Question, StudyLanguages, StudyMode, UserAnswer } from '@vocab/shared';
 import type { ComponentType } from 'react';
 import { FlashcardMode } from './flashcard/flashcard-mode';
+import { WriteModeView } from './write/write-mode';
 
 export interface StudyModeProps {
   question: Question;
@@ -12,4 +13,5 @@ export interface StudyModeProps {
 /** Thêm chế độ mới chỉ cần khai báo view ở đây. */
 export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps>>> = {
   FLASHCARD: FlashcardMode,
+  WRITE: WriteModeView,
 };
