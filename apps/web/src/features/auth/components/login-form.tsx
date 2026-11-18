@@ -11,10 +11,10 @@ import { FormField } from '@/components/common/form-field';
 import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
 import { login } from '../api';
-import { applyFormError } from '../form-errors';
+import { applyFormError } from '@/lib/form-errors';
 import { safeNextPath } from '../next-path';
 import { startSession } from '../session';
-import { FormError, FormNotice } from './form-message';
+import { FormError, FormNotice } from '@/components/common/form-message';
 
 const FIELDS = ['email', 'password'] as const;
 

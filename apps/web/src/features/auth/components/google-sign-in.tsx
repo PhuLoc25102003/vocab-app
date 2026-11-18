@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { loginWithGoogle } from '../api';
-import { formErrorMessage } from '../form-errors';
+import { formErrorMessage } from '@/lib/form-errors';
 import {
   getGoogleClientId,
   type GoogleButtonText,
@@ -14,7 +14,7 @@ import {
 } from '../google-identity';
 import { safeNextPath } from '../next-path';
 import { startSession } from '../session';
-import { FormError } from './form-message';
+import { FormError } from '@/components/common/form-message';
 
 /** Nút lớn nhất của Google cao 40 px, phóng lên để đạt vùng bấm 44 px. */
 const BUTTON_SCALE = 1.1;
