@@ -75,7 +75,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.7** API bộ từ: danh sách, tìm bộ công khai, tạo, xem, sửa, xoá mềm (#44, #45, #46).
 - [x] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài (#53).
 - [x] **1.9** `POST /sets/:id/duplicate` (#55).
-- [x] **1.10** Web: dashboard và danh sách bộ từ.
+- [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
 - [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ.
 - [ ] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache`.
 
