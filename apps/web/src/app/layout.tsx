@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Be_Vietnam_Pro, Literata, Noto_Serif } from 'next/font/google';
 import { Providers } from '@/components/common/providers';
+import { themeInitScript } from '@/lib/theme';
 import './globals.css';
 
 const beVietnamPro = Be_Vietnam_Pro({
@@ -34,7 +35,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="vi"
       className={`${beVietnamPro.variable} ${literata.variable} ${notoSerif.variable} h-full antialiased`}
+      // Script bên dưới đổi class của <html> trước khi React hydrate.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex min-h-full flex-col font-sans">
         <Providers>{children}</Providers>
       </body>

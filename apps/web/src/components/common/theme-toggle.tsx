@@ -1,24 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTheme } from '@/lib/use-theme';
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
-
-  function toggle() {
-    const next = !isDark;
-    document.documentElement.classList.toggle('dark', next);
-    setIsDark(next);
-  }
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === 'dark';
+  const Icon = isDark ? Sun : Moon;
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label="Giao diện tối"
       aria-pressed={isDark}
-      className="min-h-11 rounded-md border border-border-strong bg-surface px-3 py-2 text-small transition-colors duration-fast ease-standard hover:bg-primary-soft"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      Giao diện tối
-    </button>
+      <Icon aria-hidden className="size-5" />
+    </Button>
   );
 }
