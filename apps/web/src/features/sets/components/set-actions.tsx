@@ -58,7 +58,7 @@ export function SetOwnerActions({ id }: { id: string }) {
 
   return (
     <>
-      <Button asChild>
+      <Button asChild variant="secondary">
         <Link href={`/sets/${id}/edit` as Route}>Sửa bộ từ</Link>
       </Button>
       <Button ref={deleteRef} variant="secondary" onClick={() => toggleConfirm(true)}>
@@ -83,7 +83,7 @@ export function DuplicateSetButton({ id }: { id: string }) {
   };
 
   return (
-    <Button loading={duplicateSet.isPending} onClick={duplicate}>
+    <Button variant="secondary" loading={duplicateSet.isPending} onClick={duplicate}>
       Sao chép bộ từ
     </Button>
   );

@@ -33,6 +33,7 @@ src/
 │   ├── (marketing)/page.tsx      # landing
 │   ├── (auth)/login, register
 │   ├── (public)/public/sets/[id]/page.tsx  # trang công khai cho khách
+│   ├── (public)/public/sets/[id]/study/[mode]/page.tsx  # khách học thử, không lưu tiến độ
 │   ├── (app)/dashboard
 │   ├── (app)/explore             # tìm bộ từ công khai
 │   ├── (app)/sets/[id]/page.tsx

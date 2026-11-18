@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Làm chế độ Flashcard trên web (việc 1.16).
-2. Làm phát âm (việc 1.17).
+1. Làm phát âm (việc 1.17).
+2. Làm chế độ Viết (việc 1.24).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     16 |     36 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     17 |     36 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **29** | **72** | **40%**      |
+| **Toàn dự án**          |                                            | **30** | **72** | **42%**      |
 
 ## Cách cập nhật
 
@@ -87,7 +87,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test (#69).
 - [x] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress` (#73).
 - [x] **1.15** Web: `study-shell`, session store, tiến độ trong phiên, màn hình kết quả (#75, #76).
-- [ ] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ.
+- [x] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ (#78).
 - [ ] **1.17** Phát âm: `lib/speech.ts` và `audio-button`.
 
 ### 1D. Đưa lên môi trường thật
