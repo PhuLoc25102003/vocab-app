@@ -77,7 +77,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.9** `POST /sets/:id/duplicate` (#55).
 - [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
 - [x] **1.11** Web: tạo, sửa bộ từ và soạn thẻ (#60, #61, #63).
-- [x] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache` (#65).
+- [x] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache` (#65, #67).
 
 ### 1C. Học bằng Flashcard
 
