@@ -113,7 +113,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng (#82).
 - [x] **1.25** Chế độ Nghe viết (#84).
 - [x] **1.26** Chế độ Trắc nghiệm (#86).
-- [x] **1.27** `GET /review/due` và trang "Ôn hôm nay".
+- [x] **1.27** `GET /review/due` và trang "Ôn hôm nay" (#88).
 - [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.
 
 ### 1G. Hoàn thiện và phát hành MVP
