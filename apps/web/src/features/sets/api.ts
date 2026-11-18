@@ -9,7 +9,7 @@ import {
   type SetSummary,
   type UpdateSetDto,
 } from '@vocab/shared';
-import { http } from '@/lib/http';
+import { http, type HttpOptions } from '@/lib/http';
 
 export interface SetListParams {
   page: number;
@@ -21,8 +21,8 @@ export async function listMySets({ page, limit }: SetListParams): Promise<SetLis
   return setListSchema.parse(await http(`/sets?${query}`));
 }
 
-export async function getSet(id: string): Promise<SetDetail> {
-  const body = await http(`/sets/${encodeURIComponent(id)}`);
+export async function getSet(id: string, options?: HttpOptions): Promise<SetDetail> {
+  const body = await http(`/sets/${encodeURIComponent(id)}`, options);
   return setDetailResponseSchema.parse(body).data;
 }
 
