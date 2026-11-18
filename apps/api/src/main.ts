@@ -7,6 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { Env, parseCorsOrigins } from './config/env';
+import { setupSwagger } from './config/swagger';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -22,6 +23,10 @@ async function bootstrap(): Promise<void> {
     origin: parseCorsOrigins(config.get('CORS_ORIGINS', { infer: true })),
     credentials: true,
   });
+
+  if (config.get('NODE_ENV', { infer: true }) !== 'production') {
+    setupSwagger(app);
+  }
 
   const port = config.get('PORT', { infer: true });
   await app.listen(port, '0.0.0.0');
