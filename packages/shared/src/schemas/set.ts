@@ -122,6 +122,37 @@ export const updateSetSchema = z
   });
 export type UpdateSetDto = z.infer<typeof updateSetSchema>;
 
+/**
+ * Một dòng thẻ trong form. Dòng mới để trống hoàn toàn được bỏ qua.
+ * Thẻ đã có không được để trống, vì bỏ qua đồng nghĩa với xoá cả tiến độ học.
+ */
+const cardDraftSchema = z
+  .object({
+    id: z.string().optional(),
+    term: z.string(),
+    definition: z.string(),
+    phonetic: z.string(),
+    example: z.string(),
+  })
+  .transform(({ id, term, definition, phonetic, example }, context) => {
+    const optional = {
+      phonetic: phonetic.trim() || undefined,
+      example: example.trim() || undefined,
+    };
+    const isBlank = !term.trim() && !definition.trim() && !optional.phonetic && !optional.example;
+    if (!id && isBlank) {
+      return null;
+    }
+    const card = cardInputSchema.safeParse({ term, definition, ...optional });
+    if (!card.success) {
+      card.error.issues.forEach(({ path, message }) =>
+        context.addIssue({ code: 'custom', path, message }),
+      );
+      return z.NEVER;
+    }
+    return { ...card.data, ...(id ? { id } : {}) };
+  });
+
 /** Dữ liệu của form bộ từ. Mô tả để trống nghĩa là không có mô tả. */
 export const setFormSchema = z.object({
   title: titleSchema,
@@ -129,8 +160,14 @@ export const setFormSchema = z.object({
   termLang: languageSchema,
   defLang: languageSchema,
   visibility: visibilitySchema,
+  cards: z
+    .array(cardDraftSchema)
+    .transform((cards) => cards.filter((card) => card !== null))
+    .pipe(replaceCardsSchema.shape.cards),
 });
-export type SetFormValues = z.infer<typeof setFormSchema>;
+export type SetFormInput = z.input<typeof setFormSchema>;
+export type SetFormValues = z.output<typeof setFormSchema>;
+export type CardDraft = SetFormInput['cards'][number];
 
 export const cardSchema = z.object({
   id: z.string(),

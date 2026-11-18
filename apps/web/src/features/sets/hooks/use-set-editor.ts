@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateSetInput, UpdateSetDto } from '@vocab/shared';
-import { createSet, getSet, updateSet } from '../api';
+import type { CreateSetInput, ReplaceCardsDto, UpdateSetDto } from '@vocab/shared';
+import { createSet, getSet, replaceCards, updateSet } from '../api';
 import { setKeys } from '../query-keys';
 
 /** Form chỉ nhận dữ liệu một lần, nên luôn tải bản mới thay vì dùng cache. */
@@ -21,10 +21,18 @@ export function useCreateSet() {
   });
 }
 
-export function useUpdateSet(id: string) {
+interface SaveSetInput extends ReplaceCardsDto {
+  details: UpdateSetDto;
+}
+
+export function useSaveSet(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: UpdateSetDto) => updateSet(id, input),
+    // Lưu thông tin trước: nếu bước sau lỗi, gửi lại vẫn cho cùng kết quả.
+    mutationFn: async ({ details, cards }: SaveSetInput) => {
+      await updateSet(id, details);
+      await replaceCards(id, { cards });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: setKeys.all }),
   });
 }

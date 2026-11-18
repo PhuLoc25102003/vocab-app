@@ -15,7 +15,9 @@ describe('setFormSchema', () => {
     termLang: 'en',
     defLang: 'vi',
     visibility: 'PRIVATE',
+    cards: [],
   };
+  const draft = { term: '', definition: '', phonetic: '', example: '' };
 
   it('cắt khoảng trắng và cho phép mô tả trống', () => {
     expect(setFormSchema.parse(values)).toEqual({ ...values, title: 'Trái cây', description: '' });
@@ -23,6 +25,34 @@ describe('setFormSchema', () => {
 
   it('bắt buộc có tên', () => {
     expect(setFormSchema.safeParse({ ...values, title: ' ' }).success).toBe(false);
+  });
+
+  it('bỏ dòng mới để trống, giữ id và bỏ trường phụ trống', () => {
+    const cards = [
+      draft,
+      { ...draft, id: 'c1', term: ' apple ', definition: 'quả táo', phonetic: ' ' },
+    ];
+
+    expect(setFormSchema.parse({ ...values, cards }).cards).toEqual([
+      { id: 'c1', term: 'apple', definition: 'quả táo' },
+    ]);
+  });
+
+  it('báo lỗi đúng ô của đúng dòng', () => {
+    const cards = [
+      { ...draft, term: 'apple', definition: 'quả táo' },
+      { ...draft, term: 'pear' },
+    ];
+    const result = setFormSchema.safeParse({ ...values, cards });
+
+    expect(result.error?.issues.map(({ path }) => path)).toEqual([['cards', 1, 'definition']]);
+  });
+
+  it('không cho để trống thẻ đã có', () => {
+    const result = setFormSchema.safeParse({ ...values, cards: [{ ...draft, id: 'c1' }] });
+
+    const fields = new Set(result.error?.issues.map(({ path }) => path.at(-1)));
+    expect([...fields]).toEqual(['term', 'definition']);
   });
 });
 

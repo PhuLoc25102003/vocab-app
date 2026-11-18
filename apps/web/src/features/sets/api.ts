@@ -3,6 +3,7 @@ import {
   setListSchema,
   setResponseSchema,
   type CreateSetInput,
+  type ReplaceCardsDto,
   type SetDetail,
   type SetList,
   type SetSummary,
@@ -36,4 +37,11 @@ export async function updateSet(id: string, input: UpdateSetDto): Promise<SetSum
     body: JSON.stringify(input),
   });
   return setResponseSchema.parse(body).data;
+}
+
+export async function replaceCards(id: string, input: ReplaceCardsDto): Promise<void> {
+  await http(`/sets/${encodeURIComponent(id)}/cards`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
 }

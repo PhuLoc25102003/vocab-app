@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { Activity, type ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
-import { createSet, getSet, updateSet } from '../api';
+import { createSet, getSet, replaceCards, updateSet } from '../api';
 import { CreateSet } from './create-set';
 import { EditSet } from './edit-set';
 
@@ -61,6 +61,7 @@ describe('CreateSet', () => {
       termLang: 'en',
       defLang: 'vi',
       visibility: 'PUBLIC',
+      cards: [],
     });
   });
 
@@ -123,6 +124,7 @@ describe('EditSet', () => {
   it('điền dữ liệu cũ, giữ chế độ lớp học và gửi null khi xoá mô tả', async () => {
     vi.mocked(getSet).mockResolvedValue(detail);
     vi.mocked(updateSet).mockResolvedValue(summary);
+    vi.mocked(replaceCards).mockResolvedValue();
     renderWithQuery(<EditSet id="s1" />);
 
     const description = await screen.findByLabelText('Mô tả (không bắt buộc)');
@@ -138,6 +140,7 @@ describe('EditSet', () => {
       defLang: 'vi',
       visibility: 'CLASS',
     });
+    expect(replaceCards).toHaveBeenCalledWith('s1', { cards: [] });
   });
 
   it('báo không tìm thấy khi API trả 404', async () => {
