@@ -92,7 +92,7 @@ src/
     ├── sets/         sets.controller.ts, sets.service.ts, sets.repository.ts, dto/
     ├── cards/
     ├── import/       import.service.ts, parsers/ (text, csv, xlsx)
-    ├── study/        study.service.ts, srs.service.ts
+    ├── study/        controller, service, repository (SRS nằm ở shared)
     ├── progress/
     ├── health/
     └── classes/      (giai đoạn 3)
@@ -121,11 +121,11 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                   |
 | `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                   |
 | `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
-| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS. Chưa có strategy của chế độ nào   |
+| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS và strategy Flashcard              |
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
 | `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
 | `AudioButton`                                                                                     | Chưa có                                                              |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets` có code, còn lại là module rỗng    |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study` có code, còn lại rỗng     |
 
 ## Đã điều chỉnh so với spec gốc
 

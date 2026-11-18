@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -90,6 +90,13 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PUT /sets/:id/cards` dành cho chủ hoặc ADMIN, nhận `{ cards }` là toàn bộ danh sách theo thứ tự mới, tối đa 2.000 thẻ, body tối đa 5 MB. Thẻ có `id` được giữ và cập nhật, thẻ không có `id` được tạo mới, thẻ đang có mà không gửi lên bị xoá cùng tiến độ học của thẻ đó. `phonetic`, `example` không gửi lên sẽ bị xoá. Trả 200 kèm bộ từ và `cards`. `id` không thuộc bộ từ trả 422 `CARD_NOT_IN_SET` và không đổi gì.
 - `POST /sets/:id/duplicate` sao chép bộ từ người gọi xem được về tài khoản của họ, trả 201 kèm thông tin bộ mới. Bản sao có tên thêm ` (bản sao)`, luôn `PRIVATE`, gồm toàn bộ thẻ với `id` mới, không kèm thư mục và tiến độ học. Bộ không xem được trả 404.
 - `folderId` chưa được nhận, sẽ thêm cùng API thư mục ở việc 2.4.
+
+## Phiên học
+
+- `POST /study/sessions` nhận `{ setId, mode, limit? }`, trả 201 `{ data: { session, questions } }`. Chỉ học được bộ từ người gọi xem được, nếu không trả 404 `SET_NOT_FOUND`. Chế độ chưa có trả 422 `STUDY_MODE_UNAVAILABLE`, bộ từ không có thẻ trả 422 `SET_HAS_NO_CARDS`. Hiện có chế độ `FLASHCARD`, đáp án là `known` hoặc `unknown`.
+- `POST /study/sessions/:id/answers` nhận `{ answers: [{ questionId, value, timeMs }] }`, tối đa 200 đáp án mỗi lô, trả 200 `{ data: { results, ignored } }`. Server chấm lại, lưu `Attempt` và cập nhật `CardProgress` trong một transaction. Câu hỏi của thẻ đã xoá được bỏ qua và tính vào `ignored`. Phiên đã kết thúc trả 409 `STUDY_SESSION_FINISHED`. Client gửi các lô lần lượt, không gửi song song.
+- `PATCH /study/sessions/:id/finish` trả 200 `{ data: { session, wrongCardIds } }`. `total` là số thẻ đã trả lời, `correct` và `wrongCardIds` tính theo lần trả lời đầu của mỗi thẻ. Gọi lại không đổi kết quả.
+- Hai route theo `:id` chỉ dành cho chủ phiên, kể cả ADMIN cũng không gọi thay được.
 
 ## Khác biệt đang có trong code
 
