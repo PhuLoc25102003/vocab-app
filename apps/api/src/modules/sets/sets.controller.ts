@@ -74,6 +74,12 @@ export class SetsController {
     return this.sets.create(user.id, dto);
   }
 
+  @Post(':id/duplicate')
+  @ApiOperation({ summary: 'Sao chép bộ từ về tài khoản của tôi' })
+  duplicate(@Param('id') id: string, @CurrentUser() user: CurrentUserData) {
+    return this.sets.duplicate(id, user);
+  }
+
   @Patch(':id')
   @CheckOwnership('set')
   @ApiOperation({ summary: 'Sửa thông tin bộ từ' })

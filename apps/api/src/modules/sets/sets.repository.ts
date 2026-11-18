@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
+  SET_TITLE_MAX_LENGTH,
   type CreateSetDto,
   type Pagination,
   type PublicSetQuery,
@@ -43,12 +44,35 @@ const CARD_SELECT = {
   audioUrl: true,
 } as const;
 
-/** Lưu 2.000 thẻ có thể lâu hơn mức mặc định 5 giây của transaction. */
-const REPLACE_CARDS_TIMEOUT_MS = 30_000;
+/** Ghi 2.000 thẻ có thể lâu hơn mức mặc định 5 giây của transaction. */
+const BULK_CARDS_TIMEOUT_MS = 30_000;
+const COPY_TITLE_SUFFIX = ' (bản sao)';
 
 export interface SetViewer {
   id: string;
   role: Role;
+}
+
+/** Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại. */
+function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
+  if (viewer?.role === 'ADMIN') {
+    return {};
+  }
+  return {
+    OR: [
+      { visibility: 'PUBLIC', owner: { deletedAt: null } },
+      ...(viewer ? [{ ownerId: viewer.id }] : []),
+    ],
+  };
+}
+
+function toCopyTitle(title: string): string {
+  const kept = title
+    .slice(0, SET_TITLE_MAX_LENGTH - COPY_TITLE_SUFFIX.length)
+    // Không để lại nửa ký tự khi cắt giữa emoji.
+    .replace(/[\uD800-\uDBFF]$/, '')
+    .trimEnd();
+  return `${kept}${COPY_TITLE_SUFFIX}`;
 }
 
 function toOrderBy(sort: string): Prisma.StudySetOrderByWithRelationInput[] {
@@ -103,19 +127,9 @@ export class SetsRepository extends BaseRepository {
     ]);
   }
 
-  /** Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại. */
   findVisibleById(id: string, viewer: SetViewer | null) {
-    const access: Prisma.StudySetWhereInput =
-      viewer?.role === 'ADMIN'
-        ? {}
-        : {
-            OR: [
-              { visibility: 'PUBLIC', owner: { deletedAt: null } },
-              ...(viewer ? [{ ownerId: viewer.id }] : []),
-            ],
-          };
     return this.prisma.studySet.findFirst({
-      where: { id, deletedAt: null, ...access },
+      where: { id, deletedAt: null, ...visibleTo(viewer) },
       select: {
         ...SET_SUMMARY_SELECT,
         ...OWNER_NAME_SELECT,
@@ -136,6 +150,55 @@ export class SetsRepository extends BaseRepository {
       });
       return created;
     });
+  }
+
+  /**
+   * Bản sao luôn riêng tư, không kèm thư mục và tiến độ học.
+   * Trả `null` nếu người gọi không xem được bộ gốc.
+   */
+  duplicate(id: string, viewer: SetViewer) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        const source = await tx.studySet.findFirst({
+          where: { id, deletedAt: null, ...visibleTo(viewer) },
+          select: {
+            title: true,
+            description: true,
+            termLang: true,
+            defLang: true,
+            cards: {
+              select: {
+                position: true,
+                term: true,
+                definition: true,
+                phonetic: true,
+                example: true,
+                imageUrl: true,
+                audioUrl: true,
+              },
+            },
+          },
+        });
+        if (!source) {
+          return null;
+        }
+
+        const { cards, title, ...set } = source;
+        const copy = await tx.studySet.create({
+          data: {
+            ...set,
+            title: toCopyTitle(title),
+            ownerId: viewer.id,
+            visibility: 'PRIVATE',
+            cardCount: cards.length,
+          },
+          select: SET_SUMMARY_SELECT,
+        });
+        await tx.card.createMany({ data: cards.map((card) => ({ ...card, setId: copy.id })) });
+        return copy;
+      },
+      { timeout: BULK_CARDS_TIMEOUT_MS },
+    );
   }
 
   /**
@@ -232,7 +295,7 @@ export class SetsRepository extends BaseRepository {
           },
         });
       },
-      { timeout: REPLACE_CARDS_TIMEOUT_MS },
+      { timeout: BULK_CARDS_TIMEOUT_MS },
     );
   }
 
