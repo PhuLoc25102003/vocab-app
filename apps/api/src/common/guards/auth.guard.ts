@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import type { FastifyRequest } from 'fastify';
 import { AccessTokenService, unauthorizedError } from '../auth/access-token.service';
 import { TokenUserRepository } from '../auth/token-user.repository';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { IS_PUBLIC_KEY, OPTIONAL_AUTH_KEY } from '../decorators/public.decorator';
 import '../decorators/current-user.decorator';
 
 function bearerToken({ headers }: FastifyRequest): string | null {
@@ -21,28 +21,32 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
+    const targets = [context.getHandler(), context.getClass()];
+    const request = context.switchToHttp().getRequest<FastifyRequest>();
+    const token = bearerToken(request);
+
+    if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, targets)) {
+      // Token sai vẫn trả 401, để client refresh thay vì xem trang như khách.
+      if (token && this.reflector.getAllAndOverride<boolean>(OPTIONAL_AUTH_KEY, targets)) {
+        await this.authenticate(request, token);
+      }
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<FastifyRequest>();
-    const token = bearerToken(request);
     if (!token) {
       throw unauthorizedError();
     }
+    await this.authenticate(request, token);
+    return true;
+  }
 
+  private async authenticate(request: FastifyRequest, token: string): Promise<void> {
     const claims = await this.accessTokens.verify(token);
     // Đọc database để tài khoản đã xoá, đã đổi quyền hoặc đã đăng xuất mọi nơi có hiệu lực ngay.
     const user = await this.users.findActiveById(claims.sub);
     if (!user || user.tokenVersion !== claims.tv) {
       throw unauthorizedError();
     }
-
     request.user = { id: user.id, role: user.role };
-    return true;
   }
 }

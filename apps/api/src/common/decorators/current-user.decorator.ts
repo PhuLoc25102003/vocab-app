@@ -15,6 +15,12 @@ declare module 'fastify' {
   }
 }
 
+/** Người dùng nếu có, dùng cùng `@OptionalAuth()`. Khách nhận `null`. */
+export const OptionalUser = createParamDecorator(
+  (_data: unknown, context: ExecutionContext): CurrentUserData | null =>
+    context.switchToHttp().getRequest<FastifyRequest>().user ?? null,
+);
+
 /** Người dùng đã đăng nhập. Chỉ dùng trên route không có `@Public()`. */
 export const CurrentUser = createParamDecorator(
   (_data: unknown, context: ExecutionContext): CurrentUserData => {

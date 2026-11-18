@@ -1,5 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type CreateSetDto, type Pagination, type UpdateSetDto } from '@vocab/shared';
+import {
+  ERROR_CODES,
+  type CreateSetDto,
+  type Pagination,
+  type PublicSetQuery,
+  type Role,
+  type UpdateSetDto,
+} from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -21,6 +28,24 @@ const SET_SUMMARY_SELECT = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+const OWNER_NAME_SELECT = { owner: { select: { displayName: true } } } as const;
+
+const CARD_SELECT = {
+  id: true,
+  position: true,
+  term: true,
+  definition: true,
+  phonetic: true,
+  example: true,
+  imageUrl: true,
+  audioUrl: true,
+} as const;
+
+export interface SetViewer {
+  id: string;
+  role: Role;
+}
 
 function toOrderBy(sort: string): Prisma.StudySetOrderByWithRelationInput[] {
   const direction = sort.startsWith('-') ? 'desc' : 'asc';
@@ -54,6 +79,45 @@ export class SetsRepository extends BaseRepository {
       }),
       this.prisma.studySet.count({ where }),
     ]);
+  }
+
+  findPublic({ q, ...query }: PublicSetQuery) {
+    const where: Prisma.StudySetWhereInput = {
+      visibility: 'PUBLIC',
+      deletedAt: null,
+      owner: { deletedAt: null },
+      ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+    };
+    return Promise.all([
+      this.prisma.studySet.findMany({
+        where,
+        select: { ...SET_SUMMARY_SELECT, ...OWNER_NAME_SELECT },
+        orderBy: toOrderBy(query.sort),
+        ...toSkipTake(query),
+      }),
+      this.prisma.studySet.count({ where }),
+    ]);
+  }
+
+  /** Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại. */
+  findVisibleById(id: string, viewer: SetViewer | null) {
+    const access: Prisma.StudySetWhereInput =
+      viewer?.role === 'ADMIN'
+        ? {}
+        : {
+            OR: [
+              { visibility: 'PUBLIC', owner: { deletedAt: null } },
+              ...(viewer ? [{ ownerId: viewer.id }] : []),
+            ],
+          };
+    return this.prisma.studySet.findFirst({
+      where: { id, deletedAt: null, ...access },
+      select: {
+        ...SET_SUMMARY_SELECT,
+        ...OWNER_NAME_SELECT,
+        cards: { select: CARD_SELECT, orderBy: { position: 'asc' } },
+      },
+    });
   }
 
   /** Bộ từ và thẻ được tạo cùng lúc, lỗi giữa chừng thì không còn dữ liệu dở dang. */

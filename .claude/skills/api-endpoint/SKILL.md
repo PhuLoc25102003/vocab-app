@@ -28,12 +28,13 @@ description: Dùng khi thêm hoặc sửa một endpoint REST trong apps/api c�
 3. Viết repository, service, controller.
 4. Chọn đúng một mức truy cập:
 
-| Ai được gọi      | Khai báo                              |
-| ---------------- | ------------------------------------- |
-| Ai cũng gọi được | `@Public()`                           |
-| Đã đăng nhập     | Không thêm gì, `AuthGuard` đã áp dụng |
-| Theo vai trò     | `@Roles('TEACHER', 'ADMIN')`          |
-| Chủ tài nguyên   | `@CheckOwnership('set')`              |
+| Ai được gọi         | Khai báo                                      |
+| ------------------- | --------------------------------------------- |
+| Ai cũng gọi được    | `@Public()`                                   |
+| Khách và người dùng | `@OptionalAuth()`, đọc bằng `@OptionalUser()` |
+| Đã đăng nhập        | Không thêm gì, `AuthGuard` đã áp dụng         |
+| Theo vai trò        | `@Roles('TEACHER', 'ADMIN')`                  |
+| Chủ tài nguyên      | `@CheckOwnership('set')`                      |
 
 5. Thêm Swagger decorator và test.
 6. Cập nhật bảng endpoint trong `docs/03-api.md`.

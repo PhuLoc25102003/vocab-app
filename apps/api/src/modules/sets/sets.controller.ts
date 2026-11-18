@@ -11,12 +11,18 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { createSetSchema, paginationSchema, updateSetSchema } from '@vocab/shared';
-import type { CreateSetDto, Pagination, UpdateSetDto } from '@vocab/shared';
+import {
+  createSetSchema,
+  paginationSchema,
+  publicSetQuerySchema,
+  updateSetSchema,
+} from '@vocab/shared';
+import type { CreateSetDto, Pagination, PublicSetQuery, UpdateSetDto } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CheckOwnership } from '../../common/decorators/check-ownership.decorator';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { CurrentUser, OptionalUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
+import { OptionalAuth, Public } from '../../common/decorators/public.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { SetsService } from './sets.service';
 
@@ -33,6 +39,21 @@ export class SetsController {
     @Query(new ZodValidationPipe(paginationSchema)) query: Pagination,
   ) {
     return this.sets.listMine(user.id, query);
+  }
+
+  // Phải khai báo trước `:id`.
+  @Public()
+  @Get('public')
+  @ApiOperation({ summary: 'Tìm bộ từ công khai' })
+  listPublic(@Query(new ZodValidationPipe(publicSetQuerySchema)) query: PublicSetQuery) {
+    return this.sets.listPublic(query);
+  }
+
+  @OptionalAuth()
+  @Get(':id')
+  @ApiOperation({ summary: 'Xem bộ từ kèm thẻ' })
+  getById(@Param('id') id: string, @OptionalUser() viewer: CurrentUserData | null) {
+    return this.sets.getById(id, viewer);
   }
 
   @Post()
