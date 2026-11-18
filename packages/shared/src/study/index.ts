@@ -5,4 +5,5 @@ export * from './modes/mcq';
 export * from './modes/write';
 export * from './registry';
 export * from './srs';
+export * from './stats';
 export * from './types';

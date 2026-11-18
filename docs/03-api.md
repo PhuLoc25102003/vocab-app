@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -99,6 +99,10 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Hai route theo `:id` chỉ dành cho chủ phiên, kể cả ADMIN cũng không gọi thay được.
 
 - `GET /review/due` nhận `page`, `limit`, trả các bộ từ có thẻ đến hạn tại thời điểm gọi: `{ data: [{ setId, title, dueCount }], meta, summary: { dueCards } }`, xếp theo tên. Chỉ tính bộ từ người gọi còn xem được.
+
+## Thống kê
+
+- `GET /stats/overview` trả `{ data: { streakDays, masteredCards, answersToday, hardCards } }`. Ngày học tính theo giờ Việt Nam (UTC+7). Chuỗi ngày vẫn giữ nếu hôm nay chưa học nhưng hôm qua có học. Thẻ đã thuộc là thẻ có `interval` từ 6 ngày. `hardCards` gồm tối đa 5 thẻ sai nhiều nhất, thuộc bộ từ người gọi còn xem được.
 
 ## Khác biệt đang có trong code
 
