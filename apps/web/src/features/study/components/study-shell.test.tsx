@@ -38,6 +38,7 @@ const session = {
 const started: StartedSession = {
   session,
   questions: [question('c1', 'apple'), question('c2', 'pear')],
+  languages: { term: 'en', definition: 'vi' },
 };
 const result: SessionResult = {
   session: { ...session, finishedAt: '2026-11-19T00:01:00.000Z', correct: 1, total: 2 },

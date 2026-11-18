@@ -50,8 +50,16 @@ export const questionSchema = z.object({
   choices: z.array(z.string()).optional(),
 });
 
+/** Mã BCP-47 của từ và nghĩa, dùng để phát âm. */
+export const studyLanguagesSchema = z.object({ term: z.string(), definition: z.string() });
+export type StudyLanguages = z.infer<typeof studyLanguagesSchema>;
+
 export const startSessionResponseSchema = z.object({
-  data: z.object({ session: studySessionSchema, questions: z.array(questionSchema) }),
+  data: z.object({
+    session: studySessionSchema,
+    questions: z.array(questionSchema),
+    languages: studyLanguagesSchema,
+  }),
 });
 
 export const submitAnswersResponseSchema = z.object({

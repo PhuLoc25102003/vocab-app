@@ -120,6 +120,7 @@ export function StudyShell({ backend, setId, mode, exitHref, resultNote }: Study
   });
   const session = useStudyStore((state) => state.session);
   const questions = useStudyStore((state) => state.questions);
+  const languages = useStudyStore((state) => state.languages);
   const position = useStudyStore((state) => state.position);
   const pendingCount = useStudyStore((state) => state.pending.length);
   const result = useStudyStore((state) => state.result);
@@ -218,5 +219,7 @@ export function StudyShell({ backend, setId, mode, exitHref, resultNote }: Study
     );
   }
 
-  return frame(<View key={question.id} question={question} onAnswer={answer} />);
+  return frame(
+    <View key={question.id} question={question} languages={languages} onAnswer={answer} />,
+  );
 }

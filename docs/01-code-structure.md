@@ -53,7 +53,7 @@ src/
 ├── lib/
 │   ├── http.ts                   # một HTTP client duy nhất, tự refresh token
 │   ├── query-client.ts
-│   └── speech.ts                 # bọc Web Speech API sau interface ISpeechService
+│   └── speech.ts                 # bọc Web Speech API
 └── proxy.ts                      # chặn route (app) khi chưa đăng nhập
 ```
 
@@ -125,7 +125,7 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS và strategy Flashcard              |
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
 | `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
-| `AudioButton`                                                                                     | Chưa có                                                              |
+| `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |
 | Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study` có code, còn lại rỗng     |
 
 ## Đã điều chỉnh so với spec gốc

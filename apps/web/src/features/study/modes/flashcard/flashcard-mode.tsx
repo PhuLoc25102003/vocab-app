@@ -2,6 +2,7 @@
 
 import { FLASHCARD_ANSWERS } from '@vocab/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AudioButton } from '@/components/common/audio-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
@@ -17,7 +18,7 @@ function isInteractive(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && target.closest('button, a, input, textarea') !== null;
 }
 
-export function FlashcardMode({ question, onAnswer }: StudyModeProps) {
+export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps) {
   const [flipped, setFlipped] = useState(false);
   const shownAt = useRef(0);
   const answered = useRef(false);
@@ -92,6 +93,23 @@ export function FlashcardMode({ question, onAnswer }: StudyModeProps) {
           onClick={() => setFlipped((value) => !value)}
           className="absolute inset-0 rounded-lg"
         />
+        <div className="absolute top-2 right-2">
+          {flipped ? (
+            <AudioButton
+              text={question.expected}
+              lang={languages.definition}
+              label="Nghe nghĩa"
+              className="text-board-fg hover:bg-board-muted/20"
+            />
+          ) : (
+            <AudioButton
+              text={question.prompt}
+              lang={languages.term}
+              label="Nghe phát âm"
+              className="bg-surface"
+            />
+          )}
+        </div>
       </div>
 
       <div className="mt-auto flex flex-col gap-3">

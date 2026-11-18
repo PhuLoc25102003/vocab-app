@@ -31,7 +31,7 @@ export function createGuestBackend(): StudyBackend {
   return {
     async start(setId, mode): Promise<StartedSession> {
       const body = await http(`/sets/${encodeURIComponent(setId)}`, { skipAuth: true });
-      const { cards } = setDetailResponseSchema.parse(body).data;
+      const { cards, termLang, defLang } = setDetailResponseSchema.parse(body).data;
       if (cards.length === 0) {
         throw new HttpError('Bộ từ này chưa có thẻ', 422, ERROR_CODES.SET_HAS_NO_CARDS);
       }
@@ -52,7 +52,7 @@ export function createGuestBackend(): StudyBackend {
         questions: new Map(questions.map((question) => [question.id, question])),
         firstResults: new Map(),
       };
-      return { session, questions };
+      return { session, questions, languages: { term: termLang, definition: defLang } };
     },
 
     async submit(sessionId, answers) {

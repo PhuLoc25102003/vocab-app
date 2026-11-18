@@ -14,7 +14,13 @@ const question: Question = {
 
 function setup() {
   const onAnswer = vi.fn();
-  render(<FlashcardMode question={question} onAnswer={onAnswer} />);
+  render(
+    <FlashcardMode
+      question={question}
+      languages={{ term: 'en', definition: 'vi' }}
+      onAnswer={onAnswer}
+    />,
+  );
   return onAnswer;
 }
 
