@@ -86,7 +86,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Khi database lỗi, `/health` trả 503 với mã `DB_UNAVAILABLE`.
 - Chưa có interceptor bọc response. Endpoint nghiệp vụ tự trả `{ data }` hoặc `{ data, meta }` qua helper `ok()` và `paginated()` trong `common/base/pagination.ts` (mẫu trong skill `api-endpoint`).
 - `details` là `null` khi lỗi không có chi tiết. `requestId` là UUID, đồng thời nằm trong header `x-request-id`.
-- `lib/http.ts` trả nguyên body, nên `features/*/api.ts` tự lấy `.data`.
+- `lib/http.ts` trả nguyên body, nên `features/*/api.ts` tự lấy `.data`. Nó tự gắn access token, gặp 401 thì refresh một lần rồi gửi lại request. Route của phiên đăng nhập dùng `skipAuth`.
 - `GET /sets/public` phải khai báo trước `GET /sets/:id`. `GET /sets/:id` cho khách xem bộ PUBLIC nên cần `@Public()` kèm xác thực tuỳ chọn.
 
 ## Đã điều chỉnh so với spec gốc

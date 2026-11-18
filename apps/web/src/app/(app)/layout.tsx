@@ -2,6 +2,8 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { AppNav } from '@/components/common/app-nav';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { AuthGate } from '@/features/auth/components/auth-gate';
+import { LogoutButton } from '@/features/auth/components/logout-button';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -18,8 +20,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             Vocab
           </Link>
           <AppNav />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
+            <LogoutButton />
           </div>
         </div>
       </header>
@@ -28,7 +31,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         tabIndex={-1}
         className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 py-8 md:px-6 lg:px-8"
       >
-        {children}
+        <AuthGate>{children}</AuthGate>
       </main>
     </div>
   );
