@@ -1,0 +1,186 @@
+# Tiến độ dự án
+
+Cập nhật lần cuối: 2026-11-18
+
+**Đang ở:** Giai đoạn 0, phần nền cho tính năng.
+
+**Việc tiếp theo:**
+
+1. Đổi nhánh mặc định và bật branch protection trên GitHub (việc 0.8).
+2. Áp dụng design tokens mới vào web (việc 0.9).
+3. Dựng nền API: mã lỗi, `AppError`, phân trang, Swagger (việc 0.10).
+
+## Tổng quan
+
+Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng của từng việc.
+
+| Giai đoạn               | Mục tiêu                                   |  Xong |   Tổng | Trạng thái   |
+| ----------------------- | ------------------------------------------ | ----: | -----: | ------------ |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     7 |     13 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     0 |     35 | Chưa bắt đầu |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     0 |     12 | Chưa bắt đầu |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |     0 |      8 | Chưa bắt đầu |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |     0 |      3 | Chưa bắt đầu |
+| **Toàn dự án**          |                                            | **7** | **71** | **10%**      |
+
+## Cách cập nhật
+
+- Làm theo thứ tự từ trên xuống, trừ khi việc sau không phụ thuộc việc trước.
+- Mỗi việc tương ứng một issue và một PR. Việc quá lớn thì tách thành nhiều việc nhỏ ngay trong file này.
+- Khi bắt đầu, thêm `Đang làm: <tên nhánh>` vào cuối dòng.
+- Trong PR của việc đó, đổi `[ ]` thành `[x]`, ghi số PR, cập nhật bảng tổng quan, "Đang ở" và "Việc tiếp theo".
+- Một việc chỉ được tính là xong khi PR đã merge vào `develop`.
+
+## Giai đoạn 0: Nền tảng
+
+### 0A. Khung dự án
+
+- [x] **0.1** Monorepo npm workspaces + Turborepo, gồm web, API và `@vocab/shared`.
+- [x] **0.2** PostgreSQL trong Docker, Prisma 7, migration đầu tiên, `GET /health`.
+- [x] **0.3** Tài liệu `docs/`, `CLAUDE.md` và các skill dự án.
+- [x] **0.4** Nâng lên Node 24 LTS.
+- [x] **0.5** Repo GitHub, nhánh `develop`, skill `git-workflow` (#1).
+- [x] **0.6** CI với job `Verify` (#2).
+
+### 0B. Nền cho tính năng
+
+**Xong khi:** có thể bắt đầu module auth mà không phải dựng thêm hạ tầng chung.
+
+- [x] **0.7** Thêm `onDelete: Cascade` cho dữ liệu học và dữ liệu của người dùng (#3).
+- [ ] **0.8** Cấu hình GitHub: nhánh mặc định `develop`, branch protection yêu cầu `Verify`, cài `gh`.
+- [ ] **0.9** Áp dụng design tokens và font mới vào web theo `docs/05-ui-tokens.md`.
+- [ ] **0.10** Nền API: mã lỗi trong shared, `AppError`, `paginationSchema`, `ok()`, `paginated()`, Swagger.
+- [ ] **0.11** Bộ test: Vitest cho shared, API, web; Supertest; database test trong CI.
+- [ ] **0.12** Nền giao diện: shadcn/ui, layout app, điều hướng, `page-header`, `empty-state`, `error-state`, skeleton, thông báo, lưu lựa chọn theme.
+- [ ] **0.13** Kỷ luật code: Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot và `npm audit` trong CI.
+
+## Giai đoạn 1: MVP
+
+**Xong khi:** học sinh đăng ký được, tạo hoặc import bộ từ, học bằng 4 chế độ, có tiến độ và trang "Ôn hôm nay" trên môi trường production.
+
+### 1A. Tài khoản và phân quyền
+
+**Xong khi:** người dùng đăng nhập được, giữ phiên qua refresh token, route được bảo vệ đúng theo vai trò và quyền sở hữu.
+
+- [ ] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung.
+- [ ] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard`.
+- [ ] **1.3** `@CurrentUser`, `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard`.
+- [ ] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản.
+- [ ] **1.5** Web: đăng ký, đăng nhập, auth store, tự refresh trong `lib/http.ts`, `proxy.ts`, component `Can`.
+- [ ] **1.6** Đăng nhập Google trên API và web.
+
+### 1B. Bộ từ và thẻ từ
+
+**Xong khi:** người dùng tạo, sửa, xoá, sao chép bộ từ và khách xem được bộ công khai.
+
+- [ ] **1.7** API bộ từ: danh sách, tìm bộ công khai, tạo, xem, sửa, xoá mềm.
+- [ ] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài.
+- [ ] **1.9** `POST /sets/:id/duplicate`.
+- [ ] **1.10** Web: dashboard và danh sách bộ từ.
+- [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ.
+- [ ] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache`.
+
+### 1C. Học bằng Flashcard
+
+**Xong khi:** có một luồng hoàn chỉnh từ chọn bộ từ, học, lưu tiến độ đến xem kết quả.
+
+- [ ] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test.
+- [ ] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress`.
+- [ ] **1.15** Web: `study-shell`, session store, tiến độ trong phiên, màn hình kết quả.
+- [ ] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ.
+- [ ] **1.17** Phát âm: `lib/speech.ts` và `audio-button`.
+
+### 1D. Đưa lên môi trường thật
+
+**Xong khi:** merge vào `main` tự deploy, đăng nhập và học được trên URL production.
+
+- [ ] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy.
+- [ ] **1.19** Deploy API lên Render, cấu hình env và health check.
+- [ ] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
+
+### 1E. Import
+
+**Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel và sửa lỗi từng dòng trước khi lưu.
+
+- [ ] **1.21** Parser text, CSV, XLSX và `POST /import/preview`, kèm giới hạn file và kiểm tra an toàn.
+- [ ] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ.
+- [ ] **1.23** Web: tải file, dán text, xem trước và sửa lỗi.
+
+### 1F. Chế độ học còn lại và ôn tập
+
+**Xong khi:** đủ 4 chế độ MVP, có danh sách từ đến hạn và thống kê cơ bản.
+
+- [ ] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng.
+- [ ] **1.25** Chế độ Nghe viết.
+- [ ] **1.26** Chế độ Trắc nghiệm.
+- [ ] **1.27** `GET /review/due` và trang "Ôn hôm nay".
+- [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.
+
+### 1G. Hoàn thiện và phát hành MVP
+
+**Xong khi:** đạt checklist bảo mật, Definition of Done và bản MVP đã lên `main`.
+
+- [ ] **1.29** Trang giới thiệu sản phẩm.
+- [ ] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
+- [ ] **1.31** Log Pino có ẩn dữ liệu nhạy cảm, Sentry cho web và API, theo dõi uptime.
+- [ ] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md`.
+- [ ] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính.
+- [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu.
+- [ ] **1.35** PR phát hành từ `develop` vào `main`, kiểm tra production.
+
+## Giai đoạn 2: Mở rộng
+
+**Xong khi:** đủ 8 chế độ học, có quản lý thư mục, ảnh và công cụ quản trị.
+
+### 2A. Hạ tầng
+
+- [ ] **2.1** Rate limit dùng Upstash Redis.
+- [ ] **2.2** Cache bộ từ công khai.
+- [ ] **2.3** Môi trường staging cho `develop`.
+
+### 2B. Nội dung
+
+- [ ] **2.4** Thư mục bộ từ trên API và web.
+- [ ] **2.5** Ảnh cho thẻ từ: R2 và `POST /uploads/presign`.
+- [ ] **2.6** Tạo và lưu âm thanh TTS lên R2.
+
+### 2C. Chế độ học
+
+- [ ] **2.7** Chế độ Learn.
+- [ ] **2.8** Chế độ Điền từ.
+- [ ] **2.9** Chế độ Ghép cặp.
+- [ ] **2.10** Chế độ Kiểm tra.
+
+### 2D. Quản trị
+
+- [ ] **2.11** `GET /admin/users` và trang quản lý người dùng.
+- [ ] **2.12** Ẩn nội dung vi phạm.
+
+## Giai đoạn 3: Lớp học
+
+**Xong khi:** giáo viên tạo lớp, giao bộ từ và xem được kết quả của học sinh.
+
+- [ ] **3.1** Schema `Class`, `ClassMember`, `Assignment`.
+- [ ] **3.2** Quy trình cấp vai trò giáo viên.
+- [ ] **3.3** API tạo lớp, quản lý thành viên, tham gia lớp.
+- [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
+- [ ] **3.5** API giao bộ từ và theo dõi hạn nộp.
+- [ ] **3.6** API kết quả theo lớp và theo học sinh.
+- [ ] **3.7** Web cho giáo viên.
+- [ ] **3.8** Web cho học sinh trong lớp.
+
+## Giai đoạn 4: Luyện nói và offline
+
+**Xong khi:** học sinh luyện nói được và tiếp tục học khi mất mạng.
+
+- [ ] **4.1** Chế độ luyện nói.
+- [ ] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện.
+- [ ] **4.3** Học offline và đồng bộ tiến độ khi có mạng.
+
+## Quyết định cần chốt
+
+| Quyết định                         | Cần trước việc | Đề xuất                                      |
+| ---------------------------------- | -------------- | -------------------------------------------- |
+| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`       |
+| Thư viện đọc Excel                 | 1.21           | Cân nhắc `exceljs`, kiểm tra bảo mật khi làm |
+| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt          |

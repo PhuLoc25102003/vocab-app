@@ -15,7 +15,7 @@ vocab-app/
 │   ├── shared/              # Zod schema, types, hằng số, SRS, chấm điểm, study strategies
 │   └── eslint-config/       # ESLint dùng chung
 ├── docs/                    # tài liệu, ADR
-├── .github/workflows/       # CI (chưa tạo)
+├── .github/workflows/       # CI
 ├── docker-compose.yml       # Postgres local
 ├── tsconfig.base.json       # TypeScript dùng chung
 ├── .prettierrc.json         # Prettier dùng chung
