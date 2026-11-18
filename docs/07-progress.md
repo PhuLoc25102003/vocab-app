@@ -76,7 +76,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.8** `PUT /sets/:id/cards`: giữ `id` thẻ cũ, cập nhật `cardCount` trong transaction, giới hạn số thẻ và độ dài (#53).
 - [x] **1.9** `POST /sets/:id/duplicate` (#55).
 - [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
-- [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ.
+- [ ] **1.11** Web: tạo, sửa bộ từ và soạn thẻ. Đang làm: feat/59-set-form
 - [ ] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache`.
 
 ### 1C. Học bằng Flashcard

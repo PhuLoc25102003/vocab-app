@@ -4,8 +4,27 @@ import {
   CARD_TERM_MAX_LENGTH,
   createSetSchema,
   MAX_CARDS_PER_SET,
+  setFormSchema,
   updateSetSchema,
 } from './set';
+
+describe('setFormSchema', () => {
+  const values = {
+    title: ' Trái cây ',
+    description: '  ',
+    termLang: 'en',
+    defLang: 'vi',
+    visibility: 'PRIVATE',
+  };
+
+  it('cắt khoảng trắng và cho phép mô tả trống', () => {
+    expect(setFormSchema.parse(values)).toEqual({ ...values, title: 'Trái cây', description: '' });
+  });
+
+  it('bắt buộc có tên', () => {
+    expect(setFormSchema.safeParse({ ...values, title: ' ' }).success).toBe(false);
+  });
+});
 
 const card = { term: 'apple', definition: 'quả táo' };
 

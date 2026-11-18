@@ -41,7 +41,7 @@ export function MySets() {
 
   const { data, meta } = sets.data;
   if (meta.total === 0) {
-    return <EmptyState title="Chưa có bộ từ nào" description="Bộ từ của bạn sẽ hiện ở đây." />;
+    return <EmptyState title="Chưa có bộ từ nào" description="Tạo bộ đầu tiên để bắt đầu học." />;
   }
   if (data.length === 0) {
     return (

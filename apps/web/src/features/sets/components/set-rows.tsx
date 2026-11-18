@@ -1,12 +1,9 @@
-import type { SetSummary, Visibility } from '@vocab/shared';
+import type { SetSummary } from '@vocab/shared';
+import type { Route } from 'next';
+import Link from 'next/link';
 import { LoadingState } from '@/components/common/loading-state';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const VISIBILITY_LABELS: Record<Visibility, string> = {
-  PRIVATE: 'Riêng tư',
-  CLASS: 'Lớp học',
-  PUBLIC: 'Công khai',
-};
+import { VISIBILITY_LABELS } from '../labels';
 
 const dateFormat = new Intl.DateTimeFormat('vi-VN', {
   day: '2-digit',
@@ -20,10 +17,15 @@ export function SetRows({ sets }: { sets: SetSummary[] }) {
       {sets.map(({ id, title, visibility, cardCount, updatedAt }) => (
         <li
           key={id}
-          className="flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border py-3"
+          className="relative flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-2 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft"
         >
           <div className="min-w-0 flex-1 basis-56">
-            <p className="text-h3 break-words">{title}</p>
+            <Link
+              href={`/sets/${id}/edit` as Route}
+              className="block text-h3 break-words after:absolute after:inset-0"
+            >
+              {title}
+            </Link>
             <p className="text-small text-text-muted">
               Cập nhật <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
             </p>
