@@ -49,9 +49,16 @@ Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, b
 | Integration | Supertest + Postgres trong Docker | Endpoint thật: auth, phân quyền, CRUD                                           | Mọi endpoint có ít nhất 1 test 401/403 |
 | E2E         | Playwright                        | Đăng ký → import → học → xem kết quả                                            | 3–5 luồng chính                        |
 
+Cách chạy:
+
+- `npm test` chạy test của `shared`, `api` và `web`. Test của API cần Postgres, chạy `npm run db:up` trước.
+- Test của `shared` và `web` đặt cạnh code (`*.test.ts`, `*.test.tsx`). Test của API đặt trong `apps/api/test` để không lọt vào bản build, integration test đặt tên `*.integration.test.ts`.
+- Integration test dùng database `<tên>_test`, lấy từ `DATABASE_URL`. Database này được tạo tự động và áp dụng migration trước khi chạy. Dữ liệu dev không bị đụng tới.
+- Dùng `createTestApp()` và `resetDatabase()` trong `apps/api/test/support`.
+
 ## CI/CD
 
-`.github/workflows/ci.yml` chạy job `Verify` trên mọi PR và push vào `develop`, `main`: `npm ci` → `prisma migrate deploy` trên Postgres service container → `lint` → `typecheck` → `test` → `build`. Các bước chạy tuần tự vì `typecheck` và `build` của API đều sinh lại Prisma Client. Integration test sẽ dùng cùng database này khi được thêm.
+`.github/workflows/ci.yml` chạy job `Verify` trên mọi PR và push vào `develop`, `main`: `npm ci` → `prisma migrate deploy` trên Postgres service container → `lint` → `typecheck` → `test` → `build`. Các bước chạy tuần tự vì `typecheck` và `build` của API đều sinh lại Prisma Client. Integration test chạy trên database `vocab_test` trong cùng Postgres service.
 
 Đặt `Verify` làm required status check trong branch protection của `main` và `develop` để chặn merge khi CI đỏ.
 
@@ -105,11 +112,9 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 
 ## Hiện trạng công cụ
 
-| Có                                                                                                                                   | Chưa có                                                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions | Vitest, Testing Library, Supertest, Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, `constants.ts` |
-
-Chưa có package nào khai báo script `test`, nên `npm test` hiện không chạy test nào.
+| Có                                                                                                                                                                       | Chưa có                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions, Vitest, Testing Library, Supertest | Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, `constants.ts` |
 
 ## Lệnh Prisma
 

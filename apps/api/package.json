@@ -7,10 +7,11 @@
     "dev": "prisma generate && nest start --watch",
     "start": "node dist/main.js",
     "lint": "eslint .",
-    "typecheck": "prisma generate && tsc --noEmit",
+    "typecheck": "prisma generate && tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy"
+    "prisma:deploy": "prisma migrate deploy",
+    "test": "prisma generate && vitest run"
   },
   "dependencies": {
     "@fastify/helmet": "^13.0.2",
@@ -30,10 +31,18 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
+    "@nestjs/testing": "^11.2.10",
+    "@swc/core": "^1.16.22",
     "@types/node": "^24",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
     "@vocab/eslint-config": "*",
     "eslint": "^9.39.0",
+    "pg": "^8.23.1",
     "prisma": "^7.10.1",
-    "typescript": "~5.9.3"
+    "supertest": "^7.3.2",
+    "typescript": "~5.9.3",
+    "unplugin-swc": "^2.0.0",
+    "vitest": "^5.1.0"
   }
 }

@@ -139,7 +139,7 @@ npm test
 npm run build
 ```
 
-`npm test` chưa có test nào cho đến khi dự án cài bộ test, phải nói rõ điều này trong PR. Sau đó chạy skill `code-review`.
+`npm test` cần Postgres đang chạy (`npm run db:up`). Sau đó chạy skill `code-review`.
 
 Commit theo Conventional Commits, tiêu đề tiếng Anh, thể mệnh lệnh, chữ thường, không dấu chấm cuối, tối đa 72 ký tự:
 
