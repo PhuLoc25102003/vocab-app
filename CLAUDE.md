@@ -1,65 +1,85 @@
 # vocab-app
 
-Web ôn từ vựng kiểu flashcard cho học sinh. Monorepo npm workspaces + Turborepo. Chỉ dùng npm.
+Web ôn từ vựng bằng flashcard và nhiều chế độ luyện tập cho học sinh Việt Nam.
+Monorepo npm workspaces + Turborepo gồm Next.js 16, NestJS 11 + Fastify, Prisma 7 và PostgreSQL.
 
-## Cấu trúc
+## Lệnh thường dùng
 
-```text
-apps/web          Next.js (App Router), Tailwind v4, cổng 3000
-  src/app         Route groups: (marketing), (auth), (app)
-  src/features    auth, sets, import, study, stats
-  src/components  ui (thành phần cơ bản), common (dùng chung)
-  src/lib         http.ts, query-client.ts, speech.ts
-apps/api          NestJS + Fastify, prefix /api/v1, cổng 4000
-  prisma          schema.prisma, migrations
-  src/config      Kiểm tra env bằng Zod khi khởi động
-  src/common      guards, decorators, pipes, filters, interceptors, base
-  src/infrastructure  prisma, storage
-  src/modules     auth, users, sets, cards, import, study, progress, health
-  src/generated   Prisma client sinh tự động, không sửa, không commit
-packages/shared   @vocab/shared: Zod schema và type dùng chung
-packages/eslint-config  Cấu hình ESLint dùng chung
-```
-
-## Lệnh
+Chỉ dùng npm. Chạy ở gốc repo, cần Node 20.19 trở lên.
 
 ```bash
-npm run db:up       # Bật Postgres bằng Docker
-npm run dev         # Chạy web, api và shared ở chế độ watch
+npm run dev          # web :3000, api :4000, shared watch
 npm run build
-npm run typecheck
+npm test             # chưa có package nào khai báo test
 npm run lint
+npm run typecheck
 npm run format
-npm run db:migrate -- --name ten_migration
+
+npm run db:up        # docker compose up -d
+npm run db:down      # docker compose down
+npm run prisma:migrate -w @vocab/api -- --name ten_migration
+npm run prisma:generate -w @vocab/api
+npm run build -w @vocab/shared
+npm i <pkg> -w <workspace>
 ```
 
-## Quy tắc backend
+Nếu cổng 5432 đã bận, đặt `POSTGRES_PORT` trong `.env` ở gốc và sửa `DATABASE_URL` trong `apps/api/.env`.
 
-- Luồng bắt buộc: Controller → Service → Repository.
-  - Controller chỉ nhận request và trả response.
-  - Service chứa nghiệp vụ.
-  - Repository kế thừa `BaseRepository` và là nơi duy nhất gọi Prisma.
-- Mọi route mặc định cần đăng nhập. `AuthGuard` toàn cục từ chối mọi route không có `@Public()`.
-  Bước xác thực JWT chưa được làm, nên hiện chỉ route `@Public()` truy cập được.
-- Validate đầu vào bằng `ZodValidationPipe` với schema từ `@vocab/shared`.
-- Lỗi luôn có dạng `{ error: { code, message, details, requestId } }`, do `AllExceptionsFilter` xử lý.
-  Khi ném `HttpException`, truyền `{ code, message, details }` để có mã lỗi cụ thể.
-- Env mới phải được khai báo trong `apps/api/src/config/env.ts` và `.env.example`.
+## Bản đồ thư mục
 
-## Quy tắc frontend
+```text
+apps/web/src
+  app/                 Routing, layout: (marketing), (auth), (app)
+  features/<tên>/      api.ts, hooks/, components/, store: auth, sets, import, study, stats
+  components/ui/       Thành phần cơ bản
+  components/common/   Thành phần dùng chung
+  lib/                 http.ts, query-client.ts, speech.ts
+apps/api
+  prisma/              schema.prisma, migrations
+  src/config/          Kiểm tra env bằng Zod
+  src/common/          guards, decorators, pipes, filters, interceptors, base
+  src/infrastructure/  prisma, storage
+  src/modules/         auth, users, sets, cards, import, study, progress, health
+  src/generated/       Prisma Client sinh tự động, không sửa, không commit
+packages/shared/src    Zod schema, type, mã lỗi, logic học dùng chung
+packages/eslint-config ESLint dùng chung
+docs/                  Tài liệu kỹ thuật và ADR
+.claude/skills/        Quy trình làm việc của dự án
+```
 
-- Chỉ dùng design token trong `apps/web/src/app/globals.css`.
-- Cấm mã hex và class màu mặc định của Tailwind (như `bg-blue-500`, `text-white`) trong `.tsx`.
-  Dùng class theo vai trò: `bg-surface`, `text-text-muted`, `bg-primary`, `text-primary-fg`...
-- Dark mode bằng class `.dark` trên `<html>`.
-- Font: `font-sans` (Be Vietnam Pro) cho toàn app, `font-card` (Lexend) cho chữ trên flashcard.
-- Chuyển động dùng `duration-fast`, `duration-base`, `duration-flip`. Các token này về 0 khi người
-  dùng bật `prefers-reduced-motion`.
+Dự án mới có khung. Trước khi dùng một thành phần được nhắc trong docs, xem mục Hiện trạng ở `docs/01-code-structure.md`.
 
-## Quy tắc chung
+## Quy tắc bắt buộc
 
-- Schema Zod và type dùng chung đặt ở `packages/shared`, không khai báo lại trong app.
-  Sau khi sửa, `@vocab/shared` phải được build lại (`npm run dev` tự làm việc này).
-- TypeScript strict, không dùng `any` nếu tránh được.
-- Commit theo Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`.
-- Không commit `.env`. Biến mới phải được thêm vào `.env.example` tương ứng.
+1. Backend đi theo Controller → Service → Repository. Chỉ repository được gọi Prisma, service không dùng `req` hay `res`.
+2. Zod schema và type dùng chung đặt ở `@vocab/shared`, không khai báo lại trong app. Sửa xong phải build lại shared.
+3. Input API đi qua `ZodValidationPipe` với schema từ shared. Form dùng lại schema đó qua `zodResolver`.
+4. Mọi route cần đăng nhập, trừ route có `@Public()`. Không nới lỏng `AuthGuard` để làm cho nhanh.
+5. Kiểm tra vai trò bằng `@Roles` và quyền sở hữu bằng `@CheckOwnership` cùng guard. Không viết lại `if (ownerId !== userId)` trong service.
+6. Lỗi nghiệp vụ dùng `AppError` với mã trong `packages/shared/src/errors.ts`. Lỗi trả về dạng `{ error: { code, message, details, requestId } }`.
+7. Danh sách nhận `page`, `limit`, `sort`, trả `{ data, meta }`, `limit` tối đa 100.
+8. Frontend gọi API qua `features/*/api.ts` → `lib/http.ts`. Component không gọi `fetch`, `app/` không chứa logic.
+9. Chỉ dùng design token trong `docs/05-ui-tokens.md`. Cấm mã hex và class màu mặc định của Tailwind trong `.tsx`.
+10. Màn hình có dữ liệu phải đủ 4 trạng thái: loading, empty, error, success.
+11. UI chạy đúng ở light, dark, 360 px, dùng được bằng bàn phím, vùng bấm tối thiểu 44 px, tôn trọng `prefers-reduced-motion`.
+12. TypeScript strict, không dùng `any`. Dùng `unknown` rồi thu hẹp kiểu.
+13. Thay đổi database theo kiểu "thêm". Đổi tên hoặc xoá cột chia hai lần deploy.
+14. Không commit `.env`. Biến mới phải có trong `.env.example`, biến của API phải có trong `apps/api/src/config/env.ts`.
+15. Commit theo Conventional Commits. Đổi API, database hoặc token thì cập nhật `docs/` cùng commit.
+
+**Lưu ý:** `docs/05-ui-tokens.md` đã có bộ token mới nhưng `globals.css` chưa được cập nhật. Làm mục "Áp dụng vào code" trong tài liệu đó trước khi xây giao diện thật.
+
+## Khi làm việc gì
+
+| Khi làm                            | Đọc                                             | Dùng skill     |
+| ---------------------------------- | ----------------------------------------------- | -------------- |
+| Tính năng trọn vẹn FE + BE         | `docs/00-overview.md`, `01`, `03`, `04`         | `new-feature`  |
+| Thêm hoặc sửa endpoint             | `docs/03-api.md`, `docs/04-security.md`         | `api-endpoint` |
+| Thêm chế độ học                    | `docs/00-overview.md`, `docs/05-ui-tokens.md`   | `study-mode`   |
+| Component, trang, form, style      | `docs/05-ui-tokens.md`                          | `ui-component` |
+| Đổi Prisma schema                  | `docs/02-database.md`                           | `db-migration` |
+| Auth, phân quyền, dữ liệu nhạy cảm | `docs/04-security.md`                           | `api-endpoint` |
+| Đặt tên, test, Git, CI, env        | `docs/06-conventions.md`                        | Không có       |
+| Sắp xếp thư mục, tái sử dụng code  | `docs/01-code-structure.md`                     | Không có       |
+| Quyết định kiến trúc mới           | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
+| Trước khi commit hoặc mở PR        | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |

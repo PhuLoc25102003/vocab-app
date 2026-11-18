@@ -1,0 +1,97 @@
+# Bảo mật và phân quyền
+
+Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
+
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Phần JWT, rate limit, `RolesGuard` và `OwnershipGuard` chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+
+Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
+
+## JWT: thiết kế token
+
+|              | Access token                                              | Refresh token                                                     |
+| ------------ | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| Thời hạn     | 15 phút                                                   | 30 ngày                                                           |
+| Nơi lưu (FE) | Biến trong bộ nhớ (Zustand), không lưu localStorage       | Cookie `httpOnly`, `Secure`, `SameSite=None`, `Path=/api/v1/auth` |
+| Gửi đi       | Header `Authorization: Bearer <token>`                    | Trình duyệt tự gửi khi gọi `/auth/refresh`                        |
+| Nội dung     | `sub` (userId), `role`, `tv` (tokenVersion), `iat`, `exp` | `sub`, `sid` (id phiên), `fam` (familyId)                         |
+| Ký           | `JWT_ACCESS_SECRET` (HS256, ≥ 32 byte ngẫu nhiên)         | `JWT_REFRESH_SECRET` khác hoàn toàn                               |
+| Lưu DB       | Không                                                     | Chỉ lưu hash SHA-256 trong `RefreshSession`                       |
+
+**Vì FE (Vercel) và BE (Render) khác domain**, cookie là cookie bên thứ ba và có thể bị Safari chặn. Cách xử lý, chọn một:
+
+1. **Khuyến nghị:** dùng domain riêng, FE ở `app.tenmien.vn`, BE ở `api.tenmien.vn`; cookie đặt `Domain=.tenmien.vn`, `SameSite=Lax`.
+2. Chưa có domain: cấu hình `rewrites` trong `next.config` để `/api/*` của Vercel chuyển tiếp sang backend, trình duyệt chỉ thấy một domain.
+
+## Luồng refresh và phát hiện đánh cắp token
+
+1. Access token hết hạn → API trả 401 `TOKEN_EXPIRED`.
+2. `lib/http.ts` gọi `/auth/refresh` **một lần duy nhất** (các request khác chờ chung một Promise), rồi gửi lại request cũ.
+3. Server tìm `RefreshSession` theo hash: còn hạn và chưa thu hồi → thu hồi bản cũ, tạo bản mới cùng `familyId`, trả cặp token mới.
+4. Token đã bị thu hồi mà vẫn được dùng lại → có người đã lấy cắp: thu hồi cả family, bắt đăng nhập lại.
+5. Refresh thất bại → xoá state, chuyển về `/login?next=<trang cũ>`.
+
+## Phân quyền: RBAC + quyền sở hữu
+
+Hai lớp kiểm tra, đều là guard dùng chung, không viết lại trong service:
+
+- **Vai trò (RBAC):** `@Roles('TEACHER', 'ADMIN')` + `RolesGuard` — ai được gọi loại endpoint này.
+- **Sở hữu (resource-based):** `@CheckOwnership('set')` + `OwnershipGuard` — bộ từ này có phải của bạn không. ADMIN được bỏ qua.
+
+| Hành động           | Khách | STUDENT      | TEACHER      | ADMIN |
+| ------------------- | ----- | ------------ | ------------ | ----- |
+| Xem bộ từ PUBLIC    | Có    | Có           | Có           | Có    |
+| Xem bộ từ PRIVATE   | Không | Chỉ của mình | Chỉ của mình | Có    |
+| Tạo / import bộ từ  | Không | Có           | Có           | Có    |
+| Sửa / xoá bộ từ     | Không | Chỉ của mình | Chỉ của mình | Có    |
+| Lưu tiến độ học     | Không | Có           | Có           | Có    |
+| Tạo lớp, giao bài   | Không | Không        | Có           | Có    |
+| Xem kết quả của lớp | Không | Không        | Lớp của mình | Có    |
+| Quản lý người dùng  | Không | Không        | Không        | Có    |
+
+Mặc định **mọi route đều cần đăng nhập**: `AuthGuard` đặt global, route công khai phải ghi rõ `@Public()`. Quên gắn decorator thì route bị khoá, không bị lộ.
+
+```ts
+@Controller('sets')
+export class SetsController {
+  constructor(private readonly sets: SetsService) {}
+
+  @Public()
+  @Get('public')
+  findPublic(@Query(new ZodValidationPipe(paginationSchema)) q: Pagination) {
+    return this.sets.findPublic(q);
+  }
+
+  @Patch(':id')
+  @CheckOwnership('set')
+  update(@Param('id') id: string, @Body(new ZodValidationPipe(updateSetSchema)) dto: UpdateSetDto) {
+    return this.sets.update(id, dto);
+  }
+}
+```
+
+Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), nhưng **backend luôn là nơi quyết định**; ẩn nút chỉ để giao diện gọn.
+
+## Checklist bảo mật
+
+- [ ] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
+- [ ] Rate limit: `/auth/login` 5 lần/phút/IP+email, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/user (`@nestjs/throttler`).
+- [ ] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại.
+- [ ] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
+- [ ] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
+- [ ] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.
+- [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`).
+- [ ] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp`.
+- [ ] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy.
+- [ ] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
+- [ ] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.
+- [ ] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
+- [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy.
+- [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino).
+- [ ] `npm audit` và Dependabot bật trong CI.
+- [ ] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
+
+## Đã điều chỉnh so với spec gốc
+
+- `JwtAuthGuard` đổi thành `AuthGuard`, đúng tên trong `common/guards/auth.guard.ts`. Module auth sẽ bổ sung xác thực JWT vào guard này.
+- Thêm mục hiện trạng. Các ô trong checklist vẫn để trống để kiểm tra theo từng tính năng.
+- "Xoá tài khoản xoá hẳn dữ liệu" phụ thuộc quyết định về `onDelete` trong `02-database.md`.
