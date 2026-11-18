@@ -1,16 +1,18 @@
 import type { Question, SessionResult } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface StudyResultProps {
   result: SessionResult;
   questions: Question[];
   exitHref: Route;
+  note?: ReactNode;
   onRestart: () => void;
 }
 
-export function StudyResult({ result, questions, exitHref, onRestart }: StudyResultProps) {
+export function StudyResult({ result, questions, exitHref, note, onRestart }: StudyResultProps) {
   const { correct, total } = result.session;
   const wrongIds = new Set(result.wrongCardIds);
   const wrong = questions.filter(({ cardId }) => wrongIds.has(cardId));
@@ -43,6 +45,8 @@ export function StudyResult({ result, questions, exitHref, onRestart }: StudyRes
           </ul>
         </div>
       ) : null}
+
+      {note}
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={onRestart}>Học lại</Button>

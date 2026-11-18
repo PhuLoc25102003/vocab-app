@@ -25,6 +25,7 @@ interface StudyShellProps {
   setId: string;
   mode: StudyMode;
   exitHref: Route;
+  resultNote?: ReactNode;
 }
 
 function StudyFrame({
@@ -106,7 +107,7 @@ function StartFailure({
   );
 }
 
-export function StudyShell({ backend, setId, mode, exitHref }: StudyShellProps) {
+export function StudyShell({ backend, setId, mode, exitHref, resultNote }: StudyShellProps) {
   const started = useQuery({
     queryKey: ['study', 'session', setId, mode],
     queryFn: () => backend.start(setId, mode),
@@ -192,6 +193,7 @@ export function StudyShell({ backend, setId, mode, exitHref }: StudyShellProps) 
         result={result}
         questions={questions}
         exitHref={exitHref}
+        note={resultNote}
         onRestart={() => void started.refetch()}
       />,
     );

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
+import { Button } from '@/components/ui/button';
 import { useSet } from '../hooks/use-set';
 import { CardList } from './card-list';
 import { SetDetailSkeleton } from './set-detail-skeleton';
@@ -51,7 +52,12 @@ export function SetDetail({ id, renderActions, renderBack }: SetDetailProps) {
         ) : null}
       </SetMeta>
       {cards.length > 0 ? (
-        <CardList cards={cards} termLang={termLang} defLang={defLang} />
+        <>
+          <Button asChild className="self-start">
+            <Link href={`/sets/${id}/study/flashcard` as Route}>Bắt đầu học</Link>
+          </Button>
+          <CardList cards={cards} termLang={termLang} defLang={defLang} />
+        </>
       ) : (
         <EmptyState title="Bộ từ này chưa có thẻ" description="Thẻ được thêm sẽ hiện ở đây." />
       )}

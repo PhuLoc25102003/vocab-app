@@ -23,6 +23,7 @@ export async function PublicSet({ id }: { id: string }) {
         description={set.description ?? undefined}
         actions={
           <SessionLink
+            variant="secondary"
             guest={{ href: loginHref, label: 'Đăng nhập để sao chép' }}
             member={{ href: detailPath as Route, label: 'Mở trong tài khoản' }}
           />
@@ -30,7 +31,15 @@ export async function PublicSet({ id }: { id: string }) {
       />
       <SetMeta set={set} />
       {set.cards.length > 0 ? (
-        <CardList cards={set.cards} termLang={set.termLang} defLang={set.defLang} />
+        <>
+          <div>
+            <SessionLink
+              guest={{ href: `/public/sets/${id}/study/flashcard` as Route, label: 'Học thử' }}
+              member={{ href: `${detailPath}/study/flashcard` as Route, label: 'Bắt đầu học' }}
+            />
+          </div>
+          <CardList cards={set.cards} termLang={set.termLang} defLang={set.defLang} />
+        </>
       ) : (
         <EmptyState title="Bộ từ này chưa có thẻ" description="Hãy quay lại sau nhé." />
       )}
