@@ -4,15 +4,36 @@ import {
   type ThrottlerLimitDetail,
   type ThrottlerModuleOptions,
 } from '@nestjs/throttler';
-import { ERROR_CODES } from '@vocab/shared';
+import { emailSchema, ERROR_CODES } from '@vocab/shared';
 import type { FastifyReply } from 'fastify';
 import { AppError } from '../../common/errors/app-error';
 
-const ONE_MINUTE_MS = 60_000;
-const REGISTER_LIMIT_PER_IP = 3;
+export const ONE_MINUTE_MS = 60_000;
+export const REGISTER_LIMIT_PER_IP = 3;
+const LOGIN_LIMIT_PER_IP = 20;
+const LOGIN_LIMIT_PER_ACCOUNT = 5;
 
+/** Guard chạy trước pipe nên body lúc này chưa được validate. */
+function ipAndEmail(request: Record<string, unknown>): string {
+  const body = request.body as { email?: unknown } | null | undefined;
+  const email = emailSchema.safeParse(body?.email);
+  return `${String(request.ip)}:${email.success ? email.data : ''}`;
+}
+
+/**
+ * `account` chặn dò mật khẩu của một email. `ip` giới hạn tổng số lần thử,
+ * vì mỗi lần đăng nhập đều tốn một lượt argon2 dù email có tồn tại hay không.
+ */
 export const AUTH_THROTTLE_OPTIONS: ThrottlerModuleOptions = {
-  throttlers: [{ name: 'ip', ttl: ONE_MINUTE_MS, limit: REGISTER_LIMIT_PER_IP }],
+  throttlers: [
+    { name: 'ip', ttl: ONE_MINUTE_MS, limit: LOGIN_LIMIT_PER_IP },
+    {
+      name: 'account',
+      ttl: ONE_MINUTE_MS,
+      limit: LOGIN_LIMIT_PER_ACCOUNT,
+      getTracker: ipAndEmail,
+    },
+  ],
 };
 
 @Injectable()

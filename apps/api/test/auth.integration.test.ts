@@ -7,6 +7,7 @@ import { createTestApp } from './support/app';
 import { resetDatabase } from './support/database';
 
 const account = { email: 'an@example.com', password: 'mat-khau-dai', displayName: 'An' };
+const credentials = { email: account.email, password: account.password };
 
 describe('auth', () => {
   let app: NestFastifyApplication;
@@ -95,6 +96,75 @@ describe('auth', () => {
       expect(response.body.error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
       expect(Number(response.headers['retry-after'])).toBeGreaterThan(0);
       await post('register', body, nextIp()).expect(202);
+    });
+  });
+
+  describe('POST /auth/login', () => {
+    beforeEach(async () => {
+      await post('register', account, nextIp()).expect(202);
+    });
+
+    it('trả thông tin người dùng, không có hash mật khẩu', async () => {
+      const response = await post('login', { ...credentials, email: 'AN@example.com' }).expect(200);
+
+      const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
+      expect(response.body).toEqual({
+        data: { user: { id: user.id, email: account.email, displayName: 'An', role: 'STUDENT' } },
+      });
+    });
+
+    it('trả cùng một lỗi 401 cho mọi trường hợp đăng nhập sai', async () => {
+      await prisma.user.create({
+        data: { email: 'google@example.com', displayName: 'G', googleId: 'google-1' },
+      });
+      await post('register', { ...account, email: 'xoa@example.com' }, nextIp()).expect(202);
+      await prisma.user.update({
+        where: { email: 'xoa@example.com' },
+        data: { deletedAt: new Date() },
+      });
+
+      const responses = await Promise.all(
+        [
+          { ...credentials, password: 'sai-mat-khau' },
+          { ...credentials, email: 'chua-co@example.com' },
+          { ...credentials, email: 'google@example.com' },
+          { ...credentials, email: 'xoa@example.com' },
+        ].map((body) => post('login', body).expect(401)),
+      );
+
+      for (const { body } of responses) {
+        expect(body.error).toEqual({
+          code: ERROR_CODES.INVALID_CREDENTIALS,
+          message: 'Email hoặc mật khẩu không đúng',
+          details: null,
+          requestId: expect.any(String),
+        });
+      }
+    });
+
+    it('trả 400 khi thiếu mật khẩu', async () => {
+      await post('login', { email: account.email }).expect(400);
+    });
+
+    it('khoá theo IP + email từ lần thứ 6, email và IP khác vẫn dùng được', async () => {
+      const wrong = { ...credentials, password: 'sai-mat-khau' };
+      for (let attempt = 1; attempt <= 5; attempt += 1) {
+        await post('login', wrong).expect(401);
+      }
+
+      const blocked = await post('login', { ...credentials, email: 'AN@EXAMPLE.COM' }).expect(429);
+
+      expect(blocked.body.error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
+      await post('login', { ...wrong, email: 'khac@example.com' }).expect(401);
+      await post('login', credentials, nextIp()).expect(200);
+    });
+
+    it('giới hạn tổng số lần thử của một IP dù đổi email', async () => {
+      for (let attempt = 1; attempt <= 20; attempt += 1) {
+        await post('login', { ...credentials, email: `u${attempt}@example.com` }).expect(401);
+      }
+
+      await post('login', credentials).expect(429);
     });
   });
 });

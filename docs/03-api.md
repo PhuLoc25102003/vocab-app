@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -62,13 +62,15 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Tài liệu API sinh tự động bằng `@nestjs/swagger` tại `/api/docs`, bản JSON tại `/api/docs-json`. Hai đường dẫn này nằm ngoài `/api/v1` và tắt khi `NODE_ENV=production`.
 - Khi cần đổi hợp đồng API, tạo `/api/v2`, không sửa ngầm `/v1`.
 
-## Đăng ký
+## Đăng ký và đăng nhập
 
 - `POST /auth/register` nhận `{ email, password, displayName }`, luôn trả 202 `{ "data": { "status": "accepted" } }` khi dữ liệu hợp lệ, kể cả khi email đã có. Tài khoản cũ không bị đổi. Giao diện chuyển người dùng sang trang đăng nhập.
+- `POST /auth/login` nhận `{ email, password }`, trả 200 `{ "data": { "user": { id, email, displayName, role } } }`. Mọi trường hợp sai trả 401 `INVALID_CREDENTIALS` với cùng thông báo.
 - Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
 
 ## Khác biệt đang có trong code
 
+- `POST /auth/login` chưa trả access token và chưa đặt cookie refresh. Phần này thuộc việc 1.2.
 - `GET /health` trả trực tiếp `{ "status": "ok", "db": "up" }`, không bọc `data`. Đây là ngoại lệ có chủ đích và `healthResponseSchema` đang kiểm tra đúng dạng này.
 - Khi database lỗi, `/health` trả 503 với mã `DB_UNAVAILABLE`.
 - Chưa có interceptor bọc response. Endpoint nghiệp vụ tự trả `{ data }` hoặc `{ data, meta }` qua helper `ok()` và `paginated()` trong `common/base/pagination.ts` (mẫu trong skill `api-endpoint`).

@@ -6,9 +6,9 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Làm API đăng ký và đăng nhập (việc 1.1).
-2. Làm JWT, refresh token và đăng xuất (việc 1.2).
-3. Thêm `@CurrentUser`, `@Roles` và guard kiểm tra quyền (việc 1.3).
+1. Làm JWT, refresh token và đăng xuất (việc 1.2).
+2. Thêm `@CurrentUser`, `@Roles` và guard kiểm tra quyền (việc 1.3).
+3. Làm API tài khoản (việc 1.4).
 
 ## Tổng quan
 
@@ -17,11 +17,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      0 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      1 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **13** | **71** | **18%**      |
+| **Toàn dự án**          |                                            | **14** | **71** | **20%**      |
 
 ## Cách cập nhật
 
@@ -62,7 +62,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** người dùng đăng nhập được, giữ phiên qua refresh token, route được bảo vệ đúng theo vai trò và quyền sở hữu.
 
-- [ ] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung.
+- [x] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung.
 - [ ] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard`.
 - [ ] **1.3** `@CurrentUser`, `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard`.
 - [ ] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản.
@@ -95,7 +95,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** merge vào `main` tự deploy, đăng nhập và học được trên URL production.
 
 - [ ] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy.
-- [ ] **1.19** Deploy API lên Render, cấu hình env và health check.
+- [ ] **1.19** Deploy API lên Render, cấu hình env (gồm `TRUSTED_PROXIES`) và health check.
 - [ ] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
 
 ### 1E. Import
