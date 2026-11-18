@@ -18,6 +18,22 @@ description: Dùng khi tạo hoặc sửa component, trang, form, trạng thái 
 
 Tên file kebab-case, tên component PascalCase. Chỉ thêm `'use client'` khi cần state, effect hoặc API trình duyệt. Component không gọi `fetch`, dữ liệu đi qua hook của feature.
 
+## Thành phần có sẵn
+
+Dùng lại trước khi viết mới:
+
+| Cần                    | Dùng                                                       |
+| ---------------------- | ---------------------------------------------------------- |
+| Gộp class              | `cn()` trong `@/lib/utils`                                 |
+| Nút, liên kết dạng nút | `Button`: `variant`, `size="icon"`, `loading`, `asChild`   |
+| Giữ chỗ khi tải        | `LoadingState` bọc `Skeleton`                              |
+| Tiêu đề trang          | `PageHeader`                                               |
+| Không có dữ liệu, lỗi  | `EmptyState`, `ErrorState`                                 |
+| Thông báo ngắn         | `toast()` của `sonner`, `Toaster` đã gắn trong `Providers` |
+| Đọc hoặc đổi giao diện | `useTheme()` trong `@/lib/use-theme`                       |
+
+Thêm component shadcn bằng `npx shadcn@latest add <tên>` trong `apps/web`, rồi đổi toàn bộ class sang token của dự án. Không để lệnh này sửa `globals.css`.
+
 ## Quy tắc thiết kế
 
 - Màu: chỉ class từ token như `bg-surface`, `text-text-muted`, `border-border-strong`.
