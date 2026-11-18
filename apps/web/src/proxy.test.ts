@@ -26,6 +26,24 @@ describe('proxy', () => {
     );
   });
 
+  it('đưa người có phiên tới trang trong next', () => {
+    expect(proxy(requestTo('/login?next=%2Fsets%2Fabc', true)).headers.get('location')).toBe(
+      'http://localhost:3000/sets/abc',
+    );
+  });
+
+  it('không lặp lại khi next là trang đăng nhập', () => {
+    expect(proxy(requestTo('/login?next=%2Flogin', true)).headers.get('location')).toBe(
+      'http://localhost:3000/dashboard',
+    );
+  });
+
+  it('không theo next trỏ ra trang ngoài', () => {
+    expect(proxy(requestTo('/login?next=%2F%2Fevil.example', true)).headers.get('location')).toBe(
+      'http://localhost:3000/dashboard',
+    );
+  });
+
   it('cho khách vào trang đăng ký', () => {
     expect(proxy(requestTo('/register')).headers.get('location')).toBeNull();
   });

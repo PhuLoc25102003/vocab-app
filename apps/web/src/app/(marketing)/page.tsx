@@ -1,4 +1,5 @@
 import { HealthStatus } from '@/components/common/health-status';
+import { BRAND_NAME } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,7 @@ export default function HomePage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-12">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-h1">Vocab App</h1>
+          <h1 className="text-h1">{BRAND_NAME}</h1>
           <p className="text-text-muted">Trang tạm để kiểm tra design token và kết nối API.</p>
         </div>
         <div className="flex items-center gap-2">

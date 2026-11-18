@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     13 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     14 |     36 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **26** | **71** | **37%**      |
+| **Toàn dự án**          |                                            | **27** | **72** | **38%**      |
 
 ## Cách cập nhật
 
@@ -78,6 +78,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.10** Web: dashboard và danh sách bộ từ (#57).
 - [x] **1.11** Web: tạo, sửa bộ từ và soạn thẻ (#60, #61, #63).
 - [x] **1.12** Web: chi tiết bộ từ, trang công khai cho khách, cache bằng `use cache` (#65, #67).
+- [x] **1.36** Web: trang Khám phá có tìm kiếm, nút quay lại, tên Nhớ Từ và logo.
 
 ### 1C. Học bằng Flashcard
 

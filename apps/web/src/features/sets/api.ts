@@ -1,8 +1,10 @@
 import {
+  publicSetListSchema,
   setDetailResponseSchema,
   setListSchema,
   setResponseSchema,
   type CreateSetInput,
+  type PublicSetList,
   type ReplaceCardsDto,
   type SetDetail,
   type SetList,
@@ -16,9 +18,25 @@ export interface SetListParams {
   limit: number;
 }
 
+export interface PublicSetListParams extends SetListParams {
+  q: string;
+}
+
 export async function listMySets({ page, limit }: SetListParams): Promise<SetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   return setListSchema.parse(await http(`/sets?${query}`));
+}
+
+export async function listPublicSets({
+  page,
+  limit,
+  q,
+}: PublicSetListParams): Promise<PublicSetList> {
+  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (q) {
+    query.set('q', q);
+  }
+  return publicSetListSchema.parse(await http(`/sets/public?${query}`, { skipAuth: true }));
 }
 
 export async function getSet(id: string, options?: HttpOptions): Promise<SetDetail> {

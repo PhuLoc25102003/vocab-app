@@ -13,7 +13,7 @@ import { SetRows, SetRowsLoading } from './set-rows';
 
 export const SETS_PAGE_SIZE = 20;
 
-function toPage(value: string | null): number {
+export function toPage(value: string | null): number {
   const page = paginationSchema.shape.page.safeParse(value);
   return page.success ? page.data : 1;
 }

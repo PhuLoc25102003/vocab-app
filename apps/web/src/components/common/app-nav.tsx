@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, CalendarCheck, LayoutDashboard, type LucideIcon } from 'lucide-react';
+import { BookOpen, CalendarCheck, Compass, LayoutDashboard, type LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 const NAV_ITEMS: { href: Route; label: string; icon: LucideIcon }[] = [
   { href: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
   { href: '/sets', label: 'Bộ từ', icon: BookOpen },
+  { href: '/explore', label: 'Khám phá', icon: Compass },
   { href: '/review', label: 'Ôn hôm nay', icon: CalendarCheck },
 ];
 
@@ -31,7 +32,7 @@ function NavLinks({ pathname }: { pathname: string }) {
       aria-label="Điều hướng chính"
       className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:pb-0"
     >
-      <ul className="grid grid-cols-3 md:flex md:gap-2">
+      <ul className="grid grid-cols-4 md:flex md:gap-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const current = isCurrent(pathname, href);
           return (

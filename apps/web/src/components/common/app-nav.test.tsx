@@ -12,6 +12,7 @@ describe('AppNav', () => {
 
     expect(screen.getByRole('link', { name: 'Tổng quan' })).toHaveAttribute('href', '/dashboard');
     expect(screen.getByRole('link', { name: 'Bộ từ' })).toHaveAttribute('href', '/sets');
+    expect(screen.getByRole('link', { name: 'Khám phá' })).toHaveAttribute('href', '/explore');
     expect(screen.getByRole('link', { name: 'Ôn hôm nay' })).toHaveAttribute('href', '/review');
   });
 

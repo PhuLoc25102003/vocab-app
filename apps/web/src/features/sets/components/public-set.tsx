@@ -1,9 +1,8 @@
 import type { Route } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
-import { Button } from '@/components/ui/button';
+import { SessionLink } from '@/components/common/session-link';
 import { getPublicSet } from '../public-set';
 import { CardList } from './card-list';
 import { SetMeta } from './set-meta';
@@ -14,7 +13,8 @@ export async function PublicSet({ id }: { id: string }) {
     notFound();
   }
 
-  const loginHref = `/login?next=${encodeURIComponent(`/sets/${id}`)}` as Route;
+  const detailPath = `/sets/${id}`;
+  const loginHref = `/login?next=${encodeURIComponent(detailPath)}` as Route;
 
   return (
     <>
@@ -22,9 +22,10 @@ export async function PublicSet({ id }: { id: string }) {
         title={set.title}
         description={set.description ?? undefined}
         actions={
-          <Button asChild>
-            <Link href={loginHref}>Đăng nhập để sao chép</Link>
-          </Button>
+          <SessionLink
+            guest={{ href: loginHref, label: 'Đăng nhập để sao chép' }}
+            member={{ href: detailPath as Route, label: 'Mở trong tài khoản' }}
+          />
         }
       />
       <SetMeta set={set} />

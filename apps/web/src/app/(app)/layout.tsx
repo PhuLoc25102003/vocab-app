@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { Suspense, type ReactNode } from 'react';
 import { AppNav, AppNavFallback } from '@/components/common/app-nav';
+import { Logo } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
 import { LogoutButton } from '@/features/auth/components/logout-button';
@@ -16,9 +16,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </a>
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
-          <Link href="/dashboard" className="flex min-h-11 items-center font-card text-h3">
-            Vocab
-          </Link>
+          <Logo href="/dashboard" />
           <Suspense fallback={<AppNavFallback />}>
             <AppNav />
           </Suspense>

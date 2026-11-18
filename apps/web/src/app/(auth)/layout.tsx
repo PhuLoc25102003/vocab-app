@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Logo } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -7,9 +7,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center justify-between gap-6 px-4 md:px-6 lg:px-8">
-          <Link href="/" className="flex min-h-11 items-center font-card text-h3">
-            Vocab
-          </Link>
+          <Logo href="/" />
           <ThemeToggle />
         </div>
       </header>
