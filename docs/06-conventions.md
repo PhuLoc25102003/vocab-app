@@ -101,7 +101,7 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 
 - Render free ngủ khi không có truy cập: FE hiển thị skeleton và gọi `/health` ngay khi mở trang để đánh thức sớm.
 - Gửi đáp án theo lô (10 câu hoặc khi kết thúc) thay vì mỗi câu một request.
-- Trang bộ từ công khai dùng `use cache` + `cacheLife` của Next.js, làm mới sau 5 phút.
+- Trang bộ từ công khai dùng `use cache` + `cacheLife` của Next.js, làm mới sau 5 phút. Bộ từ vừa chuyển riêng tư hoặc bị xoá có thể còn hiện trên trang này tối đa 5 phút.
 - Tránh N+1: dùng `include` / `select` của Prisma, bật log query chậm (> 200 ms).
 - Endpoint `/health` kiểm tra kết nối DB; theo dõi bằng UptimeRobot hoặc Sentry Uptime.
 - Mỗi request có `requestId`, ghi trong log và trả về trong lỗi để tra cứu.

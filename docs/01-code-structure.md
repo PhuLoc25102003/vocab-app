@@ -32,6 +32,7 @@ src/
 ├── app/                          # chỉ routing + layout, rất mỏng
 │   ├── (marketing)/page.tsx      # landing
 │   ├── (auth)/login, register
+│   ├── (public)/public/sets/[id]/page.tsx  # trang công khai cho khách
 │   ├── (app)/dashboard
 │   ├── (app)/sets/[id]/page.tsx
 │   ├── (app)/sets/[id]/study/[mode]/page.tsx
