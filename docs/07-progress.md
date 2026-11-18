@@ -65,7 +65,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.1** API đăng ký và đăng nhập email + mật khẩu: argon2id, rate limit, thông báo lỗi chung (#26, #27).
 - [x] **1.2** JWT access và refresh: xoay vòng token, phát hiện dùng lại, đăng xuất, đăng xuất mọi thiết bị, xác thực trong `AuthGuard` (#29, #30, #31, #32).
 - [x] **1.3** `@Roles`, `RolesGuard`, `@CheckOwnership`, `OwnershipGuard` (#34).
-- [x] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản.
+- [x] **1.4** API tài khoản: xem, sửa tên và mật khẩu, xoá tài khoản (#36, #37).
 - [ ] **1.5** Web: đăng ký, đăng nhập, auth store, tự refresh trong `lib/http.ts`, `proxy.ts`, component `Can`.
 - [ ] **1.6** Đăng nhập Google trên API và web.
 
