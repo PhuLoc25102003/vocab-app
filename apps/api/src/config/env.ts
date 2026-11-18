@@ -16,6 +16,8 @@ const envSchema = z.object({
   TRUSTED_PROXIES: z.string().default(''),
   REFRESH_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   REFRESH_COOKIE_DOMAIN: z.string().optional(),
+  /** Để trống thì tắt đăng nhập Google. */
+  GOOGLE_CLIENT_ID: z.string().trim().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -1,8 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { loginSchema, registerSchema } from '@vocab/shared';
-import type { LoginInput, RegisterInput } from '@vocab/shared';
+import { googleLoginSchema, loginSchema, registerSchema } from '@vocab/shared';
+import type { GoogleLoginInput, LoginInput, RegisterInput } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -50,6 +50,24 @@ export class AuthController {
     @Res({ passthrough: true }) reply: FastifyReply,
   ) {
     const result = await this.auth.login(dto, sessionClientOf(request));
+    this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
+    return result.body;
+  }
+
+  @Public()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @SkipThrottle({ account: true })
+  @ApiOperation({ summary: 'Đăng nhập bằng Google ID token' })
+  @ApiZodBody(googleLoginSchema)
+  async google(
+    @Body(new ZodValidationPipe(googleLoginSchema)) dto: GoogleLoginInput,
+    @Req() request: FastifyRequest,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    // Chặn trang lạ đăng nhập trình duyệt của nạn nhân vào tài khoản của kẻ tấn công.
+    this.refreshCookie.assertTrustedOrigin(request);
+    const result = await this.auth.loginWithGoogle(dto, sessionClientOf(request));
     this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
     return result.body;
   }

@@ -1,10 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type AuthUser, type LoginInput, type RegisterInput } from '@vocab/shared';
+import {
+  ERROR_CODES,
+  type AuthUser,
+  type GoogleLoginInput,
+  type LoginInput,
+  type RegisterInput,
+} from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
-import { UsersRepository } from '../users/users.repository';
+import { UsersRepository, type Account } from '../users/users.repository';
 import { AuthSessionService, type IssuedSession, type SessionClient } from './auth-session.service';
+import { GoogleIdentityService } from './google-identity.service';
 import { PasswordService } from './password.service';
+
+function toAuthUser({ id, email, displayName, role }: Account): AuthUser {
+  return { id, email, displayName, role };
+}
 
 function toSessionResult(user: AuthUser, session: IssuedSession) {
   return {
@@ -20,6 +31,7 @@ export class AuthService {
     private readonly users: UsersRepository,
     private readonly passwords: PasswordService,
     private readonly sessions: AuthSessionService,
+    private readonly google: GoogleIdentityService,
   ) {}
 
   /** Email đã có hay chưa đều hash và trả cùng kết quả, để không lộ email đã đăng ký. */
@@ -40,13 +52,28 @@ export class AuthService {
       );
     }
 
-    const user: AuthUser = {
-      id: account.id,
-      email: account.email,
-      displayName: account.displayName,
-      role: account.role,
-    };
-    return toSessionResult(user, await this.sessions.start(account, client));
+    return toSessionResult(toAuthUser(account), await this.sessions.start(account, client));
+  }
+
+  /**
+   * Không gộp vào tài khoản có sẵn cùng email: đăng ký bằng mật khẩu chưa xác minh email,
+   * nên người đặt mật khẩu có thể không phải chủ email.
+   */
+  async loginWithGoogle({ credential }: GoogleLoginInput, client: SessionClient) {
+    const identity = await this.google.verify(credential);
+    const account =
+      (await this.users.findByGoogleId(identity.googleId)) ??
+      (await this.users.createGoogleUserIfFree(identity)) ??
+      // Một request khác có thể vừa tạo chính tài khoản này.
+      (await this.users.findByGoogleId(identity.googleId));
+    if (!account) {
+      throw new AppError(
+        ERROR_CODES.GOOGLE_EMAIL_IN_USE,
+        'Email này đã có tài khoản. Hãy đăng nhập bằng email và mật khẩu.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    return toSessionResult(toAuthUser(account), await this.sessions.start(account, client));
   }
 
   async refresh(token: string | undefined, client: SessionClient) {
