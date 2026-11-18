@@ -25,7 +25,7 @@ Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, b
 - Hàm ≤ 40 dòng, file ≤ 300 dòng; vượt thì tách.
 - Không "số ma": đưa vào `packages/shared/src/constants.ts`.
 - Import theo alias (`@/features/sets`, `@vocab/shared`), không dùng `../../../`.
-- ESLint: `eslint-plugin-boundaries` chặn import sai lớp.
+- ESLint: `eslint-plugin-boundaries` chặn import sai lớp, cấu hình ở `packages/eslint-config/boundaries.mjs`. Thêm loại thư mục mới thì khai báo tại đây.
 - Prettier chạy tự động qua `lint-staged` + Husky trước mỗi commit.
 - Comment giải thích **vì sao**, không giải thích code làm gì.
 - Cài thư viện vào đúng workspace: `npm i <pkg> -w <workspace>`.
@@ -58,7 +58,11 @@ Cách chạy:
 
 ## CI/CD
 
-`.github/workflows/ci.yml` chạy job `Verify` trên mọi PR và push vào `develop`, `main`: `npm ci` → `prisma migrate deploy` trên Postgres service container → `lint` → `typecheck` → `test` → `build`. Các bước chạy tuần tự vì `typecheck` và `build` của API đều sinh lại Prisma Client. Integration test chạy trên database `vocab_test` trong cùng Postgres service.
+`.github/workflows/ci.yml` chạy job `Verify` trên mọi PR và push vào `develop`, `main`: `npm ci` → `npm audit --omit=dev --audit-level=high` → `prisma migrate deploy` trên Postgres service container → `lint` → `typecheck` → `test` → `build`. Các bước chạy tuần tự vì `typecheck` và `build` của API đều sinh lại Prisma Client. Integration test chạy trên database `vocab_test` trong cùng Postgres service.
+
+Audit chỉ chặn lỗ hổng từ mức cao trong dependency production. Công cụ phát triển không đi vào bản chạy thật, nên `@vocab/eslint-config` khai báo dependency ở `devDependencies`.
+
+Dependabot mở PR vào `develop` mỗi tuần cho npm và GitHub Actions. Bản major của TypeScript, ESLint, NestJS và `@types/node` được bỏ qua vì cần nâng có kế hoạch: `typescript-eslint` giới hạn TypeScript, một số plugin chưa hỗ trợ ESLint 10, NestJS 12 chỉ hỗ trợ ESM, `@types/node` đi theo Node 24.
 
 Đặt `Verify` làm required status check trong branch protection của `main` và `develop` để chặn merge khi CI đỏ.
 
@@ -112,9 +116,9 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 
 ## Hiện trạng công cụ
 
-| Có                                                                                                                                                                       | Chưa có                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions, Vitest, Testing Library, Supertest | Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, `constants.ts` |
+| Có                                                                                                                                                                                                                                   | Chưa có                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions, Vitest, Testing Library, Supertest, Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot | Playwright test, `constants.ts` |
 
 ## Lệnh Prisma
 

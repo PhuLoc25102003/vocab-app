@@ -87,7 +87,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [ ] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
 - [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy.
 - [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino).
-- [ ] `npm audit` và Dependabot bật trong CI.
+- [x] `npm audit` và Dependabot bật trong CI.
 - [ ] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
 
 ## Đã điều chỉnh so với spec gốc
