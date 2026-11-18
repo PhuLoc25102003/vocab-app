@@ -60,6 +60,11 @@ export const updateAccountSchema = z
   });
 export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;
 
+export const deleteAccountSchema = z.object({
+  password: existingPasswordSchema.optional(),
+});
+export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;
+
 export const authUserSchema = z.object({
   id: z.string(),
   email: z.string(),

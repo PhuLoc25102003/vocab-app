@@ -89,7 +89,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy.
 - [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino).
 - [x] `npm audit` và Dependabot bật trong CI.
-- [ ] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
+- [x] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
 
 ## Đã điều chỉnh so với spec gốc
 

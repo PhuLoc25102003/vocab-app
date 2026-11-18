@@ -19,7 +19,7 @@ describe('tài khoản', () => {
 
   const server = () => request(app.getHttpServer());
   const auth = (path: string) => server().post(`/api/v1/auth/${path}`).set('X-Forwarded-For', ip);
-  const me = (method: 'get' | 'patch', token = accessToken) =>
+  const me = (method: 'get' | 'patch' | 'delete', token = accessToken) =>
     server()[method]('/api/v1/users/me').set('Authorization', `Bearer ${token}`);
   const refreshCookie = (headers: Record<string, unknown>) => {
     const cookies = (headers['set-cookie'] as string[] | undefined) ?? [];
@@ -55,6 +55,7 @@ describe('tài khoản', () => {
   it('cần đăng nhập', async () => {
     await server().get('/api/v1/users/me').expect(401);
     await server().patch('/api/v1/users/me').send({ displayName: 'B' }).expect(401);
+    await server().delete('/api/v1/users/me').send({}).expect(401);
   });
 
   it('GET /users/me trả thông tin tài khoản, không có dữ liệu nhạy cảm', async () => {
@@ -133,6 +134,46 @@ describe('tài khoản', () => {
       const response = await me('patch').send({ displayName: 'Tên 6' }).expect(429);
 
       expect(response.body.error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
+    });
+  });
+
+  describe('DELETE /users/me', () => {
+    it('trả 422 và giữ tài khoản khi mật khẩu sai hoặc thiếu', async () => {
+      await me('delete').send({ password: 'sai-mat-khau' }).expect(422);
+      await me('delete').send({}).expect(422);
+
+      expect(await prisma.user.count()).toBe(1);
+    });
+
+    it('xoá hẳn tài khoản và dữ liệu, không đụng người dùng khác', async () => {
+      const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
+      const other = await prisma.user.create({
+        data: { email: 'b@example.com', displayName: 'B' },
+      });
+      const mine = await prisma.studySet.create({ data: { ownerId: user.id, title: 'Của tôi' } });
+      const theirs = await prisma.studySet.create({ data: { ownerId: other.id, title: 'Khác' } });
+      await prisma.studySession.create({
+        data: { userId: user.id, setId: theirs.id, mode: 'FLASHCARD' },
+      });
+
+      const response = await me('delete').send({ password: account.password }).expect(204);
+
+      expect(response.headers['set-cookie']?.[0]).toMatch(/Expires=Thu, 01 Jan 1970/i);
+      expect(await prisma.user.findUnique({ where: { id: user.id } })).toBeNull();
+      expect(await prisma.studySet.findUnique({ where: { id: mine.id } })).toBeNull();
+      expect(await prisma.refreshSession.count()).toBe(0);
+      expect(await prisma.studySession.count()).toBe(0);
+      expect(await prisma.studySet.findUnique({ where: { id: theirs.id } })).not.toBeNull();
+      await me('get').expect(401);
+      await refresh(refreshToken).expect(401);
+    });
+
+    it('tài khoản không có mật khẩu xoá được mà không cần xác nhận', async () => {
+      await prisma.user.update({ where: { email: account.email }, data: { passwordHash: null } });
+
+      await me('delete').send({}).expect(204);
+
+      expect(await prisma.user.count()).toBe(0);
     });
   });
 });

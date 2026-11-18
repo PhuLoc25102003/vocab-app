@@ -74,4 +74,9 @@ export class UsersRepository extends BaseRepository {
     ]);
     return account;
   }
+
+  /** Xoá hẳn. Dữ liệu liên quan bị xoá theo `onDelete: Cascade`. */
+  async delete(id: string): Promise<void> {
+    await this.prisma.user.delete({ where: { id }, select: { id: true } });
+  }
 }

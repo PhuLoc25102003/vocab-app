@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Patch, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { updateAccountSchema } from '@vocab/shared';
-import type { UpdateAccountInput } from '@vocab/shared';
+import { deleteAccountSchema, updateAccountSchema } from '@vocab/shared';
+import type { DeleteAccountInput, UpdateAccountInput } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -44,5 +55,21 @@ export class UsersController {
       this.refreshCookie.set(reply, session.refreshToken, session.refreshExpiresAt);
     }
     return body;
+  }
+
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthThrottlerGuard)
+  @SkipThrottle({ account: true })
+  @Throttle(ACCOUNT_THROTTLE)
+  @ApiOperation({ summary: 'Xoá hẳn tài khoản và dữ liệu' })
+  @ApiZodBody(deleteAccountSchema)
+  async deleteMe(
+    @CurrentUser() user: CurrentUserData,
+    @Body(new ZodValidationPipe(deleteAccountSchema)) dto: DeleteAccountInput,
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ): Promise<void> {
+    await this.users.deleteMe(user.id, dto);
+    this.refreshCookie.clear(reply);
   }
 }
