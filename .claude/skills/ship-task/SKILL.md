@@ -60,7 +60,7 @@ npm test
 npm run build
 ```
 
-- Viết test cho logic mới nếu bộ test đã có. Chưa có thì ghi rõ trong PR.
+- Viết test cho logic mới. `npm test` cần Postgres đang chạy (`npm run db:up`).
 - Chạy thử thật: API thì gọi endpoint, web thì mở trình duyệt ở light, dark và 360 px.
 - Web có thể chạy ở `:3001` nếu `:3000` đang bận. Tắt server của mình khi xong.
 - Lỗi thì đọc và sửa. Sửa 2 lần không được thì dừng lại và báo.

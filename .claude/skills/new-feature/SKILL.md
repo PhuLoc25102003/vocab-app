@@ -45,7 +45,7 @@ Tạo trong `apps/api/src/modules/<tên>/`: `<tên>.module.ts`, `<tên>.controll
 
 ### 4. Test integration
 
-Tạo `apps/api/test/<tên>.integration.test.ts`. Mỗi endpoint có đủ: 401 khi chưa đăng nhập, 403 khi sai vai trò hoặc không sở hữu, trường hợp thành công, và 400 nếu có input. Cách cài test xem skill `api-endpoint`.
+Tạo `apps/api/test/<tên>.integration.test.ts`. Mỗi endpoint có đủ: 401 khi chưa đăng nhập, 403 khi sai vai trò hoặc không sở hữu, trường hợp thành công, và 400 nếu có input. Mẫu test xem skill `api-endpoint`.
 
 ### 5. API client và hook
 

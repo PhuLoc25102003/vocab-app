@@ -106,15 +106,23 @@ export class SetsRepository extends BaseRepository {
 
 ## Test
 
-Lần đầu cần cài: `npm i -D vitest supertest @types/supertest unplugin-swc @swc/core -w @vocab/api`, thêm script `"test": "vitest run"`. Cần SWC vì esbuild không sinh metadata cho decorator của NestJS. Dùng database test riêng, không chạy trên dữ liệu dev.
+Đặt trong `apps/api/test/<tên>.integration.test.ts`. Test chạy trên database `<tên>_test`, không đụng dữ liệu dev.
 
 ```ts
-const app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-app.setGlobalPrefix('api/v1');
-await app.init();
-await app.getHttpAdapter().getInstance().ready();
+let app: NestFastifyApplication;
+let prisma: PrismaService;
 
-await request(app.getHttpServer()).patch(`/api/v1/sets/${id}`).send({ title: 'A' }).expect(401);
+beforeAll(async () => {
+  app = await createTestApp();
+  prisma = app.get(PrismaService);
+});
+
+beforeEach(() => resetDatabase(prisma));
+afterAll(() => app.close());
+
+it('trả 401 khi chưa đăng nhập', async () => {
+  await request(app.getHttpServer()).patch(`/api/v1/sets/${id}`).send({ title: 'A' }).expect(401);
+});
 ```
 
 ## Checklist cuối

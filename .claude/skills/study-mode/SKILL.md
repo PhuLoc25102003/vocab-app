@@ -11,7 +11,7 @@ description: Dùng khi thêm hoặc sửa một chế độ học trong vocab-ap
 
 `packages/shared/src/study` có thể chưa tồn tại. Nếu thiếu, tạo `types.ts`, `registry.ts`, `index.ts` theo mẫu và export từ `packages/shared/src/index.ts`. Package này không được import React hay NestJS.
 
-`packages/shared` chưa có test. Lần đầu chạy `npm i -D vitest -w @vocab/shared` và thêm script `"test": "vitest run"`.
+Test của `packages/shared` đặt cạnh code và chạy bằng Vitest.
 
 ```ts
 // types.ts
