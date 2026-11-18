@@ -110,7 +110,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** đủ 4 chế độ MVP, có danh sách từ đến hạn và thống kê cơ bản.
 
-- [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng.
+- [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng (#82).
 - [ ] **1.25** Chế độ Nghe viết.
 - [ ] **1.26** Chế độ Trắc nghiệm.
 - [ ] **1.27** `GET /review/due` và trang "Ôn hôm nay".
