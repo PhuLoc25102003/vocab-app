@@ -11,6 +11,10 @@ function write(value: string, maxAge: number): void {
   document.cookie = `${SESSION_MARKER_COOKIE}=${value}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
 }
 
+export function hasSessionMarker(): boolean {
+  return document.cookie.split('; ').includes(`${SESSION_MARKER_COOKIE}=1`);
+}
+
 export function setSessionMarker(): void {
   write('1', MAX_AGE_SECONDS);
 }

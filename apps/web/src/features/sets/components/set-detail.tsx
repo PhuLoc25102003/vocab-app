@@ -16,9 +16,11 @@ interface SetDetailProps {
   id: string;
   /** Nút theo quyền của người xem, do tầng trang ghép vào. */
   renderActions: (set: SetDetailData) => ReactNode;
+  /** Chủ bộ từ và người xem từ Khám phá quay về hai nơi khác nhau. */
+  renderBack?: (set: SetDetailData) => ReactNode;
 }
 
-export function SetDetail({ id, renderActions }: SetDetailProps) {
+export function SetDetail({ id, renderActions, renderBack }: SetDetailProps) {
   const set = useSet(id);
 
   if (set.isPending) {
@@ -32,6 +34,7 @@ export function SetDetail({ id, renderActions }: SetDetailProps) {
 
   return (
     <>
+      {renderBack?.(set.data)}
       <PageHeader
         title={title}
         description={description ?? undefined}

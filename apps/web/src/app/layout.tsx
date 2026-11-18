@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Be_Vietnam_Pro, Literata, Noto_Serif } from 'next/font/google';
+import { BRAND_NAME } from '@/components/common/logo';
 import { Providers } from '@/components/common/providers';
 import { themeInitScript } from '@/lib/theme';
 import './globals.css';
@@ -26,7 +27,7 @@ const notoSerif = Noto_Serif({
 });
 
 export const metadata: Metadata = {
-  title: 'Vocab App',
+  title: BRAND_NAME,
   description: 'Ôn từ vựng bằng flashcard cho học sinh',
 };
 

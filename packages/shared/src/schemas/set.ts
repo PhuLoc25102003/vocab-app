@@ -81,6 +81,16 @@ export const setListSchema = z.object({
 });
 export type SetList = z.infer<typeof setListSchema>;
 
+export const publicSetSummarySchema = setSummarySchema.extend({
+  owner: z.object({ displayName: z.string() }),
+});
+export type PublicSetSummary = z.infer<typeof publicSetSummarySchema>;
+
+export const publicSetListSchema = setListSchema.extend({
+  data: z.array(publicSetSummarySchema),
+});
+export type PublicSetList = z.infer<typeof publicSetListSchema>;
+
 /** Thẻ có `id` là thẻ đang có, thẻ không có `id` là thẻ mới. Thứ tự trong mảng là thứ tự thẻ. */
 export const replaceCardsSchema = z.object({
   cards: z

@@ -1,4 +1,4 @@
-import type { SetSummary } from '@vocab/shared';
+import type { PublicSetSummary, SetSummary } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { LoadingState } from '@/components/common/loading-state';
@@ -11,10 +11,12 @@ const dateFormat = new Intl.DateTimeFormat('vi-VN', {
   year: 'numeric',
 });
 
-export function SetRows({ sets }: { sets: SetSummary[] }) {
+type SetRow = SetSummary & Partial<Pick<PublicSetSummary, 'owner'>>;
+
+export function SetRows({ sets }: { sets: SetRow[] }) {
   return (
     <ul className="border-t border-border">
-      {sets.map(({ id, title, visibility, cardCount, updatedAt }) => (
+      {sets.map(({ id, title, visibility, cardCount, updatedAt, owner }) => (
         <li
           key={id}
           className="relative flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-2 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft"
@@ -27,7 +29,8 @@ export function SetRows({ sets }: { sets: SetSummary[] }) {
               {title}
             </Link>
             <p className="text-small text-text-muted">
-              Cập nhật <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
+              {owner ? `Tạo bởi ${owner.displayName}, cập nhật ` : 'Cập nhật '}
+              <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
