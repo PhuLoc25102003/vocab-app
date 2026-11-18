@@ -2,7 +2,7 @@
 
 Nguồn chuẩn là `apps/api/prisma/schema.prisma`. Khối schema dưới đây được chép nguyên từ file đó. Nếu tài liệu và code lệch nhau, code đúng.
 
-8 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration đầu tiên: `20261118030153_init`.
+8 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration: `20261118030153_init`, `20261118040948_cascade_deletes`.
 
 Prisma 7: URL kết nối đặt trong `apps/api/prisma.config.ts`; generator `prisma-client`, output `../src/generated/prisma`, `moduleFormat = "cjs"`; `PrismaService` kế thừa `PrismaClient` và dùng adapter `PrismaPg`.
 
@@ -81,7 +81,7 @@ model Folder {
   ownerId String
   name    String
 
-  owner User       @relation(fields: [ownerId], references: [id])
+  owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   sets  StudySet[]
 
   @@index([ownerId])
@@ -101,7 +101,7 @@ model StudySet {
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
 
-  owner         User           @relation(fields: [ownerId], references: [id])
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   folder        Folder?        @relation(fields: [folderId], references: [id])
   cards         Card[]
   studySessions StudySession[]
@@ -141,8 +141,8 @@ model CardProgress {
   lastResult Boolean?
   updatedAt  DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  card Card @relation(fields: [cardId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@id([userId, cardId])
   @@index([userId, dueAt])
@@ -158,8 +158,8 @@ model StudySession {
   correct    Int       @default(0)
   total      Int       @default(0)
 
-  user     User      @relation(fields: [userId], references: [id])
-  set      StudySet  @relation(fields: [setId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  set      StudySet  @relation(fields: [setId], references: [id], onDelete: Cascade)
   attempts Attempt[]
 
   @@index([userId, startedAt])
@@ -175,7 +175,7 @@ model Attempt {
   createdAt DateTime @default(now())
 
   session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  card    Card         @relation(fields: [cardId], references: [id])
+  card    Card         @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@index([cardId])
 }
@@ -204,26 +204,29 @@ model Attempt {
 
 Theo quy ước, code là chuẩn. Các điểm lệch:
 
-| Quan hệ hoặc trường                      | Spec gốc                       | Code hiện tại                                                        |
-| ---------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
-| `Folder.owner`, `StudySet.owner`         | `onDelete: Cascade`            | Mặc định `Restrict`                                                  |
-| `CardProgress.user`, `CardProgress.card` | `onDelete: Cascade`            | Mặc định `Restrict`                                                  |
-| `StudySession.user`, `StudySession.set`  | Không khai báo quan hệ         | Có quan hệ, mặc định `Restrict`                                      |
-| `Attempt.card`                           | Không khai báo quan hệ         | Có quan hệ, mặc định `Restrict`                                      |
-| `StudySet.folder`                        | `onDelete: SetNull`            | Không ghi rõ, mặc định của quan hệ tuỳ chọn cũng là `SetNull`        |
-| Tên quan hệ trên `User`                  | `sets`, `progress`, `sessions` | `studySets`, `cardProgress`, `refreshSessions`, thêm `studySessions` |
+| Quan hệ hoặc trường                     | Spec gốc                       | Code hiện tại                                                        |
+| --------------------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| `StudySession.user`, `StudySession.set` | Không khai báo quan hệ         | Có quan hệ, `onDelete: Cascade`                                      |
+| `Attempt.card`                          | Không khai báo quan hệ         | Có quan hệ, `onDelete: Cascade`                                      |
+| `StudySet.folder`                       | `onDelete: SetNull`            | Không ghi rõ, mặc định của quan hệ tuỳ chọn cũng là `SetNull`        |
+| Tên quan hệ trên `User`                 | `sets`, `progress`, `sessions` | `studySets`, `cardProgress`, `refreshSessions`, thêm `studySessions` |
 
-## Việc cần quyết định trước khi làm tính năng xoá
+## Hành vi khi xoá hẳn
 
-`Restrict` mâu thuẫn với ba yêu cầu nghiệp vụ. Khi có dữ liệu học, database sẽ từ chối các thao tác sau:
+Các quy tắc dưới đây áp dụng cho lệnh `DELETE` thật. Xoá mềm bằng `deletedAt` không kích hoạt chúng.
 
-- `PUT /sets/:id/cards` xoá một thẻ đã có `CardProgress` hoặc `Attempt`.
-- Cron xoá hẳn bộ từ sau 30 ngày, vì `Card` và `StudySession` còn tham chiếu.
-- "Xoá tài khoản xoá hẳn dữ liệu" trong checklist bảo mật.
+| Khi xoá hẳn | Dữ liệu bị xoá theo                                                                   | Dữ liệu giữ lại                                |
+| ----------- | ------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `Card`      | `CardProgress`, `Attempt` của thẻ                                                     | `StudySession`, gồm cả số `correct` và `total` |
+| `StudySet`  | `Card`, `StudySession` của bộ, cùng `CardProgress` và `Attempt` liên quan             | `Folder`                                       |
+| `Folder`    | Không có                                                                              | `StudySet`, với `folderId` thành `null`        |
+| `User`      | `RefreshSession`, `Folder`, `StudySet`, `CardProgress`, `StudySession` và dữ liệu con | Không có                                       |
 
-Đề xuất: thêm `onDelete: Cascade` cho `CardProgress.user`, `CardProgress.card`, `Attempt.card`, `StudySession.user`, `StudySession.set`, `Folder.owner`, `StudySet.owner` bằng một migration riêng theo skill `db-migration`. Lịch sử học của một thẻ sẽ mất theo thẻ. Nếu cần giữ thống kê, phải chọn phương án khác trước khi migrate.
+- `PUT /sets/:id/cards` phải giữ nguyên `id` của thẻ không bị xoá. Nếu xoá hết rồi tạo lại, tiến độ học và lịch sử trả lời sẽ mất.
+- Thống kê tính từ `Attempt` hoặc `StudySession` sẽ giảm sau khi dữ liệu nguồn bị xoá hẳn. Nếu cần giữ số liệu lâu dài, phải lưu bảng tổng hợp riêng trước khi xoá.
 
 ## Đã điều chỉnh so với spec gốc
 
 - Thay khối schema bằng schema thật, chuyển chú thích trường sang bảng riêng.
-- Thêm bảng điểm lệch và việc cần quyết định.
+- Thêm bảng điểm lệch và bảng hành vi khi xoá hẳn.
+- Áp dụng `onDelete: Cascade` đã được chốt cho các quan hệ mà spec gốc khai báo Cascade hoặc chưa khai báo.
