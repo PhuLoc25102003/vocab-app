@@ -3,10 +3,11 @@ import {
   ERROR_CODES,
   getMode,
   isModeAvailable,
+  type Pagination,
   type StartSessionDto,
   type SubmitAnswersDto,
 } from '@vocab/shared';
-import { ok } from '../../common/base/pagination';
+import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import type { SetViewer } from '../sets/sets.repository';
 import { StudyRepository, type GradedAnswer } from './study.repository';
@@ -39,7 +40,7 @@ function summarize(attempts: { cardId: string; isCorrect: boolean }[]) {
 export class StudyService {
   constructor(private readonly study: StudyRepository) {}
 
-  async start(viewer: SetViewer, { setId, mode, limit }: StartSessionDto) {
+  async start(viewer: SetViewer, { setId, mode, limit, dueOnly }: StartSessionDto) {
     if (!isModeAvailable(mode)) {
       throw new AppError(
         ERROR_CODES.STUDY_MODE_UNAVAILABLE,
@@ -47,9 +48,16 @@ export class StudyService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const set = await this.study.findSet(setId, viewer);
+    const set = await this.study.findSet(setId, viewer, dueOnly ? new Date() : undefined);
     if (!set) {
       throw setNotFound();
+    }
+    if (dueOnly && set.cards.length === 0) {
+      throw new AppError(
+        ERROR_CODES.NO_CARDS_DUE,
+        'Bộ từ này không còn thẻ đến hạn',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
     if (set.cards.length === 0) {
       throw new AppError(
@@ -63,6 +71,16 @@ export class StudyService {
     const session = await this.study.createSession(viewer.id, setId, mode, questions.length);
     const languages = { term: set.termLang, definition: set.defLang };
     return ok({ session, questions, languages });
+  }
+
+  async listDueSets(viewer: SetViewer, query: Pagination) {
+    const [sets, total, dueCards] = await this.study.findDueSets(viewer, query, new Date());
+    const items = sets.map(({ id, title, _count }) => ({
+      setId: id,
+      title,
+      dueCount: _count.cards,
+    }));
+    return { ...paginated(items, total, query), summary: { dueCards } };
   }
 
   async submitAnswers(id: string, viewer: SetViewer, { answers }: SubmitAnswersDto) {

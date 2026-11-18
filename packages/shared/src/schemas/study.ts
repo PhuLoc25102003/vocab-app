@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { studyModeSchema } from '../study/types';
+import { paginationMetaSchema } from './pagination';
 
 export const STUDY_ANSWER_BATCH_MAX = 200;
 const STUDY_QUESTION_LIMIT_MAX = 2000;
@@ -13,6 +14,8 @@ export const startSessionSchema = z.object({
   setId: idSchema,
   mode: studyModeSchema,
   limit: z.number().int().min(1).max(STUDY_QUESTION_LIMIT_MAX).optional(),
+  /** Chỉ học các thẻ đã đến hạn ôn của người gọi. */
+  dueOnly: z.boolean().optional(),
 });
 export type StartSessionDto = z.infer<typeof startSessionSchema>;
 
@@ -77,3 +80,10 @@ export const finishSessionResponseSchema = z.object({
   data: z.object({ session: studySessionSchema, wrongCardIds: z.array(z.string()) }),
 });
 export type SessionResult = z.infer<typeof finishSessionResponseSchema>['data'];
+
+export const dueSetListSchema = z.object({
+  data: z.array(z.object({ setId: z.string(), title: z.string(), dueCount: z.number() })),
+  meta: paginationMetaSchema,
+  summary: z.object({ dueCards: z.number() }),
+});
+export type DueSetList = z.infer<typeof dueSetListSchema>;

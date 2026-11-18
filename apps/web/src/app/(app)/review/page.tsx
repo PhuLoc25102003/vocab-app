@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { EmptyState } from '@/components/common/empty-state';
+import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
+import { DueSets, DueSetsLoading } from '@/features/study/components/due-sets';
 
 export const metadata: Metadata = { title: 'Ôn hôm nay' };
 
@@ -8,10 +9,9 @@ export default function ReviewPage() {
   return (
     <>
       <PageHeader title="Ôn hôm nay" />
-      <EmptyState
-        title="Hôm nay chưa có từ cần ôn"
-        description="Các từ đến hạn ôn sẽ hiện ở đây."
-      />
+      <Suspense fallback={<DueSetsLoading />}>
+        <DueSets />
+      </Suspense>
     </>
   );
 }

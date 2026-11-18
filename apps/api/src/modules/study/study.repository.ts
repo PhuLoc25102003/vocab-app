@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { applyReview, createSrsState, type StudyMode, type SrsState } from '@vocab/shared';
+import {
+  applyReview,
+  createSrsState,
+  type Pagination,
+  type StudyMode,
+  type SrsState,
+} from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
+import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { visibleTo, type SetViewer } from '../sets/sets.repository';
 
@@ -17,6 +24,10 @@ const SESSION_SELECT = {
 /** Một lô có thể ghi tới 200 thẻ, lâu hơn mức mặc định 5 giây của transaction. */
 const SAVE_ANSWERS_TIMEOUT_MS = 30_000;
 
+const dueCardWhere = (userId: string, now: Date) => ({
+  progress: { some: { userId, dueAt: { lte: now } } },
+});
+
 export interface GradedAnswer {
   cardId: string;
   answer: string;
@@ -31,18 +42,40 @@ export class StudyRepository extends BaseRepository {
   }
 
   /** Trả `null` nếu bộ từ không tồn tại hoặc người xem không có quyền. */
-  findSet(setId: string, viewer: SetViewer) {
+  /** `dueAt` có giá trị thì chỉ lấy các thẻ đã đến hạn của người xem tại thời điểm đó. */
+  findSet(setId: string, viewer: SetViewer, dueAt?: Date) {
     return this.prisma.studySet.findFirst({
       where: { id: setId, deletedAt: null, ...visibleTo(viewer) },
       select: {
         termLang: true,
         defLang: true,
         cards: {
+          where: dueAt ? dueCardWhere(viewer.id, dueAt) : undefined,
           orderBy: { position: 'asc' },
           select: { id: true, term: true, definition: true },
         },
       },
     });
+  }
+
+  findDueSets(viewer: SetViewer, query: Pagination, now: Date) {
+    const dueCard = dueCardWhere(viewer.id, now);
+    const visibleSet = { deletedAt: null, ...visibleTo(viewer) };
+    const where = { ...visibleSet, cards: { some: dueCard } };
+    return Promise.all([
+      this.prisma.studySet.findMany({
+        where,
+        ...toSkipTake(query),
+        orderBy: { title: 'asc' },
+        select: {
+          id: true,
+          title: true,
+          _count: { select: { cards: { where: dueCard } } },
+        },
+      }),
+      this.prisma.studySet.count({ where }),
+      this.prisma.card.count({ where: { ...dueCard, set: visibleSet } }),
+    ]);
   }
 
   createSession(userId: string, setId: string, mode: StudyMode, total: number) {

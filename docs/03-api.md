@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -93,10 +93,12 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 ## Phiên học
 
-- `POST /study/sessions` nhận `{ setId, mode, limit? }`, trả 201 `{ data: { session, questions, languages } }`, trong đó `languages` là `{ term, definition }` để phát âm. Chỉ học được bộ từ người gọi xem được, nếu không trả 404 `SET_NOT_FOUND`. Chế độ chưa có trả 422 `STUDY_MODE_UNAVAILABLE`, bộ từ không có thẻ trả 422 `SET_HAS_NO_CARDS`. Hiện có `FLASHCARD` với đáp án `known` hoặc `unknown`, cùng `WRITE` và `DICTATION` với đáp án là từ người học gõ, `MCQ` với đáp án là một phần tử trong `choices`.
+- `POST /study/sessions` nhận `{ setId, mode, limit?, dueOnly? }`, trả 201 `{ data: { session, questions, languages } }`, trong đó `languages` là `{ term, definition }` để phát âm. Chỉ học được bộ từ người gọi xem được, nếu không trả 404 `SET_NOT_FOUND`. Chế độ chưa có trả 422 `STUDY_MODE_UNAVAILABLE`, bộ từ không có thẻ trả 422 `SET_HAS_NO_CARDS`. `dueOnly` chỉ lấy thẻ đã đến hạn của người gọi, không còn thẻ thì trả 422 `NO_CARDS_DUE`. Hiện có `FLASHCARD` với đáp án `known` hoặc `unknown`, cùng `WRITE` và `DICTATION` với đáp án là từ người học gõ, `MCQ` với đáp án là một phần tử trong `choices`.
 - `POST /study/sessions/:id/answers` nhận `{ answers: [{ questionId, value, timeMs }] }`, tối đa 200 đáp án mỗi lô, trả 200 `{ data: { results, ignored } }`. Server chấm lại, lưu `Attempt` và cập nhật `CardProgress` trong một transaction. Câu hỏi của thẻ đã xoá được bỏ qua và tính vào `ignored`. Phiên đã kết thúc trả 409 `STUDY_SESSION_FINISHED`. Client gửi các lô lần lượt, không gửi song song.
 - `PATCH /study/sessions/:id/finish` trả 200 `{ data: { session, wrongCardIds } }`. `total` là số thẻ đã trả lời, `correct` và `wrongCardIds` tính theo lần trả lời đầu của mỗi thẻ. Gọi lại không đổi kết quả.
 - Hai route theo `:id` chỉ dành cho chủ phiên, kể cả ADMIN cũng không gọi thay được.
+
+- `GET /review/due` nhận `page`, `limit`, trả các bộ từ có thẻ đến hạn tại thời điểm gọi: `{ data: [{ setId, title, dueCount }], meta, summary: { dueCards } }`, xếp theo tên. Chỉ tính bộ từ người gọi còn xem được.
 
 ## Khác biệt đang có trong code
 

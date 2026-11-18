@@ -5,13 +5,20 @@ import type { Route } from 'next';
 import { accountStudyBackend } from '../api';
 import { StudyShell } from './study-shell';
 
-export function AccountStudy({ setId, mode }: { setId: string; mode: StudyMode }) {
+interface AccountStudyProps {
+  setId: string;
+  mode: StudyMode;
+  dueOnly: boolean;
+}
+
+export function AccountStudy({ setId, mode, dueOnly }: AccountStudyProps) {
   return (
     <StudyShell
       backend={accountStudyBackend}
       setId={setId}
       mode={mode}
-      exitHref={`/sets/${setId}` as Route}
+      dueOnly={dueOnly}
+      exitHref={(dueOnly ? '/review' : `/sets/${setId}`) as Route}
     />
   );
 }

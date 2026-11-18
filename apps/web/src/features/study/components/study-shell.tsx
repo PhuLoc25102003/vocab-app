@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ERROR_CODES, type StudyMode } from '@vocab/shared';
 import { X } from 'lucide-react';
 import type { Route } from 'next';
@@ -15,6 +15,7 @@ import { HttpError } from '@/lib/http';
 import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
 import { STUDY_VIEWS } from '../modes/views';
+import { studyKeys } from '../query-keys';
 import { useStudyStore } from '../session.store';
 import { StudyResult } from './study-result';
 
@@ -26,6 +27,8 @@ interface StudyShellProps {
   mode: StudyMode;
   exitHref: Route;
   resultNote?: ReactNode;
+  /** Chỉ học các thẻ đã đến hạn ôn. */
+  dueOnly?: boolean;
 }
 
 function StudyFrame({
@@ -81,6 +84,19 @@ function StartFailure({
   onRetry: () => void;
 }) {
   const code = error instanceof HttpError ? error.code : null;
+  if (code === ERROR_CODES.NO_CARDS_DUE) {
+    return (
+      <EmptyState
+        title="Đã ôn hết thẻ đến hạn"
+        description="Bộ từ này hiện không còn thẻ cần ôn."
+        action={
+          <Button asChild variant="secondary">
+            <Link href={exitHref}>Quay lại</Link>
+          </Button>
+        }
+      />
+    );
+  }
   if (code === ERROR_CODES.SET_HAS_NO_CARDS || code === ERROR_CODES.SET_NOT_FOUND) {
     return (
       <EmptyState
@@ -107,10 +123,18 @@ function StartFailure({
   );
 }
 
-export function StudyShell({ backend, setId, mode, exitHref, resultNote }: StudyShellProps) {
+export function StudyShell({
+  backend,
+  setId,
+  mode,
+  exitHref,
+  resultNote,
+  dueOnly = false,
+}: StudyShellProps) {
+  const queryClient = useQueryClient();
   const started = useQuery({
-    queryKey: ['study', 'session', setId, mode],
-    queryFn: () => backend.start(setId, mode),
+    queryKey: studyKeys.session(setId, mode, dueOnly),
+    queryFn: () => backend.start(setId, mode, { dueOnly }),
     // Mỗi lần tải là một phiên mới, nên chỉ tạo khi người học yêu cầu.
     staleTime: Infinity,
     gcTime: 0,
@@ -134,7 +158,10 @@ export function StudyShell({ backend, setId, mode, exitHref, resultNote }: Study
       await syncAnswers();
       return backend.finish(sessionId);
     },
-    onSuccess: finish,
+    onSuccess: (sessionResult) => {
+      finish(sessionResult);
+      void queryClient.invalidateQueries({ queryKey: studyKeys.dueLists });
+    },
   });
   const { mutate: complete, isIdle: canComplete, reset: resetCompletion } = completion;
 
