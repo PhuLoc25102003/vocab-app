@@ -199,6 +199,8 @@ model Attempt {
 | `StudySet.termLang`, `StudySet.defLang` | Mã BCP-47, dùng cho phát âm           |
 | `CardProgress`                          | Dữ liệu SRS theo từng người, từng thẻ |
 | `CardProgress.interval`                 | Đơn vị ngày                           |
+| `CardProgress.lapses`                   | Số lần quên thẻ đã từng nhớ           |
+| `CardProgress.dueAt`                    | Tính bằng `applyReview` trong shared  |
 
 ## Lệch giữa spec gốc và code
 

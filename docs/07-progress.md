@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-18
 
 **Việc tiếp theo:**
 
-1. Làm nền cho chế độ học trong `packages/shared/src/study` (việc 1.13).
-2. Làm API phiên học (việc 1.14).
+1. Làm API phiên học (việc 1.14).
+2. Làm `study-shell` và session store trên web (việc 1.15).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     12 |     35 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     13 |     35 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **25** | **71** | **35%**      |
+| **Toàn dự án**          |                                            | **26** | **71** | **37%**      |
 
 ## Cách cập nhật
 
@@ -83,7 +83,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** có một luồng hoàn chỉnh từ chọn bộ từ, học, lưu tiến độ đến xem kết quả.
 
-- [ ] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test.
+- [x] **1.13** `packages/shared/src/study`: type, registry, chấm điểm, thuật toán SRS và unit test.
 - [ ] **1.14** API phiên học: bắt đầu, gửi đáp án theo lô, kết thúc, cập nhật `CardProgress`.
 - [ ] **1.15** Web: `study-shell`, session store, tiến độ trong phiên, màn hình kết quả.
 - [ ] **1.16** Chế độ Flashcard: lật thẻ, phím tắt, khách học không lưu tiến độ.
