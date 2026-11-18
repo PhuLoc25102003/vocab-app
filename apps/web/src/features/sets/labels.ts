@@ -21,4 +21,5 @@ export const LANGUAGE_LABELS: Record<string, string> = {
 export const STUDY_ENTRIES = [
   { slug: 'flashcard', label: 'Bắt đầu học', guestLabel: 'Học thử' },
   { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết' },
+  { slug: 'dictation', label: 'Nghe viết', guestLabel: 'Nghe viết' },
 ] as const;

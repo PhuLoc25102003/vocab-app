@@ -16,9 +16,13 @@ interface AudioButtonProps {
 const subscribe = () => () => undefined;
 const getServerSnapshot = () => false;
 
+export function useSpeechSupported(): boolean {
+  return useSyncExternalStore(subscribe, isSpeechSupported, getServerSnapshot);
+}
+
 /** Trình duyệt không có Web Speech thì không hiện nút. */
 export function AudioButton({ text, lang, label, className }: AudioButtonProps) {
-  const supported = useSyncExternalStore(subscribe, isSpeechSupported, getServerSnapshot);
+  const supported = useSpeechSupported();
   if (!supported) {
     return null;
   }
