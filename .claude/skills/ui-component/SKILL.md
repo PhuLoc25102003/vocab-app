@@ -26,6 +26,7 @@ Dùng lại trước khi viết mới:
 | ---------------------- | ---------------------------------------------------------- |
 | Gộp class              | `cn()` trong `@/lib/utils`                                 |
 | Nút, liên kết dạng nút | `Button`: `variant`, `size="icon"`, `loading`, `asChild`   |
+| Ô nhập có nhãn và lỗi  | `FormField`, ô trần dùng `Input`                           |
 | Giữ chỗ khi tải        | `LoadingState` bọc `Skeleton`                              |
 | Tiêu đề trang          | `PageHeader`                                               |
 | Không có dữ liệu, lỗi  | `EmptyState`, `ErrorState`                                 |
