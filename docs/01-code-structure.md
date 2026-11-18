@@ -46,7 +46,7 @@ src/
 │   │   └── components/study-shell.tsx
 │   └── stats/
 ├── components/ui/                # shadcn/ui đã áp token (Button, Input, Dialog...)
-├── components/common/            # audio-button, empty-state, error-state, page-header
+├── components/common/            # app-nav, page-header, empty-state, error-state, loading-state, audio-button
 ├── lib/
 │   ├── http.ts                   # một HTTP client duy nhất, tự refresh token
 │   ├── query-client.ts
@@ -120,7 +120,8 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                            |
 | `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                            |
 | `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                |
-| `apps/web/src/proxy.ts`, shadcn/ui, `EmptyState`, `ErrorState`, `PageHeader`, `AudioButton`       | Chưa có                                                       |
+| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                            |
+| `apps/web/src/proxy.ts`, `AudioButton`                                                            | Chưa có                                                       |
 | Module nghiệp vụ trong `apps/api/src/modules`                                                     | Chỉ `health` có code, các module khác là `@Module({})` rỗng   |
 
 ## Đã điều chỉnh so với spec gốc
