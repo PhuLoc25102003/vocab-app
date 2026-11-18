@@ -19,7 +19,7 @@ description: Dùng khi thêm hoặc sửa một endpoint REST trong apps/api c�
 
 `sort` phải được đối chiếu với danh sách trường cho phép trong repository. Không đưa thẳng vào `orderBy`.
 
-`@Roles()`, `RolesGuard`, `@CheckOwnership()`, `OwnershipGuard`, `@CurrentUser()` thuộc phần auth, đặt trong `common/decorators` và `common/guards`. Nếu chưa có, làm chúng trước theo `docs/04-security.md`.
+`@Roles()`, `@CheckOwnership()`, `@CurrentUser()` nằm trong `common/decorators`, các guard nằm trong `common/guards` và đã chạy toàn cục. Tài nguyên mới cần kiểm tra sở hữu thì thêm vào `OwnershipRepository` và `RESOURCES` trong `ownership.guard.ts`.
 
 ## Các bước
 

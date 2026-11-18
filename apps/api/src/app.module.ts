@@ -4,6 +4,8 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthCoreModule } from './common/auth/auth-core.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { AuthGuard } from './common/guards/auth.guard';
+import { OwnershipGuard } from './common/guards/ownership.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 import { validateEnv } from './config/env';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
@@ -32,7 +34,10 @@ import { UsersModule } from './modules/users/users.module';
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    // Guard toàn cục chạy theo đúng thứ tự khai báo.
     { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: OwnershipGuard },
     { provide: APP_INTERCEPTOR, useClass: RequestIdInterceptor },
   ],
 })
