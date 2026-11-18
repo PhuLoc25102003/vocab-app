@@ -121,7 +121,8 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
 | `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                       |
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
-| `apps/web/src/proxy.ts`, `AudioButton`                                                            | Chưa có                                                              |
+| `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
+| `AudioButton`                                                                                     | Chưa có                                                              |
 | Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users` có code, còn lại là module rỗng            |
 
 ## Đã điều chỉnh so với spec gốc

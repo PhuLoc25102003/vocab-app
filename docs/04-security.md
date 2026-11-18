@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Web giữ access token trong bộ nhớ. `proxy.ts` không đọc được cookie refresh ở domain API, nên dùng cookie `vocab_session` chỉ để điều hướng, không có giá trị bảo mật. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
