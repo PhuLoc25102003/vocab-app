@@ -7,16 +7,6 @@ description: Dùng khi tạo hoặc sửa component, trang, form, trạng thái 
 
 Đọc trước: `docs/05-ui-tokens.md`. Đây là nguồn chuẩn duy nhất cho token.
 
-## Điều kiện nền
-
-Kiểm tra token mới đã vào code chưa:
-
-```bash
-grep -c "border-strong" apps/web/src/app/globals.css
-```
-
-Kết quả `0` nghĩa là `globals.css` còn bộ cũ. Làm mục "Áp dụng vào code" trong `docs/05-ui-tokens.md` thành một commit riêng trước, hoặc báo người dùng nếu nhiệm vụ không cho sửa code.
-
 ## Đặt file ở đâu
 
 | Loại                                  | Vị trí                                          |

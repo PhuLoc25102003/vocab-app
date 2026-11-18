@@ -68,8 +68,6 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 14. Không commit `.env`. Biến mới phải có trong `.env.example`, biến của API phải có trong `apps/api/src/config/env.ts`.
 15. Commit theo Conventional Commits. Đổi API, database hoặc token thì cập nhật `docs/` cùng commit, xong một việc thì đánh dấu trong `docs/07-progress.md`.
 
-**Lưu ý:** `docs/05-ui-tokens.md` đã có bộ token mới nhưng `globals.css` chưa được cập nhật. Làm mục "Áp dụng vào code" trong tài liệu đó trước khi xây giao diện thật.
-
 ## Khi làm việc gì
 
 | Khi làm                             | Đọc                                             | Dùng skill     |
