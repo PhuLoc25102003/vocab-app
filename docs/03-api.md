@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH /users/me`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -70,6 +70,12 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /auth/logout` và `POST /auth/logout-all` cần access token, trả 204 và xoá cookie.
 - Route cần đăng nhập trả 401 `TOKEN_EXPIRED` khi access token hết hạn, 401 `UNAUTHORIZED` khi thiếu hoặc sai token.
 - Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
+
+## Tài khoản
+
+- `GET /users/me` trả `{ "data": { "user": { id, email, displayName, role } } }`.
+- `PATCH /users/me` nhận `displayName`, hoặc `currentPassword` cùng `newPassword`. Khi đổi mật khẩu, mọi phiên cũ kết thúc, response có thêm `accessToken` và cookie refresh mới cho thiết bị đang dùng. Sai mật khẩu hiện tại trả 422 `WRONG_PASSWORD`.
+- `PATCH` giới hạn 5 lần/phút cho mỗi tài khoản.
 
 ## Khác biệt đang có trong code
 

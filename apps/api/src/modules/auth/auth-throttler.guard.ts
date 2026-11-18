@@ -5,12 +5,14 @@ import {
   type ThrottlerModuleOptions,
 } from '@nestjs/throttler';
 import { emailSchema, ERROR_CODES } from '@vocab/shared';
-import type { FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import '../../common/decorators/current-user.decorator';
 import { AppError } from '../../common/errors/app-error';
 
 export const ONE_MINUTE_MS = 60_000;
 export const REGISTER_LIMIT_PER_IP = 3;
 export const REFRESH_LIMIT_PER_IP = 60;
+const ACCOUNT_CHANGE_LIMIT_PER_USER = 5;
 const LOGIN_LIMIT_PER_IP = 20;
 const LOGIN_LIMIT_PER_ACCOUNT = 5;
 
@@ -20,6 +22,16 @@ function ipAndEmail(request: Record<string, unknown>): string {
   const email = emailSchema.safeParse(body?.email);
   return `${String(request.ip)}:${email.success ? email.data : ''}`;
 }
+
+/** Sửa tài khoản có thể phải kiểm tra mật khẩu, nên giới hạn theo từng người dùng. */
+export const ACCOUNT_THROTTLE = {
+  ip: {
+    limit: ACCOUNT_CHANGE_LIMIT_PER_USER,
+    ttl: ONE_MINUTE_MS,
+    getTracker: (request: Record<string, unknown>) =>
+      (request as unknown as FastifyRequest).user?.id ?? String(request.ip),
+  },
+};
 
 /**
  * `account` chặn dò mật khẩu của một email. `ip` giới hạn tổng số lần thử,
