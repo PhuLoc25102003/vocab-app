@@ -39,8 +39,11 @@ describe('POST /auth/google', () => {
       getPayload: () => payload,
     } as unknown as LoginTicket);
   };
-  const post = (body: object = { credential: 'google-id-token' }) =>
-    request(app.getHttpServer()).post('/api/v1/auth/google').set('X-Forwarded-For', ip).send(body);
+  const postAuth = (path: string, body: object) =>
+    request(app.getHttpServer()).post(`/api/v1/auth/${path}`).set('X-Forwarded-For', ip).send(body);
+  const post = (body: object = { credential: 'google-id-token' }) => postAuth('google', body);
+  const getMe = (token: string) =>
+    request(app.getHttpServer()).get('/api/v1/users/me').set('Authorization', `Bearer ${token}`);
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -92,9 +95,32 @@ describe('POST /auth/google', () => {
     expect(await prisma.user.count()).toBe(1);
   });
 
-  it('không gộp vào tài khoản mật khẩu có cùng email', async () => {
+  it('gộp vào tài khoản mật khẩu cùng email và huỷ mật khẩu, phiên cũ', async () => {
+    const password = 'mat-khau-dai';
+    const email = GOOGLE_USER.email;
+    await postAuth('register', { email, password, displayName: 'Chủ cũ' }).expect(202);
+    const oldLogin = await postAuth('login', { email, password }).expect(200);
+    const { user: oldUser, accessToken } = oldLogin.body.data;
+    const oldCookie = oldLogin.headers['set-cookie']?.[0]?.split(';')[0] ?? '';
+    await prisma.studySet.create({ data: { ownerId: oldUser.id, title: 'Bộ từ cũ' } });
+
+    const response = await post().expect(200);
+
+    expect(response.body.data.user).toEqual(oldUser);
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: oldUser.id } });
+    expect(user).toMatchObject({ googleId: GOOGLE_USER.sub, passwordHash: null });
+    expect(await prisma.studySet.count({ where: { ownerId: oldUser.id } })).toBe(1);
+    expect(await prisma.user.count()).toBe(1);
+
+    await postAuth('login', { email, password }).expect(401);
+    await postAuth('refresh', {}).set('Cookie', oldCookie).expect(401);
+    await getMe(accessToken).expect(401);
+    await getMe(response.body.data.accessToken).expect(200);
+  });
+
+  it('từ chối khi email đã gắn với Google ID khác', async () => {
     const before = await prisma.user.create({
-      data: { email: GOOGLE_USER.email, displayName: 'Chủ cũ', passwordHash: 'hash-cu' },
+      data: { email: GOOGLE_USER.email, displayName: 'Chủ cũ', googleId: 'google-sub-khac' },
     });
 
     const response = await post().expect(409);
@@ -102,7 +128,6 @@ describe('POST /auth/google', () => {
     expect(response.body.error.code).toBe(ERROR_CODES.GOOGLE_EMAIL_IN_USE);
     expect(response.headers['set-cookie']).toBeUndefined();
     expect(await prisma.user.findUniqueOrThrow({ where: { id: before.id } })).toEqual(before);
-    expect(await prisma.refreshSession.count()).toBe(0);
   });
 
   it('dùng phần trước @ của email khi tên Google không hợp lệ', async () => {

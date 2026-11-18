@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormField } from '@/components/common/form-field';
+import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
 import { registerAccount } from '../api';
 import { applyFormError } from '../form-errors';
@@ -60,9 +61,8 @@ export function RegisterForm() {
         error={errors.email?.message}
         {...register('email')}
       />
-      <FormField
+      <PasswordField
         label="Mật khẩu"
-        type="password"
         autoComplete="new-password"
         hint={`Tối thiểu ${PASSWORD_MIN_LENGTH} ký tự.`}
         error={errors.password?.message}

@@ -55,21 +55,19 @@ export class AuthService {
     return toSessionResult(toAuthUser(account), await this.sessions.start(account, client));
   }
 
-  /**
-   * Không gộp vào tài khoản có sẵn cùng email: đăng ký bằng mật khẩu chưa xác minh email,
-   * nên người đặt mật khẩu có thể không phải chủ email.
-   */
+  /** Google đã xác minh email, nên email trùng được gộp vào tài khoản có sẵn. */
   async loginWithGoogle({ credential }: GoogleLoginInput, client: SessionClient) {
     const identity = await this.google.verify(credential);
     const account =
       (await this.users.findByGoogleId(identity.googleId)) ??
+      (await this.users.linkGoogleByEmail(identity.email, identity.googleId)) ??
       (await this.users.createGoogleUserIfFree(identity)) ??
       // Một request khác có thể vừa tạo chính tài khoản này.
       (await this.users.findByGoogleId(identity.googleId));
     if (!account) {
       throw new AppError(
         ERROR_CODES.GOOGLE_EMAIL_IN_USE,
-        'Email này đã có tài khoản. Hãy đăng nhập bằng email và mật khẩu.',
+        'Email này đã gắn với một tài khoản Google khác.',
         HttpStatus.CONFLICT,
       );
     }
