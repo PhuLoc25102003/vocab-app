@@ -51,7 +51,9 @@ Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, b
 
 ## CI/CD
 
-GitHub Actions, mỗi PR chạy: `npm ci` → `npx turbo lint typecheck test build` (chỉ chạy phần bị ảnh hưởng) → integration test với Postgres service container.
+`.github/workflows/ci.yml` chạy job `Verify` trên mọi PR và push vào `develop`, `main`: `npm ci` → `prisma migrate deploy` trên Postgres service container → `lint` → `typecheck` → `test` → `build`. Các bước chạy tuần tự vì `typecheck` và `build` của API đều sinh lại Prisma Client. Integration test sẽ dùng cùng database này khi được thêm.
+
+Đặt `Verify` làm required status check trong branch protection của `main` và `develop` để chặn merge khi CI đỏ.
 
 | Thành phần | Preview (mỗi PR)                    | Production (merge `main`)                            |
 | ---------- | ----------------------------------- | ---------------------------------------------------- |
@@ -102,9 +104,9 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 
 ## Hiện trạng công cụ
 
-| Có                                                                                                           | Chưa có                                                                                                                             |
-| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app | Vitest, Testing Library, Supertest, Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, GitHub Actions, `constants.ts` |
+| Có                                                                                                                                   | Chưa có                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions | Vitest, Testing Library, Supertest, Playwright test, Husky, lint-staged, `eslint-plugin-boundaries`, `constants.ts` |
 
 Chưa có package nào khai báo script `test`, nên `npm test` hiện không chạy test nào.
 
