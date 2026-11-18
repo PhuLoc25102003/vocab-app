@@ -112,7 +112,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **1.24** Chế độ Viết, chấm bằng gạch đỏ và đáp án đúng (#82).
 - [x] **1.25** Chế độ Nghe viết (#84).
-- [x] **1.26** Chế độ Trắc nghiệm.
+- [x] **1.26** Chế độ Trắc nghiệm (#86).
 - [ ] **1.27** `GET /review/due` và trang "Ôn hôm nay".
 - [ ] **1.28** `GET /stats/overview` và phần thống kê: streak, số từ đã thuộc, từ hay sai.
 
