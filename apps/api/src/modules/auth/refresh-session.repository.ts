@@ -21,4 +21,49 @@ export class RefreshSessionRepository extends BaseRepository {
   async create(data: NewRefreshSession): Promise<void> {
     await this.prisma.refreshSession.create({ data, select: { id: true } });
   }
+
+  findByTokenHash(tokenHash: string) {
+    return this.prisma.refreshSession.findUnique({
+      where: { tokenHash },
+      select: {
+        id: true,
+        familyId: true,
+        expiresAt: true,
+        revokedAt: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+            role: true,
+            tokenVersion: true,
+            deletedAt: true,
+          },
+        },
+      },
+    });
+  }
+
+  /** Thu hồi phiên cũ và tạo phiên mới. Trả `false` nếu request khác đã xoay vòng trước. */
+  rotate(sessionId: string, next: NewRefreshSession): Promise<boolean> {
+    return this.prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const { count } = await tx.refreshSession.updateMany({
+        where: { id: sessionId, revokedAt: null },
+        data: { revokedAt: now },
+      });
+      if (count === 0) {
+        return false;
+      }
+      await tx.refreshSession.create({ data: next, select: { id: true } });
+      await tx.refreshSession.deleteMany({
+        where: { familyId: next.familyId, expiresAt: { lt: now } },
+      });
+      return true;
+    });
+  }
+
+  async deleteFamily(familyId: string): Promise<void> {
+    await this.prisma.refreshSession.deleteMany({ where: { familyId } });
+  }
 }

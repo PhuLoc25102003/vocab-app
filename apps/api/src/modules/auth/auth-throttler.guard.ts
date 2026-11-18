@@ -10,6 +10,7 @@ import { AppError } from '../../common/errors/app-error';
 
 export const ONE_MINUTE_MS = 60_000;
 export const REGISTER_LIMIT_PER_IP = 3;
+export const REFRESH_LIMIT_PER_IP = 60;
 const LOGIN_LIMIT_PER_IP = 20;
 const LOGIN_LIMIT_PER_ACCOUNT = 5;
 

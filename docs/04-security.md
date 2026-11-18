@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()` đã có. Phần `RolesGuard`, `OwnershipGuard` và giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()` đã có. Phần `RolesGuard`, `OwnershipGuard` và giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
@@ -27,8 +27,9 @@ Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refre
 1. Access token hết hạn → API trả 401 `TOKEN_EXPIRED`.
 2. `lib/http.ts` gọi `/auth/refresh` **một lần duy nhất** (các request khác chờ chung một Promise), rồi gửi lại request cũ.
 3. Server tìm `RefreshSession` theo hash: còn hạn và chưa thu hồi → thu hồi bản cũ, tạo bản mới cùng `familyId`, trả cặp token mới.
-4. Token đã bị thu hồi mà vẫn được dùng lại → có người đã lấy cắp: thu hồi cả family, bắt đăng nhập lại.
-5. Refresh thất bại → xoá state, chuyển về `/login?next=<trang cũ>`.
+4. Token đã thu hồi được gửi lại trong 10 giây → thường là tab khác đang refresh: trả 409 `REFRESH_IN_PROGRESS`, client gửi lại một lần.
+5. Token đã thu hồi được dùng lại sau 10 giây → có người đã lấy cắp: xoá cả family, bắt đăng nhập lại.
+6. Refresh thất bại → xoá state, chuyển về `/login?next=<trang cũ>`.
 
 ## Phân quyền: RBAC + quyền sở hữu
 
@@ -84,7 +85,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [ ] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy.
 - [ ] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
 - [ ] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.
-- [ ] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
+- [x] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
 - [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy.
 - [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino).
 - [x] `npm audit` và Dependabot bật trong CI.

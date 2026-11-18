@@ -3,8 +3,16 @@ import { ERROR_CODES, type AuthUser, type LoginInput, type RegisterInput } from 
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { UsersRepository } from '../users/users.repository';
-import { AuthSessionService, type SessionClient } from './auth-session.service';
+import { AuthSessionService, type IssuedSession, type SessionClient } from './auth-session.service';
 import { PasswordService } from './password.service';
+
+function toSessionResult(user: AuthUser, session: IssuedSession) {
+  return {
+    body: ok({ user, accessToken: session.accessToken }),
+    refreshToken: session.refreshToken,
+    refreshExpiresAt: session.refreshExpiresAt,
+  };
+}
 
 @Injectable()
 export class AuthService {
@@ -38,11 +46,11 @@ export class AuthService {
       displayName: account.displayName,
       role: account.role,
     };
-    const session = await this.sessions.start(account, client);
-    return {
-      body: ok({ user, accessToken: session.accessToken }),
-      refreshToken: session.refreshToken,
-      refreshExpiresAt: session.refreshExpiresAt,
-    };
+    return toSessionResult(user, await this.sessions.start(account, client));
+  }
+
+  async refresh(token: string | undefined, client: SessionClient) {
+    const { user, issued } = await this.sessions.refresh(token, client);
+    return toSessionResult(user, issued);
   }
 }
