@@ -139,7 +139,7 @@ Nút đang gửi giữ nguyên kích thước, hiện vòng xoay và khoá bấm
 | Error      | Nói việc gì không làm được, cách xử lý, và nút "Thử lại". Lỗi form đặt ngay dưới ô nhập, nối bằng `aria-describedby` |
 | Success    | Nội dung thật. Sau thao tác, thông báo ngắn cùng tên với hành động                                                   |
 
-Xoá mềm dùng thông báo có nút "Hoàn tác" thay cho hộp xác nhận. Chỉ xác nhận khi không hoàn tác được.
+Xoá mềm dùng thông báo có nút "Hoàn tác" thay cho hộp xác nhận. Chỉ xác nhận khi không hoàn tác được. API chưa có endpoint khôi phục bộ từ, nên hiện tại xoá bộ từ phải xác nhận.
 
 ## Màn hình học
 
