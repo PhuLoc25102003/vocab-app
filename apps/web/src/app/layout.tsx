@@ -15,7 +15,6 @@ const beVietnamPro = Be_Vietnam_Pro({
 const literata = Literata({
   variable: '--font-literata',
   subsets: ['latin', 'vietnamese'],
-  axes: ['opsz'],
 });
 
 // Phiên âm IPA chỉ cần khi thẻ có phiên âm nên không preload.

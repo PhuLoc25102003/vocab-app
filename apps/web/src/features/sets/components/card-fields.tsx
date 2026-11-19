@@ -93,7 +93,6 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
             <li
               key={field.key}
               data-card={index}
-              role="group"
               aria-labelledby={titleId}
               className="flex flex-col gap-3 border-b border-border px-1 py-4 [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
             >

@@ -71,10 +71,11 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P8. Rà chất lượng
 
-- **Việc:** 1.34. **Người dùng:** mọi người. **Trạng thái:** Chưa làm.
+- **Việc:** 1.34. **Người dùng:** mọi người. **Trạng thái:** Thiếu, Performance chưa đạt.
 - **Phải có:** mọi trang đạt bàn phím, focus, vùng bấm 44 px, light, dark, 360 px, `prefers-reduced-motion`; Lighthouse trang học đạt Performance từ 90 và Accessibility từ 95.
-- **Cách test:** thêm kiểm tra axe vào E2E; chạy Lighthouse trên bản production; đi hết các màn hình bằng bàn phím; kiểm tra thủ công một điện thoại thật.
-- **Lưu ý:** làm sau phần 1H để không phải rà lại các màn hình mới.
+- **Đã đạt:** E2E quét axe theo WCAG 2.2 AA, tràn ngang, vùng bấm 44 px, vòng focus ở mọi màn hình, light 1280 px và dark 360 px, với từ dài 200 ký tự và khi giảm chuyển động. Lighthouse Accessibility 100 ở trang chủ, trang công khai và trang học thử.
+- **Chưa đạt:** Lighthouse Performance trên máy local, mobile giả lập: trang chủ 87, trang công khai 88, trang học thử 85. LCP khoảng 4 giây vì tải khoảng 200 KB font và 255 KB JavaScript trước khi hiện chữ, trang học còn chờ gọi API.
+- **Hướng xử lý:** đo lại trên production sau việc 1.20; nếu vẫn dưới 90 thì bớt độ đậm font hoặc render sẵn câu đầu của trang học ở server.
 
 ## UC-P9. Phát hành MVP
 

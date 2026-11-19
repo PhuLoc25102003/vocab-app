@@ -30,7 +30,6 @@ function SampleCard() {
     <figure className="flex w-full max-w-md flex-col">
       <div className="paper-grid flex min-h-44 flex-col items-center justify-center gap-1 rounded-lg border border-border p-6 shadow-raised">
         <span className="font-card text-card">remember</span>
-        <span className="bg-surface px-2 font-phonetic text-text-muted">/rɪˈmɛmbər/</span>
       </div>
       <div className="-mt-4 ml-8 flex min-h-24 items-center justify-center rounded-lg bg-board p-4 text-board-fg shadow-raised">
         <span className="font-card text-h2">ghi nhớ</span>

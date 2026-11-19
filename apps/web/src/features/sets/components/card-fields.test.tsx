@@ -50,7 +50,8 @@ function renderWithQuery(ui: ReactNode) {
   render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
 }
 
-const cardGroup = (number: number) => within(screen.getByRole('group', { name: `Thẻ ${number}` }));
+const cardGroup = (number: number) =>
+  within(screen.getByRole('listitem', { name: `Thẻ ${number}` }));
 const save = () => userEvent.click(screen.getByRole('button', { name: 'Lưu bộ từ' }));
 
 async function renderEditor() {
@@ -58,7 +59,7 @@ async function renderEditor() {
   vi.mocked(updateSet).mockResolvedValue(summary);
   vi.mocked(replaceCards).mockResolvedValue();
   renderWithQuery(<EditSet id="s1" />);
-  await screen.findByRole('group', { name: 'Thẻ 1' });
+  await screen.findByRole('listitem', { name: 'Thẻ 1' });
 }
 
 const savedCards = () => vi.mocked(replaceCards).mock.calls[0]?.[1].cards;

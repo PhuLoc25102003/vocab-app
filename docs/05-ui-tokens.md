@@ -68,11 +68,11 @@ Quy tắc:
 
 ## Typography
 
-| Font                | Class           | Dùng cho                            | Lý do                                                 |
-| ------------------- | --------------- | ----------------------------------- | ----------------------------------------------------- |
-| Be Vietnam Pro      | `font-sans`     | Toàn bộ giao diện                   | Thiết kế cho tiếng Việt, dấu không chồng              |
-| Literata (variable) | `font-card`     | Từ và nghĩa trên thẻ, ô nhập đáp án | Có optical size, đọc rõ, mang cảm giác mục từ từ điển |
-| Noto Serif 400      | `font-phonetic` | Phiên âm IPA                        | Literata và Be Vietnam Pro thiếu nhiều ký tự IPA      |
+| Font                | Class           | Dùng cho                            | Lý do                                            |
+| ------------------- | --------------- | ----------------------------------- | ------------------------------------------------ |
+| Be Vietnam Pro      | `font-sans`     | Toàn bộ giao diện                   | Thiết kế cho tiếng Việt, dấu không chồng         |
+| Literata (variable) | `font-card`     | Từ và nghĩa trên thẻ, ô nhập đáp án | Đọc rõ, mang cảm giác mục từ từ điển             |
+| Noto Serif 400      | `font-phonetic` | Phiên âm IPA                        | Literata và Be Vietnam Pro thiếu nhiều ký tự IPA |
 
 Nạp bằng `next/font/google`. Noto Serif đặt `preload: false` vì chỉ cần khi thẻ có phiên âm.
 
