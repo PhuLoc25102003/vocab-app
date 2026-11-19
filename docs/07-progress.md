@@ -194,7 +194,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.20** Mức nhớ từng thẻ (Mới, Đang học, Đã thuộc) và ngày ôn tiếp theo trên trang bộ từ, kèm giải thích điều kiện đã thuộc (#208).
 - [x] **2.26** Trang Ôn hôm nay giải thích lịch ôn và hiện thẻ sắp đến hạn; ô "Từ đã thuộc" ở Tổng quan có chú thích điều kiện (#222).
 - [x] **2.21** Trang Tổng quan nổi bật hơn: việc nên làm tiếp, bốn ô số liệu, biểu đồ hoạt động 7 ngày, thanh phân bố mức nhớ (#210).
-- [x] **2.27** Tổng quan cho ADMIN: số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá.
+- [x] **2.27** Tổng quan cho ADMIN: số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá (#224).
 - [x] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện dạng danh sách để quản lý, Khám phá là lưới bộ của cộng đồng có tác giả, mô tả và số thẻ; mô tả trang nói rõ vai trò (#212).
 - [x] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị (#216).
 - [x] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ (#218).
