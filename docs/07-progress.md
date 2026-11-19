@@ -6,7 +6,7 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Cải thiện trải nghiệm và giao diện, nhóm 2E (việc 2.16 đến 2.25).
+1. Cải thiện trải nghiệm và giao diện, nhóm 2E (việc 2.16 đến 2.26).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34).
 
@@ -18,10 +18,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong         |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     14 |      25 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     15 |      26 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |       4 | Đang làm     |
-| **Toàn dự án**          |                                            | **79** | **104** | **76%**      |
+| **Toàn dự án**          |                                            | **80** | **105** | **76%**      |
 
 ## Cách cập nhật
 
@@ -192,7 +192,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.17** Header hiện tên hiển thị cạnh ảnh đại diện, mở menu tài khoản (Tài khoản, Quản lý người dùng với ADMIN, Đăng xuất) (#198).
 - [x] **2.18** Ô chọn (dropdown) mới thay `select` mặc định: đẹp, đúng token, dùng được bằng bàn phím và trình đọc màn hình (#203).
 - [x] **2.19** Chế độ học trên trang bộ từ gom thành lưới thẻ có icon và mô tả ngắn, một nút chính "Bắt đầu học", thay hàng nút trải dài (#206).
-- [ ] **2.20** Giải thích "đã thuộc" và "đến hạn": mỗi thẻ hiện mức nhớ (Mới, Đang học, Đã thuộc) và ngày ôn tiếp theo; trang Ôn hôm nay giải thích lịch ôn và hiện thẻ sắp đến hạn; ô "Từ đã thuộc" có chú thích điều kiện.
+- [x] **2.20** Mức nhớ từng thẻ (Mới, Đang học, Đã thuộc) và ngày ôn tiếp theo trên trang bộ từ, kèm giải thích điều kiện đã thuộc (#208).
+- [ ] **2.26** Trang Ôn hôm nay giải thích lịch ôn và hiện thẻ sắp đến hạn; ô "Từ đã thuộc" ở Tổng quan có chú thích điều kiện.
 - [ ] **2.21** Trang Tổng quan nổi bật hơn: hoạt động 7 ngày, phân bố mức nhớ, bộ đang học dở, việc nên làm tiếp; ADMIN thấy thêm số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá.
 - [ ] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện của tôi (tiến độ từng bộ, thư mục, thao tác chủ), Khám phá là cộng đồng (thẻ có tác giả, số thẻ, sao chép nhanh, sắp xếp mới và nhiều thẻ).
 - [ ] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị.

@@ -111,6 +111,30 @@ describe('GET /stats/overview', () => {
     expect(body.data).toEqual({ total: 2, mastered: 1, learning: 0, notStarted: 1, due: 1 });
   });
 
+  it('trả mức nhớ và ngày ôn của từng thẻ theo người gọi', async () => {
+    const [apple, pear] = [cardIds[0]!, cardIds[1]!];
+    const due = new Date(Date.now() + DAY_MS);
+    await prisma.cardProgress.createMany({
+      data: [
+        { userId: owner.id, cardId: apple, interval: MASTERED_INTERVAL_DAYS, dueAt: due },
+        { userId: other.id, cardId: pear, interval: 1, dueAt: due },
+      ],
+    });
+    const cards = (token: string | null) => {
+      const call = request(app.getHttpServer()).get(`/api/v1/stats/sets/${setId}/cards`);
+      return token ? call.set('Authorization', `Bearer ${token}`) : call;
+    };
+
+    await cards(null).expect(401);
+    const { body } = await cards(owner.token).expect(200);
+    expect(body.data).toEqual([
+      { cardId: apple, level: 'mastered', dueAt: due.toISOString() },
+      { cardId: pear, level: 'new', dueAt: null },
+    ]);
+    const { body: forOther } = await cards(other.token).expect(200);
+    expect(forOther.data[1]).toMatchObject({ cardId: pear, level: 'learning' });
+  });
+
   it('trả 404 khi không xem được bộ từ', async () => {
     await prisma.studySet.update({ where: { id: setId }, data: { visibility: 'PRIVATE' } });
 

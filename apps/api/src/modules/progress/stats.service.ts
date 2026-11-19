@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { computeStreak, ERROR_CODES, startOfStudyDay } from '@vocab/shared';
+import { cardMastery, computeStreak, ERROR_CODES, startOfStudyDay } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import type { SetViewer } from '../sets/sets.repository';
@@ -25,6 +25,20 @@ export class StatsService {
       dueCards,
       hardCards,
     });
+  }
+
+  async cardProgress(setId: string, viewer: SetViewer) {
+    const found = await this.stats.findCardProgress(setId, viewer);
+    if (!found) {
+      throw new AppError(ERROR_CODES.SET_NOT_FOUND, 'Không tìm thấy bộ từ', HttpStatus.NOT_FOUND);
+    }
+    const byCard = new Map(found.progress.map((item) => [item.cardId, item]));
+    return ok(
+      found.cardIds.map((cardId) => {
+        const item = byCard.get(cardId) ?? null;
+        return { cardId, level: cardMastery(item), dueAt: item?.dueAt ?? null };
+      }),
+    );
   }
 
   async setProgress(setId: string, viewer: SetViewer) {

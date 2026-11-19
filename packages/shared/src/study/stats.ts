@@ -33,3 +33,14 @@ export function computeStreak(days: Iterable<string>, now: Date): number {
   }
   return streak;
 }
+
+export type CardMastery = 'new' | 'learning' | 'mastered';
+
+/**
+ * Mức nhớ của một thẻ. Đúng lần đầu thì hẹn ôn sau 1 ngày, đúng tiếp khi đến hạn thì giãn ra
+ * 6 ngày, lúc đó mới là đã thuộc. Học dồn trong cùng ngày không làm thẻ tiến lên.
+ */
+export function cardMastery(progress: { interval: number } | null): CardMastery {
+  if (!progress) return 'new';
+  return progress.interval >= MASTERED_INTERVAL_DAYS ? 'mastered' : 'learning';
+}
