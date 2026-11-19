@@ -14,18 +14,13 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   createSetSchema,
-  paginationSchema,
   publicSetQuerySchema,
   replaceCardsSchema,
   updateSetSchema,
+  mySetQuerySchema,
+  MySetQuery,
 } from '@vocab/shared';
-import type {
-  CreateSetDto,
-  Pagination,
-  PublicSetQuery,
-  ReplaceCardsDto,
-  UpdateSetDto,
-} from '@vocab/shared';
+import type { CreateSetDto, PublicSetQuery, ReplaceCardsDto, UpdateSetDto } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CheckOwnership } from '../../common/decorators/check-ownership.decorator';
 import { CurrentUser, OptionalUser } from '../../common/decorators/current-user.decorator';
@@ -44,7 +39,7 @@ export class SetsController {
   @ApiOperation({ summary: 'Danh sách bộ từ của tôi' })
   listMine(
     @CurrentUser() user: CurrentUserData,
-    @Query(new ZodValidationPipe(paginationSchema)) query: Pagination,
+    @Query(new ZodValidationPipe(mySetQuerySchema)) query: MySetQuery,
   ) {
     return this.sets.listMine(user.id, query);
   }

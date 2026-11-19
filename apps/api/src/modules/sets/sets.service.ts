@@ -2,10 +2,10 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
   type CreateSetDto,
-  type Pagination,
   type PublicSetQuery,
   type ReplaceCardsDto,
   type UpdateSetDto,
+  type MySetQuery,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -19,7 +19,7 @@ function setNotFound(): AppError {
 export class SetsService {
   constructor(private readonly sets: SetsRepository) {}
 
-  async listMine(ownerId: string, query: Pagination) {
+  async listMine(ownerId: string, query: MySetQuery) {
     const [items, total] = await this.sets.findByOwner(ownerId, query);
     return paginated(items, total, query);
   }

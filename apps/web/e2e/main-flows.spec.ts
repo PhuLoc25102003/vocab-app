@@ -164,10 +164,10 @@ test.describe.serial('luồng chính', () => {
     await expect(page.getByRole('heading', { name: 'Không tìm thấy trang' })).toBeVisible();
     await page.getByRole('link', { name: 'Về trang của tôi' }).click();
     await page.waitForURL('**/dashboard');
+    await expect(page.getByRole('heading', { name: 'Tổng quan' })).toBeVisible();
   });
 
   test('đổi tên và mật khẩu ở trang tài khoản', async () => {
-    await page.goto('/dashboard');
     await page.getByRole('link', { name: 'Tài khoản' }).click();
     await page.waitForURL('**/account');
     await expect(page.getByText(account.email)).toBeVisible();

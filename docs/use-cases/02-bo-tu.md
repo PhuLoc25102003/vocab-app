@@ -4,13 +4,12 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S1. Xem danh sách bộ từ của tôi
 
-- **Việc:** 1.7, 1.10, 1.43. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-07).
+- **Việc:** 1.7, 1.10, 1.43. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** danh sách dạng dòng với tên, số thẻ, phạm vi, ngày cập nhật; phân trang trên URL; nút tạo bộ; ô tìm theo tên; chọn cách sắp xếp.
 - **Luồng chính:** mở `/sets`, thấy bộ mới sửa ở đầu, tìm hoặc sắp xếp, mở một bộ, quay lại vẫn đúng trang và từ khoá.
 - **Ngoại lệ:** chưa có bộ nào; không có kết quả tìm kiếm; số trang vượt quá; lỗi mạng có nút thử lại.
 - **Test đã có:** `sets.integration`, `my-sets.test`.
-- **Test cần thêm:** integration tham số `q` chỉ tìm trong bộ của mình; component giữ từ khoá trên URL; E2E tìm rồi mở rồi quay lại.
-- **Còn thiếu:** API `GET /sets` có `sort` nhưng chưa có `q`, web chưa dùng cả hai.
+- **Test cần thêm:** E2E tìm rồi mở rồi quay lại.
 
 ## UC-S2. Tạo bộ từ
 

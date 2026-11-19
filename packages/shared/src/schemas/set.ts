@@ -119,6 +119,9 @@ export const publicSetQuerySchema = paginationSchema.extend({
 });
 export type PublicSetQuery = z.infer<typeof publicSetQuerySchema>;
 
+export const mySetQuerySchema = publicSetQuerySchema;
+export type MySetQuery = PublicSetQuery;
+
 export const updateSetSchema = z
   .object({
     title: titleSchema.optional(),
