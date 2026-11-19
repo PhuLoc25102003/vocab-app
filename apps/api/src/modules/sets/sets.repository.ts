@@ -74,7 +74,7 @@ export function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
   }
   return {
     OR: [
-      { visibility: 'PUBLIC', owner: { deletedAt: null } },
+      { visibility: 'PUBLIC', hiddenAt: null, owner: { deletedAt: null } },
       ...(viewer ? [{ ownerId: viewer.id }] : []),
     ],
   };
@@ -132,6 +132,7 @@ export class SetsRepository extends BaseRepository {
     const where: Prisma.StudySetWhereInput = {
       visibility: 'PUBLIC',
       deletedAt: null,
+      hiddenAt: null,
       owner: { deletedAt: null },
       ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
     };

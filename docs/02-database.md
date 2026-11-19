@@ -104,6 +104,9 @@ model StudySet {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
+  hiddenAt     DateTime?
+  hiddenReason String?
+  hiddenById   String?
 
   owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   folder        Folder?        @relation(fields: [folderId], references: [id])
@@ -189,6 +192,7 @@ model Attempt {
 
 - `cardCount` lưu sẵn để trang danh sách không phải đếm; cập nhật trong cùng transaction khi thêm/xoá thẻ.
 - `User.lockedAt`, `lockReason`, `lockedById` lưu việc ADMIN khoá tài khoản (việc 2.11). `lockedById` là id ADMIN, không đặt khoá ngoại để giữ lịch sử khi tài khoản ADMIN bị xoá. Tài khoản có `lockedAt` không đăng nhập, không refresh được và bị `AuthGuard` từ chối.
+- `StudySet.hiddenAt`, `hiddenReason`, `hiddenById` lưu việc ADMIN ẩn bộ vi phạm (việc 2.12). Bộ bị ẩn không còn trong Khám phá và với người khác (`visibleTo()` chỉ cho xem bộ `PUBLIC` có `hiddenAt` null), chủ bộ và ADMIN vẫn thấy.
 - Xoá bộ từ là soft delete (`deletedAt`). `SetsPurgeService` xoá hẳn bộ có `deletedAt` quá 30 ngày, kèm thẻ, phiên học, câu trả lời và tiến độ theo cascade. Job chạy khoảng 1 phút sau khi API khởi động và mỗi 24 giờ (Render gói Free ngủ khi rảnh nên không dùng giờ cố định), xoá theo lô 200 bộ, giữ `pg_try_advisory_xact_lock` để nhiều instance không chạy trùng, ghi log số bộ đã xoá. MVP không có thùng rác, bộ đã xoá không khôi phục được.
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
 - `Class`, `ClassMember`, `Assignment` thêm ở giai đoạn 3, không ảnh hưởng bảng cũ.

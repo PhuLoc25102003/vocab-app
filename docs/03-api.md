@@ -32,6 +32,8 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | GET    | /admin/users                | ADMIN                     | Danh sách người dùng, tìm theo email hoặc tên              |
 | PATCH  | /admin/users/:id/lock       | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
 | PATCH  | /admin/users/:id/unlock     | ADMIN                     | Mở khoá tài khoản                                          |
+| PATCH  | /admin/sets/:id/hide        | ADMIN                     | Ẩn bộ từ vi phạm kèm lý do                                 |
+| PATCH  | /admin/sets/:id/unhide      | ADMIN                     | Bỏ ẩn bộ từ                                                |
 | POST   | /import/preview             | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
 | POST   | /sets/:id/import            | Chủ                       | Lưu kết quả đã xem trước                                   |
 | POST   | /uploads/presign            | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
@@ -129,6 +131,8 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `GET /admin/users` nhận `page`, `limit`, `sort` (`createdAt`, `email`, `displayName`, mặc định `-createdAt`) và `q` (tìm trong email hoặc tên, không phân biệt hoa thường, tối đa 100 ký tự), trả `{ data: [{ id, email, displayName, role, createdAt, lockedAt, lockReason, lockedById }], meta }`. Không trả hash mật khẩu.
 - `PATCH /admin/users/:id/lock` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, tăng `tokenVersion` và xoá mọi phiên refresh nên tài khoản bị đăng xuất ngay, trả 200 `{ data: user }`. Tự khoá mình trả 422 `CANNOT_LOCK_SELF`. `PATCH /admin/users/:id/unlock` xoá ba trường khoá. Không tìm thấy trả 404 `USER_NOT_FOUND`.
 - Tài khoản bị khoá đăng nhập bằng mật khẩu hoặc Google trả 403 `ACCOUNT_LOCKED`, chỉ sau khi mật khẩu đúng. Refresh trả 401 và access token cũ bị `AuthGuard` từ chối.
+
+- `PATCH /admin/sets/:id/hide` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, trả 200 `{ data: { id, title, hiddenAt, hiddenReason, hiddenById } }`. `PATCH /admin/sets/:id/unhide` xoá ba trường này. Bộ không tồn tại hoặc đã xoá trả 404 `SET_NOT_FOUND`. Bộ bị ẩn không còn trong `GET /sets/public`, và với người không phải chủ hay ADMIN thì `GET /sets/:id`, học, sao chép đều trả 404.
 
 ## Thống kê
 
