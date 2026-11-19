@@ -231,7 +231,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   });
 
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
-    test.setTimeout(240_000);
+    // Quét khoảng 25 màn hình ở hai giao diện, máy CI chậm hơn máy local nhiều.
+    test.setTimeout(480_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();
     const memberPaths = [
       '/dashboard',
