@@ -69,6 +69,8 @@ export const setSummarySchema = z.object({
   termLang: z.string(),
   defLang: z.string(),
   visibility: visibilitySchema,
+  /** Thư mục của chủ bộ từ, chỉ có trong dữ liệu trả cho chủ. */
+  folderId: z.string().nullable().optional(),
   cardCount: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -119,8 +121,13 @@ export const publicSetQuerySchema = paginationSchema.extend({
 });
 export type PublicSetQuery = z.infer<typeof publicSetQuerySchema>;
 
-export const mySetQuerySchema = publicSetQuerySchema;
-export type MySetQuery = PublicSetQuery;
+/** `folderId` là id thư mục, hoặc `none` để lấy bộ chưa vào thư mục nào. */
+export const mySetQuerySchema = publicSetQuerySchema.extend({
+  folderId: z.string().min(1).max(64).optional(),
+});
+export type MySetQuery = z.infer<typeof mySetQuerySchema>;
+
+export const NO_FOLDER = 'none';
 
 export const updateSetSchema = z
   .object({
@@ -129,6 +136,8 @@ export const updateSetSchema = z
     termLang: languageSchema.optional(),
     defLang: languageSchema.optional(),
     visibility: visibilitySchema.optional(),
+    /** `null` để đưa bộ từ ra khỏi thư mục. */
+    folderId: z.string().min(1).max(64).nullable().optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: 'Chưa có thay đổi nào',

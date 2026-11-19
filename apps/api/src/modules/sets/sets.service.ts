@@ -13,6 +13,10 @@ import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { SetsRepository, type SetViewer } from './sets.repository';
 
+function folderNotFound(): AppError {
+  return new AppError(ERROR_CODES.FOLDER_NOT_FOUND, 'Không tìm thấy thư mục', HttpStatus.NOT_FOUND);
+}
+
 function setNotFound(): AppError {
   return new AppError(ERROR_CODES.SET_NOT_FOUND, 'Không tìm thấy bộ từ', HttpStatus.NOT_FOUND);
 }
@@ -36,7 +40,9 @@ export class SetsService {
     if (!set) {
       throw setNotFound();
     }
-    return ok(set);
+    // Thư mục là thông tin riêng của chủ bộ từ.
+    const { folderId: _folderId, ...rest } = set;
+    return ok(viewer?.id === set.ownerId ? set : rest);
   }
 
   async create(ownerId: string, dto: CreateSetDto) {
@@ -52,7 +58,20 @@ export class SetsService {
   }
 
   async update(id: string, dto: UpdateSetDto) {
-    const set = await this.sets.update(id, dto);
+    if (dto.folderId) {
+      // ADMIN sửa bộ của người khác thì thư mục vẫn phải thuộc chủ bộ từ.
+      const ownerId = await this.sets.findOwnerId(id);
+      if (!ownerId) {
+        throw setNotFound();
+      }
+      if (!(await this.sets.folderOwnedBy(dto.folderId, ownerId))) {
+        throw folderNotFound();
+      }
+    }
+    const set = await this.sets.update(id, dto).catch((error: unknown) => {
+      // Thư mục bị xoá ngay giữa lúc kiểm tra và lưu.
+      throw (error as { code?: unknown } | null)?.code === 'P2003' ? folderNotFound() : error;
+    });
     if (!set) {
       throw setNotFound();
     }

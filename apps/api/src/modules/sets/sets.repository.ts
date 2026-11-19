@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
   MAX_CARDS_PER_SET,
+  NO_FOLDER,
   SET_TITLE_MAX_LENGTH,
   type CardInput,
   type CreateSetDto,
@@ -28,6 +29,7 @@ const SET_SUMMARY_SELECT = {
   termLang: true,
   defLang: true,
   visibility: true,
+  folderId: true,
   cardCount: true,
   createdAt: true,
   updatedAt: true,
@@ -105,10 +107,11 @@ export class SetsRepository extends BaseRepository {
     super(prisma);
   }
 
-  findByOwner(ownerId: string, { q, ...query }: MySetQuery) {
+  findByOwner(ownerId: string, { q, folderId, ...query }: MySetQuery) {
     const where: Prisma.StudySetWhereInput = {
       ownerId,
       deletedAt: null,
+      ...(folderId ? { folderId: folderId === NO_FOLDER ? null : folderId } : {}),
       ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
     };
     return Promise.all([
@@ -132,7 +135,8 @@ export class SetsRepository extends BaseRepository {
     return Promise.all([
       this.prisma.studySet.findMany({
         where,
-        select: { ...SET_SUMMARY_SELECT, ...OWNER_NAME_SELECT },
+        // Thư mục là thông tin riêng của chủ, không trả trong danh sách công khai.
+        select: { ...SET_SUMMARY_SELECT, folderId: false, ...OWNER_NAME_SELECT },
         orderBy: toOrderBy(query.sort),
         ...toSkipTake(query),
       }),
@@ -355,6 +359,23 @@ export class SetsRepository extends BaseRepository {
       },
       { timeout: BULK_CARDS_TIMEOUT_MS },
     );
+  }
+
+  /** Thư mục có thuộc người này không. */
+  async folderOwnedBy(folderId: string, ownerId: string): Promise<boolean> {
+    const folder = await this.prisma.folder.findFirst({
+      where: { id: folderId, ownerId },
+      select: { id: true },
+    });
+    return folder !== null;
+  }
+
+  async findOwnerId(id: string): Promise<string | null> {
+    const set = await this.prisma.studySet.findFirst({
+      where: { id, deletedAt: null },
+      select: { ownerId: true },
+    });
+    return set?.ownerId ?? null;
   }
 
   /** Trả `null` nếu bộ từ không tồn tại hoặc đã xoá mềm. */
