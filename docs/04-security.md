@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập Google xác thực ID token ở API. Email đã xác minh trùng tài khoản mật khẩu thì được gộp, mật khẩu cũ và mọi phiên cũ bị huỷ, vì đăng ký bằng mật khẩu chưa xác minh email nên người đặt mật khẩu có thể không phải chủ email. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Web giữ access token trong bộ nhớ. `proxy.ts` không đọc được cookie refresh ở domain API, nên dùng cookie `vocab_session` chỉ để điều hướng, không có giá trị bảo mật. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập Google xác thực ID token ở API. Email đã xác minh trùng tài khoản mật khẩu thì được gộp, mật khẩu cũ và mọi phiên cũ bị huỷ, vì đăng ký bằng mật khẩu chưa xác minh email nên người đặt mật khẩu có thể không phải chủ email. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Web giữ access token trong bộ nhớ. `proxy.ts` không đọc được cookie refresh ở domain API, nên dùng cookie `vocab_session` chỉ để điều hướng, không có giá trị bảo mật. Web đặt CSP và header bảo mật trong `next.config.ts`. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
@@ -77,19 +77,25 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [x] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
 - [ ] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/user (`@nestjs/throttler`). Còn thiếu giới hạn chung, cần có user từ JWT. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance. Sau proxy phải đặt `TRUSTED_PROXIES`.
 - [x] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại. Đăng ký bằng email đã có trả cùng kết quả với email mới.
-- [ ] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
-- [ ] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
-- [ ] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.
-- [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`).
-- [ ] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp`.
-- [ ] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy.
-- [ ] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
-- [ ] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.
+- [x] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
+- [x] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
+- [x] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.
+- [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`). Chưa có tính năng import.
+- [ ] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp`. Chưa có tính năng upload.
+- [x] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy. Chỗ dùng duy nhất là script giao diện có nội dung cố định.
+- [x] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
+- [x] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.
 - [x] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
-- [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy.
-- [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino).
+- [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy. Phần trong repo đã đạt, phần Render và Vercel kiểm tra khi triển khai.
+- [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino). Làm ở việc 1.31.
 - [x] `npm audit` và Dependabot bật trong CI.
 - [x] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
+
+## Header bảo mật của web
+
+`apps/web/src/lib/security-headers.ts` tạo header cho mọi route. CSP chỉ cho gọi origin của `NEXT_PUBLIC_API_URL` và Google Identity. Giá trị này được đọc lúc build, đổi API thì phải build lại.
+
+`script-src` có `'unsafe-inline'` vì app dùng prerender một phần, phần tĩnh không nhận được nonce theo request. CSP vì vậy không chặn được script nội tuyến nếu có lỗi XSS, nên React escape và lệnh cấm `dangerouslySetInnerHTML` vẫn là lớp bảo vệ chính. Môi trường dev có thêm `'unsafe-eval'` và `ws:`.
 
 ## Đã điều chỉnh so với spec gốc
 
