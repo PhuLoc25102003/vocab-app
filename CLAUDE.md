@@ -11,6 +11,7 @@ Chỉ dùng npm. Chạy ở gốc repo, dùng Node 24 (`.nvmrc`, `nvm use 24.22.
 npm run dev          # web :3000, api :4000, shared watch
 npm run build
 npm test             # unit và integration, cần Postgres đang chạy
+npm run test:e2e     # Playwright, dùng database vocab_e2e và cổng 3100, 4100
 npm run lint
 npm run typecheck
 npm run format
