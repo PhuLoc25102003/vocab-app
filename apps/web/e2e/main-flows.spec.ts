@@ -177,13 +177,15 @@ test.describe.serial('luồng chính', () => {
   });
 
   test('đổi tên và mật khẩu ở trang tài khoản', async () => {
-    await page.getByRole('link', { name: 'Tài khoản' }).click();
+    await page.getByRole('button', { name: /^Tài khoản:/ }).click();
+    await page.getByRole('menuitem', { name: 'Tài khoản' }).click();
     await page.waitForURL('**/account');
     await expect(page.getByText(account.email)).toBeVisible();
 
     await page.getByLabel('Tên hiển thị').fill('Tên mới E2E');
     await page.getByRole('button', { name: 'Lưu tên' }).click();
     await expect(page.getByText('Đã lưu tên hiển thị')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Tài khoản: Tên mới E2E' })).toBeVisible();
 
     await page.getByLabel('Mật khẩu hiện tại', { exact: true }).fill(account.password);
     account.password = 'mat-khau-moi-e2e-456';
@@ -193,7 +195,8 @@ test.describe.serial('luồng chính', () => {
   });
 
   test('đăng xuất, bị chặn ở trang riêng, đăng nhập lại đúng trang', async () => {
-    await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click();
+    await page.getByRole('button', { name: /^Tài khoản:/ }).click();
+    await page.getByRole('menuitem', { name: 'Đăng xuất' }).click();
     await page.waitForURL((url) => !url.pathname.startsWith('/dashboard'));
 
     await page.goto(setPath);
