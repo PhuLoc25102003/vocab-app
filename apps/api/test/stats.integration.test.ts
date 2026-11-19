@@ -87,8 +87,37 @@ describe('GET /stats/overview', () => {
       streakDays: 0,
       masteredCards: 0,
       answersToday: 0,
+      dueCards: 0,
       hardCards: [],
     });
+  });
+
+  it('đếm thẻ đến hạn và tiến độ theo bộ từ của người gọi', async () => {
+    const [apple, pear] = [cardIds[0]!, cardIds[1]!];
+    const past = new Date(Date.now() - DAY_MS);
+    await prisma.cardProgress.createMany({
+      data: [
+        { userId: owner.id, cardId: apple, interval: MASTERED_INTERVAL_DAYS, dueAt: past },
+        { userId: other.id, cardId: pear, interval: 1, dueAt: past },
+      ],
+    });
+
+    expect((await overview(owner.token).expect(200)).body.data.dueCards).toBe(1);
+    const { body } = await request(app.getHttpServer())
+      .get(`/api/v1/stats/sets/${setId}`)
+      .set('Authorization', `Bearer ${owner.token}`)
+      .expect(200);
+
+    expect(body.data).toEqual({ total: 2, mastered: 1, learning: 0, notStarted: 1, due: 1 });
+  });
+
+  it('trả 404 khi không xem được bộ từ', async () => {
+    await prisma.studySet.update({ where: { id: setId }, data: { visibility: 'PRIVATE' } });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/stats/sets/${setId}`)
+      .set('Authorization', `Bearer ${other.token}`)
+      .expect(404);
   });
 
   it('tổng hợp đúng dữ liệu của người gọi', async () => {

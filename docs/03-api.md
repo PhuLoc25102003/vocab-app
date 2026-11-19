@@ -32,6 +32,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /study/sessions/:id/answers | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
 | PATCH  | /study/sessions/:id/finish  | Chủ phiên                 | Kết thúc, trả kết quả                                      |
 | GET    | /review/due                 | Đã đăng nhập              | Thẻ đến hạn ôn hôm nay                                     |
+| GET    | /stats/sets/:id             | Người xem được bộ từ      | Tiến độ của tôi trong bộ từ                                |
 | GET    | /stats/overview             | Đã đăng nhập              | Streak, số từ đã thuộc, từ hay sai                         |
 | GET    | /health                     | Công khai                 | Kiểm tra API + kết nối DB                                  |
 | GET    | /admin/users                | ADMIN                     | Quản lý người dùng                                         |
@@ -102,7 +103,8 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 ## Thống kê
 
-- `GET /stats/overview` trả `{ data: { streakDays, masteredCards, answersToday, hardCards } }`. Ngày học tính theo giờ Việt Nam (UTC+7). Chuỗi ngày vẫn giữ nếu hôm nay chưa học nhưng hôm qua có học. Thẻ đã thuộc là thẻ có `interval` từ 6 ngày. `hardCards` gồm tối đa 5 thẻ sai nhiều nhất, thuộc bộ từ người gọi còn xem được.
+- `GET /stats/sets/:id` trả `{ data: { total, mastered, learning, notStarted, due } }`, trả 404 nếu không xem được bộ từ.
+- `GET /stats/overview` trả `{ data: { streakDays, masteredCards, answersToday, dueCards, hardCards } }`. Ngày học tính theo giờ Việt Nam (UTC+7). Chuỗi ngày vẫn giữ nếu hôm nay chưa học nhưng hôm qua có học. Thẻ đã thuộc là thẻ có `interval` từ 6 ngày. `hardCards` gồm tối đa 5 thẻ sai nhiều nhất, thuộc bộ từ người gọi còn xem được.
 
 ## Khác biệt đang có trong code
 

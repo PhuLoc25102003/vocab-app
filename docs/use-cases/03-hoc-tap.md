@@ -97,9 +97,9 @@
 
 ## UC-L11. Thống kê
 
-- **Việc:** 1.28, 1.44. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-08).
+- **Việc:** 1.28, 1.44. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** chuỗi ngày học, số từ đã thuộc, số câu hôm nay, từ hay sai, số thẻ đến hạn kèm nút "Ôn ngay".
 - **Quy tắc:** ngày tính theo giờ Việt Nam. Từ đã thuộc có khoảng ôn từ 6 ngày. Chưa học hôm nay vẫn giữ chuỗi nếu hôm qua có học.
 - **Ngoại lệ:** chưa học gì thì mời bắt đầu; lỗi mạng có nút thử lại; bộ đã xoá không nằm trong từ hay sai.
 - **Test đã có:** `stats.integration`, `stats-overview.test`, unit `stats`, E2E.
-- **Test cần thêm:** integration ranh giới 0 giờ Việt Nam; component nút "Ôn ngay".
+- **Test cần thêm:** integration ranh giới 0 giờ Việt Nam.

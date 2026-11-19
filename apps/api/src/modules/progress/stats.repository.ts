@@ -35,6 +35,37 @@ export class StatsRepository extends BaseRepository {
     });
   }
 
+  countDue(viewer: SetViewer, now: Date) {
+    return this.prisma.cardProgress.count({
+      where: {
+        userId: viewer.id,
+        dueAt: { lte: now },
+        card: { set: { deletedAt: null, ...visibleTo(viewer) } },
+      },
+    });
+  }
+
+  /** Trả `null` nếu người xem không xem được bộ từ. */
+  async findSetProgress(setId: string, viewer: SetViewer, now: Date) {
+    const set = await this.prisma.studySet.findFirst({
+      where: { id: setId, deletedAt: null, ...visibleTo(viewer) },
+      select: { id: true },
+    });
+    if (!set) {
+      return null;
+    }
+    const progress = { userId: viewer.id, card: { setId } };
+    const [total, started, mastered, due] = await Promise.all([
+      this.prisma.card.count({ where: { setId } }),
+      this.prisma.cardProgress.count({ where: progress }),
+      this.prisma.cardProgress.count({
+        where: { ...progress, interval: { gte: MASTERED_INTERVAL_DAYS } },
+      }),
+      this.prisma.cardProgress.count({ where: { ...progress, dueAt: { lte: now } } }),
+    ]);
+    return { total, started, mastered, due };
+  }
+
   countAnswersSince(userId: string, since: Date) {
     return this.prisma.attempt.count({
       where: { session: { userId }, createdAt: { gte: since } },

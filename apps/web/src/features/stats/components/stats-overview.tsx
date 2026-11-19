@@ -34,8 +34,14 @@ export function StatsOverview() {
     );
   }
 
-  const { streakDays, masteredCards, answersToday, hardCards } = stats.data;
-  if (streakDays === 0 && masteredCards === 0 && answersToday === 0 && hardCards.length === 0) {
+  const { streakDays, masteredCards, answersToday, dueCards, hardCards } = stats.data;
+  if (
+    streakDays === 0 &&
+    masteredCards === 0 &&
+    answersToday === 0 &&
+    dueCards === 0 &&
+    hardCards.length === 0
+  ) {
     return (
       <EmptyState
         title="Chưa có số liệu học tập"
@@ -60,6 +66,16 @@ export function StatsOverview() {
       <h2 id="stats-heading" className="text-h2">
         Thống kê
       </h2>
+      {dueCards > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p>
+            Bạn có <span className="font-semibold tabular-nums">{dueCards}</span> thẻ đến hạn ôn.
+          </p>
+          <Button asChild>
+            <Link href="/review">Ôn ngay</Link>
+          </Button>
+        </div>
+      ) : null}
       <dl className="flex flex-wrap gap-x-10 gap-y-3 border-y border-border py-4">
         {items.map(({ label, value }) => (
           <div key={label} className="flex flex-col-reverse">

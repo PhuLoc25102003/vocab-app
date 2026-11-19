@@ -20,9 +20,11 @@ interface SetDetailProps {
   renderActions: (set: SetDetailData) => ReactNode;
   /** Chủ bộ từ và người xem từ Khám phá quay về hai nơi khác nhau. */
   renderBack?: (set: SetDetailData) => ReactNode;
+  /** Tiến độ của người xem, hiện khi bộ từ có thẻ. */
+  renderProgress?: (set: SetDetailData) => ReactNode;
 }
 
-export function SetDetail({ id, renderActions, renderBack }: SetDetailProps) {
+export function SetDetail({ id, renderActions, renderBack, renderProgress }: SetDetailProps) {
   const set = useSet(id);
 
   if (set.isPending) {
@@ -54,6 +56,7 @@ export function SetDetail({ id, renderActions, renderBack }: SetDetailProps) {
       </SetMeta>
       {cards.length > 0 ? (
         <>
+          {renderProgress?.(set.data)}
           <div className="flex flex-wrap gap-2">
             {STUDY_ENTRIES.map(({ slug, label }, index) => (
               <Button key={slug} asChild variant={index === 0 ? 'primary' : 'secondary'}>

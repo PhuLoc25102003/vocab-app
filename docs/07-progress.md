@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Báo thẻ đến hạn và tiến độ theo bộ (việc 1.44).
-2. Học lại thẻ sai và chọn chế độ ôn (việc 1.45).
+1. Học lại thẻ sai và chọn chế độ ôn (việc 1.45).
+2. Quay lại và chia sẻ ở trang công khai (việc 1.46).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     33 |     49 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     34 |     49 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **46** | **85** | **54%**      |
+| **Toàn dự án**          |                                            | **47** | **85** | **55%**      |
 
 ## Cách cập nhật
 
@@ -140,7 +140,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.41** Trang 404 và trang lỗi toàn cục bằng tiếng Việt, có lối quay về (GAP-05, #113).
 - [x] **1.42** Khách dùng được trang Khám phá (GAP-06, #115).
 - [x] **1.43** Tìm kiếm và sắp xếp trong danh sách bộ từ của tôi (GAP-07, #117).
-- [ ] **1.44** Tổng quan báo số thẻ đến hạn, chi tiết bộ từ có tiến độ của bộ (GAP-08).
+- [x] **1.44** Tổng quan báo số thẻ đến hạn, chi tiết bộ từ có tiến độ của bộ (GAP-08).
 - [ ] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09).
 - [ ] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10).
 - [ ] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11).

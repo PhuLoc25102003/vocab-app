@@ -127,6 +127,11 @@ test.describe.serial('luồng chính', () => {
     await expect(page.getByText('Câu trả lời hôm nay')).toBeVisible();
     await expect(page.getByRole('link', { name: wrongTerm })).toBeVisible();
     await expect(page.getByText('Sai 1 lần')).toBeVisible();
+
+    await page.goto(setPath);
+    await expect(page.getByText('Đang học', { exact: true })).toBeVisible();
+    await page.goto('/dashboard');
+    await expect(page.getByText('Câu trả lời hôm nay')).toBeVisible();
   });
 
   test('khách học thử bộ từ công khai mà không lưu tiến độ', async ({ browser, baseURL }) => {
