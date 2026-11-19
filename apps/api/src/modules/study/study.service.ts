@@ -21,6 +21,18 @@ function sessionNotFound(): AppError {
 }
 
 /** Điểm tính theo lần trả lời đầu của mỗi thẻ, nên gửi lại một lô không làm đổi điểm. */
+function attemptKey({
+  cardId,
+  answer,
+  timeMs,
+}: {
+  cardId: string;
+  answer: string;
+  timeMs: number;
+}): string {
+  return JSON.stringify([cardId, answer, timeMs]);
+}
+
 function summarize(attempts: { cardId: string; isCorrect: boolean }[]) {
   const firstResults = new Map<string, boolean>();
   for (const { cardId, isCorrect } of attempts) {
@@ -119,8 +131,17 @@ export class StudyService {
       }
     }
 
-    if (graded.length > 0) {
-      await this.study.saveAnswers(viewer.id, id, graded, new Date());
+    // Trình duyệt có thể gửi lại một lô khi tải lại trang, lịch ôn không được tính hai lần.
+    const seen = new Set((await this.study.findAttemptKeys(id)).map(attemptKey));
+    const fresh = graded.filter((attempt) => {
+      const key = attemptKey(attempt);
+      const isNew = !seen.has(key);
+      seen.add(key);
+      return isNew;
+    });
+
+    if (fresh.length > 0) {
+      await this.study.saveAnswers(viewer.id, id, fresh, new Date());
     }
     return ok({ results, ignored: answers.length - graded.length });
   }

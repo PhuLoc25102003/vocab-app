@@ -31,6 +31,7 @@ export function TypedAnswer({
   question,
   languages,
   onAnswer,
+  onChecked,
   prompt,
   inputLabel,
 }: TypedAnswerProps) {
@@ -60,6 +61,7 @@ export function TypedAnswer({
         timeMs.current = Date.now() - shownAt.current;
         const answer = { questionId: question.id, value, timeMs: timeMs.current };
         setResult(getMode(question.mode).grade(question, answer));
+        onChecked?.(answer);
       }
       return;
     }

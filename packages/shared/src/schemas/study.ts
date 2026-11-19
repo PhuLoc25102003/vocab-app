@@ -19,19 +19,24 @@ export const startSessionSchema = z.object({
 });
 export type StartSessionDto = z.infer<typeof startSessionSchema>;
 
+const userAnswerSchema = z.object({
+  questionId: idSchema,
+  value: z.string().max(STUDY_ANSWER_MAX_LENGTH),
+  timeMs: z.number().int().min(0).max(STUDY_ANSWER_TIME_MAX_MS),
+});
+
 export const submitAnswersSchema = z.object({
-  answers: z
-    .array(
-      z.object({
-        questionId: idSchema,
-        value: z.string().max(STUDY_ANSWER_MAX_LENGTH),
-        timeMs: z.number().int().min(0).max(STUDY_ANSWER_TIME_MAX_MS),
-      }),
-    )
-    .min(1)
-    .max(STUDY_ANSWER_BATCH_MAX),
+  answers: z.array(userAnswerSchema).min(1).max(STUDY_ANSWER_BATCH_MAX),
 });
 export type SubmitAnswersDto = z.infer<typeof submitAnswersSchema>;
+
+/** Tiến độ phiên học được giữ ở trình duyệt để khôi phục khi tải lại trang. */
+export const studyProgressSchema = z.object({
+  position: z.number().int().min(0),
+  recorded: z.number().int().min(-1),
+  pending: z.array(userAnswerSchema),
+});
+export type StudyProgress = z.infer<typeof studyProgressSchema>;
 
 export const studySessionSchema = z.object({
   id: z.string(),

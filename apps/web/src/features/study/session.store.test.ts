@@ -28,6 +28,24 @@ describe('useStudyStore', () => {
     expect(store().pending).toEqual([answer]);
   });
 
+  it('không thêm đáp án lần hai khi sang câu sau câu đã chấm', () => {
+    store().record(answer);
+    expect(store().position).toBe(0);
+    expect(store().pending).toEqual([answer]);
+
+    store().answer(answer);
+
+    expect(store().position).toBe(1);
+    expect(store().pending).toEqual([answer]);
+  });
+
+  it('khôi phục tiến độ và bỏ qua câu đã chấm', () => {
+    store().begin(started, { progress: { position: 0, recorded: 0, pending: [answer] } });
+
+    expect(store().position).toBe(1);
+    expect(store().pending).toEqual([answer]);
+  });
+
   it('chỉ xoá đáp án của đúng phiên đã được lưu', () => {
     store().answer(answer);
 

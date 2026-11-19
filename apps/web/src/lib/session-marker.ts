@@ -1,3 +1,5 @@
+import { clearUserItems } from './user-storage';
+
 /**
  * Cookie refresh nằm ở domain API nên `proxy.ts` không đọc được. Cookie này chỉ báo trình duyệt
  * có phiên để điều hướng sớm, không chứa bí mật và không dùng để phân quyền.
@@ -21,4 +23,5 @@ export function setSessionMarker(): void {
 
 export function clearSessionMarker(): void {
   write('', 0);
+  clearUserItems();
 }

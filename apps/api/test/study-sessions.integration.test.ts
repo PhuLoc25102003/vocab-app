@@ -130,6 +130,24 @@ describe('study sessions', () => {
   });
 
   describe('POST /study/sessions/:id/answers', () => {
+    it('không tính hai lần khi cùng một lô được gửi lại', async () => {
+      const id = await startSession();
+      const batch = [answer(cardIds[0]!, known)];
+
+      await submit(id, owner.token, batch).expect(200);
+      const progress = await prisma.cardProgress.findFirstOrThrow({
+        where: { userId: owner.id, cardId: cardIds[0]! },
+      });
+      await submit(id, owner.token, batch).expect(200);
+
+      expect(await prisma.attempt.count({ where: { sessionId: id } })).toBe(1);
+      expect(
+        await prisma.cardProgress.findFirstOrThrow({
+          where: { userId: owner.id, cardId: cardIds[0]! },
+        }),
+      ).toEqual(progress);
+    });
+
     it('chấm đáp án, lưu lượt trả lời và cập nhật lịch ôn', async () => {
       const id = await startSession();
 

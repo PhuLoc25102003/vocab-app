@@ -13,6 +13,8 @@ import { http } from '@/lib/http';
 
 /** Nơi lưu phiên học. Shell chỉ biết interface này, không biết có gọi API hay không. */
 export interface StudyBackend {
+  /** Phiên còn dùng được sau khi tải lại trang. */
+  resumable?: boolean;
   start: (
     setId: string,
     mode: StudyMode,
@@ -25,6 +27,7 @@ export interface StudyBackend {
 const sessionPath = (id: string) => `/study/sessions/${encodeURIComponent(id)}`;
 
 export const accountStudyBackend: StudyBackend = {
+  resumable: true,
   async start(setId, mode, options) {
     const body = await http('/study/sessions', {
       method: 'POST',
@@ -36,6 +39,8 @@ export const accountStudyBackend: StudyBackend = {
     const body = await http(`${sessionPath(sessionId)}/answers`, {
       method: 'POST',
       body: JSON.stringify({ answers }),
+      // Request vẫn hoàn tất khi người học tải lại hoặc đóng trang.
+      keepalive: true,
     });
     submitAnswersResponseSchema.parse(body);
   },

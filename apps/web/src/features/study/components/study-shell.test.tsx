@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { Question, SessionResult, StartedSession } from '@vocab/shared';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
@@ -68,6 +68,7 @@ const answerAll = async () => {
 
 describe('StudyShell', () => {
   beforeEach(() => {
+    window.sessionStorage.clear();
     useStudyStore.setState({
       session: null,
       questions: [],
@@ -104,6 +105,23 @@ describe('StudyShell', () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]?.[1]).toHaveLength(2);
     expect(backend.finish).toHaveBeenCalledTimes(1);
+  });
+
+  it('tiếp tục phiên đang học sau khi tải lại trang', async () => {
+    const fresh = { ...started, session: { ...session, startedAt: new Date().toISOString() } };
+    const first = setup({ resumable: true, start: vi.fn().mockResolvedValue(fresh) });
+    await screen.findByText('0/2');
+    await userEvent.click(screen.getByRole('button', { name: 'Trả lời apple' }));
+    await screen.findByText('1/2');
+    cleanup();
+    useStudyStore.setState({ session: null, position: 0, pending: [] });
+
+    const second = setup({ resumable: true, start: vi.fn().mockResolvedValue(fresh) });
+
+    expect(await screen.findByText('1/2')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Trả lời pear' })).toBeInTheDocument();
+    expect(first.start).toHaveBeenCalledTimes(1);
+    expect(second.start).not.toHaveBeenCalled();
   });
 
   it('học lại bằng một phiên mới', async () => {

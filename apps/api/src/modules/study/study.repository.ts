@@ -89,6 +89,13 @@ export class StudyRepository extends BaseRepository {
     return this.prisma.studySession.findUnique({ where: { id }, select: SESSION_SELECT });
   }
 
+  findAttemptKeys(sessionId: string) {
+    return this.prisma.attempt.findMany({
+      where: { sessionId },
+      select: { cardId: true, answer: true, timeMs: true },
+    });
+  }
+
   findAttempts(sessionId: string) {
     return this.prisma.attempt.findMany({
       where: { sessionId },
