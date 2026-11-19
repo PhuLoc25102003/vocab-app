@@ -151,6 +151,15 @@ test.describe.serial('luồng chính', () => {
     await guest.close();
   });
 
+  test('đường dẫn sai có trang 404 tiếng Việt và lối về', async () => {
+    const response = await page.goto('/duong-dan-khong-co');
+
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole('heading', { name: 'Không tìm thấy trang' })).toBeVisible();
+    await page.getByRole('link', { name: 'Về trang của tôi' }).click();
+    await page.waitForURL('**/dashboard');
+  });
+
   test('đổi tên và mật khẩu ở trang tài khoản', async () => {
     await page.goto('/dashboard');
     await page.getByRole('link', { name: 'Tài khoản' }).click();
