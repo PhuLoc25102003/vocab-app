@@ -1,5 +1,7 @@
 import {
+  cardProgressListResponseSchema,
   setProgressResponseSchema,
+  type CardProgressItem,
   statsOverviewResponseSchema,
   type SetProgress,
   type StatsOverview,
@@ -13,4 +15,9 @@ export async function getStatsOverview(): Promise<StatsOverview> {
 export async function getSetProgress(setId: string): Promise<SetProgress> {
   const path = `/stats/sets/${encodeURIComponent(setId)}`;
   return setProgressResponseSchema.parse(await http(path)).data;
+}
+
+export async function getCardProgress(setId: string): Promise<CardProgressItem[]> {
+  const path = `/stats/sets/${encodeURIComponent(setId)}/cards`;
+  return cardProgressListResponseSchema.parse(await http(path)).data;
 }

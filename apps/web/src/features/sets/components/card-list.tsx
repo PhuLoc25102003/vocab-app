@@ -1,13 +1,16 @@
 import type { Card } from '@vocab/shared';
+import type { ReactNode } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 
 interface CardListProps {
   cards: Card[];
   termLang: string;
   defLang: string;
+  /** Thông tin thêm theo thẻ, ví dụ mức nhớ của người học, ghép ở tầng trang. */
+  renderCardExtra?: (cardId: string) => ReactNode;
 }
 
-export function CardList({ cards, termLang, defLang }: CardListProps) {
+export function CardList({ cards, termLang, defLang, renderCardExtra }: CardListProps) {
   return (
     <ol className="border-t border-border">
       {cards.map(({ id, term, definition, phonetic, example }) => (
@@ -25,6 +28,7 @@ export function CardList({ cards, termLang, defLang }: CardListProps) {
             {phonetic ? (
               <p className="font-phonetic text-small break-words text-text-muted">{phonetic}</p>
             ) : null}
+            {renderCardExtra?.(id)}
           </div>
           <div className="min-w-0">
             <p lang={defLang} className="break-words whitespace-pre-line">

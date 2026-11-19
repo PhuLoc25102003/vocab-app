@@ -137,6 +137,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 ## Thống kê
 
 - `GET /stats/sets/:id` trả `{ data: { total, mastered, learning, notStarted, due } }`, trả 404 nếu không xem được bộ từ.
+- `GET /stats/sets/:id/cards` trả `{ data: [{ cardId, level, dueAt }] }` theo thứ tự thẻ cho người gọi: `level` là `new` (chưa học), `learning` hoặc `mastered` (khoảng ôn từ `MASTERED_INTERVAL_DAYS` ngày), `dueAt` là lần ôn tiếp theo hoặc `null`. Không xem được bộ từ trả 404.
 - `GET /stats/overview` trả `{ data: { streakDays, masteredCards, answersToday, dueCards, hardCards } }`. Ngày học tính theo giờ Việt Nam (UTC+7). Chuỗi ngày vẫn giữ nếu hôm nay chưa học nhưng hôm qua có học. Thẻ đã thuộc là thẻ có `interval` từ 6 ngày. `hardCards` gồm tối đa 5 thẻ sai nhiều nhất, thuộc bộ từ người gọi còn xem được.
 
 ## Khác biệt đang có trong code

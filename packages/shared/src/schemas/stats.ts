@@ -29,3 +29,13 @@ export const setProgressSchema = z.object({
 export type SetProgress = z.infer<typeof setProgressSchema>;
 
 export const setProgressResponseSchema = z.object({ data: setProgressSchema });
+
+export const cardProgressSchema = z.object({
+  cardId: z.string(),
+  level: z.enum(['new', 'learning', 'mastered']),
+  /** Lần ôn tiếp theo, `null` khi thẻ chưa học. */
+  dueAt: z.coerce.date().nullable(),
+});
+export type CardProgressItem = z.infer<typeof cardProgressSchema>;
+
+export const cardProgressListResponseSchema = z.object({ data: z.array(cardProgressSchema) });

@@ -66,6 +66,22 @@ export class StatsRepository extends BaseRepository {
     return { total, started, mastered, due };
   }
 
+  /** Trả `null` nếu người xem không xem được bộ từ. Thẻ chưa học không có tiến độ. */
+  async findCardProgress(setId: string, viewer: SetViewer) {
+    const set = await this.prisma.studySet.findFirst({
+      where: { id: setId, deletedAt: null, ...visibleTo(viewer) },
+      select: { cards: { select: { id: true }, orderBy: { position: 'asc' } } },
+    });
+    if (!set) {
+      return null;
+    }
+    const progress = await this.prisma.cardProgress.findMany({
+      where: { userId: viewer.id, card: { setId } },
+      select: { cardId: true, interval: true, dueAt: true },
+    });
+    return { cardIds: set.cards.map(({ id }) => id), progress };
+  }
+
   countAnswersSince(userId: string, since: Date) {
     return this.prisma.attempt.count({
       where: { session: { userId }, createdAt: { gte: since } },

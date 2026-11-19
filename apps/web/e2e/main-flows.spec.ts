@@ -129,7 +129,9 @@ test.describe.serial('luồng chính', () => {
     await expect(page.getByText('Sai 1 lần')).toBeVisible();
 
     await page.goto(setPath);
-    await expect(page.getByText('Đang học', { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'Tiến độ của bạn' }).getByText('Đang học', { exact: true }),
+    ).toBeVisible();
     await page.goto('/dashboard');
     await expect(page.getByText('Câu trả lời hôm nay')).toBeVisible();
   });

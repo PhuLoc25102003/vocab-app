@@ -9,6 +9,7 @@ import { Can } from '@/features/auth/components/can';
 import { SetFolderPicker } from '@/features/folders/components/set-folder-picker';
 import { DuplicateSetButton, SetOwnerActions } from '@/features/sets/components/set-actions';
 import { SetDetail } from '@/features/sets/components/set-detail';
+import { CardMasteryBadge } from '@/features/stats/components/card-mastery';
 import { SetProgressSummary } from '@/features/stats/components/set-progress';
 
 /** Feature không import lẫn nhau, nên quyền và nút bộ từ được ghép ở tầng trang. */
@@ -33,6 +34,7 @@ export function SetDetailScreen({ id }: { id: string }) {
         </Can>
       )}
       renderProgress={(set) => <SetProgressSummary setId={set.id} />}
+      renderCardExtra={(cardId) => <CardMasteryBadge setId={id} cardId={cardId} />}
       renderActions={(set) => (
         <>
           <Can action="update" resource={set} fallback={<DuplicateSetButton id={set.id} />}>

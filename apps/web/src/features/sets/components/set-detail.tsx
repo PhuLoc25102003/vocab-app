@@ -22,6 +22,8 @@ interface SetDetailProps {
   renderBack?: (set: SetDetailData) => ReactNode;
   /** Tiến độ của người xem, hiện khi bộ từ có thẻ. */
   renderProgress?: (set: SetDetailData) => ReactNode;
+  /** Thông tin thêm cho từng thẻ, ví dụ mức nhớ. */
+  renderCardExtra?: (cardId: string) => ReactNode;
   /** Hành động khi bộ từ chưa có thẻ, theo quyền của người xem. */
   renderEmptyAction?: (set: SetDetailData) => ReactNode;
 }
@@ -31,6 +33,7 @@ export function SetDetail({
   renderActions,
   renderBack,
   renderProgress,
+  renderCardExtra,
   renderEmptyAction,
 }: SetDetailProps) {
   const set = useSet(id);
@@ -75,7 +78,12 @@ export function SetDetail({
         <>
           {renderProgress?.(set.data)}
           <StudyModeGrid setId={id} />
-          <CardList cards={cards} termLang={termLang} defLang={defLang} />
+          <CardList
+            cards={cards}
+            termLang={termLang}
+            defLang={defLang}
+            renderCardExtra={renderCardExtra}
+          />
         </>
       ) : (
         <EmptyState

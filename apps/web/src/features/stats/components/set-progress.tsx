@@ -54,6 +54,10 @@ export function SetProgressSummary({ setId }: { setId: string }) {
           </div>
         ))}
       </dl>
+      <p className="basis-full text-small text-text-muted">
+        Thẻ đúng lần đầu hẹn ôn sau 1 ngày. Đúng tiếp khi đến hạn thì giãn ra 6 ngày và được tính là
+        đã thuộc, nên cần đúng ở hai ngày khác nhau. Học lại trong cùng ngày không làm thẻ tiến lên.
+      </p>
       {due > 0 ? (
         <Button asChild variant="secondary">
           <Link href={`/sets/${setId}/study/flashcard?due=1` as Route}>Ôn {due} thẻ đến hạn</Link>
