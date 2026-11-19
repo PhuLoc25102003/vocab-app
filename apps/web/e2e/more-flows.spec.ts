@@ -180,6 +180,23 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(result).toHaveText(`Bạn nhớ ${cards.length - 1} trên ${cards.length} thẻ.`);
   });
 
+  test('làm bài kiểm tra, nộp một lần rồi xem kết quả', async () => {
+    await page.goto(`${setPath}/study/test`);
+    await expect(page.getByRole('button', { name: 'Nộp bài' })).toBeVisible();
+    for (const [index, { term, definition }] of cards.entries()) {
+      const item = page.locator('form ol > li').nth(index);
+      const typed = item.getByLabel(`Nhập từ cho câu ${index + 1}`);
+      if (await typed.isVisible()) {
+        await typed.fill(term);
+      } else {
+        await item.getByRole('radio', { name: definition, exact: true }).check();
+      }
+    }
+    await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
+    await page.getByRole('button', { name: 'Nộp bài' }).click();
+    await expectScore(page, cards.length);
+  });
+
   test('ghép cặp từ với nghĩa', async () => {
     await page.goto(`${setPath}/study/match`);
     const terms = page.getByRole('list', { name: 'Từ' });
@@ -311,6 +328,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       `${setPath}/study/flashcard`,
       `${setPath}/study/learn`,
       `${setPath}/study/write`,
+      `${setPath}/study/test`,
       `${setPath}/study/dictation`,
       `${setPath}/study/mcq`,
       `${setPath}/study/cloze`,

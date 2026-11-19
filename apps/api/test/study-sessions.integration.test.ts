@@ -150,10 +150,27 @@ describe('study sessions', () => {
       await start(other.token, { setId, mode: 'FLASHCARD' }).expect(201);
     });
 
-    it('trả 422 khi chế độ chưa có', async () => {
-      const { body } = await start(owner.token, { setId, mode: 'TEST' }).expect(422);
+    it('chế độ Kiểm tra mỗi thẻ một câu, chấm ở server, nộp hai lần không tính hai lần', async () => {
+      const { body } = await start(owner.token, { setId, mode: 'TEST' }).expect(201);
+      const questions = body.data.questions as { id: string; cardId: string; expected: string }[];
+      expect(questions.map(({ cardId }) => cardId)).toEqual(cardIds);
+      expect(questions.every(({ id, cardId }) => id.startsWith(`${cardId}:`))).toBe(true);
 
-      expect(body.error.code).toBe(ERROR_CODES.STUDY_MODE_UNAVAILABLE);
+      const sessionId = body.data.session.id;
+      const answers = questions.map(({ id, expected }, index) =>
+        answer(id, index === 0 ? expected : ''),
+      );
+      const first = await submit(sessionId, owner.token, answers).expect(200);
+      expect(first.body.data.results.map((r: { isCorrect: boolean }) => r.isCorrect)).toEqual([
+        true,
+        false,
+      ]);
+      await submit(sessionId, owner.token, answers).expect(200);
+
+      const { body: result } = await finish(sessionId, owner.token).expect(200);
+      expect(result.data.session).toMatchObject({ total: 2, correct: 1 });
+      expect(result.data.wrongCardIds).toEqual([cardIds[1]]);
+      expect(await prisma.attempt.count({ where: { sessionId } })).toBe(2);
     });
 
     it('chế độ Điền từ chỉ dùng thẻ có câu ví dụ chứa từ và chấm ở server', async () => {
