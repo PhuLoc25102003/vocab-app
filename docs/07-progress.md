@@ -181,7 +181,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.11** API quản trị người dùng: `GET /admin/users`, khoá và mở khoá tài khoản (#182).
 - [x] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá (#184).
 - [x] **2.12** API ẩn và bỏ ẩn bộ từ vi phạm, bộ bị ẩn không còn với người khác (#186).
-- [x] **2.15** Giao diện ẩn bộ từ: nút ẩn kèm lý do cho ADMIN, chủ bộ thấy thông báo bộ đang bị ẩn.
+- [x] **2.15** Giao diện ẩn bộ từ: nút ẩn kèm lý do cho ADMIN, chủ bộ thấy thông báo bộ đang bị ẩn (#188).
 
 ## Giai đoạn 3: Lớp học
 
