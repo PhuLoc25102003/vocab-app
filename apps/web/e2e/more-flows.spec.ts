@@ -492,6 +492,8 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   browser,
   baseURL,
 }) => {
+  // Luồng dài: hai lần đăng ký, khoá, mở khoá rồi ẩn bộ từ, máy CI cần hơn 30 giây.
+  test.setTimeout(90_000);
   const target = `e2e-target-${stamp}@example.com`;
   const adminEmail = `e2e-admin-${stamp}@example.com`;
   const targetPage = await (await browser.newContext({ baseURL })).newPage();
