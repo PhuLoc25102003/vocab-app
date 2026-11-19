@@ -124,7 +124,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
 - [ ] **1.31** Log Pino có ẩn dữ liệu nhạy cảm, Sentry cho web và API, theo dõi uptime.
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
-- [x] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính.
+- [x] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính (#98).
 - [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu.
 - [ ] **1.35** PR phát hành từ `develop` vào `main`, kiểm tra production.
 
