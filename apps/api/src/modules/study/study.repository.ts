@@ -58,6 +58,14 @@ export class StudyRepository extends BaseRepository {
     });
   }
 
+  /** Tiến độ của người học với các thẻ, dùng để tính mức nhớ khi tạo câu hỏi. */
+  findProgress(userId: string, cardIds: string[]) {
+    return this.prisma.cardProgress.findMany({
+      where: { userId, cardId: { in: cardIds } },
+      select: { cardId: true, reps: true, lastResult: true },
+    });
+  }
+
   findDueSets(viewer: SetViewer, query: Pagination, now: Date) {
     const dueCard = dueCardWhere(viewer.id, now);
     const visibleSet = { deletedAt: null, ...visibleTo(viewer) };

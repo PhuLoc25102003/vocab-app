@@ -19,7 +19,15 @@ export interface StudyCard {
   definition: string;
   /** Câu ví dụ, chế độ Điền từ cần có. */
   example?: string | null;
+  /**
+   * Mức nhớ của người học, chế độ Learn dùng để chọn dạng câu. Không có nghĩa là chưa biết,
+   * như với khách hoặc khi API dựng lại câu hỏi để chấm.
+   */
+  level?: LearnLevel;
 }
+
+/** `new`: chưa học hoặc lần gần nhất sai. `known`: lần gần nhất trả lời đúng. */
+export type LearnLevel = 'new' | 'known';
 
 export interface StudyOptions {
   limit?: number;

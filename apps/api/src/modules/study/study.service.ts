@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
   getMode,
+  learnLevel,
   isModeAvailable,
   type Pagination,
   type StartSessionDto,
@@ -81,7 +82,16 @@ export class StudyService {
       );
     }
 
-    const questions = getMode(mode).buildQuestions(cards, { limit });
+    const progress = await this.study.findProgress(
+      viewer.id,
+      cards.map(({ id }) => id),
+    );
+    const byCard = new Map(progress.map((item) => [item.cardId, item]));
+    const leveled = cards.map((card) => ({
+      ...card,
+      level: learnLevel(byCard.get(card.id) ?? null),
+    }));
+    const questions = getMode(mode).buildQuestions(leveled, { limit });
     if (questions.length === 0) {
       throw new AppError(
         ERROR_CODES.NO_QUESTIONS_FOR_MODE,

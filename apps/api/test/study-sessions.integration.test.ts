@@ -91,6 +91,42 @@ describe('study sessions', () => {
       expect([...body.data.questions[0].choices].sort()).toEqual(['quả lê', 'quả táo']);
     });
 
+    it('chế độ Learn trộn dạng câu theo mức nhớ và chấm được cả hai dạng', async () => {
+      const ids = (body: { data: { questions: { id: string }[] } }) =>
+        body.data.questions.map(({ id }) => id);
+      const [apple, pear] = cardIds as [string, string];
+
+      const first = await start(owner.token, { setId, mode: 'LEARN' }).expect(201);
+      expect(ids(first.body)).toEqual([
+        `${apple}:choice`,
+        `${pear}:choice`,
+        `${apple}:write`,
+        `${pear}:write`,
+      ]);
+      expect(first.body.data.questions[0].choices).toContain('quả táo');
+      expect(first.body.data.session.total).toBe(4);
+
+      // Trả lời đúng `apple` thì lần sau thẻ này chỉ còn câu gõ từ.
+      const sessionId = first.body.data.session.id;
+      const { body: graded } = await submit(sessionId, owner.token, [
+        answer(`${apple}:choice`, 'quả táo'),
+        answer(`${apple}:write`, 'Apple '),
+        answer(`${pear}:choice`, 'quả táo'),
+      ]).expect(200);
+      expect(graded.data.results.map((r: { isCorrect: boolean }) => r.isCorrect)).toEqual([
+        true,
+        true,
+        false,
+      ]);
+      // Mức nhớ đã đổi nhưng câu trắc nghiệm của phiên cũ vẫn chấm được.
+      await submit(sessionId, owner.token, [answer(`${pear}:write`, 'pear')]).expect(200);
+      const { body: result } = await finish(sessionId, owner.token).expect(200);
+      expect(result.data.wrongCardIds).toEqual([pear]);
+
+      const second = await start(owner.token, { setId, mode: 'LEARN' }).expect(201);
+      expect(ids(second.body)).toEqual([`${pear}:choice`, `${apple}:write`, `${pear}:write`]);
+    });
+
     it('giới hạn số câu hỏi', async () => {
       const { body } = await start(owner.token, { setId, mode: 'FLASHCARD', limit: 1 }).expect(201);
 
