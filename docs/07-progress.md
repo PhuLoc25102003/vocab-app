@@ -126,7 +126,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** đạt checklist bảo mật, Definition of Done và bản MVP đã lên `main`.
 
 - [x] **1.29** Trang giới thiệu sản phẩm (#93).
-- [x] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
+- [x] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày (#172).
 - [ ] **1.31** Sentry cho web và API, theo dõi uptime. Cần tài khoản Sentry.
 - [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie (#133).
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
