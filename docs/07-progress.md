@@ -124,7 +124,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.29** Trang giới thiệu sản phẩm (#93).
 - [ ] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
 - [ ] **1.31** Sentry cho web và API, theo dõi uptime. Cần tài khoản Sentry.
-- [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie.
+- [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie (#133).
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
 - [x] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính (#98).
 - [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu. Accessibility đã đạt, Performance còn 85 đến 88.
