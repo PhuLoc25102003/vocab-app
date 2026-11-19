@@ -29,6 +29,9 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /folders                    | Đã đăng nhập              | Tạo thư mục                                                |
 | PATCH  | /folders/:id                | Chủ                       | Đổi tên thư mục                                            |
 | DELETE | /folders/:id                | Chủ                       | Xoá thư mục, giữ bộ từ                                     |
+| GET    | /admin/users                | ADMIN                     | Danh sách người dùng, tìm theo email hoặc tên              |
+| PATCH  | /admin/users/:id/lock       | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
+| PATCH  | /admin/users/:id/unlock     | ADMIN                     | Mở khoá tài khoản                                          |
 | POST   | /import/preview             | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
 | POST   | /sets/:id/import            | Chủ                       | Lưu kết quả đã xem trước                                   |
 | POST   | /uploads/presign            | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
@@ -120,6 +123,12 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - Hai route theo `:id` chỉ dành cho chủ phiên, kể cả ADMIN cũng không gọi thay được.
 
 - `GET /review/due` nhận `page`, `limit`, trả các bộ từ có thẻ đến hạn tại thời điểm gọi: `{ data: [{ setId, title, dueCount }], meta, summary: { dueCards } }`, xếp theo tên. Chỉ tính bộ từ người gọi còn xem được.
+
+## Quản trị người dùng
+
+- `GET /admin/users` nhận `page`, `limit`, `sort` (`createdAt`, `email`, `displayName`, mặc định `-createdAt`) và `q` (tìm trong email hoặc tên, không phân biệt hoa thường, tối đa 100 ký tự), trả `{ data: [{ id, email, displayName, role, createdAt, lockedAt, lockReason, lockedById }], meta }`. Không trả hash mật khẩu.
+- `PATCH /admin/users/:id/lock` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, tăng `tokenVersion` và xoá mọi phiên refresh nên tài khoản bị đăng xuất ngay, trả 200 `{ data: user }`. Tự khoá mình trả 422 `CANNOT_LOCK_SELF`. `PATCH /admin/users/:id/unlock` xoá ba trường khoá. Không tìm thấy trả 404 `USER_NOT_FOUND`.
+- Tài khoản bị khoá đăng nhập bằng mật khẩu hoặc Google trả 403 `ACCOUNT_LOCKED`, chỉ sau khi mật khẩu đúng. Refresh trả 401 và access token cũ bị `AuthGuard` từ chối.
 
 ## Thống kê
 

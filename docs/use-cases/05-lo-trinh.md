@@ -38,10 +38,11 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 
 ### UC-X5. Quản trị
 
-- **Việc:** 2.11, 2.12. **Người dùng:** ADMIN.
+- **Việc:** 2.11, 2.14, 2.12. **Người dùng:** ADMIN. **Trạng thái:** Đã có API danh sách, tìm, khoá và mở khoá (2.11). Còn trang quản trị (2.14) và ẩn nội dung (2.12).
 - **Phải có:** danh sách và tìm người dùng, khoá tài khoản, ẩn và bỏ ẩn nội dung vi phạm, lưu lý do và người thực hiện.
 - **Ngoại lệ:** ADMIN không tự khoá mình; không nhận vai trò từ dữ liệu client; bộ bị ẩn biến mất khỏi Khám phá và trang công khai.
 - **Cách test:** integration 401, 403 và thành công; E2E ẩn bộ rồi khách không xem được.
+- **Test đã có:** `admin-users.integration` gồm 401, 403, tìm, tham số sai, khoá rồi bị chặn đăng nhập và mất phiên, mở khoá, tự khoá mình, không tìm thấy.
 
 ## Giai đoạn 3: Lớp học
 

@@ -9,4 +9,5 @@ export * from './study';
 export * from './schemas/import';
 export * from './import/parse';
 export * from './import/template';
+export * from './schemas/admin';
 export * from './schemas/folder';

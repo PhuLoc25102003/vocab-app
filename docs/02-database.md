@@ -53,6 +53,9 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
+  lockedAt     DateTime?
+  lockReason   String?
+  lockedById   String?
 
   refreshSessions RefreshSession[]
   folders         Folder[]
@@ -185,6 +188,7 @@ model Attempt {
 ## Ghi chú thiết kế
 
 - `cardCount` lưu sẵn để trang danh sách không phải đếm; cập nhật trong cùng transaction khi thêm/xoá thẻ.
+- `User.lockedAt`, `lockReason`, `lockedById` lưu việc ADMIN khoá tài khoản (việc 2.11). `lockedById` là id ADMIN, không đặt khoá ngoại để giữ lịch sử khi tài khoản ADMIN bị xoá. Tài khoản có `lockedAt` không đăng nhập, không refresh được và bị `AuthGuard` từ chối.
 - Xoá bộ từ là soft delete (`deletedAt`). `SetsPurgeService` xoá hẳn bộ có `deletedAt` quá 30 ngày, kèm thẻ, phiên học, câu trả lời và tiến độ theo cascade. Job chạy khoảng 1 phút sau khi API khởi động và mỗi 24 giờ (Render gói Free ngủ khi rảnh nên không dùng giờ cố định), xoá theo lô 200 bộ, giữ `pg_try_advisory_xact_lock` để nhiều instance không chạy trùng, ghi log số bộ đã xoá. MVP không có thùng rác, bộ đã xoá không khôi phục được.
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
 - `Class`, `ClassMember`, `Assignment` thêm ở giai đoạn 3, không ảnh hưởng bảng cũ.
