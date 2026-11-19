@@ -13,6 +13,7 @@ export default function SetsPage() {
     <>
       <PageHeader
         title="Bộ từ"
+        description="Thư viện của bạn: bộ từ bạn tạo, nhập và sao chép về. Bộ của người khác nằm ở Khám phá."
         actions={
           <>
             <Button asChild variant="secondary">

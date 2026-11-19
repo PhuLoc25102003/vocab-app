@@ -73,7 +73,7 @@ describe('ExploreSets', () => {
       'href',
       '/sets/s1',
     );
-    expect(screen.getByText(/Tạo bởi Lan/)).toBeInTheDocument();
+    expect(screen.getByText('Lan')).toBeInTheDocument();
   });
 
   it('tìm theo từ khoá trên URL', async () => {

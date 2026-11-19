@@ -9,7 +9,10 @@ export const metadata: Metadata = { title: 'Khám phá' };
 export default function ExplorePage() {
   return (
     <>
-      <PageHeader title="Khám phá" description="Tìm bộ từ công khai và sao chép về để học." />
+      <PageHeader
+        title="Khám phá"
+        description="Bộ từ công khai do cộng đồng tạo. Mở một bộ để học hoặc sao chép về thư viện của bạn."
+      />
       <Suspense fallback={<SetRowsLoading count={5} />}>
         <ExploreSets />
       </Suspense>
