@@ -179,7 +179,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2D. Quản trị
 
 - [x] **2.11** API quản trị người dùng: `GET /admin/users`, khoá và mở khoá tài khoản (#182).
-- [x] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá.
+- [x] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá (#184).
 - [ ] **2.12** Ẩn nội dung vi phạm.
 
 ## Giai đoạn 3: Lớp học
