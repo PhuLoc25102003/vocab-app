@@ -9,6 +9,7 @@ import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getStatsOverview } from '../api';
+import { ActivityChart, MasteryBar } from './overview-charts';
 
 export function StatsOverview() {
   const stats = useQuery({
@@ -34,7 +35,8 @@ export function StatsOverview() {
     );
   }
 
-  const { streakDays, masteredCards, answersToday, dueCards, hardCards } = stats.data;
+  const { streakDays, masteredCards, learningCards, activity, answersToday, dueCards, hardCards } =
+    stats.data;
   if (
     streakDays === 0 &&
     masteredCards === 0 &&
@@ -58,32 +60,45 @@ export function StatsOverview() {
   const items = [
     { label: 'Ngày học liên tiếp', value: streakDays },
     { label: 'Từ đã thuộc', value: masteredCards },
+    { label: 'Từ đang học', value: learningCards },
     { label: 'Câu trả lời hôm nay', value: answersToday },
   ];
 
   return (
-    <section aria-labelledby="stats-heading" className="flex flex-col gap-4">
-      <h2 id="stats-heading" className="text-h2">
+    <section aria-labelledby="stats-heading" className="flex flex-col gap-6">
+      <h2 id="stats-heading" className="sr-only">
         Thống kê
       </h2>
-      {dueCards > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p>
-            Bạn có <span className="font-semibold tabular-nums">{dueCards}</span> thẻ đến hạn ôn.
-          </p>
-          <Button asChild>
-            <Link href="/review">Ôn ngay</Link>
-          </Button>
-        </div>
-      ) : null}
-      <dl className="flex flex-wrap gap-x-10 gap-y-3 border-y border-border py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-l-4 border-primary bg-primary-soft px-4 py-3">
+        <p>
+          {dueCards > 0 ? (
+            <>
+              Bạn có <span className="font-semibold tabular-nums">{dueCards}</span> thẻ đến hạn ôn.
+              Ôn ngay để không quên.
+            </>
+          ) : (
+            'Hôm nay không còn thẻ đến hạn. Học thêm một bộ để giữ chuỗi ngày học.'
+          )}
+        </p>
+        <Button asChild>
+          {dueCards > 0 ? <Link href="/review">Ôn ngay</Link> : <Link href="/sets">Học tiếp</Link>}
+        </Button>
+      </div>
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {items.map(({ label, value }) => (
-          <div key={label} className="flex flex-col-reverse">
+          <div
+            key={label}
+            className="flex flex-col-reverse gap-1 rounded-md border border-border bg-surface p-4"
+          >
             <dt className="text-small text-text-muted">{label}</dt>
             <dd className="text-h1 tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ActivityChart activity={activity} />
+        <MasteryBar mastered={masteredCards} learning={learningCards} />
+      </div>
 
       {hardCards.length > 0 ? (
         <div className="flex flex-col gap-2">
