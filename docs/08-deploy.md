@@ -39,6 +39,8 @@ Hiện API chạy ở `https://vocab-app-rj0t.onrender.com`, deploy từ nhánh 
 | Root directory | `apps/web`                                            |
 | Build command  | `cd ../.. && npx turbo run build --filter=@vocab/web` |
 
+Biến mới dùng lúc build phải khai báo trong `env` của `turbo.json`, nếu không Turborepo bỏ biến đó và `rewrites` không được tạo, `/api/v1` trả 404.
+
 Biến môi trường: `NEXT_PUBLIC_API_URL=/api/v1`, `API_INTERNAL_URL=https://<tên>.onrender.com/api/v1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` để trống nếu chưa bật Google.
 
 ## Kiểm tra sau khi deploy
