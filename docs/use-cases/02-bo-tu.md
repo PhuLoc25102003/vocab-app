@@ -93,7 +93,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S10. Nhập danh sách từ
 
-- **Việc:** 1.21, 1.22, 1.23. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chờ quyết định, cần chọn thư viện đọc Excel.
+- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX). **Người dùng:** người đã đăng nhập. **Trạng thái:** Đang làm. Đã có parser text, CSV và `POST /import/preview`. XLSX chờ chọn thư viện.
 - **Phải có:**
   - Dán text, tải `.csv`, `.xlsx`, `.txt` tối đa 2 MB.
   - Chọn ký tự phân cách và cột từ, cột nghĩa.

@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Chế độ Điền từ (việc 2.8).
-2. Rà Performance theo hướng bạn chọn (việc 1.34).
+1. Lưu thẻ đã nhập vào bộ từ (việc 1.22).
+2. Trang nhập từ trên web (việc 1.23).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     39 |     50 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     40 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **52** | **86** | **60%**      |
+| **Toàn dự án**          |                                            | **53** | **87** | **61%**      |
 
 ## Cách cập nhật
 
@@ -103,9 +103,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel và sửa lỗi từng dòng trước khi lưu.
 
-- [ ] **1.21** Parser text, CSV, XLSX và `POST /import/preview`, kèm giới hạn file và kiểm tra an toàn.
+- [x] **1.21** Parser text, CSV và `POST /import/preview`, kèm giới hạn kích thước và số dòng (#135).
 - [ ] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ.
 - [ ] **1.23** Web: tải file, dán text, xem trước và sửa lỗi.
+- [ ] **1.51** Đọc file XLSX cho import, chỉ đọc giá trị, không chạy công thức. Chờ chọn thư viện.
 
 ### 1F. Chế độ học còn lại và ôn tập
 
@@ -202,7 +203,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Quyết định                         | Cần trước việc | Đề xuất                                      |
 | ---------------------------------- | -------------- | -------------------------------------------- |
 | Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`       |
-| Thư viện đọc Excel                 | 1.21           | Cân nhắc `exceljs`, kiểm tra bảo mật khi làm |
+| Thư viện đọc Excel                 | 1.51           | Cân nhắc `exceljs`, kiểm tra bảo mật khi làm |
 | Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt          |
 | Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản  |
 | Khôi phục bộ từ đã xoá             | 1.30           | MVP không có thùng rác, xoá hẳn sau 30 ngày  |
