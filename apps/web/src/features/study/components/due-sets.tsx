@@ -4,9 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { paginationSchema } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
+import { SelectField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
@@ -31,7 +33,15 @@ function pageHref(page: number): Route {
   return (page === 1 ? '/review' : `/review?page=${page}`) as Route;
 }
 
+const REVIEW_MODES = [
+  { slug: 'flashcard', label: 'Flashcard' },
+  { slug: 'write', label: 'Viết' },
+  { slug: 'dictation', label: 'Nghe viết' },
+  { slug: 'mcq', label: 'Trắc nghiệm' },
+];
+
 export function DueSets() {
+  const [mode, setMode] = useState(REVIEW_MODES[0]?.slug ?? 'flashcard');
   const parsedPage = paginationSchema.shape.page.safeParse(useSearchParams().get('page'));
   const page = parsedPage.success ? parsedPage.data : 1;
   const due = useQuery({
@@ -74,6 +84,19 @@ export function DueSets() {
         Bạn có <span className="font-semibold text-text tabular-nums">{summary.dueCards}</span> thẻ
         cần ôn.
       </p>
+      <div className="max-w-60">
+        <SelectField
+          label="Ôn bằng chế độ"
+          value={mode}
+          onChange={(event) => setMode(event.target.value)}
+        >
+          {REVIEW_MODES.map(({ slug, label }) => (
+            <option key={slug} value={slug}>
+              {label}
+            </option>
+          ))}
+        </SelectField>
+      </div>
       <ul className="border-t border-border">
         {data.map(({ setId, title, dueCount }) => (
           <li
@@ -86,7 +109,7 @@ export function DueSets() {
             </div>
             <Button asChild>
               <Link
-                href={`/sets/${setId}/study/flashcard?due=1` as Route}
+                href={`/sets/${setId}/study/${mode}?due=1` as Route}
                 aria-label={`Ôn bộ từ ${title}`}
               >
                 Ôn ngay

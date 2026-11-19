@@ -29,14 +29,16 @@ export function createGuestBackend(): StudyBackend {
   };
 
   return {
-    async start(setId, mode): Promise<StartedSession> {
+    async start(setId, mode, options): Promise<StartedSession> {
       const body = await http(`/sets/${encodeURIComponent(setId)}`, { skipAuth: true });
       const { cards, termLang, defLang } = setDetailResponseSchema.parse(body).data;
       if (cards.length === 0) {
         throw new HttpError('Bộ từ này chưa có thẻ', 422, ERROR_CODES.SET_HAS_NO_CARDS);
       }
 
-      const questions = getMode(mode).buildQuestions(cards, {});
+      const selected = options?.cardIds ? new Set(options.cardIds) : null;
+      const studyCards = selected ? cards.filter(({ id }) => selected.has(id)) : cards;
+      const questions = getMode(mode).buildQuestions(studyCards, {});
       sequence += 1;
       const session: StudySession = {
         id: `guest-${sequence}`,

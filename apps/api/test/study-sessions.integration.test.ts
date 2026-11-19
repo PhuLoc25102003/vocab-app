@@ -129,6 +129,20 @@ describe('study sessions', () => {
     });
   });
 
+  describe('POST /study/sessions với cardIds', () => {
+    it('chỉ tạo câu hỏi cho các thẻ được chọn trong bộ từ', async () => {
+      const { body } = await start(owner.token, {
+        setId,
+        mode: 'FLASHCARD',
+        cardIds: [cardIds[1]!, 'the-cua-bo-khac'],
+      }).expect(201);
+
+      expect(body.data.questions.map(({ cardId }: { cardId: string }) => cardId)).toEqual([
+        cardIds[1],
+      ]);
+    });
+  });
+
   describe('POST /study/sessions/:id/answers', () => {
     it('không tính hai lần khi cùng một lô được gửi lại', async () => {
       const id = await startSession();

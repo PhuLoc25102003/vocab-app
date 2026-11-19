@@ -30,13 +30,12 @@
 
 ## UC-L3. Xem kết quả phiên
 
-- **Việc:** 1.15, 1.45. **Người dùng:** người học. **Trạng thái:** Thiếu (GAP-09).
+- **Việc:** 1.15, 1.45. **Người dùng:** người học. **Trạng thái:** Đủ.
 - **Phải có:** số câu đúng trên tổng, danh sách từ cần ôn, nút học lại toàn bộ, nút học lại thẻ sai, nút về bộ từ.
 - **Luồng chính:** học xong, xem kết quả, học lại thẻ sai hoặc quay về.
 - **Ngoại lệ:** gửi kết quả lỗi thì có nút thử lại và không mất đáp án; đúng hết thì ẩn nút học lại thẻ sai.
 - **Quy tắc điểm:** tính theo lần trả lời đầu tiên của mỗi thẻ.
-- **Test đã có:** `study-sessions.integration`, `study-shell.test`, E2E chế độ Viết.
-- **Test cần thêm:** component nút học lại thẻ sai; integration phiên chỉ gồm các thẻ được chọn và thẻ phải thuộc bộ đó.
+- **Test đã có:** `study-sessions.integration`, `study-shell.test`, E2E chế độ Viết, kể cả học lại thẻ sai ở component và thẻ phải thuộc bộ từ ở API.
 
 ## UC-L4. Chế độ Flashcard
 
@@ -88,7 +87,7 @@
 
 ## UC-L10. Ôn hôm nay
 
-- **Việc:** 1.13, 1.27, 1.45. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-09).
+- **Việc:** 1.13, 1.27, 1.45. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tổng số thẻ đến hạn, danh sách bộ có thẻ đến hạn, phân trang, chọn chế độ ôn, phiên chỉ gồm thẻ đến hạn.
 - **Luồng chính:** mở trang, chọn bộ và chế độ, ôn xong thì số thẻ giảm.
 - **Ngoại lệ:** không có thẻ đến hạn thì mời học thêm; ôn xong hết thì báo đã xong; bộ đã xoá không xuất hiện; thẻ sai sẽ quay lại sau 10 phút.

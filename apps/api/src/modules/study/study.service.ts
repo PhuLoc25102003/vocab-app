@@ -52,7 +52,7 @@ function summarize(attempts: { cardId: string; isCorrect: boolean }[]) {
 export class StudyService {
   constructor(private readonly study: StudyRepository) {}
 
-  async start(viewer: SetViewer, { setId, mode, limit, dueOnly }: StartSessionDto) {
+  async start(viewer: SetViewer, { setId, mode, limit, dueOnly, cardIds }: StartSessionDto) {
     if (!isModeAvailable(mode)) {
       throw new AppError(
         ERROR_CODES.STUDY_MODE_UNAVAILABLE,
@@ -64,14 +64,16 @@ export class StudyService {
     if (!set) {
       throw setNotFound();
     }
-    if (dueOnly && set.cards.length === 0) {
+    const selected = cardIds ? new Set(cardIds) : null;
+    const cards = selected ? set.cards.filter(({ id }) => selected.has(id)) : set.cards;
+    if (dueOnly && cards.length === 0) {
       throw new AppError(
         ERROR_CODES.NO_CARDS_DUE,
         'Bộ từ này không còn thẻ đến hạn',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    if (set.cards.length === 0) {
+    if (cards.length === 0) {
       throw new AppError(
         ERROR_CODES.SET_HAS_NO_CARDS,
         'Bộ từ này chưa có thẻ',
@@ -79,7 +81,7 @@ export class StudyService {
       );
     }
 
-    const questions = getMode(mode).buildQuestions(set.cards, { limit });
+    const questions = getMode(mode).buildQuestions(cards, { limit });
     const session = await this.study.createSession(viewer.id, setId, mode, questions.length);
     const languages = { term: set.termLang, definition: set.defLang };
     return ok({ session, questions, languages });

@@ -10,9 +10,17 @@ interface StudyResultProps {
   exitHref: Route;
   note?: ReactNode;
   onRestart: () => void;
+  onRetryWrong: () => void;
 }
 
-export function StudyResult({ result, questions, exitHref, note, onRestart }: StudyResultProps) {
+export function StudyResult({
+  result,
+  questions,
+  exitHref,
+  note,
+  onRestart,
+  onRetryWrong,
+}: StudyResultProps) {
   const { correct, total } = result.session;
   const wrongIds = new Set(result.wrongCardIds);
   const wrong = questions.filter(({ cardId }) => wrongIds.has(cardId));
@@ -49,7 +57,10 @@ export function StudyResult({ result, questions, exitHref, note, onRestart }: St
       {note}
 
       <div className="flex flex-wrap gap-2">
-        <Button onClick={onRestart}>Học lại</Button>
+        {wrong.length > 0 ? <Button onClick={onRetryWrong}>Học lại thẻ sai</Button> : null}
+        <Button variant={wrong.length > 0 ? 'secondary' : 'primary'} onClick={onRestart}>
+          Học lại từ đầu
+        </Button>
         <Button asChild variant="secondary">
           <Link href={exitHref}>Về bộ từ</Link>
         </Button>
