@@ -133,7 +133,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** các lỗ hổng trong `docs/use-cases/README.md` đã được xử lý. Làm phần này trước việc 1.34 và 1.35.
 
-- [x] **1.37** Sau khi tạo hoặc sửa bộ từ, nút quay lại của trình duyệt không về form đã lưu (GAP-01).
+- [x] **1.37** Sau khi tạo hoặc sửa bộ từ, nút quay lại của trình duyệt không về form đã lưu (GAP-01, #103).
 - [ ] **1.38** Cảnh báo khi rời form chưa lưu bằng nút quay lại, nút huỷ hoặc menu (GAP-02).
 - [ ] **1.39** Không mất đáp án khi tải lại hoặc đóng trang, tiếp tục được phiên đang học (GAP-03).
 - [ ] **1.40** Trang tài khoản: đổi tên, đổi mật khẩu, đăng xuất mọi thiết bị, xoá tài khoản (GAP-04).
