@@ -103,7 +103,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel và sửa lỗi từng dòng trước khi lưu.
 
-- [x] **1.21** Parser text, CSV và `POST /import/preview`, kèm giới hạn kích thước và số dòng.
+- [x] **1.21** Parser text, CSV và `POST /import/preview`, kèm giới hạn kích thước và số dòng (#135).
 - [ ] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ.
 - [ ] **1.23** Web: tải file, dán text, xem trước và sửa lỗi.
 - [ ] **1.51** Đọc file XLSX cho import, chỉ đọc giá trị, không chạy công thức. Chờ chọn thư viện.
