@@ -142,6 +142,18 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expectScore(page, cards.length);
   });
 
+  test('ghép cặp từ với nghĩa', async () => {
+    await page.goto(`${setPath}/study/match`);
+    const terms = page.getByRole('list', { name: 'Từ' });
+    const meanings = page.getByRole('list', { name: 'Nghĩa' });
+    for (const { term, definition } of cards) {
+      await terms.getByRole('button', { name: term, exact: true }).click();
+      await meanings.getByRole('button', { name: definition, exact: true }).click();
+    }
+    await page.getByRole('button', { name: 'Tiếp tục' }).click();
+    await expectScore(page, cards.length);
+  });
+
   test('ôn thẻ đến hạn bằng chế độ đã chọn', async () => {
     makeCardsDue(setPath.split('/').at(-1) ?? '');
 
@@ -210,6 +222,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       `${setPath}/study/dictation`,
       `${setPath}/study/mcq`,
       `${setPath}/study/cloze`,
+      `${setPath}/study/match`,
     ];
     const guestPaths = [
       '/',

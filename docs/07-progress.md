@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Chế độ Ghép cặp (việc 2.9).
-2. Chế độ Learn (việc 2.7).
+1. Chế độ Learn (việc 2.7).
+2. Chế độ Kiểm tra (việc 2.10).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     43 |     51 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     44 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **56** | **87** | **64%**      |
+| **Toàn dự án**          |                                            | **57** | **87** | **66%**      |
 
 ## Cách cập nhật
 
@@ -169,7 +169,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [ ] **2.7** Chế độ Learn.
 - [x] **2.8** Chế độ Điền từ (#144).
-- [ ] **2.9** Chế độ Ghép cặp.
+- [x] **2.9** Chế độ Ghép cặp (#146).
 - [ ] **2.10** Chế độ Kiểm tra.
 
 ### 2D. Quản trị
