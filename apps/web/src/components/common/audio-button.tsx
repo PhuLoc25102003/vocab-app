@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2 } from 'lucide-react';
+import { Snail, Volume2 } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,8 @@ interface AudioButtonProps {
   lang: string;
   label: string;
   className?: string;
+  /** Thêm nút nghe chậm cạnh nút nghe. */
+  withSlow?: boolean;
 }
 
 const subscribe = () => () => undefined;
@@ -22,13 +24,13 @@ export function useSpeechSupported(): boolean {
 }
 
 /** Trình duyệt không có Web Speech thì không hiện nút. */
-export function AudioButton({ text, lang, label, className }: AudioButtonProps) {
+export function AudioButton({ text, lang, label, className, withSlow = false }: AudioButtonProps) {
   const supported = useSpeechSupported();
   if (!supported) {
     return null;
   }
 
-  return (
+  const normal = (
     <Button
       type="button"
       variant="ghost"
@@ -39,5 +41,23 @@ export function AudioButton({ text, lang, label, className }: AudioButtonProps) 
     >
       <Volume2 aria-hidden className="size-5" />
     </Button>
+  );
+  if (!withSlow) {
+    return normal;
+  }
+  return (
+    <span className="flex shrink-0 items-center">
+      {normal}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={`${label} chậm`}
+        title="Nghe chậm"
+        onClick={() => speak(text, lang, { slow: true })}
+      >
+        <Snail aria-hidden className="size-5" />
+      </Button>
+    </span>
   );
 }

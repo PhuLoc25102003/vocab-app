@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageContainer } from '@/components/common/page-container';
 import { PageHeader } from '@/components/common/page-header';
+import { SpeechSettings } from '@/components/common/speech-settings';
 import { Button } from '@/components/ui/button';
 import { AccountSettings } from '@/features/auth/components/account-settings';
 import { Can } from '@/features/auth/components/can';
@@ -22,6 +23,7 @@ export default function AccountPage() {
         }
       />
       <AccountSettings />
+      <SpeechSettings />
     </PageContainer>
   );
 }
