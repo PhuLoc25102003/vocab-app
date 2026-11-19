@@ -34,6 +34,7 @@ export const config = {
     '/sets/:path*',
     '/explore/:path*',
     '/review/:path*',
+    '/account/:path*',
     '/login',
     '/register',
   ],

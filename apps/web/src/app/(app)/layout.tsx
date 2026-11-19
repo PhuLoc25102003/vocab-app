@@ -1,7 +1,10 @@
+import { UserRound } from 'lucide-react';
+import Link from 'next/link';
 import { Suspense, type ReactNode } from 'react';
 import { AppNav, AppNavFallback } from '@/components/common/app-nav';
 import { Logo } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { Button } from '@/components/ui/button';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
 import { LogoutButton } from '@/features/auth/components/logout-button';
 
@@ -22,6 +25,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </Suspense>
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
+            <Button asChild variant="ghost" size="icon">
+              <Link href="/account" aria-label="Tài khoản" title="Tài khoản">
+                <UserRound aria-hidden className="size-5" />
+              </Link>
+            </Button>
             <LogoutButton />
           </div>
         </div>
