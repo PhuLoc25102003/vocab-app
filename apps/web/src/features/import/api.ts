@@ -1,6 +1,7 @@
 import {
   importCardsResultSchema,
   importPreviewResponseSchema,
+  setDetailResponseSchema,
   setResponseSchema,
   type CardInput,
   type ImportPreviewInput,
@@ -21,6 +22,19 @@ export async function importIntoSet(setId: string, cards: CardInput[]): Promise<
     body: JSON.stringify({ cards }),
   });
   return importCardsResultSchema.parse(body).data.id;
+}
+
+export interface ImportTarget {
+  id: string;
+  title: string;
+  cardCount: number;
+}
+
+/** Bộ từ có sẵn sẽ nhận thẻ, chỉ lấy phần cần hiển thị. */
+export async function getImportTarget(id: string): Promise<ImportTarget> {
+  const body = await http(`/sets/${encodeURIComponent(id)}`);
+  const { title, cardCount } = setDetailResponseSchema.parse(body).data;
+  return { id, title, cardCount };
 }
 
 export interface NewSetInput {
