@@ -1,4 +1,9 @@
-import type { DetectedDelimiter, ImportOptions, ImportPreviewResult } from '../schemas/import';
+import type {
+  DetectedDelimiter,
+  ImportOptions,
+  ImportPreviewResult,
+  ImportRow,
+} from '../schemas/import';
 import { cardInputSchema } from '../schemas/set';
 
 const DELIMITERS: Record<DetectedDelimiter, string> = {
@@ -96,7 +101,10 @@ function tokenize(content: string, delimiter: string): RawRecord[] {
   return records;
 }
 
-/** Đọc text hoặc CSV thành danh sách thẻ, mỗi dòng kèm lỗi nếu có. */
+/**
+ * Đọc text hoặc CSV thành danh sách thẻ, mỗi dòng kèm lỗi nếu có.
+ * Phiên âm và ví dụ chỉ có trong dòng khi chọn cột, ô trống không phải lỗi.
+ */
 export function parseImport(content: string, options: ImportOptions): ImportPreviewResult {
   const normalized = normalize(content);
   const delimiter = options.delimiter === 'auto' ? detectDelimiter(normalized) : options.delimiter;
@@ -104,10 +112,23 @@ export function parseImport(content: string, options: ImportOptions): ImportPrev
     .filter(({ fields }) => fields.some((value) => value.trim()))
     .slice(options.hasHeader ? 1 : 0);
 
+  const cell = (fields: string[], column: number) => (fields[column - 1] ?? '').trim();
   const rows = records.map(({ line, fields }) => {
-    const term = (fields[options.termColumn - 1] ?? '').trim();
-    const definition = (fields[options.definitionColumn - 1] ?? '').trim();
-    const result = cardInputSchema.safeParse({ term, definition });
+    const term = cell(fields, options.termColumn);
+    const definition = cell(fields, options.definitionColumn);
+    const optional: Pick<ImportRow, 'phonetic' | 'example'> = {};
+    if (options.phoneticColumn !== undefined) {
+      optional.phonetic = cell(fields, options.phoneticColumn);
+    }
+    if (options.exampleColumn !== undefined) {
+      optional.example = cell(fields, options.exampleColumn);
+    }
+    const result = cardInputSchema.safeParse({
+      term,
+      definition,
+      phonetic: optional.phonetic || undefined,
+      example: optional.example || undefined,
+    });
     // Mỗi ô chỉ báo lỗi đầu tiên để người dùng dễ đọc.
     const errors: string[] = [];
     const seen = new Set<string>();
@@ -118,7 +139,7 @@ export function parseImport(content: string, options: ImportOptions): ImportPrev
         errors.push(issue.message);
       }
     }
-    return { line, term, definition, errors };
+    return { line, term, definition, ...optional, errors };
   });
 
   return {

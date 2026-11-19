@@ -21,7 +21,7 @@ import { HttpError } from '@/lib/http';
 import { useUnsavedGuard } from '@/lib/use-unsaved-guard';
 import { getImportTarget, importAsNewSet, importIntoSet } from '../api';
 import { ImportPreview } from './import-preview';
-import { ImportSource } from './import-source';
+import { ImportSource, type ImportExtraColumns } from './import-source';
 
 const newSetSchema = createSetSchema.pick({ title: true, visibility: true });
 type NewSetInput = z.input<typeof newSetSchema>;
@@ -39,6 +39,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<ImportRow[] | null>(null);
+  const [columns, setColumns] = useState<ImportExtraColumns>({ phonetic: false, example: false });
   const hasMounted = useRef(false);
   const target = useQuery({
     queryKey: [...SETS_QUERY_KEY, 'import-target', setId],
@@ -47,7 +48,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   });
   const save = useMutation({
     mutationFn: async (details: NewSetValues) => {
-      const cards = (rows ?? []).map(({ term, definition }) => ({ term, definition }));
+      const cards = (rows ?? []).map(({ term, definition, phonetic, example }) => ({
+        term,
+        definition,
+        phonetic: phonetic?.trim() || undefined,
+        example: example?.trim() || undefined,
+      }));
       return setId ? importIntoSet(setId, cards) : importAsNewSet({ ...details, cards });
     },
   });
@@ -98,7 +104,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     return (
       <div className="flex flex-col gap-6">
         {targetNote}
-        <ImportSource onPreview={(result) => setRows(result.rows)} />
+        <ImportSource
+          onPreview={(result, chosen) => {
+            setColumns(chosen);
+            setRows(result.rows);
+          }}
+        />
       </div>
     );
   }
@@ -139,7 +150,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   return (
     <div className="flex max-w-[720px] flex-col gap-6">
-      <ImportPreview rows={rows} onChange={setRows} />
+      <ImportPreview rows={rows} columns={columns} onChange={setRows} />
       <form
         onSubmit={submit}
         noValidate

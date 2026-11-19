@@ -33,11 +33,24 @@ const PLACEHOLDER =
 
 const DEFAULT_VALUES: ImportPreviewInput = {
   content: '',
-  options: { delimiter: 'auto', hasHeader: false, termColumn: 1, definitionColumn: 2 },
+  options: {
+    delimiter: 'auto',
+    hasHeader: false,
+    termColumn: 1,
+    definitionColumn: 2,
+    phoneticColumn: '',
+    exampleColumn: '',
+  },
 };
 
+/** Cột không bắt buộc người dùng đã chọn, để bảng xem trước hiện đúng ô. */
+export interface ImportExtraColumns {
+  phonetic: boolean;
+  example: boolean;
+}
+
 interface ImportSourceProps {
-  onPreview: (result: ImportPreviewResult) => void;
+  onPreview: (result: ImportPreviewResult, columns: ImportExtraColumns) => void;
 }
 
 export function ImportSource({ onPreview }: ImportSourceProps) {
@@ -74,7 +87,11 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
 
   const submit = handleSubmit(async (values) => {
     try {
-      onPreview(await preview.mutateAsync(values));
+      const result = await preview.mutateAsync(values);
+      onPreview(result, {
+        phonetic: values.options.phoneticColumn !== undefined,
+        example: values.options.exampleColumn !== undefined,
+      });
     } catch {
       // Lỗi hiện qua `preview.error`.
     }
@@ -85,6 +102,12 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
       Cột {column}
     </option>
   ));
+  const optionalColumnOptions = [
+    <option key="none" value="">
+      Không có
+    </option>,
+    ...columnOptions,
+  ];
 
   return (
     <form onSubmit={submit} noValidate className="flex max-w-[720px] flex-col gap-6">
@@ -138,6 +161,20 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
           {...register('options.definitionColumn')}
         >
           {columnOptions}
+        </SelectField>
+        <SelectField
+          label="Cột phiên âm (không bắt buộc)"
+          error={errors.options?.phoneticColumn?.message}
+          {...register('options.phoneticColumn')}
+        >
+          {optionalColumnOptions}
+        </SelectField>
+        <SelectField
+          label="Cột ví dụ (không bắt buộc)"
+          error={errors.options?.exampleColumn?.message}
+          {...register('options.exampleColumn')}
+        >
+          {optionalColumnOptions}
         </SelectField>
         <label className="flex min-h-11 items-center gap-3 text-body sm:col-span-3">
           <input

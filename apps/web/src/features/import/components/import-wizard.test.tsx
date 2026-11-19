@@ -64,6 +64,39 @@ describe('ImportWizard', () => {
     });
   });
 
+  it('lưu phiên âm và ví dụ khi có chọn cột, ô trống thì bỏ qua', async () => {
+    vi.mocked(previewImport).mockResolvedValue({
+      delimiter: 'tab',
+      columnCount: 4,
+      rows: [
+        {
+          line: 1,
+          term: 'apple',
+          definition: 'quả táo',
+          phonetic: '/ˈæp.əl/',
+          example: '',
+          errors: [],
+        },
+      ],
+    });
+    vi.mocked(importAsNewSet).mockResolvedValue('s9');
+    renderWizard();
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple	quả táo');
+    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
+    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
+    await userEvent.click(screen.getByRole('button', { name: 'Xem trước' }));
+
+    expect(await screen.findByLabelText('Phiên âm')).toHaveValue('/ˈæp.əl/');
+    await userEvent.type(screen.getByLabelText('Ví dụ'), 'I eat an apple.');
+    await userEvent.type(screen.getByLabelText('Tên bộ từ mới'), 'Trái cây');
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu 1 thẻ' }));
+
+    await waitFor(() => expect(importAsNewSet).toHaveBeenCalled());
+    expect(vi.mocked(importAsNewSet).mock.calls[0]?.[0].cards).toStrictEqual([
+      { term: 'apple', definition: 'quả táo', phonetic: '/ˈæp.əl/', example: 'I eat an apple.' },
+    ]);
+  });
+
   it('yêu cầu tên khi tạo bộ mới', async () => {
     vi.mocked(previewImport).mockResolvedValue({ ...preview, rows: [preview.rows[0]!] });
     renderWizard();

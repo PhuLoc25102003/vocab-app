@@ -5,12 +5,18 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { FormField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
+import type { ImportExtraColumns } from './import-source';
 
-type RowField = 'term' | 'definition';
+type RowField = 'term' | 'definition' | 'phonetic' | 'example';
 
 /** Lỗi đầu tiên của từng ô, dùng cùng schema với API. */
 function fieldErrors(row: ImportRow): Partial<Record<RowField, string>> {
-  const result = cardInputSchema.safeParse({ term: row.term, definition: row.definition });
+  const result = cardInputSchema.safeParse({
+    term: row.term,
+    definition: row.definition,
+    phonetic: row.phonetic || undefined,
+    example: row.example || undefined,
+  });
   const errors: Partial<Record<RowField, string>> = {};
   for (const issue of result.success ? [] : result.error.issues) {
     const field = issue.path[0] as RowField;
@@ -26,10 +32,11 @@ export function validateRow(row: ImportRow): ImportRow {
 
 interface ImportPreviewProps {
   rows: ImportRow[];
+  columns: ImportExtraColumns;
   onChange: (rows: ImportRow[]) => void;
 }
 
-export function ImportPreview({ rows, onChange }: ImportPreviewProps) {
+export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
   const invalidCount = rows.filter(({ errors }) => errors.length > 0).length;
   const [onlyInvalid, setOnlyInvalid] = useState(invalidCount > 0);
   const visible = onlyInvalid && invalidCount > 0 ? rows.filter((row) => row.errors.length) : rows;
@@ -92,6 +99,22 @@ export function ImportPreview({ rows, onChange }: ImportPreviewProps) {
                   error={errors.definition}
                   onChange={(event) => update(row.line, 'definition', event.target.value)}
                 />
+                {columns.phonetic ? (
+                  <FormField
+                    label="Phiên âm"
+                    value={row.phonetic ?? ''}
+                    error={errors.phonetic}
+                    onChange={(event) => update(row.line, 'phonetic', event.target.value)}
+                  />
+                ) : null}
+                {columns.example ? (
+                  <FormField
+                    label="Ví dụ"
+                    value={row.example ?? ''}
+                    error={errors.example}
+                    onChange={(event) => update(row.line, 'example', event.target.value)}
+                  />
+                ) : null}
               </div>
               <Button
                 type="button"
