@@ -13,6 +13,7 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { HealthModule } from './modules/health/health.module';
+import { FoldersModule } from './modules/folders/folders.module';
 import { ImportModule } from './modules/import/import.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { SetsModule } from './modules/sets/sets.module';
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module';
     UsersModule,
     SetsModule,
     CardsModule,
+    FoldersModule,
     ImportModule,
     StudyModule,
     ProgressModule,

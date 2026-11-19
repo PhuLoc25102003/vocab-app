@@ -23,6 +23,12 @@ const RESOURCES: Record<
     notFoundCode: ERROR_CODES.NOT_FOUND,
     notFoundMessage: 'Không tìm thấy phiên học',
   },
+  // Thư mục là cách sắp xếp riêng của mỗi người, ADMIN không cần sửa thay.
+  folder: {
+    adminBypass: false,
+    notFoundCode: ERROR_CODES.FOLDER_NOT_FOUND,
+    notFoundMessage: 'Không tìm thấy thư mục',
+  },
 };
 
 /** Chạy sau `RolesGuard`. Chỉ áp dụng cho route có @CheckOwnership(). */

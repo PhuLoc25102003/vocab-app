@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { BaseRepository } from '../base/base.repository';
 
-export type OwnedResource = 'set' | 'session';
+export type OwnedResource = 'set' | 'session' | 'folder';
 
 @Injectable()
 export class OwnershipRepository extends BaseRepository {
@@ -18,6 +18,14 @@ export class OwnershipRepository extends BaseRepository {
         select: { ownerId: true },
       });
       return set?.ownerId ?? null;
+    }
+
+    if (resource === 'folder') {
+      const folder = await this.prisma.folder.findUnique({
+        where: { id },
+        select: { ownerId: true },
+      });
+      return folder?.ownerId ?? null;
     }
 
     const session = await this.prisma.studySession.findUnique({
