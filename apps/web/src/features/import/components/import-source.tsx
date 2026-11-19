@@ -3,14 +3,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import {
+  detectTemplateHeader,
   importPreviewSchema,
   type ImportDelimiter,
   type ImportPreviewDto,
   type ImportPreviewInput,
   type ImportPreviewResult,
 } from '@vocab/shared';
-import { FileUp } from 'lucide-react';
-import { useId, useRef, useState, type ChangeEvent } from 'react';
+import { Download, FileUp } from 'lucide-react';
+import { useId, useRef, useState, type ChangeEvent, type ClipboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { SelectField, TextareaField } from '@/components/common/form-field';
@@ -18,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { previewImport } from '../api';
 import { IMPORT_FILE_ACCEPT, ImportFileError, readImportFile } from '../read-file';
+import { downloadTemplate, type TemplateFormat } from '../template-file';
 
 export const DELIMITER_LABELS: Record<ImportDelimiter, string> = {
   auto: 'Tự nhận',
@@ -58,16 +60,50 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [templateError, setTemplateError] = useState<string | null>(null);
+  const [usesTemplate, setUsesTemplate] = useState(false);
   const preview = useMutation({ mutationFn: previewImport });
   const {
     register,
     handleSubmit,
+    getValues,
     setValue,
     formState: { errors },
   } = useForm<ImportPreviewInput, unknown, ImportPreviewDto>({
     resolver: zodResolver(importPreviewSchema),
     defaultValues: DEFAULT_VALUES,
   });
+
+  /** Dòng đầu trùng tiêu đề file mẫu thì chọn sẵn cột, người dùng vẫn đổi lại được. */
+  const applyTemplateHeader = (text: string) => {
+    const detected = detectTemplateHeader(text);
+    setUsesTemplate(Boolean(detected));
+    if (!detected) {
+      return;
+    }
+    const options = { shouldDirty: true };
+    setValue('options.delimiter', detected.delimiter, options);
+    setValue('options.hasHeader', true, options);
+    setValue('options.termColumn', detected.termColumn, options);
+    setValue('options.definitionColumn', detected.definitionColumn, options);
+    setValue('options.phoneticColumn', detected.phoneticColumn ?? '', options);
+    setValue('options.exampleColumn', detected.exampleColumn ?? '', options);
+  };
+
+  const pasteContent = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+    if (!getValues('content').trim()) {
+      applyTemplateHeader(event.clipboardData.getData('text'));
+    }
+  };
+
+  const saveTemplate = async (format: TemplateFormat) => {
+    try {
+      await downloadTemplate(format);
+      setTemplateError(null);
+    } catch {
+      setTemplateError('Không tạo được file mẫu. Hãy thử lại.');
+    }
+  };
 
   const chooseFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,6 +117,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
       if (delimiter) {
         setValue('options.delimiter', delimiter, { shouldDirty: true });
       }
+      applyTemplateHeader(text);
       setFileName(file.name);
       setFileError(null);
     } catch (error) {
@@ -115,6 +152,26 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   return (
     <form onSubmit={submit} noValidate className="flex max-w-[720px] flex-col gap-6">
       {preview.error ? <FormError>{formErrorMessage(preview.error)}</FormError> : null}
+      <section aria-labelledby="template-title" className="flex flex-col gap-2">
+        <h2 id="template-title" className="text-h3">
+          File mẫu
+        </h2>
+        <p className="max-w-[65ch] text-text-muted">
+          Mỗi dòng là một thẻ. Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống. Giữ
+          nguyên hàng tiêu đề của file mẫu để trang tự chọn cột.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="secondary" onClick={() => void saveTemplate('xlsx')}>
+            <Download aria-hidden className="size-4" />
+            Tải file mẫu .xlsx
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => void saveTemplate('csv')}>
+            <Download aria-hidden className="size-4" />
+            Tải file mẫu .csv
+          </Button>
+        </div>
+        {templateError ? <FormError>{templateError}</FormError> : null}
+      </section>
       <div className="flex flex-col gap-2">
         <TextareaField
           label="Dán danh sách từ"
@@ -122,7 +179,13 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
           rows={8}
           spellCheck={false}
           error={errors.content?.message}
-          {...register('content', { onChange: () => setFileName(null) })}
+          onPaste={pasteContent}
+          {...register('content', {
+            onChange: (event: ChangeEvent<HTMLTextAreaElement>) => {
+              setFileName(null);
+              if (!event.target.value.trim()) setUsesTemplate(false);
+            },
+          })}
         />
         <div className="flex flex-wrap items-center gap-3">
           <input
@@ -144,6 +207,9 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
           </p>
         </div>
         {fileError ? <FormError>{fileError}</FormError> : null}
+        <p className="text-small text-text-muted" aria-live="polite">
+          {usesTemplate ? 'Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn bên dưới.' : ''}
+        </p>
       </div>
 
       <fieldset className="grid gap-4 sm:grid-cols-3">

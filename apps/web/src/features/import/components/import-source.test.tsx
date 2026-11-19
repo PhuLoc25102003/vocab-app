@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
-import { buildXlsx } from '@/test/build-xlsx';
+import { buildXlsx } from '@/lib/xlsx';
 import { previewImport } from '../api';
 import { ImportSource } from './import-source';
 
@@ -116,6 +116,45 @@ describe('ImportSource', () => {
     );
     expect(screen.getByLabelText('Ký tự phân cách')).toHaveValue('tab');
     expect(screen.getByText('Đã đọc tu.xlsx')).toBeInTheDocument();
+  });
+
+  it('nhận ra file mẫu đã điền và chọn sẵn cột, vẫn đổi lại được', async () => {
+    renderSource();
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    const workbook = buildXlsx([
+      [
+        ['Ví dụ', 'Từ', 'Nghĩa', 'Phiên âm'],
+        [null, 'cat', 'con mèo', null],
+      ],
+    ]);
+
+    await userEvent.upload(input!, new File([workbook as BlobPart], 'mau.xlsx', { type: '' }));
+
+    expect(
+      await screen.findByText('Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn bên dưới.'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Dòng đầu là tiêu đề, bỏ qua khi nhập')).toBeChecked();
+    expect(screen.getByLabelText('Cột từ')).toHaveValue('2');
+    expect(screen.getByLabelText('Cột nghĩa')).toHaveValue('3');
+    expect(screen.getByLabelText('Cột phiên âm (không bắt buộc)')).toHaveValue('4');
+    expect(screen.getByLabelText('Cột ví dụ (không bắt buộc)')).toHaveValue('1');
+
+    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '');
+    expect(screen.getByLabelText('Cột ví dụ (không bắt buộc)')).toHaveValue('');
+  });
+
+  it('dán nội dung có tiêu đề mẫu vào ô trống thì chọn sẵn cột', async () => {
+    renderSource();
+    const textarea = screen.getByLabelText('Dán danh sách từ');
+
+    await userEvent.click(textarea);
+    const pasted = 'Từ,Nghĩa,Ví dụ\napple,quả táo,An apple.';
+    await userEvent.paste(pasted);
+
+    expect(textarea).toHaveValue(pasted);
+    expect(screen.getByLabelText('Ký tự phân cách')).toHaveValue('comma');
+    expect(screen.getByLabelText('Cột ví dụ (không bắt buộc)')).toHaveValue('3');
+    expect(screen.getByLabelText('Cột phiên âm (không bắt buộc)')).toHaveValue('');
   });
 
   it('báo lỗi file Excel và lỗi từ máy chủ', async () => {

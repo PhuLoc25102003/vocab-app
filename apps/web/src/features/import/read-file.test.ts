@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildXlsx, type XlsxCell } from '@/test/build-xlsx';
+import { buildXlsx, type XlsxCell } from '@/lib/xlsx';
 import { IMPORT_FILE_MAX_BYTES, readImportFile } from './read-file';
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';

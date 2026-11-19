@@ -2,13 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1 còn file mẫu cho phần nhập từ (1.54), các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
+**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
 
 **Việc tiếp theo:**
 
-1. Tải file mẫu ở trang nhập (việc 1.54).
-2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-3. Đo lại Lighthouse trên production (việc 1.34).
+1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+2. Đo lại Lighthouse trên production (việc 1.34).
 
 ## Tổng quan
 
@@ -17,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     48 |     54 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     49 |     54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **64** | **90** | **71%**      |
+| **Toàn dự án**          |                                            | **65** | **90** | **72%**      |
 
 ## Cách cập nhật
 
@@ -110,7 +109,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.23** Web: tải file, dán text, xem trước và sửa lỗi (#142).
 - [x] **1.53** Nhập thêm cột phiên âm (IPA) và câu ví dụ, cả hai không bắt buộc, áp dụng cho text, CSV và XLSX (#165).
 - [x] **1.51** Đọc file XLSX trên trình duyệt bằng `read-excel-file`, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002) (#167).
-- [ ] **1.54** Nút tải file mẫu `.xlsx` và `.csv` ở trang nhập, nhận diện hàng tiêu đề của file mẫu để tự chọn cột. Cần 1.51 và 1.53.
+- [x] **1.54** Nút tải file mẫu `.xlsx` và `.csv` ở trang nhập, nhận diện hàng tiêu đề của file mẫu để tự chọn cột. Cần 1.51 và 1.53.
 
 ### 1F. Chế độ học còn lại và ôn tập
 

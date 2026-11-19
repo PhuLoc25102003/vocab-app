@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { expect, test, type Page } from '@playwright/test';
-import { buildXlsx } from '../src/test/build-xlsx';
+import { buildXlsx } from '../src/lib/xlsx';
 import { AUDIT_VIEWS, auditFocus, auditPage, applyAuditView } from './audit';
 
 const stamp = Date.now();
@@ -212,6 +213,24 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('button', { name: 'Lưu 1 thẻ' }).click();
     await page.waitForURL(`**${importPath}`);
     await expect(page.getByText('con hổ')).toBeVisible();
+
+    // Tải file mẫu rồi chọn lại chính file đó: trang nhận ra tiêu đề và chọn sẵn 4 cột.
+    await page.goto('/sets/import');
+    const [template] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'Tải file mẫu .xlsx' }).click(),
+    ]);
+    expect(template.suggestedFilename()).toBe('mau-nhap-tu-vung.xlsx');
+    await page.locator('input[type="file"]').setInputFiles({
+      name: template.suggestedFilename(),
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer: await readFile(await template.path()),
+    });
+    await expect(page.getByText('Đã nhận ra tiêu đề file mẫu')).toBeVisible();
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+    await expect(page.getByRole('heading', { name: 'Xem trước (3 thẻ)' })).toBeVisible();
+    await expect(page.getByLabel('Phiên âm').first()).toHaveValue('/ˈæp.əl/');
+    await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
   });
 
   test('tạo thư mục, chuyển bộ vào, lọc rồi xoá thư mục mà bộ vẫn còn', async () => {
