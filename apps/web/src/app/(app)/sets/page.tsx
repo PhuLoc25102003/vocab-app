@@ -14,9 +14,14 @@ export default function SetsPage() {
       <PageHeader
         title="Bộ từ"
         actions={
-          <Button asChild>
-            <Link href="/sets/new">Tạo bộ từ</Link>
-          </Button>
+          <>
+            <Button asChild variant="secondary">
+              <Link href="/sets/import">Nhập từ file</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/sets/new">Tạo bộ từ</Link>
+            </Button>
+          </>
         }
       />
       <Suspense fallback={<SetRowsLoading count={5} />}>

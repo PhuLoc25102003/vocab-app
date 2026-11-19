@@ -93,7 +93,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S10. Nhập danh sách từ
 
-- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX). **Người dùng:** người đã đăng nhập. **Trạng thái:** Đang làm. Đã có parser text, CSV, `POST /import/preview` và `POST /sets/:id/import`. XLSX chờ chọn thư viện.
+- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX). **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ với text và CSV. XLSX chờ chọn thư viện (1.51), hiện web báo người dùng lưu thành CSV.
 - **Phải có:**
   - Dán text, tải `.csv`, `.xlsx`, `.txt` tối đa 2 MB.
   - Chọn ký tự phân cách và cột từ, cột nghĩa.
@@ -106,4 +106,6 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Công thức Excel chỉ được đọc như văn bản.
   - Mã hoá UTF-8 có BOM và dấu tiếng Việt phải đúng.
   - Rời trang khi chưa lưu phải hỏi xác nhận.
-- **Cách test:** unit từng parser với file mẫu; integration giới hạn file, quyền, transaction; component bảng xem trước; E2E tải CSV, sửa một dòng lỗi, lưu, học ngay.
+- **Điểm vào:** nút "Nhập từ file" ở trang Bộ từ mở `/sets/import`, nút "Nhập thêm thẻ" của chủ bộ từ mở `/sets/import?setId=...`.
+- **Test đã có:** `parse.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test`, `import-source.test`, `import-preview.test`, `import-wizard.test`, E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi nhập thêm vào bộ có sẵn, audit accessibility trang nhập.
+- **Test cần thêm:** file XLSX khi làm 1.51.

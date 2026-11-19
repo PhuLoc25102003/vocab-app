@@ -105,6 +105,8 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
             type="file"
             accept={IMPORT_FILE_ACCEPT}
             className="sr-only"
+            tabIndex={-1}
+            aria-label="Chọn file .txt hoặc .csv"
             onChange={(event) => void chooseFile(event)}
           />
           <Button type="button" variant="secondary" onClick={() => fileInput.current?.click()}>
@@ -140,7 +142,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         <label className="flex min-h-11 items-center gap-3 text-body sm:col-span-3">
           <input
             type="checkbox"
-            className="size-5 accent-primary"
+            className="size-11 shrink-0 accent-primary"
             {...register('options.hasHeader')}
           />
           Dòng đầu là tiêu đề, bỏ qua khi nhập

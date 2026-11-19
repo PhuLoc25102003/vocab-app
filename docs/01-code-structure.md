@@ -44,7 +44,7 @@ src/
 │   ├── marketing/   { components/landing-page.tsx }
 │   ├── auth/        { api.ts, hooks/, components/, store.ts }
 │   ├── sets/        { api.ts, hooks/use-sets.ts, components/set-card.tsx ... }
-│   ├── import/      { parsers/, components/import-preview.tsx }
+│   ├── import/      { api.ts, read-file.ts, components/import-wizard.tsx }
 │   ├── study/
 │   │   ├── modes/   { flashcard/, write/, dictation/, mcq/, match/ }
 │   │   ├── session.store.ts      # Zustand: thẻ hiện tại, điểm, hàng đợi
@@ -94,7 +94,7 @@ src/
     ├── users/
     ├── sets/         sets.controller.ts, sets.service.ts, sets.repository.ts, dto/
     ├── cards/
-    ├── import/       import.service.ts, parsers/ (text, csv, xlsx)
+    ├── import/       import.service.ts, đọc text và CSV bằng parseImport của shared
     ├── study/        controller, service, repository (SRS nằm ở shared)
     ├── progress/
     ├── health/

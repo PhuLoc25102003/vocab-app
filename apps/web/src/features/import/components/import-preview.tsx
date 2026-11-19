@@ -57,7 +57,7 @@ export function ImportPreview({ rows, onChange }: ImportPreviewProps) {
           <label className="flex min-h-11 items-center gap-3 text-body">
             <input
               type="checkbox"
-              className="size-5 accent-primary"
+              className="size-11 shrink-0 accent-primary"
               checked={onlyInvalid}
               onChange={(event) => setOnlyInvalid(event.target.checked)}
             />
