@@ -93,19 +93,26 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S10. Nhập danh sách từ
 
-- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX). **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ với text và CSV. XLSX chờ chọn thư viện (1.51), hiện web báo người dùng lưu thành CSV.
+- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX), 1.53 (phiên âm, ví dụ), 1.54 (file mẫu). **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu. Đã đủ với từ và nghĩa từ text, CSV. Còn thiếu XLSX (1.51), cột phiên âm và ví dụ (1.53), file mẫu (1.54). Hiện web báo người dùng lưu file Excel thành CSV.
 - **Phải có:**
   - Dán text, tải `.csv`, `.xlsx`, `.txt` tối đa 2 MB.
-  - Chọn ký tự phân cách và cột từ, cột nghĩa.
-  - Bảng xem trước, báo lỗi từng dòng, sửa hoặc bỏ dòng trước khi lưu.
-  - Nhập vào bộ mới hoặc bộ có sẵn.
-- **Luồng chính:** đưa dữ liệu vào, xem trước, sửa lỗi, lưu trong một transaction, tới trang bộ từ.
+  - Chọn ký tự phân cách, cột từ, cột nghĩa. Cột phiên âm và cột ví dụ **không bắt buộc**, mặc định là "Không có".
+  - Nút "Tải file mẫu" với hai định dạng `.xlsx` và `.csv` (UTF-8 có BOM). File mẫu có hàng tiêu đề `Từ`, `Nghĩa`, `Phiên âm`, `Ví dụ` và 3 dòng ví dụ, như `apple`, `quả táo`, `/ˈæp.əl/`, `I eat an apple every day.`. Trang nhập có một dòng giải thích ngắn về các cột.
+  - Nếu hàng đầu tiên trùng tiêu đề của file mẫu (không phân biệt hoa thường, bỏ khoảng trắng thừa), web tự bật "Dòng đầu là tiêu đề" và chọn đúng 4 cột. Người dùng vẫn đổi lại được.
+  - Bảng xem trước hiện cả phiên âm và ví dụ khi có chọn cột, báo lỗi từng dòng, sửa hoặc bỏ dòng trước khi lưu.
+  - Nhập vào bộ mới hoặc bộ có sẵn. Thẻ đã lưu có `phonetic` và `example` khi dòng có giá trị.
+- **Luồng chính:** tải file mẫu, điền từ, tải file lên hoặc dán, xem trước, sửa lỗi, lưu trong một transaction, tới trang bộ từ.
 - **Ngoại lệ:**
-  - File sai định dạng, sai MIME, quá lớn, rỗng hoặc hỏng.
+  - File sai định dạng, sai MIME, quá lớn, rỗng hoặc hỏng. File `.xls` cũ bị từ chối, kèm hướng dẫn lưu lại thành `.xlsx` hoặc CSV.
+  - XLSX chỉ đọc sheet đầu tiên. Ô công thức lấy giá trị đã tính sẵn, không chạy công thức. Ô công thức không có giá trị lưu sẵn coi như trống (ADR 0002).
+  - Ô phiên âm, ví dụ trống thì thẻ không có trường đó, không phải lỗi. Phiên âm dài quá giới hạn của từ, ví dụ dài quá giới hạn của nghĩa thì báo lỗi ở dòng đó.
+  - Các cột được chọn phải khác nhau. Dòng thiếu cột phiên âm hoặc ví dụ thì coi như ô trống.
   - Vượt 2.000 thẻ, tính cả thẻ đang có.
-  - Công thức Excel chỉ được đọc như văn bản.
-  - Mã hoá UTF-8 có BOM và dấu tiếng Việt phải đúng.
+  - Mã hoá UTF-8 có BOM, dấu tiếng Việt và ký tự IPA phải đúng.
   - Rời trang khi chưa lưu phải hỏi xác nhận.
 - **Điểm vào:** nút "Nhập từ file" ở trang Bộ từ mở `/sets/import`, nút "Nhập thêm thẻ" của chủ bộ từ mở `/sets/import?setId=...`.
 - **Test đã có:** `parse.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test`, `import-source.test`, `import-preview.test`, `import-wizard.test`, E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi nhập thêm vào bộ có sẵn, audit accessibility trang nhập.
-- **Test cần thêm:** file XLSX khi làm 1.51.
+- **Test cần thêm:**
+  - 1.53: `parse.test` có cột phiên âm và ví dụ, ô trống, quá độ dài, trùng cột. `import-preview.integration` với `phoneticColumn`, `exampleColumn`. Thẻ lưu đúng `phonetic`, `example`.
+  - 1.51: `read-file.test` với XLSX hợp lệ, hỏng, rỗng, có ô công thức, có dấu tiếng Việt và IPA, file `.xls`.
+  - 1.54: file mẫu tải được và có đúng hàng tiêu đề, nhận diện tiêu đề tự chọn cột. E2E tải file mẫu `.xlsx` có điền từ rồi lưu.

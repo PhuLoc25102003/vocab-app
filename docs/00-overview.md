@@ -16,7 +16,7 @@ Nguồn: tách từ `spec-source.md` (bản 2026-11-18), đã đối chiếu v�
 **Phạm vi MVP:**
 
 - Đăng ký, đăng nhập (email + mật khẩu, Google OAuth).
-- Tạo, sửa, xoá bộ từ và thẻ từ; import từ text, CSV, Excel.
+- Tạo, sửa, xoá bộ từ và thẻ từ; import từ text, CSV, Excel, kèm phiên âm và câu ví dụ nếu có, có file mẫu để tải về.
 - Chế độ Flashcard, Viết, Nghe – viết, Trắc nghiệm; nghe phát âm.
 - Lưu tiến độ từng thẻ; trang "Ôn hôm nay".
 
