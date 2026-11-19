@@ -127,6 +127,21 @@ describe('study sessions', () => {
       expect(ids(second.body)).toEqual([`${pear}:choice`, `${apple}:write`, `${pear}:write`]);
     });
 
+    it('chế độ Luyện nói chấm câu nhận dạng, bỏ qua tính là sai', async () => {
+      const { body } = await start(owner.token, { setId, mode: 'SPEAK' }).expect(201);
+      expect(body.data.questions[0]).toMatchObject({ prompt: 'apple', hint: 'quả táo' });
+
+      const sessionId = body.data.session.id;
+      const { body: graded } = await submit(sessionId, owner.token, [
+        answer(cardIds[0]!, 'Apple'),
+        answer(cardIds[1]!, ''),
+      ]).expect(200);
+      expect(graded.data.results.map((r: { isCorrect: boolean }) => r.isCorrect)).toEqual([
+        true,
+        false,
+      ]);
+    });
+
     it('giới hạn số câu hỏi', async () => {
       const { body } = await start(owner.token, { setId, mode: 'FLASHCARD', limit: 1 }).expect(201);
 
