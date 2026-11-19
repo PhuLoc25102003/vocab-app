@@ -188,7 +188,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** các trang chính cân đối, dễ hiểu, có cá tính riêng; người học hiểu vì sao thẻ đến hạn và khi nào được tính là đã thuộc. Thiết kế theo skill `ui-ux-pro` và `docs/05-ui-tokens.md`, mọi hiệu ứng tôn trọng `prefers-reduced-motion`.
 
-- [x] **2.16** Bố cục cân đối: nội dung trang căn giữa với độ rộng tối đa nhất quán, form căn giữa, không dồn sang trái ở màn hình rộng.
+- [x] **2.16** Bố cục cân đối: nội dung trang căn giữa với độ rộng tối đa nhất quán, form căn giữa, không dồn sang trái ở màn hình rộng (#196).
 - [ ] **2.17** Header hiện tên hiển thị cạnh ảnh đại diện, mở menu tài khoản (Tài khoản, Quản lý người dùng với ADMIN, Đăng xuất).
 - [ ] **2.18** Ô chọn (dropdown) mới thay `select` mặc định: đẹp, đúng token, dùng được bằng bàn phím và trình đọc màn hình.
 - [ ] **2.19** Chế độ học trên trang bộ từ gom thành lưới thẻ có icon và mô tả ngắn, một nút chính "Bắt đầu học", thay hàng nút trải dài.
