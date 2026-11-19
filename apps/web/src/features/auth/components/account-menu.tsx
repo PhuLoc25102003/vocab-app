@@ -1,0 +1,79 @@
+'use client';
+
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { ChevronDown, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { can } from '../permissions';
+import { signOut } from '../session';
+import { useAuthStore } from '../store';
+
+const ITEM_CLASS =
+  'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:opacity-50';
+
+/** Ảnh đại diện kèm tên hiển thị, mở menu tài khoản. Tên ẩn trên màn hình hẹp. */
+export function AccountMenu() {
+  const user = useAuthStore((state) => state.user);
+  const [leaving, setLeaving] = useState(false);
+  const name = user?.displayName ?? 'Tài khoản';
+  const initial = name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className="flex min-h-11 min-w-11 items-center gap-2 rounded-full px-1 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:pr-3">
+        <span
+          aria-hidden
+          className="flex size-9 items-center justify-center rounded-full bg-primary text-small font-semibold text-primary-fg"
+        >
+          {initial}
+        </span>
+        {/* Tên đọc được là "Tài khoản: <tên>", phần chữ hiện trên nút nằm trong đó. */}
+        <span className="sr-only">Tài khoản: </span>
+        <span className="sr-only max-w-40 truncate text-small font-medium sm:not-sr-only">
+          {name}
+        </span>
+        <ChevronDown aria-hidden className="hidden size-4 text-text-muted sm:inline" />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="z-40 min-w-56 rounded-md border border-border bg-surface p-1 shadow-raised"
+        >
+          {user ? (
+            <div className="border-b border-border px-3 py-2">
+              <p className="truncate font-medium">{user.displayName}</p>
+              <p className="truncate text-small text-text-muted">{user.email}</p>
+            </div>
+          ) : null}
+          <DropdownMenu.Item asChild className={ITEM_CLASS}>
+            <Link href="/account">
+              <UserRound aria-hidden className="size-4" />
+              Tài khoản
+            </Link>
+          </DropdownMenu.Item>
+          {can(user, 'manage-users') ? (
+            <DropdownMenu.Item asChild className={ITEM_CLASS}>
+              <Link href="/admin/users">
+                <ShieldCheck aria-hidden className="size-4" />
+                Quản lý người dùng
+              </Link>
+            </DropdownMenu.Item>
+          ) : null}
+          <DropdownMenu.Separator className="my-1 h-px bg-border" />
+          <DropdownMenu.Item
+            className={ITEM_CLASS}
+            disabled={leaving}
+            onSelect={() => {
+              setLeaving(true);
+              void signOut();
+            }}
+          >
+            <LogOut aria-hidden className="size-4" />
+            {leaving ? 'Đang đăng xuất' : 'Đăng xuất'}
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
