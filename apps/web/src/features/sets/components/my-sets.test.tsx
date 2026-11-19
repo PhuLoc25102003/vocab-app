@@ -7,9 +7,10 @@ import { listMySets } from '../api';
 import { MySets, SETS_PAGE_SIZE } from './my-sets';
 import { RecentSets } from './recent-sets';
 
-const navigation = vi.hoisted(() => ({ params: new URLSearchParams() }));
+const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
 
 vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: navigation.push }),
   useSearchParams: () => navigation.params,
 }));
 vi.mock('../api');
@@ -60,6 +61,37 @@ describe('MySets', () => {
     expect(screen.getByText('18/11/2026')).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
     expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE });
+  });
+
+  it('tìm theo tên và giữ cách sắp xếp trên địa chỉ', async () => {
+    navigation.params = new URLSearchParams('sort=title');
+    vi.mocked(listMySets).mockResolvedValue(list([set], 1));
+    renderWithQuery(<MySets />);
+
+    await userEvent.type(await screen.findByRole('searchbox'), 'táo{Enter}');
+
+    expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, sort: 'title' });
+    expect(navigation.push).toHaveBeenCalledWith('/sets?q=t%C3%A1o&sort=title');
+  });
+
+  it('đổi cách sắp xếp và về trang đầu', async () => {
+    navigation.params = new URLSearchParams('page=3');
+    vi.mocked(listMySets).mockResolvedValue(list([set], 80, 3));
+    renderWithQuery(<MySets />);
+
+    await userEvent.selectOptions(await screen.findByLabelText('Sắp xếp'), 'title');
+
+    expect(navigation.push).toHaveBeenCalledWith('/sets?sort=title');
+  });
+
+  it('báo không có kết quả và cho xem tất cả', async () => {
+    navigation.params = new URLSearchParams('q=xyz');
+    vi.mocked(listMySets).mockResolvedValue(list([], 0));
+    renderWithQuery(<MySets />);
+
+    expect(await screen.findByText('Không tìm thấy bộ từ phù hợp')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Xem tất cả' })).toHaveAttribute('href', '/sets');
+    expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, q: 'xyz' });
   });
 
   it('hiện trạng thái trống', async () => {

@@ -16,14 +16,22 @@ import { http, type HttpOptions } from '@/lib/http';
 export interface SetListParams {
   page: number;
   limit: number;
+  q?: string;
+  sort?: string;
 }
 
 export interface PublicSetListParams extends SetListParams {
   q: string;
 }
 
-export async function listMySets({ page, limit }: SetListParams): Promise<SetList> {
+export async function listMySets({ page, limit, q, sort }: SetListParams): Promise<SetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (q) {
+    query.set('q', q);
+  }
+  if (sort) {
+    query.set('sort', sort);
+  }
   return setListSchema.parse(await http(`/sets?${query}`));
 }
 

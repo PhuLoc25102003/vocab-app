@@ -83,7 +83,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 ## Bộ từ
 
-- `GET /sets` và `GET /sets/public` sắp xếp theo `updatedAt`, `createdAt`, `title`, thêm `-` để giảm dần. `GET /sets/public` nhận thêm `q` để tìm theo tên.
+- `GET /sets` và `GET /sets/public` sắp xếp theo `updatedAt`, `createdAt`, `title`, thêm `-` để giảm dần. Cả hai nhận thêm `q` để tìm theo tên.
 - `POST /sets` nhận `{ title, description?, termLang?, defLang?, visibility?, cards? }`, trả 201. Mỗi thẻ gồm `term`, `definition`, `phonetic?`, `example?`. Body tối đa 5 MB.
 - `GET /sets/:id` trả bộ từ kèm `owner.displayName` và `cards`. Khách và người dùng khác xem được bộ `PUBLIC`. Bộ không được xem trả 404 như bộ không tồn tại. Bộ `CLASS` hiện chỉ chủ và ADMIN xem được, cho đến việc 3.4.
 - `PATCH` và `DELETE /sets/:id` dành cho chủ hoặc ADMIN. `DELETE` là xoá mềm, trả 204.

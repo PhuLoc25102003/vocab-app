@@ -109,6 +109,17 @@ describe('bộ từ', () => {
       expect(response.body.data[0]).not.toHaveProperty('deletedAt');
     });
 
+    it('chỉ tìm theo tên trong bộ từ của tôi, không phân biệt hoa thường', async () => {
+      await seedSet(owner.id, 'Trái cây');
+      await seedSet(owner.id, 'Động vật');
+      await seedSet(other.id, 'Trái cây của người khác', { visibility: 'PUBLIC' });
+
+      const response = await call('get', '?q=TR%C3%81I', owner.token).expect(200);
+
+      expect(response.body.data.map(({ title }: { title: string }) => title)).toEqual(['Trái cây']);
+      expect(response.body.meta.total).toBe(1);
+    });
+
     it('sắp xếp giảm dần bằng dấu trừ', async () => {
       await seedSet(owner.id, 'A');
       await seedSet(owner.id, 'B');

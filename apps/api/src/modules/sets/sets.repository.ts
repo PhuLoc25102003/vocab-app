@@ -3,11 +3,11 @@ import {
   ERROR_CODES,
   SET_TITLE_MAX_LENGTH,
   type CreateSetDto,
-  type Pagination,
   type PublicSetQuery,
   type ReplaceCardsDto,
   type Role,
   type UpdateSetDto,
+  type MySetQuery,
 } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
@@ -96,8 +96,12 @@ export class SetsRepository extends BaseRepository {
     super(prisma);
   }
 
-  findByOwner(ownerId: string, query: Pagination) {
-    const where = { ownerId, deletedAt: null };
+  findByOwner(ownerId: string, { q, ...query }: MySetQuery) {
+    const where: Prisma.StudySetWhereInput = {
+      ownerId,
+      deletedAt: null,
+      ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+    };
     return Promise.all([
       this.prisma.studySet.findMany({
         where,
