@@ -2,6 +2,7 @@ export * from './grading';
 export * from './modes/cloze';
 export * from './modes/dictation';
 export * from './modes/flashcard';
+export * from './modes/match';
 export * from './modes/mcq';
 export * from './modes/write';
 export * from './registry';

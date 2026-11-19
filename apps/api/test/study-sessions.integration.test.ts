@@ -115,7 +115,7 @@ describe('study sessions', () => {
     });
 
     it('trả 422 khi chế độ chưa có', async () => {
-      const { body } = await start(owner.token, { setId, mode: 'MATCH' }).expect(422);
+      const { body } = await start(owner.token, { setId, mode: 'TEST' }).expect(422);
 
       expect(body.error.code).toBe(ERROR_CODES.STUDY_MODE_UNAVAILABLE);
     });

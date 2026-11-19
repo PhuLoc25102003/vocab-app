@@ -30,7 +30,7 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 | ---- | -------- | -------------------------------------------------------- | ----------------------------------------- |
 | 2.7  | Learn    | Trộn dạng câu theo mức nhớ, thẻ sai quay lại trong phiên | Unit thuật toán chọn câu, E2E học đến hết |
 | 2.8  | Điền từ  | Đã có. Câu ví dụ có chỗ trống, nghĩa làm gợi ý           | `cloze.test`, integration, component      |
-| 2.9  | Ghép cặp | Ghép từ với nghĩa, tính giờ, dùng được bằng bàn phím     | Unit chấm, component bàn phím và 360 px   |
+| 2.9  | Ghép cặp | Đã có. Vòng 6 cặp, tính giờ, dùng được bằng bàn phím     | `match.test`, component, E2E, audit       |
 | 2.10 | Kiểm tra | Đề nhiều dạng, chấm một lần cuối bài, xem lại câu sai    | Integration chấm ở server, nộp hai lần    |
 
 Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản và khách, trừ khi use case ghi khác.

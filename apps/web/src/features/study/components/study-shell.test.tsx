@@ -10,6 +10,7 @@ import { useStudyStore } from '../session.store';
 import { StudyShell } from './study-shell';
 
 vi.mock('../modes/views', () => ({
+  STUDY_ROUND_SIZE: {},
   STUDY_VIEWS: {
     FLASHCARD: ({ question, onAnswer }: StudyModeProps) => (
       <button onClick={() => onAnswer({ questionId: question.id, value: 'known', timeMs: 5 })}>

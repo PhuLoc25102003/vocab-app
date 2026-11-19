@@ -39,6 +39,7 @@ const REVIEW_MODES = [
   { slug: 'dictation', label: 'Nghe viết' },
   { slug: 'mcq', label: 'Trắc nghiệm' },
   { slug: 'cloze', label: 'Điền từ' },
+  { slug: 'match', label: 'Ghép cặp' },
 ];
 
 export function DueSets() {

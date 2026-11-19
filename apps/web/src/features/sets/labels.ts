@@ -24,4 +24,5 @@ export const STUDY_ENTRIES = [
   { slug: 'dictation', label: 'Nghe viết', guestLabel: 'Nghe viết' },
   { slug: 'mcq', label: 'Trắc nghiệm', guestLabel: 'Trắc nghiệm' },
   { slug: 'cloze', label: 'Điền từ', guestLabel: 'Điền từ' },
+  { slug: 'match', label: 'Ghép cặp', guestLabel: 'Ghép cặp' },
 ] as const;

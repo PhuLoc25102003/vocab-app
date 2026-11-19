@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
 import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
-import { STUDY_VIEWS } from '../modes/views';
+import { STUDY_ROUND_SIZE, STUDY_VIEWS } from '../modes/views';
 import { studyKeys } from '../query-keys';
 import {
   clearSnapshot,
@@ -302,6 +302,7 @@ export function StudyShell({
       languages={languages}
       onAnswer={answer}
       onChecked={record}
+      round={questions.slice(position, position + (STUDY_ROUND_SIZE[mode] ?? 1))}
     />,
   );
 }
