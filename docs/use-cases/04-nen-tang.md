@@ -86,7 +86,7 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P10. Trang lỗi chung
 
-- **Việc:** 1.41. **Người dùng:** mọi người. **Trạng thái:** Thiếu (GAP-05).
+- **Việc:** 1.41. **Người dùng:** mọi người. **Trạng thái:** Đủ.
 - **Phải có:** trang 404 tiếng Việt có logo và nút về đúng nơi theo phiên, `global-error` khi layout gốc lỗi, không lộ thông tin kỹ thuật.
-- **Ngoại lệ:** đường dẫn sai trong vùng đã đăng nhập vẫn giữ menu; trang lỗi dùng được ở dark và 360 px.
-- **Cách test:** component nút theo phiên; E2E đường dẫn sai trả 404 và có lối về.
+- **Ngoại lệ:** trang lỗi dùng được ở dark và 360 px; đường dẫn sai không được index.
+- **Test đã có:** `session-link.test`, E2E đường dẫn sai trả 404 và có lối về.
