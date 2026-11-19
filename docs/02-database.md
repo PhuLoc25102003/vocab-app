@@ -40,6 +40,7 @@ enum StudyMode {
   MCQ
   MATCH
   TEST
+  SPEAK
 }
 
 model User {

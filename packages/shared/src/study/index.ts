@@ -5,6 +5,7 @@ export * from './modes/flashcard';
 export * from './modes/learn';
 export * from './modes/match';
 export * from './modes/mcq';
+export * from './modes/speak';
 export * from './modes/test';
 export * from './modes/write';
 export * from './registry';

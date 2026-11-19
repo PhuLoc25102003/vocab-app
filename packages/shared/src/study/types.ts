@@ -10,6 +10,7 @@ export const studyModeSchema = z.enum([
   'MCQ',
   'MATCH',
   'TEST',
+  'SPEAK',
 ]);
 export type StudyMode = z.infer<typeof studyModeSchema>;
 
