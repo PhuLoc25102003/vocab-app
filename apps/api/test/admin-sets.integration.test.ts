@@ -88,7 +88,8 @@ describe('ẩn bộ từ vi phạm', () => {
       .set('Authorization', `Bearer ${other.token}`)
       .send({ setId, mode: 'FLASHCARD' })
       .expect(404);
-    await getSet(owner.token).expect(200);
+    const ownerView = await getSet(owner.token).expect(200);
+    expect(ownerView.body.data).toMatchObject({ hiddenReason: 'Nội dung xấu' });
     await getSet(admin.token).expect(200);
 
     const unhidden = await patch(admin.token, `${setId}/unhide`).expect(200);

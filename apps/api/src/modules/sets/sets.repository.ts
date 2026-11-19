@@ -154,6 +154,9 @@ export class SetsRepository extends BaseRepository {
       select: {
         ...SET_SUMMARY_SELECT,
         ...OWNER_NAME_SELECT,
+        // Bộ bị ẩn chỉ chủ và ADMIN xem được, nên trạng thái ẩn không lộ cho người khác.
+        hiddenAt: true,
+        hiddenReason: true,
         cards: { select: CARD_SELECT, orderBy: { position: 'asc' } },
       },
     });

@@ -1,7 +1,7 @@
 import type { AuthUser, Role } from '@vocab/shared';
 
 export type OwnedAction = 'update' | 'delete';
-export type RoleAction = 'manage-classes' | 'manage-users';
+export type RoleAction = 'manage-classes' | 'manage-users' | 'moderate-content';
 export type Action = OwnedAction | RoleAction;
 
 export interface OwnedResource {
@@ -11,6 +11,7 @@ export interface OwnedResource {
 const ROLE_ACTIONS: Record<RoleAction, readonly Role[]> = {
   'manage-classes': ['TEACHER', 'ADMIN'],
   'manage-users': ['ADMIN'],
+  'moderate-content': ['ADMIN'],
 };
 
 /** Chỉ để ẩn hiện giao diện. Backend luôn là nơi quyết định quyền. */

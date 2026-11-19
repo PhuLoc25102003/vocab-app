@@ -72,6 +72,19 @@ describe('SetDetail', () => {
     expect(screen.getByRole('button', { name: 'Hành động' })).toBeInTheDocument();
   });
 
+  it('báo bộ từ đang bị ẩn kèm lý do', async () => {
+    vi.mocked(getSet).mockResolvedValue({
+      ...set,
+      hiddenAt: new Date('2026-11-19T00:00:00.000Z'),
+      hiddenReason: 'Nội dung xấu',
+    });
+    renderDetail();
+
+    expect(await screen.findByText(/đang bị quản trị viên ẩn/)).toHaveTextContent(
+      'Lý do: Nội dung xấu',
+    );
+  });
+
   it('báo bộ từ chưa có thẻ', async () => {
     vi.mocked(getSet).mockResolvedValue({ ...set, cardCount: 0, cards: [] });
     renderDetail();

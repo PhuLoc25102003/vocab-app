@@ -206,6 +206,9 @@ export type Card = z.infer<typeof cardSchema>;
 export const setDetailSchema = setSummarySchema.extend({
   owner: z.object({ displayName: z.string() }),
   cards: z.array(cardSchema),
+  /** ADMIN đã ẩn bộ vi phạm. Chỉ chủ bộ và ADMIN xem được bộ đang bị ẩn. */
+  hiddenAt: z.coerce.date().nullable().optional(),
+  hiddenReason: z.string().nullable().optional(),
 });
 export type SetDetail = z.infer<typeof setDetailSchema>;
 

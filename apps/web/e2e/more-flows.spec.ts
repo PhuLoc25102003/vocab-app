@@ -493,6 +493,25 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
   await targetPage.waitForURL('**/dashboard');
 
+  // ADMIN ẩn bộ công khai của người khác, khách không còn xem được.
+  const setId = `e2e-hidden-${stamp}`;
+  const inserted = spawnSync('node', ['e2e/run-sql.mjs'], {
+    input: `INSERT INTO "StudySet" (id, "ownerId", title, visibility, "updatedAt")
+      SELECT '${setId}', id, 'Bộ vi phạm ${stamp}', 'PUBLIC', now() FROM "User" WHERE email = '${target}';`,
+    encoding: 'utf8',
+  });
+  expect(inserted.status, inserted.stderr).toBe(0);
+  await admin.goto(`/sets/${setId}`);
+  await admin.getByRole('button', { name: 'Ẩn bộ từ' }).click();
+  await admin.getByLabel('Lý do ẩn').fill('Nội dung vi phạm');
+  await admin.getByRole('button', { name: 'Ẩn khỏi người khác' }).click();
+  await expect(admin.getByText('Lý do: Nội dung vi phạm', { exact: false })).toBeVisible();
+  const guest = await (await browser.newContext({ baseURL })).newPage();
+  await guest.goto(`/public/sets/${setId}`);
+  await expect(guest.getByRole('heading', { name: `Bộ vi phạm ${stamp}` })).toHaveCount(0);
+  await expect(guest.getByText(/Không tìm thấy/).first()).toBeVisible();
+
+  await guest.context().close();
   await admin.context().close();
   await targetPage.context().close();
 });
