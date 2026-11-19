@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { ERROR_CODES, type ApiError, type ErrorCode } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -60,8 +60,6 @@ function normalize(exception: unknown): NormalizedError {
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name);
-
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const request = http.getRequest<FastifyRequest>();
@@ -69,10 +67,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { status, code, message, details } = normalize(exception);
 
     if (status >= 500) {
-      this.logger.error(
-        `${request.method} ${request.url} [${request.id}]`,
-        exception instanceof Error ? exception.stack : String(exception),
-      );
+      // Logger của request đã gắn sẵn requestId.
+      const err = exception instanceof Error ? exception : new Error(String(exception));
+      request.log.error({ err }, 'Lỗi không xử lý được');
     }
 
     const body: ApiError = {

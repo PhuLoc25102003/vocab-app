@@ -87,7 +87,7 @@ Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file t
 | 1.28             | UC-L11                                          |
 | 1.29             | UC-P2                                           |
 | 1.30             | UC-P4                                           |
-| 1.31             | UC-P5                                           |
+| 1.31, 1.50       | UC-P5                                           |
 | 1.32, 1.48       | UC-P6                                           |
 | 1.33, 1.47       | UC-P7                                           |
 | 1.34             | UC-P8                                           |

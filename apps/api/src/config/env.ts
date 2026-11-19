@@ -18,6 +18,7 @@ const envSchema = z.object({
   REFRESH_COOKIE_DOMAIN: z.string().optional(),
   /** Để trống thì tắt đăng nhập Google. */
   GOOGLE_CLIENT_ID: z.string().trim().default(''),
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 
 export type Env = z.infer<typeof envSchema>;
