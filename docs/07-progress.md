@@ -2,12 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1, đã bổ sung các chức năng còn thiếu theo `docs/use-cases/`, chỉ còn quên mật khẩu chờ chọn dịch vụ email. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
+**Đang ở:** Giai đoạn 1 còn các việc chờ tài khoản dịch vụ (1D, Sentry), thư viện Excel (1.51), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
 
 **Việc tiếp theo:**
 
-1. Chế độ Learn (việc 2.7).
-2. Chế độ Kiểm tra (việc 2.10).
+1. Quản trị người dùng (việc 2.11).
+2. Chốt thiết kế cho chế độ Learn (2.7) và Kiểm tra (2.10).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     44 |     51 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     42 |     51 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **57** | **87** | **66%**      |
+| **Toàn dự án**          |                                            | **58** | **87** | **67%**      |
 
 ## Cách cập nhật
 
@@ -161,7 +161,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ### 2B. Nội dung
 
-- [ ] **2.4** Thư mục bộ từ trên API và web.
+- [x] **2.4** Thư mục bộ từ trên API và web (#151).
 - [ ] **2.5** Ảnh cho thẻ từ: R2 và `POST /uploads/presign`.
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2.
 
