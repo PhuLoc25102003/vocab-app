@@ -43,6 +43,30 @@ const REVIEW_MODES = [
   { slug: 'match', label: 'Ghép cặp' },
 ];
 
+const dueFormat = new Intl.DateTimeFormat('vi-VN', {
+  hour: '2-digit',
+  minute: '2-digit',
+  day: '2-digit',
+  month: '2-digit',
+});
+
+/** Giải thích vì sao thẻ xuất hiện ở đây, để người học biết khi nào quay lại. */
+function ScheduleNote() {
+  return (
+    <details className="rounded-md border border-border bg-surface px-4 py-2">
+      <summary className="flex min-h-11 cursor-pointer items-center font-medium">
+        Khi nào thẻ đến hạn ôn?
+      </summary>
+      <ul className="flex list-disc flex-col gap-1 pb-2 pl-5 text-small text-text-muted">
+        <li>Trả lời sai: thẻ quay lại sau 10 phút.</li>
+        <li>Đúng lần đầu: hẹn ôn sau 1 ngày.</li>
+        <li>Đúng tiếp khi đến hạn: giãn ra 6 ngày, lúc đó từ được tính là đã thuộc.</li>
+        <li>Về sau khoảng cách tiếp tục tăng. Học lại trước hạn không làm thẻ tiến nhanh hơn.</li>
+      </ul>
+    </details>
+  );
+}
+
 export function DueSets() {
   const [mode, setMode] = useState(REVIEW_MODES[0]?.slug ?? 'flashcard');
   const parsedPage = paginationSchema.shape.page.safeParse(useSearchParams().get('page'));
@@ -69,20 +93,28 @@ export function DueSets() {
   const { data, meta, summary } = due.data;
   if (summary.dueCards === 0) {
     return (
-      <EmptyState
-        title="Hôm nay chưa có từ cần ôn"
-        description="Học thêm một bộ từ, các từ đến hạn ôn sẽ hiện ở đây."
-        action={
-          <Button asChild variant="secondary">
-            <Link href="/sets">Xem bộ từ</Link>
-          </Button>
-        }
-      />
+      <>
+        <EmptyState
+          title="Hôm nay chưa có từ cần ôn"
+          description={
+            summary.nextDueAt
+              ? `Thẻ tiếp theo đến hạn lúc ${dueFormat.format(summary.nextDueAt)}.`
+              : 'Học thêm một bộ từ, các từ đến hạn ôn sẽ hiện ở đây.'
+          }
+          action={
+            <Button asChild variant="secondary">
+              <Link href="/sets">Xem bộ từ</Link>
+            </Button>
+          }
+        />
+        <ScheduleNote />
+      </>
     );
   }
 
   return (
     <>
+      <ScheduleNote />
       <p className="text-text-muted">
         Bạn có <span className="font-semibold text-text tabular-nums">{summary.dueCards}</span> thẻ
         cần ôn.

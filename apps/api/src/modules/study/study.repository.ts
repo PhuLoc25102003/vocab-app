@@ -86,6 +86,20 @@ export class StudyRepository extends BaseRepository {
     ]);
   }
 
+  /** Lần đến hạn sớm nhất sau `now` của thẻ người xem còn xem được. */
+  async findNextDue(viewer: SetViewer, now: Date): Promise<Date | null> {
+    const next = await this.prisma.cardProgress.findFirst({
+      where: {
+        userId: viewer.id,
+        dueAt: { gt: now },
+        card: { set: { deletedAt: null, ...visibleTo(viewer) } },
+      },
+      orderBy: { dueAt: 'asc' },
+      select: { dueAt: true },
+    });
+    return next?.dueAt ?? null;
+  }
+
   createSession(userId: string, setId: string, mode: StudyMode, total: number) {
     return this.prisma.studySession.create({
       data: { userId, setId, mode, total },
