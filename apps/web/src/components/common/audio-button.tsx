@@ -3,6 +3,7 @@
 import { Volume2 } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { isSpeechSupported, speak } from '@/lib/speech';
 
 interface AudioButtonProps {
@@ -33,7 +34,7 @@ export function AudioButton({ text, lang, label, className }: AudioButtonProps) 
       variant="ghost"
       size="icon"
       aria-label={label}
-      className={className}
+      className={cn('shrink-0', className)}
       onClick={() => speak(text, lang)}
     >
       <Volume2 aria-hidden className="size-5" />

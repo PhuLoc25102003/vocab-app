@@ -31,7 +31,7 @@ export function SetRows({ sets, hrefFor = memberSetHref }: SetRowsProps) {
           <div className="min-w-0 flex-1 basis-56">
             <Link
               href={hrefFor(id)}
-              className="block text-h3 break-words after:absolute after:inset-0"
+              className="flex min-h-11 items-center text-h3 wrap-anywhere after:absolute after:inset-0"
             >
               {title}
             </Link>

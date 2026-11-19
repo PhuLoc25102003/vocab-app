@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
+import { AUDIT_VIEWS, auditFocus, auditPage, applyAuditView } from './audit';
 
 const stamp = Date.now();
 const password = 'mat-khau-e2e-123';
@@ -58,7 +59,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   let setPath: string;
 
   test.beforeAll(async ({ browser, baseURL }) => {
-    page = await browser.newPage({ baseURL });
+    page = await (await browser.newContext({ baseURL })).newPage();
     // Máy CI không có giọng đọc, nên ghi lại từ được yêu cầu đọc.
     await page.addInitScript(() => {
       const spoken: string[] = [];
@@ -78,7 +79,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   });
 
   test.afterAll(async () => {
-    await page.close();
+    await page.context().close();
   });
 
   test('tạo, sửa rồi tìm thấy bộ từ trong danh sách', async () => {
@@ -155,6 +156,111 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
     await page.goto('/review');
     await expect(page.getByText('Hôm nay chưa có từ cần ôn')).toBeVisible();
+  });
+
+  test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
+    test.setTimeout(240_000);
+    const guest = await (await browser.newContext({ baseURL })).newPage();
+    const memberPaths = [
+      '/dashboard',
+      '/sets',
+      '/sets/new',
+      setPath,
+      `${setPath}/edit`,
+      '/explore',
+      '/review',
+      '/account',
+      `${setPath}/study/flashcard`,
+      `${setPath}/study/write`,
+      `${setPath}/study/dictation`,
+      `${setPath}/study/mcq`,
+    ];
+    const guestPaths = [
+      '/',
+      '/login',
+      '/register',
+      '/public/explore',
+      `/public${setPath}`,
+      `/public${setPath}/study/flashcard`,
+      '/khong-co-trang-nay',
+    ];
+    const issues: string[] = [];
+
+    for (const view of AUDIT_VIEWS) {
+      await applyAuditView(page, view);
+      await applyAuditView(guest, view);
+      for (const [viewer, paths] of [
+        [page, memberPaths],
+        [guest, guestPaths],
+      ] as const) {
+        for (const path of paths) {
+          await viewer.goto(path);
+          const label = `${view.name} ${path.replace(setPath, '/sets/:id')}`;
+          issues.push(...(await auditPage(viewer, label)));
+          if (view.colorScheme === 'light') {
+            issues.push(...(await auditFocus(viewer, label)));
+          }
+        }
+      }
+
+      await page.goto(`${setPath}/study/flashcard`);
+      const flip = page.getByRole('button', { name: /^Xem nghĩa/ });
+      await flip.click();
+      issues.push(...(await auditPage(page, `${view.name} mặt sau thẻ`)));
+      const known = page.getByRole('button', { name: /^Đã nhớ/ });
+      await known.click();
+      const result = page.getByRole('heading', { name: 'Đã xong phiên học' });
+      while (!(await result.isVisible())) {
+        if (await flip.isVisible()) await flip.click();
+        if (await known.isVisible()) await known.click();
+      }
+      issues.push(...(await auditPage(page, `${view.name} kết quả`)));
+    }
+
+    await guest.context().close();
+
+    // Đang ở 360 px: từ rất dài không được làm tràn bố cục.
+    const longTitle = 't'.repeat(200);
+    await page.goto('/sets/new');
+    await visibleField(page, 'Tên bộ từ').fill(longTitle);
+    for (const index of [0, 1]) {
+      await visibleField(page, 'Từ')
+        .nth(index)
+        .fill(`${'w'.repeat(199)}${index}`);
+      await visibleField(page, 'Nghĩa').nth(index).fill('n'.repeat(1000));
+    }
+    await page.getByRole('button', { name: 'Lưu bộ từ' }).click();
+    await expect(page.getByRole('heading', { name: longTitle })).toBeVisible();
+    const longPath = new URL(page.url()).pathname;
+    for (const path of [
+      longPath,
+      '/sets',
+      `${longPath}/edit`,
+      `${longPath}/study/flashcard`,
+      `${longPath}/study/write`,
+      `${longPath}/study/mcq`,
+    ]) {
+      await page.goto(path);
+      issues.push(...(await auditPage(page, `từ dài ${path.replace(longPath, '/sets/:id')}`)));
+    }
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(`${setPath}/study/flashcard`);
+    await page.getByRole('button', { name: /^Xem nghĩa/ }).click();
+    const animated = await page.evaluate(() =>
+      [...document.querySelectorAll('*')]
+        .filter((element) => {
+          const style = getComputedStyle(element);
+          return [style.transitionDuration, style.animationDuration].some((value) =>
+            value.split(',').some((part) => parseFloat(part) > 0.01),
+          );
+        })
+        .map((element) => element.tagName.toLowerCase()),
+    );
+    issues.push(...animated.map((tag) => `giảm chuyển động: ${tag} vẫn chạy hiệu ứng`));
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await applyAuditView(page, AUDIT_VIEWS[0]);
+    expect([...new Set(issues)]).toEqual([]);
   });
 
   test('người khác sao chép được, chủ xoá bộ gốc thì bản sao vẫn còn', async ({
