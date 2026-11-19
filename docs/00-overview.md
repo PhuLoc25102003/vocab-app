@@ -20,7 +20,7 @@ Nguồn: tách từ `spec-source.md` (bản 2026-11-18), đã đối chiếu v�
 - Chế độ Flashcard, Viết, Nghe – viết, Trắc nghiệm; nghe phát âm.
 - Lưu tiến độ từng thẻ; trang "Ôn hôm nay".
 
-**Để sau MVP:** chế độ Kiểm tra, lớp học, luyện nói, PWA offline. Chế độ Learn (2.7, 2.13), Điền từ (2.8) và Ghép cặp (2.9) đã có.
+**Để sau MVP:** lớp học, luyện nói, PWA offline. Chế độ Learn (2.7, 2.13), Kiểm tra (2.10), Điền từ (2.8) và Ghép cặp (2.9) đã có.
 
 ## Kiến trúc hệ thống
 
