@@ -257,3 +257,57 @@
     animation: none;
   }
 }
+
+/* Trang giới thiệu: thẻ bay nhẹ, nội dung hiện dần khi vào màn hình và khi cuộn tới. */
+@keyframes landing-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+@keyframes landing-enter {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@layer components {
+  .landing-float {
+    animation: landing-float 6s ease-in-out infinite;
+  }
+
+  .landing-float-slow {
+    animation: landing-float 8s ease-in-out infinite reverse;
+  }
+
+  .landing-enter {
+    animation: landing-enter 400ms ease-out both;
+  }
+
+  /* Trình duyệt chưa hỗ trợ cuộn theo khung nhìn thì nội dung hiện ngay. */
+  @supports (animation-timeline: view()) {
+    .landing-reveal {
+      animation: landing-enter linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-float,
+  .landing-float-slow,
+  .landing-enter,
+  .landing-reveal {
+    animation: none;
+  }
+}
