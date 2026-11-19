@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { BRAND_NAME, Logo } from '@/components/common/logo';
+import { BRAND_NAME } from '@/components/common/logo';
 import { SessionLink } from '@/components/common/session-link';
-import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Button } from '@/components/ui/button';
+import { MarketingShell } from './marketing-shell';
 
 const MODES = [
   { name: 'Flashcard', description: 'Lật thẻ, rồi tự chấm xem mình đã nhớ hay chưa.' },
@@ -41,21 +41,7 @@ function SampleCard() {
 
 export function LandingPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="border-b border-border">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-2 px-4 md:px-6 lg:px-8">
-          <Logo href="/" />
-          <div className="ml-auto flex items-center gap-2">
-            <ThemeToggle />
-            <SessionLink
-              variant="secondary"
-              guest={{ href: '/login', label: 'Đăng nhập' }}
-              member={{ href: '/dashboard', label: 'Trang của tôi' }}
-            />
-          </div>
-        </div>
-      </header>
-
+    <MarketingShell>
       <main className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-16 px-4 py-12 md:px-6 lg:px-8 lg:py-16">
         <section className="grid items-center gap-12 lg:grid-cols-2">
           <div className="flex max-w-[65ch] flex-col items-start gap-6">
@@ -116,6 +102,6 @@ export function LandingPage() {
           <SessionLink {...START_LINK} />
         </section>
       </main>
-    </div>
+    </MarketingShell>
   );
 }
