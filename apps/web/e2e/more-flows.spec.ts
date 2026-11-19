@@ -348,7 +348,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   });
 
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
-    test.setTimeout(240_000);
+    // Audit mọi màn hình ở bốn kiểu xem, danh sách màn hình tăng theo số chế độ học.
+    test.setTimeout(360_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();
     const memberPaths = [
       '/dashboard',
@@ -528,6 +529,9 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
 
   await admin.getByRole('button', { name: `Mở khoá ${target}` }).click();
   await expect(admin.getByText('Đang hoạt động', { exact: false })).toBeVisible();
+  // Form có thể được làm mới sau lần bị từ chối, nên điền lại trước khi đăng nhập.
+  await visibleField(targetPage, 'Email').fill(target);
+  await visibleField(targetPage, 'Mật khẩu').fill(password);
   await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
   await targetPage.waitForURL('**/dashboard');
 
