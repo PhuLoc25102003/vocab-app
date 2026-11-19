@@ -2,12 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1, bổ sung các chức năng còn thiếu sau khi rà use case trong `docs/use-cases/`. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
+**Đang ở:** Giai đoạn 1, đã bổ sung các chức năng còn thiếu theo `docs/use-cases/`, chỉ còn quên mật khẩu chờ chọn dịch vụ email. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
 
 **Việc tiếp theo:**
 
-1. Thêm rate limit chung cho API (việc 1.48).
-2. Rà accessibility, dark mode, 360 px và Lighthouse (việc 1.34).
+1. Rà accessibility, dark mode, màn hình 360 px và Lighthouse (việc 1.34).
+2. Chọn dịch vụ email cho quên mật khẩu (việc 1.49).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     37 |     49 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     38 |     49 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **50** | **85** | **59%**      |
+| **Toàn dự án**          |                                            | **51** | **85** | **60%**      |
 
 ## Cách cập nhật
 
@@ -144,7 +144,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09, #121).
 - [x] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10, #123).
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
-- [ ] **1.48** Rate limit chung cho API (GAP-12, #95).
+- [x] **1.48** Rate limit chung cho API (GAP-12, #95).
 - [ ] **1.49** Quên mật khẩu qua email (GAP-13). Chờ chọn dịch vụ gửi email.
 
 ## Giai đoạn 2: Mở rộng

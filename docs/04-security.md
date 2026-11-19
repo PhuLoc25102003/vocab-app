@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code.
 
-**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập Google xác thực ID token ở API. Email đã xác minh trùng tài khoản mật khẩu thì được gộp, mật khẩu cũ và mọi phiên cũ bị huỷ, vì đăng ký bằng mật khẩu chưa xác minh email nên người đặt mật khẩu có thể không phải chủ email. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Web giữ access token trong bộ nhớ. `proxy.ts` không đọc được cookie refresh ở domain API, nên dùng cookie `vocab_session` chỉ để điều hướng, không có giá trị bảo mật. Web đặt CSP và header bảo mật trong `next.config.ts`. Giới hạn chung theo user chưa làm. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
+**Hiện trạng:** đã có `AuthGuard` toàn cục (từ chối mọi route không có `@Public()`), helmet, CORS theo `CORS_ORIGINS`, kiểm tra env bằng Zod khi khởi động. Đăng ký và đăng nhập đã có argon2id và rate limit. Đăng nhập Google xác thực ID token ở API. Email đã xác minh trùng tài khoản mật khẩu thì được gộp, mật khẩu cũ và mọi phiên cũ bị huỷ, vì đăng ký bằng mật khẩu chưa xác minh email nên người đặt mật khẩu có thể không phải chủ email. Đăng nhập cấp access token và cookie refresh, refresh token được xoay vòng và phát hiện dùng lại, `AuthGuard` xác thực JWT và đối chiếu `tokenVersion` trong database ở mỗi request. `@CurrentUser()`, `RolesGuard`, `OwnershipGuard` đã có. Web giữ access token trong bộ nhớ. `proxy.ts` không đọc được cookie refresh ở domain API, nên dùng cookie `vocab_session` chỉ để điều hướng, không có giá trị bảo mật. Web đặt CSP và header bảo mật trong `next.config.ts`. API có giới hạn chung theo người dùng và theo IP cho khách. Secret JWT đang yêu cầu tối thiểu 32 ký tự.
 
 Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refresh token sống 30 ngày trong cookie httpOnly và được xoay vòng sau mỗi lần dùng.
 
@@ -75,7 +75,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 ## Checklist bảo mật
 
 - [x] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
-- [ ] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/user (`@nestjs/throttler`). Còn thiếu giới hạn chung, cần có user từ JWT. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance. Sau proxy phải đặt `TRUSTED_PROXIES`.
+- [x] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/người dùng và 300 lần/phút/IP cho khách. `/auth/*` và `/health` không tính vào giới hạn chung. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance, việc 2.1 chuyển sang Redis. Sau proxy phải đặt `TRUSTED_PROXIES`.
 - [x] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại. Đăng ký bằng email đã có trả cùng kết quả với email mới.
 - [x] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
 - [x] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
