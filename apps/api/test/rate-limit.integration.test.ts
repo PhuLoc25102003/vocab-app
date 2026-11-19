@@ -1,6 +1,5 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ERROR_CODES } from '@vocab/shared';
-import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AccessTokenService } from '../src/common/auth/access-token.service';
 import { GUEST_REQUEST_LIMIT, USER_REQUEST_LIMIT } from '../src/common/guards/api-rate-limit.guard';
@@ -16,12 +15,15 @@ describe('rate limit chung của API', () => {
     const user = await prisma.user.create({ data: { email, displayName: email } });
     return app.get(AccessTokenService).sign(user);
   };
-  const server = () => request(app.getHttpServer());
-  const me = (token: string) =>
-    server().get('/api/v1/users/me').set('Authorization', `Bearer ${token}`);
-  const publicSets = (ip: string) => server().get('/api/v1/sets/public').set('X-Forwarded-For', ip);
-  const repeat = (count: number, send: () => PromiseLike<unknown>) =>
-    Promise.all(Array.from({ length: count }, () => send()));
+  // Gọi thẳng vào Fastify, vì mở hàng trăm kết nối cùng lúc làm test không ổn định trên Windows.
+  const get = (url: string, headers: Record<string, string> = {}) =>
+    app.getHttpAdapter().getInstance().inject({ method: 'GET', url, headers });
+  const me = (token: string) => get('/api/v1/users/me', { authorization: `Bearer ${token}` });
+  const publicSets = (ip: string) => get('/api/v1/sets/public', { 'x-forwarded-for': ip });
+  const expectAllowed = async (count: number, send: () => ReturnType<typeof get>) => {
+    const responses = await Promise.all(Array.from({ length: count }, send));
+    expect(responses.every(({ statusCode }) => statusCode === 200)).toBe(true);
+  };
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -41,25 +43,26 @@ describe('rate limit chung của API', () => {
       createToken('busy@example.com'),
       createToken('calm@example.com'),
     ]);
-    await repeat(USER_REQUEST_LIMIT, () => me(busy).expect(200));
+    await expectAllowed(USER_REQUEST_LIMIT, () => me(busy));
 
-    const { body, headers } = await me(busy).expect(429);
+    const blocked = await me(busy);
 
-    expect(body.error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
-    expect(headers['retry-after']).toBeDefined();
-    await me(calm).expect(200);
+    expect(blocked.statusCode).toBe(429);
+    expect(blocked.json().error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
+    expect(blocked.headers['retry-after']).toBeDefined();
+    expect((await me(calm)).statusCode).toBe(200);
   });
 
   it('tính khách theo IP', async () => {
-    await repeat(GUEST_REQUEST_LIMIT, () => publicSets('203.0.113.10').expect(200));
+    await expectAllowed(GUEST_REQUEST_LIMIT, () => publicSets('203.0.113.10'));
 
-    await publicSets('203.0.113.10').expect(429);
-    await publicSets('203.0.113.11').expect(200);
+    expect((await publicSets('203.0.113.10')).statusCode).toBe(429);
+    expect((await publicSets('203.0.113.11')).statusCode).toBe(200);
   });
 
   it('không giới hạn kiểm tra sức khoẻ', async () => {
-    await repeat(GUEST_REQUEST_LIMIT + 1, () =>
-      server().get('/api/v1/health').set('X-Forwarded-For', '203.0.113.12').expect(200),
+    await expectAllowed(GUEST_REQUEST_LIMIT + 1, () =>
+      get('/api/v1/health', { 'x-forwarded-for': '203.0.113.12' }),
     );
   });
 });
