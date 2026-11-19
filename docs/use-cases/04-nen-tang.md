@@ -64,10 +64,10 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P7. Test đầu cuối
 
-- **Việc:** 1.33, 1.47. **Người dùng:** đội phát triển. **Trạng thái:** Thiếu (GAP-11).
+- **Việc:** 1.33, 1.47. **Người dùng:** đội phát triển. **Trạng thái:** Đủ.
 - **Phải có:** database `vocab_e2e` riêng, cổng riêng, job CI, phủ các luồng quan trọng nhất.
-- **Đã phủ:** đăng ký, tạo bộ công khai, học Viết, thống kê, khách học thử, đăng xuất, đăng nhập lại.
-- **Cần thêm:** nút quay lại sau khi lưu, cảnh báo rời form, tải lại giữa phiên, sửa, xoá, sao chép, Khám phá, Ôn hôm nay, Flashcard, Nghe viết, Trắc nghiệm, trang tài khoản.
+- **Đã phủ:** đăng ký, tạo, sửa, tìm, xoá, sao chép bộ từ, cảnh báo rời form, nút quay lại sau khi lưu, 4 chế độ học, tải lại giữa phiên, Ôn hôm nay, thống kê, Khám phá và học thử của khách, trang tài khoản, trang 404.
+- **Giới hạn:** tối đa 3 lần đăng ký trong một lần chạy vì rate limit theo IP.
 - **Yêu cầu:** test không phụ thuộc thứ tự câu hỏi, không dùng `sleep` cố định, chạy dưới 5 phút.
 
 ## UC-P8. Rà chất lượng
