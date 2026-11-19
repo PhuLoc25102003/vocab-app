@@ -174,7 +174,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.13** Giao diện chế độ Learn: vòng 7 câu, câu sai được hỏi lại trong vòng đến khi đúng (#178).
 - [x] **2.8** Chế độ Điền từ (#144).
 - [x] **2.9** Chế độ Ghép cặp (#146).
-- [x] **2.10** Chế độ Kiểm tra: trộn trắc nghiệm và gõ từ, phần 20 câu, nộp một lần.
+- [x] **2.10** Chế độ Kiểm tra: trộn trắc nghiệm và gõ từ, phần 20 câu, nộp một lần (#180).
 
 ### 2D. Quản trị
 
