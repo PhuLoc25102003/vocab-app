@@ -37,6 +37,18 @@ describe('DueSets', () => {
     expect(screen.getByText('3 thẻ đến hạn')).toBeInTheDocument();
   });
 
+  it('mở phiên ôn bằng chế độ đã chọn', async () => {
+    vi.mocked(listDueSets).mockResolvedValue(list(2));
+    renderDue();
+
+    await userEvent.selectOptions(await screen.findByLabelText('Ôn bằng chế độ'), 'mcq');
+
+    expect(screen.getByRole('link', { name: /^Ôn bộ từ/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/study/mcq?due=1'),
+    );
+  });
+
   it('báo khi chưa có thẻ cần ôn', async () => {
     vi.mocked(listDueSets).mockResolvedValue(list(0));
     renderDue();

@@ -16,6 +16,8 @@ export const startSessionSchema = z.object({
   limit: z.number().int().min(1).max(STUDY_QUESTION_LIMIT_MAX).optional(),
   /** Chỉ học các thẻ đã đến hạn ôn của người gọi. */
   dueOnly: z.boolean().optional(),
+  /** Chỉ học các thẻ này, dùng khi học lại thẻ sai. */
+  cardIds: z.array(idSchema).min(1).max(STUDY_QUESTION_LIMIT_MAX).optional(),
 });
 export type StartSessionDto = z.infer<typeof startSessionSchema>;
 

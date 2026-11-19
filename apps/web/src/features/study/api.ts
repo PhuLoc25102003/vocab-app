@@ -18,7 +18,7 @@ export interface StudyBackend {
   start: (
     setId: string,
     mode: StudyMode,
-    options?: { dueOnly?: boolean },
+    options?: { dueOnly?: boolean; cardIds?: string[] },
   ) => Promise<StartedSession>;
   submit: (sessionId: string, answers: UserAnswer[]) => Promise<void>;
   finish: (sessionId: string) => Promise<SessionResult>;

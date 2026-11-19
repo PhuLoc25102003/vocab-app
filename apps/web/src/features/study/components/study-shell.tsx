@@ -5,7 +5,7 @@ import { ERROR_CODES, type StudyMode } from '@vocab/shared';
 import { X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
@@ -141,10 +141,19 @@ export function StudyShell({
 }: StudyShellProps) {
   const queryClient = useQueryClient();
   const snapshotKey = backend.resumable ? studySnapshotKey(setId, mode, dueOnly) : undefined;
+  const retryCardIds = useRef<string[] | null>(null);
   const started = useQuery({
     queryKey: studyKeys.session(setId, mode, dueOnly),
-    queryFn: async (): Promise<ResumableSession> =>
-      (snapshotKey ? loadSnapshot(snapshotKey) : null) ?? backend.start(setId, mode, { dueOnly }),
+    queryFn: async (): Promise<ResumableSession> => {
+      const cardIds = retryCardIds.current;
+      retryCardIds.current = null;
+      if (cardIds) {
+        return backend.start(setId, mode, { cardIds });
+      }
+      return (
+        (snapshotKey ? loadSnapshot(snapshotKey) : null) ?? backend.start(setId, mode, { dueOnly })
+      );
+    },
     // Mỗi lần tải là một phiên mới, nên chỉ tạo khi người học yêu cầu.
     staleTime: Infinity,
     gcTime: 0,
@@ -246,6 +255,10 @@ export function StudyShell({
         exitHref={exitHref}
         note={resultNote}
         onRestart={() => void started.refetch()}
+        onRetryWrong={() => {
+          retryCardIds.current = result.wrongCardIds;
+          void started.refetch();
+        }}
       />,
     );
   }

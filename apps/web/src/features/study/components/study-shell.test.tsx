@@ -132,11 +132,23 @@ describe('StudyShell', () => {
     setup({ start });
 
     await answerAll();
-    await userEvent.click(await screen.findByRole('button', { name: 'Học lại' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Học lại từ đầu' }));
 
     expect(await screen.findByRole('button', { name: 'Trả lời apple' })).toBeInTheDocument();
     await waitFor(() => expect(useStudyStore.getState().session?.id).toBe('s2'));
     expect(start).toHaveBeenCalledTimes(2);
+  });
+
+  it('học lại riêng các thẻ sai', async () => {
+    const backend = setup();
+    await screen.findByText('0/2');
+    await answerAll();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Học lại thẻ sai' }));
+
+    await waitFor(() =>
+      expect(backend.start).toHaveBeenLastCalledWith('set1', 'FLASHCARD', { cardIds: ['c2'] }),
+    );
   });
 
   it('báo bộ từ chưa có thẻ', async () => {
