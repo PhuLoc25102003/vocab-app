@@ -83,13 +83,18 @@ describe('GET /stats/overview', () => {
   it('trả số 0 khi chưa học', async () => {
     const { body } = await overview(owner.token).expect(200);
 
-    expect(body.data).toEqual({
+    expect(body.data).toMatchObject({
       streakDays: 0,
       masteredCards: 0,
+      learningCards: 0,
       answersToday: 0,
       dueCards: 0,
       hardCards: [],
     });
+    expect(body.data.activity).toHaveLength(7);
+    expect(body.data.activity.every(({ answers }: { answers: number }) => answers === 0)).toBe(
+      true,
+    );
   });
 
   it('đếm thẻ đến hạn và tiến độ theo bộ từ của người gọi', async () => {
@@ -165,7 +170,13 @@ describe('GET /stats/overview', () => {
 
     expect(body.data.streakDays).toBe(3);
     expect(body.data.masteredCards).toBe(1);
+    expect(body.data.learningCards).toBe(1);
     expect(body.data.answersToday).toBeGreaterThanOrEqual(2);
+    // Ngày cũ nhất trước; tổng 7 ngày gồm đủ 4 câu của người gọi, không có của người khác.
+    const counts = body.data.activity.map(({ answers }: { answers: number }) => answers);
+    expect(counts).toHaveLength(7);
+    expect(counts.reduce((sum: number, value: number) => sum + value, 0)).toBe(4);
+    expect(counts[6]).toBe(body.data.answersToday);
     expect(body.data.hardCards).toEqual([
       { cardId: pear, setId, term: 'pear', definition: 'quả lê', wrongCount: 2 },
       { cardId: apple, setId, term: 'apple', definition: 'quả táo', wrongCount: 1 },

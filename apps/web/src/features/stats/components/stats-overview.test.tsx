@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http } from '@/lib/http';
@@ -32,6 +32,16 @@ describe('StatsOverview', () => {
       data: {
         streakDays: 3,
         masteredCards: 12,
+        learningCards: 4,
+        activity: [
+          { day: '2026-11-14', answers: 0 },
+          { day: '2026-11-15', answers: 5 },
+          { day: '2026-11-16', answers: 0 },
+          { day: '2026-11-17', answers: 2 },
+          { day: '2026-11-18', answers: 0 },
+          { day: '2026-11-19', answers: 9 },
+          { day: '2026-11-20', answers: 7 },
+        ],
         answersToday: 7,
         dueCards: 3,
         hardCards: [
@@ -42,7 +52,13 @@ describe('StatsOverview', () => {
     renderStats();
 
     expect(await screen.findByText('Ngày học liên tiếp')).toBeInTheDocument();
-    expect(screen.getByText('12')).toBeInTheDocument();
+    const tiles = screen.getByText('Ngày học liên tiếp').closest('dl') as HTMLElement;
+    expect(within(tiles).getByText('12')).toBeInTheDocument();
+    expect(within(tiles).getByText('Từ đang học')).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Số câu trả lời theo ngày' })).toHaveTextContent(
+      '2026-11-199',
+    );
+    expect(screen.getByText(/^Đã thuộc:/)).toHaveTextContent('Đã thuộc: 12 (75%)');
     expect(screen.getByRole('link', { name: 'apple' })).toHaveAttribute('href', '/sets/s1');
     expect(screen.getByText('Sai 4 lần')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ôn ngay' })).toHaveAttribute('href', '/review');

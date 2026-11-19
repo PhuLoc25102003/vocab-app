@@ -25,6 +25,28 @@ export class StatsRepository extends BaseRepository {
     return rows.map(({ day }) => day);
   }
 
+  /** Số câu trả lời theo ngày học (giờ Việt Nam) từ `since`. */
+  async countAnswersByDay(userId: string, since: Date): Promise<Map<string, number>> {
+    const rows = await this.prisma.$queryRaw<{ day: string; answers: number }[]>`
+      SELECT to_char(a."createdAt" + make_interval(hours => ${STUDY_DAY_OFFSET_HOURS}::int), 'YYYY-MM-DD') AS day,
+        COUNT(*)::int AS answers
+      FROM "Attempt" a
+      JOIN "StudySession" s ON s.id = a."sessionId"
+      WHERE s."userId" = ${userId} AND a."createdAt" >= ${since}
+      GROUP BY day`;
+    return new Map(rows.map(({ day, answers }) => [day, answers]));
+  }
+
+  countLearning(viewer: SetViewer) {
+    return this.prisma.cardProgress.count({
+      where: {
+        userId: viewer.id,
+        interval: { lt: MASTERED_INTERVAL_DAYS },
+        card: { set: { deletedAt: null, ...visibleTo(viewer) } },
+      },
+    });
+  }
+
   countMastered(viewer: SetViewer) {
     return this.prisma.cardProgress.count({
       where: {

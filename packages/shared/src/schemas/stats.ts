@@ -3,6 +3,10 @@ import { z } from 'zod';
 export const statsOverviewSchema = z.object({
   streakDays: z.number(),
   masteredCards: z.number(),
+  /** Thẻ đã học nhưng chưa thuộc. Bản cũ của API không có trường này. */
+  learningCards: z.number().default(0),
+  /** Số câu trả lời 7 ngày gần nhất, ngày cũ nhất trước. */
+  activity: z.array(z.object({ day: z.string(), answers: z.number() })).default([]),
   answersToday: z.number(),
   dueCards: z.number(),
   hardCards: z.array(
