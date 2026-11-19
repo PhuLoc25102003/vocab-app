@@ -1,31 +1,10 @@
 import { spawnSync } from 'node:child_process';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { API_DIR, useE2eDatabase } from './database.mjs';
 
-const API_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../../api');
-const E2E_DATABASE = 'vocab_e2e';
-
-function loadDevEnv() {
-  try {
-    process.loadEnvFile(resolve(API_DIR, '.env'));
-  } catch {
-    // CI truyền biến môi trường trực tiếp, không có file .env.
-  }
-}
-
-/** Dùng cùng máy chủ Postgres nhưng database riêng, không đụng dữ liệu dev. */
-function e2eDatabaseUrl() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('Thiếu DATABASE_URL');
-  }
-  const url = new URL(process.env.DATABASE_URL);
-  url.pathname = `/${E2E_DATABASE}`;
-  return url.toString();
-}
-
-loadDevEnv();
+useE2eDatabase();
 Object.assign(process.env, {
-  DATABASE_URL: e2eDatabaseUrl(),
   NODE_ENV: 'test',
   PORT: process.env.E2E_API_PORT,
   CORS_ORIGINS: process.env.E2E_WEB_ORIGIN,
