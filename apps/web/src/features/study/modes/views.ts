@@ -1,4 +1,5 @@
 import {
+  LEARN_ROUND_SIZE,
   MATCH_ROUND_SIZE,
   type Question,
   type StudyLanguages,
@@ -9,6 +10,7 @@ import type { ComponentType } from 'react';
 import { ClozeModeView } from './cloze/cloze-mode';
 import { DictationModeView } from './dictation/dictation-mode';
 import { FlashcardMode } from './flashcard/flashcard-mode';
+import { LearnModeView } from './learn/learn-mode';
 import { MatchModeView } from './match/match-mode';
 import { McqModeView } from './mcq/mcq-mode';
 import { WriteModeView } from './write/write-mode';
@@ -27,6 +29,7 @@ export interface StudyModeProps {
 /** Thêm chế độ mới chỉ cần khai báo view ở đây. */
 export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps>>> = {
   FLASHCARD: FlashcardMode,
+  LEARN: LearnModeView,
   WRITE: WriteModeView,
   DICTATION: DictationModeView,
   MCQ: McqModeView,
@@ -37,4 +40,5 @@ export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps
 /** Chế độ cần nhiều câu cùng lúc. View gọi `onAnswer` lần lượt cho từng câu khi xong vòng. */
 export const STUDY_ROUND_SIZE: Partial<Record<StudyMode, number>> = {
   MATCH: MATCH_ROUND_SIZE,
+  LEARN: LEARN_ROUND_SIZE,
 };
