@@ -35,6 +35,9 @@ const SET_SUMMARY_SELECT = {
   updatedAt: true,
 } as const;
 
+/** Khoá advisory của Postgres dành riêng cho job xoá hẳn bộ từ (việc 1.30). */
+const PURGE_LOCK_KEY = 1_030;
+
 const OWNER_NAME_SELECT = { owner: { select: { displayName: true } } } as const;
 
 const CARD_SELECT = {
@@ -386,6 +389,34 @@ export class SetsRepository extends BaseRepository {
       return null;
     }
     return this.prisma.studySet.findFirst({ where, select: SET_SUMMARY_SELECT });
+  }
+
+  /**
+   * Xoá hẳn tối đa `limit` bộ từ đã xoá mềm trước `before`. Thẻ, phiên học và tiến độ
+   * bị xoá theo cascade. Trả `null` khi instance khác đang giữ khoá của job này.
+   */
+  async purgeDeletedBefore(before: Date, limit: number): Promise<number | null> {
+    return this.prisma.$transaction(async (tx) => {
+      // Khoá tự nhả khi transaction kết thúc, nên không cần giữ một kết nối riêng.
+      const [lock] = await tx.$queryRaw<{ locked: boolean }[]>`
+        SELECT pg_try_advisory_xact_lock(${PURGE_LOCK_KEY}::bigint) AS locked`;
+      if (!lock?.locked) {
+        return null;
+      }
+      const expired = await tx.studySet.findMany({
+        where: { deletedAt: { lt: before } },
+        select: { id: true },
+        orderBy: { deletedAt: 'asc' },
+        take: limit,
+      });
+      if (expired.length === 0) {
+        return 0;
+      }
+      const { count } = await tx.studySet.deleteMany({
+        where: { id: { in: expired.map(({ id }) => id) }, deletedAt: { lt: before } },
+      });
+      return count;
+    });
   }
 
   /** Trả `false` nếu bộ từ không tồn tại hoặc đã xoá mềm. */
