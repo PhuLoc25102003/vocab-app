@@ -93,7 +93,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S10. Nhập danh sách từ
 
-- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX), 1.53 (phiên âm, ví dụ), 1.54 (file mẫu). **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu. Đã đủ với text, CSV, XLSX (1.51), kể cả cột phiên âm và ví dụ (1.53). Còn thiếu file mẫu (1.54). Hiện web báo người dùng lưu file Excel thành CSV.
+- **Việc:** 1.21, 1.22, 1.23, 1.51 (XLSX), 1.53 (phiên âm, ví dụ), 1.54 (file mẫu). **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ. Có text, CSV, XLSX (1.51), cột phiên âm và ví dụ (1.53), file mẫu và nhận diện tiêu đề mẫu khi chọn file hoặc dán vào ô trống (1.54). Hiện web báo người dùng lưu file Excel thành CSV.
 - **Phải có:**
   - Dán text, tải `.csv`, `.xlsx`, `.txt` tối đa 2 MB.
   - Chọn ký tự phân cách, cột từ, cột nghĩa. Cột phiên âm và cột ví dụ **không bắt buộc**, mặc định là "Không có".
@@ -111,6 +111,5 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Mã hoá UTF-8 có BOM, dấu tiếng Việt và ký tự IPA phải đúng.
   - Rời trang khi chưa lưu phải hỏi xác nhận.
 - **Điểm vào:** nút "Nhập từ file" ở trang Bộ từ mở `/sets/import`, nút "Nhập thêm thẻ" của chủ bộ từ mở `/sets/import?setId=...`.
-- **Test đã có:** `parse.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test` (gồm XLSX hợp lệ, hỏng, rỗng, ô công thức, dấu tiếng Việt và IPA, file `.xls`), `import-source.test`, `import-preview.test`, `import-wizard.test` (gồm cột phiên âm, ví dụ, cột trùng, lưu thẻ có phiên âm và ví dụ), E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi tải file `.xlsx` có cột phiên âm để nhập thêm vào bộ có sẵn, audit accessibility trang nhập.
-- **Test cần thêm:**
-  - 1.54: file mẫu tải được và có đúng hàng tiêu đề, nhận diện tiêu đề tự chọn cột. E2E tải file mẫu `.xlsx` có điền từ rồi lưu.
+- **Test đã có:** `parse.test`, `template.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test` (gồm XLSX hợp lệ, hỏng, rỗng, ô công thức, dấu tiếng Việt và IPA, file `.xls`), `import-source.test` (gồm nhận diện tiêu đề mẫu khi chọn file và khi dán), `template-file.test`, `import-preview.test`, `import-wizard.test` (gồm cột phiên âm, ví dụ, cột trùng, lưu thẻ có phiên âm và ví dụ), E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi tải file `.xlsx` có cột phiên âm để nhập thêm vào bộ có sẵn, tải file mẫu `.xlsx` rồi chọn lại để kiểm tra tự chọn cột, audit accessibility trang nhập.
+- **Test cần thêm:** mở file mẫu `.xlsx` bằng Excel và LibreOffice thật (thủ công).

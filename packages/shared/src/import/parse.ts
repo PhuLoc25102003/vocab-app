@@ -101,6 +101,14 @@ function tokenize(content: string, delimiter: string): RawRecord[] {
   return records;
 }
 
+/** Các ô của dòng có nội dung đầu tiên, dùng để nhận diện hàng tiêu đề. */
+export function readFirstRecord(content: string, delimiter: DetectedDelimiter): string[] {
+  const record = tokenize(normalize(content), DELIMITERS[delimiter]).find(({ fields }) =>
+    fields.some((value) => value.trim()),
+  );
+  return record?.fields ?? [];
+}
+
 /**
  * Đọc text hoặc CSV thành danh sách thẻ, mỗi dòng kèm lỗi nếu có.
  * Phiên âm và ví dụ chỉ có trong dòng khi chọn cột, ô trống không phải lỗi.

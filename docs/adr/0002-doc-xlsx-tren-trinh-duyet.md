@@ -25,7 +25,7 @@ Người dùng cần nhập danh sách từ từ file Excel (việc 1.51). Luồ
 
 - Thêm dependency `read-excel-file` cho `@vocab/web`. Kiểm tra `npm audit` khi cài và theo dõi qua Dependabot.
 - CSP thêm `worker-src 'self' blob:`. Vì `script-src` đã có `'unsafe-inline'`, quy tắc này gần như không mở thêm bề mặt tấn công: chỉ script đã chạy trên trang mới tạo được worker từ `blob:`.
-- Test dựng file XLSX bằng `fflate` (devDependency) trong `src/test/build-xlsx.ts`, không commit file nhị phân.
+- File mẫu `.xlsx` (việc 1.54) và file XLSX trong test được dựng bằng `fflate` trong `src/lib/xlsx.ts`, tải lazy khi bấm tải file mẫu, không commit file nhị phân. `fflate` vốn là dependency của `read-excel-file`.
 - Kết quả đọc file phụ thuộc trình duyệt, nên `read-file.ts` cần test với file XLSX mẫu, gồm file hỏng, file rỗng, ô công thức và dấu tiếng Việt.
 - File quá 2 MB bị chặn trước khi giải nén.
 

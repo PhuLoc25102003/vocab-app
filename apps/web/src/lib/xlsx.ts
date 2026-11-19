@@ -1,6 +1,6 @@
 import { strToU8, zipSync } from 'fflate';
 
-/** Một ô: chuỗi, số, hoặc công thức kèm giá trị lưu sẵn (có thể không có). */
+/** Một ô: chuỗi, số, hoặc công thức kèm giá trị lưu sẵn (có thể không có, dùng trong test). */
 export type XlsxCell = string | number | null | { formula: string; cached?: string };
 
 const escapeXml = (value: string) =>
@@ -18,7 +18,7 @@ function cellXml(cell: XlsxCell, ref: string): string {
   return `<c r="${ref}" t="str"><f>${escapeXml(cell.formula)}</f>${cached}</c>`;
 }
 
-/** Dựng file XLSX tối thiểu cho test, mỗi phần tử của `sheets` là một sheet. */
+/** Dựng file XLSX tối thiểu chỉ chứa chữ và số, mỗi phần tử của `sheets` là một sheet. */
 export function buildXlsx(sheets: XlsxCell[][][]): Uint8Array {
   const sheetXml = (rows: XlsxCell[][]) =>
     `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
