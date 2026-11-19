@@ -32,6 +32,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | GET    | /admin/users                | ADMIN                     | Danh sách người dùng, tìm theo email hoặc tên              |
 | PATCH  | /admin/users/:id/lock       | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
 | PATCH  | /admin/users/:id/unlock     | ADMIN                     | Mở khoá tài khoản                                          |
+| GET    | /admin/stats                | ADMIN                     | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
 | PATCH  | /admin/sets/:id/hide        | ADMIN                     | Ẩn bộ từ vi phạm kèm lý do                                 |
 | PATCH  | /admin/sets/:id/unhide      | ADMIN                     | Bỏ ẩn bộ từ                                                |
 | POST   | /import/preview             | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |

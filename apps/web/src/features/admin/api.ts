@@ -1,7 +1,9 @@
 import {
+  adminStatsResponseSchema,
   adminUserListResponseSchema,
   adminUserResponseSchema,
   hiddenSetResponseSchema,
+  type AdminStats,
   type AdminUser,
   type AdminUserList,
   type HiddenSet,
@@ -47,4 +49,8 @@ export async function hideSet(id: string, reason: string): Promise<HiddenSet> {
 export async function unhideSet(id: string): Promise<HiddenSet> {
   const body = await http(`/admin/sets/${encodeURIComponent(id)}/unhide`, { method: 'PATCH' });
   return hiddenSetResponseSchema.parse(body).data;
+}
+
+export async function getAdminStats(): Promise<AdminStats> {
+  return adminStatsResponseSchema.parse(await http('/admin/stats')).data;
 }
