@@ -4,6 +4,7 @@ import { paginationSchema } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { ReactNode } from 'react';
 import { EmptyState } from '@/components/common/empty-state';
 import { SelectField } from '@/components/common/form-field';
 import { ErrorState } from '@/components/common/error-state';
@@ -31,29 +32,53 @@ function toSort(value: string | null): string {
   return SORT_OPTIONS.some((option) => option.value === value) ? (value as string) : DEFAULT_SORT;
 }
 
-function listHref(q: string, sort: string, page = 1): Route {
+export const FOLDER_FIELD = 'folder';
+
+interface ListState {
+  q: string;
+  sort: string;
+  folder: string;
+}
+
+function listHref({ q, sort, folder }: ListState, page = 1): Route {
   const params = new URLSearchParams();
   if (q) params.set(QUERY_FIELD, q);
   if (sort !== DEFAULT_SORT) params.set('sort', sort);
+  if (folder) params.set(FOLDER_FIELD, folder);
   if (page > 1) params.set('page', String(page));
   const query = params.toString();
   return (query ? `/sets?${query}` : '/sets') as Route;
 }
 
-export function MySets() {
+export interface FolderFilterProps {
+  /** Id thư mục, `none`, hoặc chuỗi rỗng nghĩa là tất cả. */
+  value: string;
+  onChange: (value: string) => void;
+}
+
+interface MySetsProps {
+  /** Ô lọc theo thư mục, do tầng trang ghép từ feature thư mục. */
+  renderFolderFilter?: (props: FolderFilterProps) => ReactNode;
+}
+
+export function MySets({ renderFolderFilter }: MySetsProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = toPage(searchParams.get('page'));
   const q = toQuery(searchParams.get(QUERY_FIELD));
   const sort = toSort(searchParams.get('sort'));
+  const folder = searchParams.get(FOLDER_FIELD)?.slice(0, 64) ?? '';
+  const state: ListState = { q, sort, folder };
   const isCustomSort = sort !== DEFAULT_SORT;
   const sets = useMySets({
     page,
     limit: SETS_PAGE_SIZE,
     ...(q ? { q } : {}),
     ...(isCustomSort ? { sort } : {}),
+    ...(folder ? { folderId: folder } : {}),
   });
-  const hasTools = Boolean(q) || isCustomSort || (sets.data?.meta.total ?? 0) > 0;
+  const hasTools =
+    Boolean(q) || Boolean(folder) || isCustomSort || (sets.data?.meta.total ?? 0) > 0;
 
   return (
     <>
@@ -63,13 +88,13 @@ export function MySets() {
             <SetSearchForm
               id="my-sets-search"
               value={q}
-              onSearch={(value) => router.push(listHref(value, sort))}
+              onSearch={(value) => router.push(listHref({ ...state, q: value }))}
             />
           </div>
           <SelectField
             label="Sắp xếp"
             value={sort}
-            onChange={(event) => router.push(listHref(q, event.target.value))}
+            onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
           >
             {SORT_OPTIONS.map(({ value, label }) => (
               <option key={value} value={value}>
@@ -77,22 +102,19 @@ export function MySets() {
               </option>
             ))}
           </SelectField>
+          {renderFolderFilter?.({
+            value: folder,
+            onChange: (value) => router.push(listHref({ ...state, folder: value })),
+          })}
         </div>
       ) : null}
-      <MySetsResults sets={sets} q={q} sort={sort} />
+      <MySetsResults sets={sets} state={state} />
     </>
   );
 }
 
-function MySetsResults({
-  sets,
-  q,
-  sort,
-}: {
-  sets: ReturnType<typeof useMySets>;
-  q: string;
-  sort: string;
-}) {
+function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; state: ListState }) {
+  const { q, folder } = state;
   if (sets.isPending) {
     return <SetRowsLoading count={5} />;
   }
@@ -114,7 +136,20 @@ function MySetsResults({
         description={`Bạn chưa có bộ từ nào khớp với "${q}".`}
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref('', sort)}>Xem tất cả</Link>
+            <Link href={listHref({ ...state, q: '' })}>Xem tất cả</Link>
+          </Button>
+        }
+      />
+    );
+  }
+  if (meta.total === 0 && folder) {
+    return (
+      <EmptyState
+        title="Thư mục này chưa có bộ từ"
+        description="Mở một bộ từ rồi chọn thư mục để chuyển bộ vào đây."
+        action={
+          <Button asChild variant="secondary">
+            <Link href={listHref({ ...state, folder: '' })}>Xem tất cả</Link>
           </Button>
         }
       />
@@ -130,7 +165,7 @@ function MySetsResults({
         description="Danh sách của bạn ngắn hơn số trang này."
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref(q, sort)}>Về trang đầu</Link>
+            <Link href={listHref(state)}>Về trang đầu</Link>
           </Button>
         }
       />
@@ -143,7 +178,7 @@ function MySetsResults({
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}
-        hrefFor={(target) => listHref(q, sort, target)}
+        hrefFor={(target) => listHref(state, target)}
       />
     </>
   );

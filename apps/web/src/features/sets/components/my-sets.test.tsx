@@ -94,6 +94,29 @@ describe('MySets', () => {
     expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, q: 'xyz' });
   });
 
+  it('lọc theo thư mục trên địa chỉ, giữ bộ lọc khi đổi sắp xếp', async () => {
+    navigation.params = new URLSearchParams('folder=f1');
+    vi.mocked(listMySets).mockResolvedValue(list([], 0));
+    renderWithQuery(
+      <MySets
+        renderFolderFilter={({ value, onChange }) => (
+          <button onClick={() => onChange('none')}>Thư mục {value}</button>
+        )}
+      />,
+    );
+
+    expect(await screen.findByText('Thư mục này chưa có bộ từ')).toBeInTheDocument();
+    expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, folderId: 'f1' });
+    await userEvent.click(screen.getByRole('button', { name: 'Thư mục f1' }));
+    await userEvent.selectOptions(screen.getByLabelText('Sắp xếp'), 'title');
+
+    expect(navigation.push.mock.calls).toEqual([
+      ['/sets?folder=none'],
+      ['/sets?sort=title&folder=f1'],
+    ]);
+    expect(screen.getByRole('link', { name: 'Xem tất cả' })).toHaveAttribute('href', '/sets');
+  });
+
   it('hiện trạng thái trống', async () => {
     vi.mocked(listMySets).mockResolvedValue(list([], 0));
     renderWithQuery(<MySets />);

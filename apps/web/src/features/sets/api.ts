@@ -18,19 +18,30 @@ export interface SetListParams {
   limit: number;
   q?: string;
   sort?: string;
+  /** Id thư mục, hoặc `none` cho bộ chưa vào thư mục. */
+  folderId?: string;
 }
 
 export interface PublicSetListParams extends SetListParams {
   q: string;
 }
 
-export async function listMySets({ page, limit, q, sort }: SetListParams): Promise<SetList> {
+export async function listMySets({
+  page,
+  limit,
+  q,
+  sort,
+  folderId,
+}: SetListParams): Promise<SetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (q) {
     query.set('q', q);
   }
   if (sort) {
     query.set('sort', sort);
+  }
+  if (folderId) {
+    query.set('folderId', folderId);
   }
   return setListSchema.parse(await http(`/sets?${query}`));
 }
