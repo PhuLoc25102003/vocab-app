@@ -174,3 +174,44 @@
       8px 8px;
   }
 }
+
+/* Ô chọn: trình duyệt hỗ trợ `base-select` thì danh sách lựa chọn cũng theo token. */
+@supports (appearance: base-select) {
+  .select-styled,
+  .select-styled::picker(select) {
+    appearance: base-select;
+  }
+
+  .select-styled::picker-icon {
+    display: none;
+  }
+
+  .select-styled::picker(select) {
+    margin-block: 4px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .select-styled option {
+    min-height: 44px;
+    padding-inline: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  .select-styled option:hover,
+  .select-styled option:focus-visible {
+    background: var(--primary-soft);
+  }
+
+  .select-styled option:checked {
+    font-weight: 600;
+  }
+
+  .select-styled option::checkmark {
+    color: var(--primary);
+  }
+}
