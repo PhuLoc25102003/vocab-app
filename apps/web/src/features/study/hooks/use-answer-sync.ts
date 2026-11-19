@@ -1,7 +1,9 @@
-import { STUDY_ANSWER_BATCH_MAX } from '@vocab/shared';
 import { useCallback, useRef } from 'react';
 import type { StudyBackend } from '../api';
 import { useStudyStore } from '../session.store';
+
+/** Request `keepalive` bị giới hạn 64 KB, mỗi đáp án tối đa 500 ký tự. */
+const SYNC_BATCH_SIZE = 20;
 
 async function drain(backend: StudyBackend): Promise<void> {
   for (;;) {
@@ -9,7 +11,7 @@ async function drain(backend: StudyBackend): Promise<void> {
     if (!session || pending.length === 0) {
       return;
     }
-    const batch = pending.slice(0, STUDY_ANSWER_BATCH_MAX);
+    const batch = pending.slice(0, SYNC_BATCH_SIZE);
     await backend.submit(session.id, batch);
     useStudyStore.getState().acknowledge(session.id, batch.length);
   }

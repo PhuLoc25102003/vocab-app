@@ -10,6 +10,8 @@ export interface StudyModeProps {
   languages: StudyLanguages;
   /** Gọi đúng một lần cho mỗi câu, khi người học chuyển sang câu tiếp theo. */
   onAnswer: (answer: UserAnswer) => void;
+  /** Gọi khi đáp án vừa được chấm, để không mất nếu người học rời trang trước khi đi tiếp. */
+  onChecked?: (answer: UserAnswer) => void;
 }
 
 /** Thêm chế độ mới chỉ cần khai báo view ở đây. */

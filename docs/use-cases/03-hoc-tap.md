@@ -11,7 +11,7 @@
 
 ## UC-L2. Chạy một phiên học
 
-- **Việc:** 1.14, 1.15, 1.39. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-03).
+- **Việc:** 1.14, 1.15, 1.39. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:**
   - Bắt đầu phiên, thanh tiến độ, nút thoát.
   - Server tự chấm lại, không tin kết quả từ client.
@@ -25,11 +25,8 @@
   - Token hết hạn giữa phiên: tự refresh và học tiếp.
   - Bộ bị xoá hoặc sửa giữa phiên: câu không còn hợp lệ bị bỏ qua, không làm hỏng phiên.
 - **Test đã có:** `study-sessions.integration`, `study-shell.test`, `session.store.test`.
-- **Test cần thêm:** E2E trả lời một câu, tải lại, vẫn ở câu tiếp theo và đáp án được tính; E2E đóng trang rồi xem thống kê; E2E mất mạng rồi có mạng lại.
-- **Còn thiếu (đã tái hiện):**
-  - Dưới 10 đáp án chưa gửi thì tải lại trang làm mất đáp án, tiến độ về 0.
-  - Đáp án đã bấm "Kiểm tra" nhưng chưa sang câu sau không được tính khi thoát.
-  - Hướng xử lý: đưa đáp án vào hàng đợi ngay khi chấm, lưu phiên và hàng đợi trong `sessionStorage`, gửi bằng `keepalive` khi rời trang, khôi phục khi mở lại.
+- **Cách giữ tiến độ:** phiên và hàng đợi đáp án nằm trong `sessionStorage` của tab tối đa 12 giờ, xoá khi đăng xuất. Đáp án gửi bằng `keepalive`, server bỏ qua đáp án gửi lại y hệt.
+- **Test cần thêm:** E2E đóng trang rồi xem thống kê; E2E mất mạng rồi có mạng lại.
 
 ## UC-L3. Xem kết quả phiên
 
@@ -68,7 +65,7 @@
 
 ## UC-L7. Chế độ Viết
 
-- **Việc:** 1.24. **Người dùng:** người học. **Trạng thái:** Đủ, phụ thuộc GAP-03.
+- **Việc:** 1.24. **Người dùng:** người học. **Trạng thái:** Đủ.
 - **Phải có:** hiện nghĩa, ô nhập từ, Enter để kiểm tra, báo đúng sai bằng chữ và icon, gạch đỏ phần sai, hiện đáp án đúng.
 - **Ngoại lệ:** ô trống không gửi được; đáp án khác hoa thường vẫn đúng; thiếu dấu là sai; từ nhiều chữ và ký tự đặc biệt.
 - **Test đã có:** `typed-answer.test`, unit `write`, E2E.

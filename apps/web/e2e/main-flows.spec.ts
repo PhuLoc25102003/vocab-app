@@ -110,6 +110,12 @@ test.describe.serial('luồng chính', () => {
 
     const first = await currentCard(page);
     await submitWrittenAnswer(page, first.term, 'Chính xác');
+
+    // Tải lại trang vẫn ở đúng câu và không mất đáp án đã trả lời.
+    await expect(page.getByText('1/2', { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByText('1/2', { exact: true })).toBeVisible();
+
     const second = await currentCard(page);
     wrongTerm = second.term;
     await submitWrittenAnswer(page, 'sai', 'Chưa đúng');

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 
-export function McqModeView({ question, languages, onAnswer }: StudyModeProps) {
+export function McqModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
   const choices = question.choices ?? [];
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -33,8 +33,9 @@ export function McqModeView({ question, languages, onAnswer }: StudyModeProps) {
       const answer = { questionId: question.id, value, timeMs: timeMs.current };
       setSelected(value);
       setResult(getMode(question.mode).grade(question, answer));
+      onChecked?.(answer);
     },
-    [question],
+    [onChecked, question],
   );
 
   const next = () => {

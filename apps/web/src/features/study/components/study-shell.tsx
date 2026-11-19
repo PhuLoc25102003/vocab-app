@@ -16,10 +16,18 @@ import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
 import { STUDY_VIEWS } from '../modes/views';
 import { studyKeys } from '../query-keys';
+import {
+  clearSnapshot,
+  loadSnapshot,
+  studySnapshotKey,
+  type ResumableSession,
+} from '../session-snapshot';
 import { useStudyStore } from '../session.store';
 import { StudyResult } from './study-result';
 
 const BACKGROUND_SYNC_SIZE = 10;
+/** Phiên đã hết hiệu lực trên server, ví dụ đã kết thúc ở lần trước. */
+const STALE_SESSION_STATUSES = new Set([403, 404, 409]);
 
 interface StudyShellProps {
   backend: StudyBackend;
@@ -132,9 +140,11 @@ export function StudyShell({
   dueOnly = false,
 }: StudyShellProps) {
   const queryClient = useQueryClient();
+  const snapshotKey = backend.resumable ? studySnapshotKey(setId, mode, dueOnly) : undefined;
   const started = useQuery({
     queryKey: studyKeys.session(setId, mode, dueOnly),
-    queryFn: () => backend.start(setId, mode, { dueOnly }),
+    queryFn: async (): Promise<ResumableSession> =>
+      (snapshotKey ? loadSnapshot(snapshotKey) : null) ?? backend.start(setId, mode, { dueOnly }),
     // Mỗi lần tải là một phiên mới, nên chỉ tạo khi người học yêu cầu.
     staleTime: Infinity,
     gcTime: 0,
@@ -150,6 +160,7 @@ export function StudyShell({
   const result = useStudyStore((state) => state.result);
   const begin = useStudyStore((state) => state.begin);
   const answer = useStudyStore((state) => state.answer);
+  const record = useStudyStore((state) => state.record);
   const finish = useStudyStore((state) => state.finish);
   const syncAnswers = useAnswerSync(backend);
 
@@ -162,6 +173,12 @@ export function StudyShell({
       finish(sessionResult);
       void queryClient.invalidateQueries({ queryKey: studyKeys.dueLists });
     },
+    onError: (error) => {
+      if (snapshotKey && error instanceof HttpError && STALE_SESSION_STATUSES.has(error.status)) {
+        clearSnapshot(snapshotKey);
+        void started.refetch();
+      }
+    },
   });
   const { mutate: complete, isIdle: canComplete, reset: resetCompletion } = completion;
 
@@ -171,10 +188,10 @@ export function StudyShell({
 
   useEffect(() => {
     if (data && data.session.id !== useStudyStore.getState().session?.id) {
-      begin(data);
+      begin(data, { snapshotKey, progress: data.progress });
       resetCompletion();
     }
-  }, [begin, data, resetCompletion]);
+  }, [begin, data, resetCompletion, snapshotKey]);
 
   useEffect(() => {
     if (isLastAnswered && !result && canComplete && session) {
@@ -191,6 +208,12 @@ export function StudyShell({
 
   // Rời trang giữa chừng vẫn cố lưu những gì đã trả lời.
   useEffect(() => () => void syncAnswers().catch(() => undefined), [syncAnswers]);
+
+  useEffect(() => {
+    const flush = () => void syncAnswers().catch(() => undefined);
+    window.addEventListener('pagehide', flush);
+    return () => window.removeEventListener('pagehide', flush);
+  }, [syncAnswers]);
 
   const total = ready ? questions.length : 0;
   const frame = (children: ReactNode) => (
@@ -247,6 +270,12 @@ export function StudyShell({
   }
 
   return frame(
-    <View key={question.id} question={question} languages={languages} onAnswer={answer} />,
+    <View
+      key={question.id}
+      question={question}
+      languages={languages}
+      onAnswer={answer}
+      onChecked={record}
+    />,
   );
 }
