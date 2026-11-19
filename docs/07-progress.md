@@ -18,10 +18,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong         |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     13 |      25 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     14 |      25 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |       4 | Đang làm     |
-| **Toàn dự án**          |                                            | **78** | **104** | **75%**      |
+| **Toàn dự án**          |                                            | **79** | **104** | **76%**      |
 
 ## Cách cập nhật
 
@@ -191,7 +191,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.16** Bố cục cân đối: nội dung trang căn giữa với độ rộng tối đa nhất quán, form căn giữa, không dồn sang trái ở màn hình rộng (#196).
 - [x] **2.17** Header hiện tên hiển thị cạnh ảnh đại diện, mở menu tài khoản (Tài khoản, Quản lý người dùng với ADMIN, Đăng xuất) (#198).
 - [x] **2.18** Ô chọn (dropdown) mới thay `select` mặc định: đẹp, đúng token, dùng được bằng bàn phím và trình đọc màn hình (#203).
-- [ ] **2.19** Chế độ học trên trang bộ từ gom thành lưới thẻ có icon và mô tả ngắn, một nút chính "Bắt đầu học", thay hàng nút trải dài.
+- [x] **2.19** Chế độ học trên trang bộ từ gom thành lưới thẻ có icon và mô tả ngắn, một nút chính "Bắt đầu học", thay hàng nút trải dài (#206).
 - [ ] **2.20** Giải thích "đã thuộc" và "đến hạn": mỗi thẻ hiện mức nhớ (Mới, Đang học, Đã thuộc) và ngày ôn tiếp theo; trang Ôn hôm nay giải thích lịch ôn và hiện thẻ sắp đến hạn; ô "Từ đã thuộc" có chú thích điều kiện.
 - [ ] **2.21** Trang Tổng quan nổi bật hơn: hoạt động 7 ngày, phân bố mức nhớ, bộ đang học dở, việc nên làm tiếp; ADMIN thấy thêm số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá.
 - [ ] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện của tôi (tiến độ từng bộ, thư mục, thao tác chủ), Khám phá là cộng đồng (thẻ có tác giả, số thẻ, sao chép nhanh, sắp xếp mới và nhiều thẻ).

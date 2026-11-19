@@ -19,13 +19,53 @@ export const LANGUAGE_LABELS: Record<string, string> = {
 
 /** Các chế độ đã có giao diện, chế độ đầu tiên là nút chính. */
 export const STUDY_ENTRIES = [
-  { slug: 'flashcard', label: 'Bắt đầu học', guestLabel: 'Học thử' },
-  { slug: 'learn', label: 'Học kỹ', guestLabel: 'Học kỹ' },
-  { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết' },
-  { slug: 'dictation', label: 'Nghe viết', guestLabel: 'Nghe viết' },
-  { slug: 'mcq', label: 'Trắc nghiệm', guestLabel: 'Trắc nghiệm' },
-  { slug: 'cloze', label: 'Điền từ', guestLabel: 'Điền từ' },
-  { slug: 'match', label: 'Ghép cặp', guestLabel: 'Ghép cặp' },
-  { slug: 'test', label: 'Kiểm tra', guestLabel: 'Kiểm tra' },
-  { slug: 'speak', label: 'Luyện nói', guestLabel: 'Luyện nói' },
+  {
+    slug: 'flashcard',
+    label: 'Bắt đầu học',
+    guestLabel: 'Học thử',
+    hint: 'Lật thẻ, tự đánh giá đã nhớ hay chưa',
+  },
+  {
+    slug: 'learn',
+    label: 'Học kỹ',
+    guestLabel: 'Học kỹ',
+    hint: 'Trắc nghiệm rồi gõ từ, câu sai hỏi lại',
+  },
+  { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết', hint: 'Nhìn nghĩa, gõ lại từ' },
+  {
+    slug: 'dictation',
+    label: 'Nghe viết',
+    guestLabel: 'Nghe viết',
+    hint: 'Nghe phát âm, gõ từ nghe được',
+  },
+  {
+    slug: 'mcq',
+    label: 'Trắc nghiệm',
+    guestLabel: 'Trắc nghiệm',
+    hint: 'Chọn nghĩa đúng trong bốn đáp án',
+  },
+  {
+    slug: 'cloze',
+    label: 'Điền từ',
+    guestLabel: 'Điền từ',
+    hint: 'Điền từ còn thiếu vào câu ví dụ',
+  },
+  {
+    slug: 'match',
+    label: 'Ghép cặp',
+    guestLabel: 'Ghép cặp',
+    hint: 'Ghép từ với nghĩa thật nhanh',
+  },
+  {
+    slug: 'test',
+    label: 'Kiểm tra',
+    guestLabel: 'Kiểm tra',
+    hint: 'Làm bài nhiều dạng, chấm khi nộp',
+  },
+  {
+    slug: 'speak',
+    label: 'Luyện nói',
+    guestLabel: 'Luyện nói',
+    hint: 'Đọc to từ, máy nhận giọng nói',
+  },
 ] as const;
