@@ -158,6 +158,40 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(page.getByText('Hôm nay chưa có từ cần ôn')).toBeVisible();
   });
 
+  test('nhập CSV, sửa dòng lỗi, lưu rồi nhập thêm vào bộ có sẵn', async () => {
+    const importTitle = `Nhập CSV ${stamp}`;
+    await page.goto('/sets');
+    await page.getByRole('link', { name: 'Nhập từ file' }).click();
+    await page.waitForURL('**/sets/import');
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'tu-vung.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from('\uFEFFTừ,Nghĩa\nbird,"con chim, chim"\nlion,\n', 'utf8'),
+    });
+    await expect(page.getByText('Đã đọc tu-vung.csv')).toBeVisible();
+    await page.getByLabel('Dòng đầu là tiêu đề, bỏ qua khi nhập').check();
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+
+    const errorRow = page.getByRole('listitem', { name: 'Dòng 3' });
+    await expect(errorRow.getByText('Hãy nhập định nghĩa')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lưu 2 thẻ' })).toBeDisabled();
+    await errorRow.getByLabel('Nghĩa').fill('sư tử');
+    await page.getByLabel('Tên bộ từ mới').fill(importTitle);
+    await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
+
+    await expect(page.getByRole('heading', { name: importTitle })).toBeVisible();
+    await expect(page.getByText('con chim, chim')).toBeVisible();
+    const importPath = new URL(page.url()).pathname;
+
+    await page.getByRole('link', { name: 'Nhập thêm thẻ' }).click();
+    await expect(page.getByText(/bộ đang có 2 thẻ/)).toBeVisible();
+    await page.getByLabel('Dán danh sách từ').fill('tiger - con hổ');
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+    await page.getByRole('button', { name: 'Lưu 1 thẻ' }).click();
+    await page.waitForURL(`**${importPath}`);
+    await expect(page.getByText('con hổ')).toBeVisible();
+  });
+
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
     test.setTimeout(240_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();
@@ -165,6 +199,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       '/dashboard',
       '/sets',
       '/sets/new',
+      '/sets/import',
       setPath,
       `${setPath}/edit`,
       '/explore',

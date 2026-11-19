@@ -61,6 +61,9 @@ export function SetOwnerActions({ id }: { id: string }) {
       <Button asChild variant="secondary">
         <Link href={`/sets/${id}/edit` as Route}>Sửa bộ từ</Link>
       </Button>
+      <Button asChild variant="secondary">
+        <Link href={`/sets/import?setId=${id}` as Route}>Nhập thêm thẻ</Link>
+      </Button>
       <Button ref={deleteRef} variant="secondary" onClick={() => toggleConfirm(true)}>
         Xoá bộ từ
       </Button>
