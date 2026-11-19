@@ -40,11 +40,44 @@ describe('ImportSource', () => {
     await userEvent.click(screen.getByLabelText('Dòng đầu là tiêu đề, bỏ qua khi nhập'));
     await userEvent.click(previewButton());
 
-    await waitFor(() => expect(onPreview).toHaveBeenCalledWith(result));
+    await waitFor(() =>
+      expect(onPreview).toHaveBeenCalledWith(result, { phonetic: false, example: false }),
+    );
     expect(vi.mocked(previewImport).mock.calls[0]?.[0]).toEqual({
       content: 'Từ,Nghĩa\napple,quả táo',
       options: { delimiter: 'comma', hasHeader: true, termColumn: 1, definitionColumn: 2 },
     });
+  });
+
+  it('gửi cột phiên âm và ví dụ khi được chọn', async () => {
+    vi.mocked(previewImport).mockResolvedValue(result);
+    const onPreview = renderSource();
+
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b	c	d');
+    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
+    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
+    await userEvent.click(previewButton());
+
+    await waitFor(() =>
+      expect(onPreview).toHaveBeenCalledWith(result, { phonetic: true, example: true }),
+    );
+    expect(vi.mocked(previewImport).mock.calls[0]?.[0].options).toMatchObject({
+      phoneticColumn: 3,
+      exampleColumn: 4,
+    });
+  });
+
+  it('báo lỗi khi cột phiên âm trùng cột khác', async () => {
+    renderSource();
+
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b');
+    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '2');
+    await userEvent.click(previewButton());
+
+    expect(
+      await screen.findByText('Cột phiên âm phải khác cột từ và cột nghĩa'),
+    ).toBeInTheDocument();
+    expect(previewImport).not.toHaveBeenCalled();
   });
 
   it('báo lỗi khi chưa có nội dung hoặc chọn hai cột giống nhau', async () => {

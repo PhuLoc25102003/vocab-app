@@ -11,9 +11,16 @@ const ROWS: ImportRow[] = [
   { line: 4, term: 'cat', definition: 'con mèo', errors: [] },
 ];
 
-function Harness({ initial = ROWS }: { initial?: ImportRow[] }) {
+const NO_EXTRA = { phonetic: false, example: false };
+
+function Harness({ initial = ROWS, columns = NO_EXTRA }: HarnessProps) {
   const [rows, setRows] = useState(initial);
-  return <ImportPreview rows={rows} onChange={setRows} />;
+  return <ImportPreview rows={rows} columns={columns} onChange={setRows} />;
+}
+
+interface HarnessProps {
+  initial?: ImportRow[];
+  columns?: { phonetic: boolean; example: boolean };
 }
 
 describe('ImportPreview', () => {
@@ -40,6 +47,24 @@ describe('ImportPreview', () => {
 
     await userEvent.clear(within(row).getByLabelText('Từ'));
     expect(within(row).getByText('Hãy nhập thuật ngữ')).toBeInTheDocument();
+  });
+
+  it('chỉ hiện phiên âm, ví dụ khi có chọn cột và kiểm tra độ dài', async () => {
+    const rows = [{ line: 1, term: 'apple', definition: 'quả táo', phonetic: '', errors: [] }];
+    const { unmount } = render(<Harness initial={rows} />);
+    expect(screen.queryByLabelText('Phiên âm')).not.toBeInTheDocument();
+    unmount();
+
+    render(<Harness initial={rows} columns={{ phonetic: true, example: false }} />);
+    const phonetic = screen.getByLabelText('Phiên âm');
+    expect(screen.queryByLabelText('Ví dụ')).not.toBeInTheDocument();
+
+    await userEvent.click(phonetic);
+    await userEvent.paste('a'.repeat(201));
+    expect(screen.getByText('phiên âm tối đa 200 ký tự')).toBeInTheDocument();
+
+    await userEvent.clear(phonetic);
+    expect(screen.getByText('Mọi dòng đều hợp lệ.')).toBeInTheDocument();
   });
 
   it('bỏ dòng khỏi danh sách', async () => {

@@ -58,11 +58,32 @@ describe('POST /import/preview', () => {
     expect(await prisma.card.count()).toBe(0);
   });
 
-  it('từ chối nội dung rỗng, quá 2 MB hoặc cột trùng', async () => {
+  it('đọc cột phiên âm và ví dụ không bắt buộc', async () => {
+    const response = await preview({
+      content: 'apple\t/ˈæp.əl/\tquả táo\tI eat an apple.\ncat\t\tcon mèo',
+      options: { definitionColumn: 3, phoneticColumn: 2, exampleColumn: 4 },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.rows).toEqual([
+      {
+        line: 1,
+        term: 'apple',
+        definition: 'quả táo',
+        phonetic: '/ˈæp.əl/',
+        example: 'I eat an apple.',
+        errors: [],
+      },
+      { line: 2, term: 'cat', definition: 'con mèo', phonetic: '', example: '', errors: [] },
+    ]);
+  });
+
+  it('từ chối nội dung rỗng, quá 2 MB hoặc cột trùng, kể cả cột phiên âm', async () => {
     const responses = await Promise.all([
       preview({ content: '  \n ' }),
       preview({ content: 'a'.repeat(IMPORT_MAX_CHARS + 1) }),
       preview({ content: 'a\tb', options: { termColumn: 1, definitionColumn: 1 } }),
+      preview({ content: 'a\tb', options: { phoneticColumn: 2 } }),
     ]);
 
     for (const response of responses) {

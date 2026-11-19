@@ -16,16 +16,37 @@ const columnSchema = z.coerce
   .min(1, 'Cột bắt đầu từ 1')
   .max(IMPORT_MAX_COLUMN, `Cột tối đa là ${IMPORT_MAX_COLUMN}`);
 
+/** Cột không bắt buộc, giá trị rỗng từ form nghĩa là không chọn. */
+const optionalColumnSchema = z.preprocess(
+  (value) => (value === '' || value === null ? undefined : value),
+  columnSchema.optional(),
+);
+
+/** Thứ tự kiểm tra trùng cột, lỗi báo ở cột đứng sau. */
+const DISTINCT_COLUMNS = [
+  ['termColumn', ''],
+  ['definitionColumn', 'Cột nghĩa phải khác cột từ'],
+  ['phoneticColumn', 'Cột phiên âm phải khác cột từ và cột nghĩa'],
+  ['exampleColumn', 'Cột ví dụ phải khác các cột đã chọn'],
+] as const;
+
 export const importOptionsSchema = z
   .object({
     delimiter: importDelimiterSchema.default('auto'),
     hasHeader: z.boolean().default(false),
     termColumn: columnSchema.default(1),
     definitionColumn: columnSchema.default(2),
+    phoneticColumn: optionalColumnSchema,
+    exampleColumn: optionalColumnSchema,
   })
-  .refine((value) => value.termColumn !== value.definitionColumn, {
-    path: ['definitionColumn'],
-    message: 'Cột nghĩa phải khác cột từ',
+  .superRefine((value, context) => {
+    const used = new Set<number>();
+    for (const [key, message] of DISTINCT_COLUMNS) {
+      const column = value[key];
+      if (column === undefined) continue;
+      if (used.has(column)) context.addIssue({ code: 'custom', path: [key], message });
+      used.add(column);
+    }
   });
 export type ImportOptions = z.infer<typeof importOptionsSchema>;
 
@@ -49,6 +70,10 @@ export const importRowSchema = z.object({
   line: z.number(),
   term: z.string(),
   definition: z.string(),
+  /** Chỉ có khi chọn cột phiên âm. */
+  phonetic: z.string().optional(),
+  /** Chỉ có khi chọn cột ví dụ. */
+  example: z.string().optional(),
   errors: z.array(z.string()),
 });
 export type ImportRow = z.infer<typeof importRowSchema>;
