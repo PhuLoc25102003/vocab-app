@@ -97,10 +97,11 @@ function FolderRow({ folder }: { folder: Folder }) {
             className="text-danger"
             loading={remove.isPending}
             onClick={() =>
-              remove.mutate(folder.id, {
-                onSuccess: () => toast.success('Đã xoá thư mục, bộ từ vẫn được giữ'),
-                onError: (error) => toast.error(formErrorMessage(error)),
-              })
+              // Dòng này biến mất khi danh sách tải lại, nên không dùng callback của `mutate`.
+              void remove
+                .mutateAsync(folder.id)
+                .then(() => toast.success('Đã xoá thư mục, bộ từ vẫn được giữ'))
+                .catch((error: unknown) => toast.error(formErrorMessage(error)))
             }
           >
             Xoá thư mục
