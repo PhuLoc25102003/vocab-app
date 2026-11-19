@@ -95,7 +95,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** merge vào `main` tự deploy, đăng nhập và học được trên URL production.
 
-- [x] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy.
+- [x] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy (#153).
 - [ ] **1.19** Deploy API lên Render, cấu hình env (gồm `TRUSTED_PROXIES`) và health check.
 - [ ] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
 
