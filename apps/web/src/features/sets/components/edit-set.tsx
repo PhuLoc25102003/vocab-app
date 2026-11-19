@@ -22,7 +22,7 @@ export function EditSet({ id }: { id: string }) {
   if (set.isPending) {
     return (
       <LoadingState label="Đang tải bộ từ">
-        <div className="flex max-w-[720px] flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-16 w-full" />

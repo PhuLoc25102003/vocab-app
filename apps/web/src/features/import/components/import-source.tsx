@@ -150,7 +150,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   ];
 
   return (
-    <form onSubmit={submit} noValidate className="flex max-w-[720px] flex-col gap-6">
+    <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
       {preview.error ? <FormError>{formErrorMessage(preview.error)}</FormError> : null}
       <section aria-labelledby="template-title" className="flex flex-col gap-2">
         <h2 id="template-title" className="text-h3">

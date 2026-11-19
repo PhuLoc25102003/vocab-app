@@ -104,6 +104,12 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
   test('tạo, sửa rồi tìm thấy bộ từ trong danh sách', async () => {
     await page.goto('/sets/new');
+    // Trang form căn giữa ở màn hình rộng, tiêu đề thẳng hàng với form.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const heading = await page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' }).boundingBox();
+    const form = await page.locator('main form').first().boundingBox();
+    expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
+    expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
     await visibleField(page, 'Tên bộ từ').fill(firstTitle);
     await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
     await page.getByRole('button', { name: 'Thêm thẻ' }).click();

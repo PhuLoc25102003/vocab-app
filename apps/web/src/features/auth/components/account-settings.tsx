@@ -53,7 +53,7 @@ function Section({
   return (
     <section
       aria-labelledby={id}
-      className="flex max-w-[560px] flex-col gap-3 border-t border-border pt-6"
+      className="flex w-full flex-col gap-3 border-t border-border pt-6"
     >
       <div className="flex flex-col gap-1">
         <h2 id={id} className="text-h3">
@@ -308,7 +308,7 @@ export function AccountSettings() {
   if (account.isPending) {
     return (
       <LoadingState label="Đang tải tài khoản">
-        <div className="flex max-w-[560px] flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-32 w-full" />
         </div>

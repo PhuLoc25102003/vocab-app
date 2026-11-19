@@ -95,15 +95,15 @@ Nạp bằng `next/font/google`. Noto Serif đặt `preload: false` vì chỉ c�
 
 ## Spacing, bố cục, bo góc
 
-| Nhóm       | Giá trị                                               | Quy tắc                                                      |
-| ---------- | ----------------------------------------------------- | ------------------------------------------------------------ |
-| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64 px (`1 2 3 4 6 8 12 16`) | Trong component 8 đến 16, giữa các nhóm 24, giữa các mục 48  |
-| Lề trang   | 16 px mobile, 24 px từ `md`, 32 px từ `lg`            | Không để nội dung chạm mép                                   |
-| Độ rộng    | App 1120 px, vùng học và form 720 px, đoạn văn 65ch   | Căn trái, chỉ nội dung flashcard căn giữa                    |
-| Breakpoint | `sm` 640, `md` 768, `lg` 1024, `xl` 1280              | Thiết kế từ 360 px trở lên                                   |
-| Bo góc     | `sm` 4, `md` 8, `lg` 16, `full`                       | Tag `sm`; nút, input, panel `md`; chỉ flashcard, dialog `lg` |
-| Đổ bóng    | `shadow-raised`                                       | Chỉ flashcard và dialog                                      |
-| Vùng bấm   | Tối thiểu 44 × 44 px                                  | Nút thường `min-h-11`, đáp án `min-h-12`                     |
+| Nhóm       | Giá trị                                               | Quy tắc                                                                                                               |
+| ---------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64 px (`1 2 3 4 6 8 12 16`) | Trong component 8 đến 16, giữa các nhóm 24, giữa các mục 48                                                           |
+| Lề trang   | 16 px mobile, 24 px từ `md`, 32 px từ `lg`            | Không để nội dung chạm mép                                                                                            |
+| Độ rộng    | App 1120 px, vùng học và form 720 px, đoạn văn 65ch   | Trang form dùng `PageContainer width="narrow"`: khối 720 px căn giữa gồm cả tiêu đề; trang danh sách dùng hết 1120 px |
+| Breakpoint | `sm` 640, `md` 768, `lg` 1024, `xl` 1280              | Thiết kế từ 360 px trở lên                                                                                            |
+| Bo góc     | `sm` 4, `md` 8, `lg` 16, `full`                       | Tag `sm`; nút, input, panel `md`; chỉ flashcard, dialog `lg`                                                          |
+| Đổ bóng    | `shadow-raised`                                       | Chỉ flashcard và dialog                                                                                               |
+| Vùng bấm   | Tối thiểu 44 × 44 px                                  | Nút thường `min-h-11`, đáp án `min-h-12`                                                                              |
 
 ## Chuyển động
 
