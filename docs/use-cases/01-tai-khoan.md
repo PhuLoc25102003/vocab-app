@@ -52,15 +52,14 @@
 
 ## UC-A5. Đăng xuất
 
-- **Việc:** 1.2, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-04).
+- **Việc:** 1.2, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** nút đăng xuất ở thanh trên, nút đăng xuất mọi thiết bị trong trang tài khoản, xoá dữ liệu đã cache của người dùng.
 - **Luồng chính:** bấm đăng xuất, API thu hồi phiên, web xoá token và về `/login`.
 - **Ngoại lệ:**
   - API lỗi: phiên ở trình duyệt vẫn được xoá.
   - Đăng xuất mọi thiết bị: tăng `tokenVersion`, thiết bị khác bị từ chối ở request kế tiếp.
 - **Test đã có:** `auth-session.integration`, E2E đăng xuất.
-- **Test cần thêm:** component cho nút đăng xuất mọi thiết bị; E2E tài khoản khác đăng nhập trên cùng trình duyệt không thấy dữ liệu cũ.
-- **Còn thiếu:** API `POST /auth/logout-all` đã có nhưng web chưa gọi.
+- **Test cần thêm:** E2E tài khoản khác đăng nhập trên cùng trình duyệt không thấy dữ liệu cũ.
 
 ## UC-A6. Bảo vệ trang và phân quyền
 
@@ -76,7 +75,7 @@
 
 ## UC-A7. Xem và sửa tài khoản
 
-- **Việc:** 1.4, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-04).
+- **Việc:** 1.4, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:**
   - Trang `/account`, lối vào từ thanh trên, ở 360 px vẫn bấm được.
   - Hiện email, vai trò, tên hiển thị.
@@ -87,20 +86,19 @@
   - Sai mật khẩu hiện tại: báo lỗi ở đúng ô.
   - Quá 5 lần mỗi phút: 429.
   - Không tải được thông tin: trạng thái lỗi có nút thử lại.
-- **Test đã có:** `users.integration` cho API.
-- **Test cần thêm:** component cho bốn trạng thái và hai form; E2E đổi mật khẩu, đăng xuất, đăng nhập bằng mật khẩu mới, mật khẩu cũ bị từ chối.
+- **Test đã có:** `users.integration`, `account-settings.test`, E2E đổi tên, đổi mật khẩu rồi đăng nhập lại.
 
 ## UC-A8. Xoá tài khoản
 
-- **Việc:** 1.4, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-04).
+- **Việc:** 1.4, 1.40. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** vùng nguy hiểm trong `/account`, nêu rõ dữ liệu bị xoá, bước xác nhận, nhập mật khẩu nếu tài khoản có mật khẩu.
-- **Luồng chính:** xác nhận, API xoá hẳn tài khoản, bộ từ, tiến độ, xoá cookie, web về trang chủ và báo đã xoá.
+- **Luồng chính:** xác nhận, API xoá hẳn tài khoản, bộ từ, tiến độ, xoá cookie, web về trang đăng nhập và báo đã xoá.
 - **Ngoại lệ:**
   - Sai mật khẩu: giữ nguyên tài khoản, báo lỗi.
   - Huỷ xác nhận: không gọi API, trả focus về nút ban đầu.
   - Người khác đang học bộ từ công khai của tài khoản này: phiên của họ báo bộ từ không còn.
-- **Test đã có:** `users.integration`.
-- **Test cần thêm:** component xác nhận; E2E xoá xong không đăng nhập lại được và bộ công khai trả 404.
+- **Test đã có:** `users.integration`, `account-settings.test`, E2E xoá xong không đăng nhập lại được.
+- **Test cần thêm:** E2E bộ công khai của tài khoản đã xoá trả 404.
 
 ## UC-A9. Quên mật khẩu
 

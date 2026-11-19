@@ -151,8 +151,25 @@ test.describe.serial('luồng chính', () => {
     await guest.close();
   });
 
+  test('đổi tên và mật khẩu ở trang tài khoản', async () => {
+    await page.goto('/dashboard');
+    await page.getByRole('link', { name: 'Tài khoản' }).click();
+    await page.waitForURL('**/account');
+    await expect(page.getByText(account.email)).toBeVisible();
+
+    await page.getByLabel('Tên hiển thị').fill('Tên mới E2E');
+    await page.getByRole('button', { name: 'Lưu tên' }).click();
+    await expect(page.getByText('Đã lưu tên hiển thị')).toBeVisible();
+
+    await page.getByLabel('Mật khẩu hiện tại', { exact: true }).fill(account.password);
+    account.password = 'mat-khau-moi-e2e-456';
+    await page.getByLabel('Mật khẩu mới', { exact: true }).fill(account.password);
+    await page.getByRole('button', { name: 'Đổi mật khẩu' }).click();
+    await expect(page.getByText(/^Đã đổi mật khẩu/)).toBeVisible();
+  });
+
   test('đăng xuất, bị chặn ở trang riêng, đăng nhập lại đúng trang', async () => {
-    await page.getByRole('button', { name: 'Đăng xuất' }).click();
+    await page.getByRole('button', { name: 'Đăng xuất', exact: true }).click();
     await page.waitForURL((url) => !url.pathname.startsWith('/dashboard'));
 
     await page.goto(setPath);
@@ -161,5 +178,16 @@ test.describe.serial('luồng chính', () => {
 
     await page.waitForURL(`**${setPath}`);
     await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
+  });
+
+  test('xoá tài khoản rồi không đăng nhập lại được', async () => {
+    await page.goto('/account');
+    await page.getByRole('button', { name: 'Xoá tài khoản' }).click();
+    await page.getByLabel('Nhập mật khẩu để xác nhận', { exact: true }).fill(account.password);
+    await page.getByRole('button', { name: 'Xoá vĩnh viễn' }).click();
+    await page.waitForURL('**/login');
+
+    await logIn(page);
+    await expect(page.getByRole('alert').filter({ hasText: 'không đúng' })).toBeVisible();
   });
 });
