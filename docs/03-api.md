@@ -94,7 +94,8 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PATCH` và `DELETE /sets/:id` dành cho chủ hoặc ADMIN. `DELETE` là xoá mềm, trả 204.
 - `PUT /sets/:id/cards` dành cho chủ hoặc ADMIN, nhận `{ cards }` là toàn bộ danh sách theo thứ tự mới, tối đa 2.000 thẻ, body tối đa 5 MB. Thẻ có `id` được giữ và cập nhật, thẻ không có `id` được tạo mới, thẻ đang có mà không gửi lên bị xoá cùng tiến độ học của thẻ đó. `phonetic`, `example` không gửi lên sẽ bị xoá. Trả 200 kèm bộ từ và `cards`. `id` không thuộc bộ từ trả 422 `CARD_NOT_IN_SET` và không đổi gì.
 - `POST /sets/:id/duplicate` sao chép bộ từ người gọi xem được về tài khoản của họ, trả 201 kèm thông tin bộ mới. Bản sao có tên thêm ` (bản sao)`, luôn `PRIVATE`, gồm toàn bộ thẻ với `id` mới, không kèm thư mục và tiến độ học. Bộ không xem được trả 404.
-- `folderId` trên bộ từ sẽ được nhận ở phần 2 của việc 2.4.
+- `PATCH /sets/:id` nhận thêm `folderId`: id thư mục của chủ bộ từ, hoặc `null` để đưa ra khỏi thư mục. Thư mục không tồn tại hoặc của người khác trả 404 `FOLDER_NOT_FOUND`, kể cả khi ADMIN sửa thay. `GET /sets` nhận `folderId` là id thư mục hoặc `none` (bộ chưa vào thư mục nào).
+- `folderId` chỉ có trong dữ liệu trả cho chủ bộ từ, không có ở `GET /sets/public` và `GET /sets/:id` khi người khác xem.
 
 ## Thư mục
 
