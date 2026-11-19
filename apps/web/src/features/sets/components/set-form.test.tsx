@@ -9,9 +9,9 @@ import { createSet, getSet, replaceCards, updateSet } from '../api';
 import { CreateSet } from './create-set';
 import { EditSet } from './edit-set';
 
-const navigation = vi.hoisted(() => ({ push: vi.fn() }));
+const navigation = vi.hoisted(() => ({ replace: vi.fn() }));
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: navigation.push }) }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: navigation.replace }) }));
 vi.mock('../api');
 
 const summary: SetSummary = {
@@ -54,7 +54,7 @@ describe('CreateSet', () => {
     await userEvent.selectOptions(screen.getByLabelText('Ai xem được'), 'PUBLIC');
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
+    await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/s1'));
     expect(vi.mocked(createSet).mock.calls[0]?.[0]).toEqual({
       title: 'Trái cây',
       description: undefined,
@@ -94,7 +94,7 @@ describe('CreateSet', () => {
     await save();
 
     expect(await screen.findByText('Tên đã bị từ chối')).toBeInTheDocument();
-    expect(navigation.push).not.toHaveBeenCalled();
+    expect(navigation.replace).not.toHaveBeenCalled();
   });
 });
 
@@ -111,7 +111,7 @@ describe('EditSet', () => {
     await save();
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Bạn không có quyền');
-    expect(navigation.push).not.toHaveBeenCalled();
+    expect(navigation.replace).not.toHaveBeenCalled();
   });
 
   it('hiện trạng thái đang tải', () => {
@@ -132,7 +132,7 @@ describe('EditSet', () => {
     await userEvent.clear(description);
     await save();
 
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets/s1'));
+    await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/s1'));
     expect(updateSet).toHaveBeenCalledWith('s1', {
       title: 'Trái cây',
       description: null,

@@ -48,7 +48,8 @@ export function EditSet({ id }: { id: string }) {
       cards: nextCards,
     });
     toast.success('Đã lưu bộ từ');
-    router.push(detailHref);
+    // Thay mục lịch sử để nút quay lại của trình duyệt không về form đã lưu.
+    router.replace(detailHref);
   };
 
   return (

@@ -65,7 +65,9 @@ test.describe.serial('luồng chính', () => {
     await logIn(page);
     await page.waitForURL('**/dashboard');
 
-    await page.goto('/sets/new');
+    await page.goto('/sets');
+    await page.getByRole('link', { name: 'Tạo bộ từ' }).filter({ visible: true }).first().click();
+    await page.waitForURL('**/sets/new');
     await page.getByLabel('Tên bộ từ').fill(setTitle);
     await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
     for (const [index, { term, definition }] of cards.entries()) {
@@ -76,6 +78,12 @@ test.describe.serial('luồng chính', () => {
 
     await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
     setPath = new URL(page.url()).pathname;
+
+    // Đã lưu thì nút quay lại của trình duyệt không mở lại form.
+    await page.goBack();
+    await page.waitForURL('**/sets');
+    await page.goForward();
+    await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
   });
 
   test('học chế độ Viết, xem kết quả và thống kê', async () => {
