@@ -76,6 +76,24 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
           speak: ({ text }: SpeechSynthesisUtterance) => spoken.push(text),
         },
       });
+      // Bộ nhận dạng giả: "nghe" đúng từ đang hiện trên trang.
+      class FakeRecognition {
+        lang = '';
+        maxAlternatives = 1;
+        interimResults = false;
+        onresult: ((event: { results: { transcript: string }[][] }) => void) | null = null;
+        onerror: ((event: { error: string }) => void) | null = null;
+        onend: (() => void) | null = null;
+        start() {
+          const transcript = document.querySelector('h1')?.textContent ?? '';
+          setTimeout(() => this.onresult?.({ results: [[{ transcript }]] }), 50);
+        }
+        abort() {}
+      }
+      Object.assign(window, {
+        SpeechRecognition: FakeRecognition,
+        webkitSpeechRecognition: FakeRecognition,
+      });
     });
     await signUp(page, 'Chủ bộ từ', `e2e-owner-${stamp}@example.com`);
   });
@@ -194,6 +212,17 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     }
     await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
     await page.getByRole('button', { name: 'Nộp bài' }).click();
+    await expectScore(page, cards.length);
+  });
+
+  test('luyện nói từng từ với bộ nhận dạng giả', async () => {
+    await page.goto(`${setPath}/study/speak`);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      await page.getByRole('button', { name: 'Bấm để nói' }).click();
+      await expect(page.getByRole('status').getByText(/Chính xác/)).toBeVisible();
+      await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+    }
     await expectScore(page, cards.length);
   });
 
@@ -329,6 +358,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       `${setPath}/study/learn`,
       `${setPath}/study/write`,
       `${setPath}/study/test`,
+      `${setPath}/study/speak`,
       `${setPath}/study/dictation`,
       `${setPath}/study/mcq`,
       `${setPath}/study/cloze`,

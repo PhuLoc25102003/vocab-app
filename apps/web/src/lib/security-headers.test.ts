@@ -66,6 +66,13 @@ describe('buildSecurityHeaders', () => {
     );
   });
 
+  it('chỉ cho chính trang dùng micro, chặn camera và vị trí', () => {
+    const policy = buildSecurityHeaders({ isDev: false }).find(
+      ({ key }) => key === 'Permissions-Policy',
+    );
+    expect(policy?.value).toBe('camera=(), microphone=(self), geolocation=()');
+  });
+
   it('chỉ bật HSTS ở production', () => {
     expect(keys(false)).toContain('Strict-Transport-Security');
     expect(keys(true)).not.toContain('Strict-Transport-Security');

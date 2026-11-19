@@ -73,7 +73,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 
 ### UC-O1. Luyện nói
 
-- **Việc:** 4.1, 4.4. **Người dùng:** người học. **Trạng thái:** Đã có enum `SPEAK`, strategy và API (4.1, `speak.test`, integration). Còn giao diện, quyền micro và E2E (4.4).
+- **Việc:** 4.1, 4.4. **Người dùng:** người học. **Trạng thái:** Đã có enum `SPEAK`, strategy và API (4.1, `speak.test`, integration). Giao diện (4.4): bấm nói thì trình duyệt xin micro, hiện câu nghe được và đúng sai, thử lại chỉ để luyện (điểm theo lần đầu), bỏ qua gửi rỗng; báo khi từ chối micro, không nghe thấy, trình duyệt không hỗ trợ. `Permissions-Policy` cho `microphone=(self)`. Test: `speak-mode.test`, E2E với bộ nhận dạng giả, audit.
 - **Phải có:** xin quyền micro khi bắt đầu, ghi nhận và so với từ đích, cho thử lại và bỏ qua.
 - **Ngoại lệ:** từ chối micro; trình duyệt không hỗ trợ; môi trường ồn. `Permissions-Policy` và CSP phải được nới đúng phạm vi.
 - **Cách test:** unit so khớp; E2E với bộ nhận dạng giả; thủ công trên điện thoại.

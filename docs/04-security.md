@@ -99,6 +99,8 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 `script-src` có `'unsafe-inline'` vì app dùng prerender một phần, phần tĩnh không nhận được nonce theo request. CSP vì vậy không chặn được script nội tuyến nếu có lỗi XSS, nên React escape và lệnh cấm `dangerouslySetInnerHTML` vẫn là lớp bảo vệ chính. Môi trường dev có thêm `'unsafe-eval'` và `ws:`.
 
+`Permissions-Policy` cho `microphone=(self)` để chế độ Luyện nói dùng micro của chính trang; camera và vị trí vẫn bị chặn. Chrome gửi âm thanh nhận dạng tới dịch vụ của Google, app không lưu âm thanh, chỉ gửi câu nhận dạng được lên API.
+
 `worker-src 'self' blob:` cho phép `read-excel-file` đọc file Excel trong worker tạo từ `blob:` (ADR 0002).
 
 ## Đã điều chỉnh so với spec gốc

@@ -39,7 +39,8 @@ export function buildSecurityHeaders(options: SecurityHeaderOptions) {
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'X-Frame-Options', value: 'DENY' },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-    { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+    // Chế độ Luyện nói cần micro của chính trang, không cho iframe hay trang khác.
+    { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=()' },
     // Popup đăng nhập Google cần giữ liên lạc với trang mở nó.
     { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
   ];
