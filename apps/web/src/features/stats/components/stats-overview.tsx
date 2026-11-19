@@ -90,7 +90,12 @@ export function StatsOverview() {
             key={label}
             className="flex flex-col-reverse gap-1 rounded-md border border-border bg-surface p-4"
           >
-            <dt className="text-small text-text-muted">{label}</dt>
+            <dt className="text-small text-text-muted">
+              {label}
+              {label === 'Từ đã thuộc' ? (
+                <span className="block text-tiny">Đúng ở hai ngày khác nhau</span>
+              ) : null}
+            </dt>
             <dd className="text-h1 tabular-nums">{value}</dd>
           </div>
         ))}

@@ -11,7 +11,7 @@ vi.mock('../api');
 const list = (dueCards: number) => ({
   data: dueCards ? [{ setId: 's1', title: 'Trái cây', dueCount: dueCards }] : [],
   meta: { page: 1, limit: 20, total: dueCards ? 1 : 0 },
-  summary: { dueCards },
+  summary: { dueCards, nextDueAt: null },
 });
 
 function renderDue() {
@@ -54,6 +54,18 @@ describe('DueSets', () => {
     renderDue();
 
     expect(await screen.findByText('Hôm nay chưa có từ cần ôn')).toBeInTheDocument();
+  });
+
+  it('báo thẻ tiếp theo đến hạn và giải thích lịch ôn', async () => {
+    vi.mocked(listDueSets).mockResolvedValue({
+      ...list(0),
+      summary: { dueCards: 0, nextDueAt: new Date('2026-11-21T02:30:00Z') },
+    });
+    renderDue();
+
+    expect(await screen.findByText(/^Thẻ tiếp theo đến hạn lúc/)).toBeInTheDocument();
+    expect(screen.getByText('Khi nào thẻ đến hạn ôn?')).toBeInTheDocument();
+    expect(screen.getByText(/giãn ra 6 ngày/)).toBeInTheDocument();
   });
 
   it('cho thử lại khi lỗi', async () => {

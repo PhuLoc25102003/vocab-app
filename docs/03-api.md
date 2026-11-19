@@ -124,7 +124,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PATCH /study/sessions/:id/finish` trả 200 `{ data: { session, wrongCardIds } }`. `total` là số thẻ đã trả lời, `correct` và `wrongCardIds` tính theo lần trả lời đầu của mỗi thẻ. Gọi lại không đổi kết quả.
 - Hai route theo `:id` chỉ dành cho chủ phiên, kể cả ADMIN cũng không gọi thay được.
 
-- `GET /review/due` nhận `page`, `limit`, trả các bộ từ có thẻ đến hạn tại thời điểm gọi: `{ data: [{ setId, title, dueCount }], meta, summary: { dueCards } }`, xếp theo tên. Chỉ tính bộ từ người gọi còn xem được.
+- `GET /review/due` nhận `page`, `limit`, trả các bộ từ có thẻ đến hạn tại thời điểm gọi: `{ data: [{ setId, title, dueCount }], meta, summary: { dueCards, nextDueAt } }`, `nextDueAt` là lần đến hạn sớm nhất sau thời điểm gọi hoặc `null`, xếp theo tên. Chỉ tính bộ từ người gọi còn xem được.
 
 ## Quản trị người dùng
 

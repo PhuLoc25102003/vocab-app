@@ -77,7 +77,8 @@ describe('review due', () => {
 
     expect(body.data).toEqual([{ setId, title: 'Trái cây', dueCount: 1 }]);
     expect(body.meta).toMatchObject({ page: 1, total: 1 });
-    expect(body.summary).toEqual({ dueCards: 1 });
+    // Thẻ của người khác không được tính vào lần đến hạn tiếp theo.
+    expect(body.summary).toEqual({ dueCards: 1, nextDueAt: FUTURE.toISOString() });
   });
 
   it('bỏ qua bộ từ đã xoá hoặc không còn xem được', async () => {
@@ -85,7 +86,7 @@ describe('review due', () => {
 
     const hidden = await listDue(other.token).expect(200);
     expect(hidden.body.data).toEqual([]);
-    expect(hidden.body.summary).toEqual({ dueCards: 0 });
+    expect(hidden.body.summary).toEqual({ dueCards: 0, nextDueAt: null });
 
     await setDue(owner.id, cardIds[0]!, PAST);
     await prisma.studySet.update({ where: { id: setId }, data: { deletedAt: new Date() } });

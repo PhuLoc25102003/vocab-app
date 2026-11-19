@@ -105,13 +105,17 @@ export class StudyService {
   }
 
   async listDueSets(viewer: SetViewer, query: Pagination) {
-    const [sets, total, dueCards] = await this.study.findDueSets(viewer, query, new Date());
+    const now = new Date();
+    const [[sets, total, dueCards], nextDueAt] = await Promise.all([
+      this.study.findDueSets(viewer, query, now),
+      this.study.findNextDue(viewer, now),
+    ]);
     const items = sets.map(({ id, title, _count }) => ({
       setId: id,
       title,
       dueCount: _count.cards,
     }));
-    return { ...paginated(items, total, query), summary: { dueCards } };
+    return { ...paginated(items, total, query), summary: { dueCards, nextDueAt } };
   }
 
   async submitAnswers(id: string, viewer: SetViewer, { answers }: SubmitAnswersDto) {

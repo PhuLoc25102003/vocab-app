@@ -92,6 +92,10 @@ export type SessionResult = z.infer<typeof finishSessionResponseSchema>['data'];
 export const dueSetListSchema = z.object({
   data: z.array(z.object({ setId: z.string(), title: z.string(), dueCount: z.number() })),
   meta: paginationMetaSchema,
-  summary: z.object({ dueCards: z.number() }),
+  summary: z.object({
+    dueCards: z.number(),
+    /** Thẻ tiếp theo đến hạn lúc nào, `null` khi chưa có thẻ nào đã học. */
+    nextDueAt: z.coerce.date().nullable().default(null),
+  }),
 });
 export type DueSetList = z.infer<typeof dueSetListSchema>;
