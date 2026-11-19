@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
+import { buildXlsx } from '@/test/build-xlsx';
 import { previewImport } from '../api';
 import { ImportSource } from './import-source';
 
@@ -103,6 +104,20 @@ describe('ImportSource', () => {
     expect(screen.getByText('Đã đọc tu.txt')).toBeInTheDocument();
   });
 
+  it('đọc file Excel vào ô nội dung và chọn tab làm ký tự phân cách', async () => {
+    renderSource();
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    const workbook = buildXlsx([[['apple', 'quả táo']]]);
+
+    await userEvent.upload(input!, new File([workbook as BlobPart], 'tu.xlsx', { type: '' }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Dán danh sách từ')).toHaveValue('apple	quả táo'),
+    );
+    expect(screen.getByLabelText('Ký tự phân cách')).toHaveValue('tab');
+    expect(screen.getByText('Đã đọc tu.xlsx')).toBeInTheDocument();
+  });
+
   it('báo lỗi file Excel và lỗi từ máy chủ', async () => {
     vi.mocked(previewImport).mockRejectedValue(
       new HttpError('Mỗi lần nhập tối đa 2000 dòng', 422, 'IMPORT_TOO_MANY_ROWS'),
@@ -113,7 +128,7 @@ describe('ImportSource', () => {
     await userEvent.upload(input!, new File(['x'], 'tu.xlsx', { type: '' }), {
       applyAccept: false,
     });
-    expect(await screen.findByText(/Chưa đọc được file Excel/)).toBeInTheDocument();
+    expect(await screen.findByText(/File Excel bị hỏng/)).toBeInTheDocument();
 
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a\tb');
     await userEvent.click(previewButton());

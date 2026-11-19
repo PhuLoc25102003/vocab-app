@@ -110,7 +110,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /sets/:id/import` dành cho chủ hoặc ADMIN, nhận `{ cards }` gồm 1 đến 2.000 thẻ đã xem trước, body tối đa 5 MB. Thẻ được thêm vào cuối bộ từ trong một transaction, trả 201 `{ data: { ...bộ từ, imported } }`. Tổng số thẻ sau khi nhập vượt 2.000 trả 422 `SET_CARD_LIMIT` kèm `details: { max, current, adding }` và không lưu gì. Nhập vào bộ mới dùng `POST /sets` kèm `cards`.
 - Logic đọc nằm ở `parseImport` trong `@vocab/shared`: bỏ BOM, đọc ô CSV có ngoặc kép, công thức trong text và CSV giữ nguyên dạng văn bản.
 - `options` nhận thêm `phoneticColumn` và `exampleColumn` (đếm từ 1, không bắt buộc, chuỗi rỗng coi như không chọn). Mọi cột được chọn phải khác nhau, nếu không trả 400 `VALIDATION_ERROR`. Khi chọn cột, mỗi phần tử trong `rows` có thêm `phonetic` hoặc `example`, ô trống là chuỗi rỗng và không phải lỗi. Không chọn thì dòng không có hai trường này. Giới hạn độ dài theo `cardInputSchema`.
-- Dự kiến ở việc 1.51, API không đổi: web đọc file XLSX bằng `read-excel-file`, chuyển sheet đầu tiên thành text ngăn bằng tab rồi gửi `content` với `delimiter: 'tab'` (ADR 0002).
+- File `.xlsx` không gửi lên API: web đọc bằng `read-excel-file`, chuyển sheet đầu tiên thành text ngăn bằng tab rồi gửi `content`, form tự chọn `delimiter: 'tab'` (ADR 0002).
 
 ## Phiên học
 

@@ -35,6 +35,7 @@ describe('buildContentSecurityPolicy', () => {
 
     expect(policy).toContain("frame-ancestors 'none'");
     expect(policy).toContain("object-src 'none'");
+    expect(directive(policy, 'worker-src')).toBe("worker-src 'self' blob:");
     expect(policy).toContain("base-uri 'self'");
   });
 

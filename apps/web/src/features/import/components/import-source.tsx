@@ -76,8 +76,11 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
       return;
     }
     try {
-      const text = await readImportFile(file);
+      const { text, delimiter } = await readImportFile(file);
       setValue('content', text, { shouldDirty: true, shouldValidate: true });
+      if (delimiter) {
+        setValue('options.delimiter', delimiter, { shouldDirty: true });
+      }
       setFileName(file.name);
       setFileError(null);
     } catch (error) {
@@ -129,15 +132,15 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
             accept={IMPORT_FILE_ACCEPT}
             className="sr-only"
             tabIndex={-1}
-            aria-label="Chọn file .txt hoặc .csv"
+            aria-label="Chọn file .txt, .csv hoặc .xlsx"
             onChange={(event) => void chooseFile(event)}
           />
           <Button type="button" variant="secondary" onClick={() => fileInput.current?.click()}>
             <FileUp aria-hidden className="size-4" />
-            Chọn file .txt hoặc .csv
+            Chọn file .txt, .csv hoặc .xlsx
           </Button>
           <p className="text-small text-text-muted wrap-anywhere" aria-live="polite">
-            {fileName ? `Đã đọc ${fileName}` : 'Tối đa 2 MB, mã hoá UTF-8.'}
+            {fileName ? `Đã đọc ${fileName}` : 'Tối đa 2 MB. File Excel chỉ đọc sheet đầu tiên.'}
           </p>
         </div>
         {fileError ? <FormError>{fileError}</FormError> : null}

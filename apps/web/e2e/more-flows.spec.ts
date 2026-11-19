@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
+import { buildXlsx } from '../src/test/build-xlsx';
 import { AUDIT_VIEWS, auditFocus, auditPage, applyAuditView } from './audit';
 
 const stamp = Date.now();
@@ -195,10 +196,19 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(page.getByText('con chim, chim')).toBeVisible();
     const importPath = new URL(page.url()).pathname;
 
+    // File Excel đi qua worker `blob:`, nên bước này kiểm tra luôn CSP của bản production.
     await page.getByRole('link', { name: 'Nhập thêm thẻ' }).click();
     await expect(page.getByText(/bộ đang có 2 thẻ/)).toBeVisible();
-    await page.getByLabel('Dán danh sách từ').fill('tiger - con hổ');
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'tu-them.xlsx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer: Buffer.from(buildXlsx([[['tiger', 'con hổ', '/ˈtaɪ.ɡər/']]])),
+    });
+    await expect(page.getByText('Đã đọc tu-them.xlsx')).toBeVisible();
+    await expect(page.getByLabel('Ký tự phân cách')).toHaveValue('tab');
+    await page.getByLabel('Cột phiên âm (không bắt buộc)').selectOption('3');
     await page.getByRole('button', { name: 'Xem trước' }).click();
+    await expect(page.getByLabel('Phiên âm')).toHaveValue('/ˈtaɪ.ɡər/');
     await page.getByRole('button', { name: 'Lưu 1 thẻ' }).click();
     await page.waitForURL(`**${importPath}`);
     await expect(page.getByText('con hổ')).toBeVisible();
