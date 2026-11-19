@@ -121,9 +121,9 @@ Có file `.env.example` (không có giá trị thật) ở gốc và trong mỗi
 
 ## Hiện trạng công cụ
 
-| Có                                                                                                                                                                                                                                   | Chưa có                         |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions, Vitest, Testing Library, Supertest, Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot | Playwright test, `constants.ts` |
+| Có                                                                                                                                                                                                                                               | Chưa có        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| TypeScript strict, ESLint dùng chung, Prettier, `lint` và `typecheck` qua Turbo, `.env.example` cho từng app, CI bằng GitHub Actions, Vitest, Testing Library, Supertest, Playwright, Husky, lint-staged, `eslint-plugin-boundaries`, Dependabot | `constants.ts` |
 
 ## Lệnh Prisma
 
