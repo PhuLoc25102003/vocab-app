@@ -30,6 +30,26 @@ describe('phiên đăng nhập', () => {
     expect(document.cookie).toContain('vocab_session=1');
   });
 
+  it('refresh cũ trả 401 không xoá phiên vừa đăng nhập trong lúc chờ', async () => {
+    let fail: (error: unknown) => void = () => undefined;
+    vi.mocked(authApi.refresh).mockReturnValue(
+      new Promise((_, reject) => {
+        fail = reject;
+      }),
+    );
+
+    const pending = refreshSession();
+    startSession({ ...session, accessToken: 'new-token' });
+    fail(invalid);
+
+    await expect(pending).resolves.toBe('new-token');
+    expect(useAuthStore.getState()).toMatchObject({
+      status: 'authenticated',
+      accessToken: 'new-token',
+    });
+    expect(document.cookie).toContain('vocab_session=');
+  });
+
   it('các lời gọi đồng thời chỉ refresh một lần', async () => {
     vi.mocked(authApi.refresh).mockResolvedValue(session);
 
