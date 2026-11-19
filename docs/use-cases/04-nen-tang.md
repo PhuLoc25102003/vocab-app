@@ -56,11 +56,10 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P6. Bảo mật
 
-- **Việc:** 1.32, 1.48. **Người dùng:** toàn hệ thống. **Trạng thái:** Thiếu (GAP-12).
-- **Phải có:** CSP và header bảo mật, checklist trong `docs/04-security.md`, giới hạn 100 request mỗi phút cho mỗi người dùng, khách tính theo IP.
+- **Việc:** 1.32, 1.48. **Người dùng:** toàn hệ thống. **Trạng thái:** Đủ.
+- **Phải có:** CSP và header bảo mật, checklist trong `docs/04-security.md`, giới hạn 100 request mỗi phút cho mỗi người dùng, 300 cho mỗi IP của khách.
 - **Ngoại lệ:** vượt giới hạn trả 429 đúng định dạng lỗi; `/health` không bị giới hạn; học nhanh theo lô không bị chặn nhầm.
-- **Test đã có:** `security-headers.test`, kiểm tra CSP trên trình duyệt.
-- **Test cần thêm:** integration vượt giới hạn, hai người dùng không ảnh hưởng nhau, IP lấy đúng sau proxy.
+- **Test đã có:** `security-headers.test`, `rate-limit.integration`, kiểm tra CSP trên trình duyệt.
 
 ## UC-P7. Test đầu cuối
 

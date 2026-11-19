@@ -16,11 +16,13 @@ import {
   REFRESH_LIMIT_PER_IP,
   REGISTER_LIMIT_PER_IP,
 } from './auth-throttler.guard';
+import { SkipApiRateLimit } from '../../common/decorators/skip-api-rate-limit.decorator';
 import { AuthService } from './auth.service';
 import { RefreshCookie, sessionClientOf } from './refresh-cookie';
 
 @ApiTags('auth')
 @Controller('auth')
+@SkipApiRateLimit()
 @UseGuards(AuthThrottlerGuard)
 export class AuthController {
   constructor(
