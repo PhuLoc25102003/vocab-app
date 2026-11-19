@@ -7,13 +7,12 @@ import type { ReactNode } from 'react';
 import { CopyLinkButton } from '@/components/common/copy-link-button';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
-import { Button } from '@/components/ui/button';
 import { useSet } from '../hooks/use-set';
-import { STUDY_ENTRIES } from '../labels';
 import { CardList } from './card-list';
 import { SetDetailSkeleton } from './set-detail-skeleton';
 import { SetLoadFailure } from './set-load-failure';
 import { SetMeta } from './set-meta';
+import { StudyModeGrid } from './study-mode-grid';
 
 interface SetDetailProps {
   id: string;
@@ -75,13 +74,7 @@ export function SetDetail({
       {cards.length > 0 ? (
         <>
           {renderProgress?.(set.data)}
-          <div className="flex flex-wrap gap-2">
-            {STUDY_ENTRIES.map(({ slug, label }, index) => (
-              <Button key={slug} asChild variant={index === 0 ? 'primary' : 'secondary'}>
-                <Link href={`/sets/${id}/study/${slug}` as Route}>{label}</Link>
-              </Button>
-            ))}
-          </div>
+          <StudyModeGrid setId={id} />
           <CardList cards={cards} termLang={termLang} defLang={defLang} />
         </>
       ) : (
