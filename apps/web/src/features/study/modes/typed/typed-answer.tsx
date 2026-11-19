@@ -96,13 +96,13 @@ export function TypedAnswer({
 
       <div role="status">
         {result?.isCorrect ? (
-          <p className="flex items-center gap-2 rounded-md bg-success-soft p-3 text-success">
+          <p className="feedback-correct flex items-center gap-2 rounded-md bg-success-soft p-3 text-success">
             <Check aria-hidden className="size-5 shrink-0" />
             Chính xác
           </p>
         ) : null}
         {result && !result.isCorrect ? (
-          <div className="flex flex-col gap-2 rounded-md bg-danger-soft p-3">
+          <div className="feedback-wrong flex flex-col gap-2 rounded-md bg-danger-soft p-3">
             <p className="flex items-center gap-2 text-danger">
               <X aria-hidden className="size-5 shrink-0" />
               Chưa đúng

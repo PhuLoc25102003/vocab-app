@@ -215,3 +215,45 @@
     color: var(--primary);
   }
 }
+
+/* Phản hồi đúng sai: nảy nhẹ khi đúng, rung ngang khi sai. Tắt khi người dùng giảm chuyển động. */
+@keyframes feedback-pop {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes feedback-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@layer components {
+  .feedback-correct {
+    animation: feedback-pop 200ms var(--ease-standard, ease-out);
+  }
+
+  .feedback-wrong {
+    animation: feedback-shake 240ms var(--ease-standard, ease-out);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-correct,
+  .feedback-wrong {
+    animation: none;
+  }
+}
