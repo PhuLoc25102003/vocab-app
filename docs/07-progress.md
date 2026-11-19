@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Chế độ Learn (việc 2.7).
-2. Chế độ Kiểm tra (việc 2.10).
+1. Chế độ Learn (việc 2.7), cần chốt cách thẻ sai quay lại trong phiên.
+2. Quản trị người dùng (việc 2.11).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     44 |     51 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     45 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **57** | **87** | **66%**      |
+| **Toàn dự án**          |                                            | **58** | **87** | **67%**      |
 
 ## Cách cập nhật
 
@@ -161,7 +161,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ### 2B. Nội dung
 
-- [ ] **2.4** Thư mục bộ từ trên API và web.
+- [x] **2.4** Thư mục bộ từ trên API và web.
 - [ ] **2.5** Ảnh cho thẻ từ: R2 và `POST /uploads/presign`.
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2.
 

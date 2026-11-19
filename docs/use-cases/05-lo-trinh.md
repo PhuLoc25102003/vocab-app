@@ -12,10 +12,11 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 
 ### UC-X2. Thư mục bộ từ
 
-- **Việc:** 2.4. **Người dùng:** người đã đăng nhập.
+- **Việc:** 2.4. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tạo, đổi tên, xoá thư mục; chuyển bộ từ vào thư mục; lọc danh sách theo thư mục.
 - **Ngoại lệ:** xoá thư mục không xoá bộ từ; tên trùng; không dùng được thư mục của người khác.
-- **Cách test:** integration quyền sở hữu; component lọc; E2E tạo thư mục, chuyển bộ, xoá thư mục.
+- **Giao diện:** khung "Quản lý thư mục" và ô lọc "Thư mục" ở trang Bộ từ (`?folder=<id>|none`), ô chọn thư mục trong thao tác của chủ bộ từ.
+- **Test đã có:** `folders.integration`, `sets-folders.integration`, `folder-filter.test`, `folder-manager.test`, `my-sets.test`, E2E tạo thư mục, chuyển bộ, lọc, xoá thư mục mà bộ vẫn còn.
 
 ### UC-X3. Ảnh và âm thanh cho thẻ
 

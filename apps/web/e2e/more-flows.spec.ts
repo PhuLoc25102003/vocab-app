@@ -204,6 +204,32 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(page.getByText('con hổ')).toBeVisible();
   });
 
+  test('tạo thư mục, chuyển bộ vào, lọc rồi xoá thư mục mà bộ vẫn còn', async () => {
+    const folderName = `Lớp 10 ${stamp}`;
+    await page.goto('/sets');
+    await page.getByText('Quản lý thư mục').click();
+    await page.getByLabel('Tên thư mục mới').fill(folderName);
+    await page.getByRole('button', { name: 'Tạo thư mục' }).click();
+    await expect(page.getByText(`${folderName} (0 bộ)`)).toBeVisible();
+
+    await page.goto(setPath);
+    await page.getByLabel('Thư mục', { exact: true }).selectOption({ label: folderName });
+    await expect(page.getByText('Đã chuyển thư mục')).toBeVisible();
+
+    await page.goto('/sets');
+    await page.getByLabel('Thư mục', { exact: true }).selectOption({ label: `${folderName} (1)` });
+    await page.waitForURL('**/sets?folder=*');
+    await expect(page.getByRole('link', { name: title })).toBeVisible();
+    await expect(page.getByRole('link', { name: `Nhập CSV ${stamp}` })).toHaveCount(0);
+
+    await page.getByText('Quản lý thư mục').click();
+    await page.getByRole('button', { name: `Xoá ${folderName}` }).click();
+    await page.getByRole('button', { name: 'Xoá thư mục' }).click();
+    await expect(page.getByText('Đã xoá thư mục, bộ từ vẫn được giữ')).toBeVisible();
+    await page.goto('/sets');
+    await expect(page.getByRole('link', { name: title })).toBeVisible();
+  });
+
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
     test.setTimeout(240_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();

@@ -45,6 +45,7 @@ src/
 │   ├── auth/        { api.ts, hooks/, components/, store.ts }
 │   ├── sets/        { api.ts, hooks/use-sets.ts, components/set-card.tsx ... }
 │   ├── import/      { api.ts, read-file.ts, components/import-wizard.tsx }
+│   ├── folders/     { api.ts, hooks.ts, components/folder-manager.tsx }
 │   ├── study/
 │   │   ├── modes/   { flashcard/, write/, dictation/, mcq/, match/ }
 │   │   ├── session.store.ts      # Zustand: thẻ hiện tại, điểm, hàng đợi
