@@ -160,6 +160,15 @@ describe('StudyShell', () => {
     expect(screen.getByRole('link', { name: 'Quay lại' })).toHaveAttribute('href', '/sets');
   });
 
+  it('hướng dẫn thêm ví dụ khi không có thẻ phù hợp với chế độ', async () => {
+    setup({
+      start: vi.fn().mockRejectedValue(new HttpError('x', 422, 'NO_QUESTIONS_FOR_MODE')),
+    });
+
+    expect(await screen.findByText('Chưa có thẻ phù hợp')).toBeInTheDocument();
+    expect(screen.getByText(/cần thẻ có câu ví dụ/)).toBeInTheDocument();
+  });
+
   it('cho thử lại khi không bắt đầu được', async () => {
     const start = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue(started);
     setup({ start });

@@ -39,6 +39,13 @@ export function createGuestBackend(): StudyBackend {
       const selected = options?.cardIds ? new Set(options.cardIds) : null;
       const studyCards = selected ? cards.filter(({ id }) => selected.has(id)) : cards;
       const questions = getMode(mode).buildQuestions(studyCards, {});
+      if (questions.length === 0) {
+        throw new HttpError(
+          'Bộ từ chưa có thẻ phù hợp với chế độ này',
+          422,
+          ERROR_CODES.NO_QUESTIONS_FOR_MODE,
+        );
+      }
       sequence += 1;
       const session: StudySession = {
         id: `guest-${sequence}`,

@@ -62,6 +62,14 @@ describe('createGuestBackend', () => {
     });
   });
 
+  it('báo lỗi khi không có thẻ phù hợp với chế độ Điền từ', async () => {
+    vi.mocked(http).mockResolvedValue(detail([card('c1', 'apple')]));
+
+    await expect(createGuestBackend().start('set1', 'CLOZE')).rejects.toMatchObject({
+      code: 'NO_QUESTIONS_FOR_MODE',
+    });
+  });
+
   it('mỗi lần học lại là một phiên mới', async () => {
     vi.mocked(http).mockResolvedValue(detail([card('c1', 'apple')]));
     const backend = createGuestBackend();

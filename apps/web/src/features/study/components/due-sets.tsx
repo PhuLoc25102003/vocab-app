@@ -38,6 +38,7 @@ const REVIEW_MODES = [
   { slug: 'write', label: 'Viết' },
   { slug: 'dictation', label: 'Nghe viết' },
   { slug: 'mcq', label: 'Trắc nghiệm' },
+  { slug: 'cloze', label: 'Điền từ' },
 ];
 
 export function DueSets() {

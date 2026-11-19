@@ -209,6 +209,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       `${setPath}/study/write`,
       `${setPath}/study/dictation`,
       `${setPath}/study/mcq`,
+      `${setPath}/study/cloze`,
     ];
     const guestPaths = [
       '/',

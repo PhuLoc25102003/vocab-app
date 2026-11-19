@@ -105,6 +105,19 @@ function StartFailure({
       />
     );
   }
+  if (code === ERROR_CODES.NO_QUESTIONS_FOR_MODE) {
+    return (
+      <EmptyState
+        title="Chưa có thẻ phù hợp"
+        description="Chế độ Điền từ cần thẻ có câu ví dụ chứa đúng từ đó. Hãy thêm ví dụ khi sửa bộ từ hoặc chọn chế độ khác."
+        action={
+          <Button asChild variant="secondary">
+            <Link href={exitHref}>Quay lại</Link>
+          </Button>
+        }
+      />
+    );
+  }
   if (code === ERROR_CODES.SET_HAS_NO_CARDS || code === ERROR_CODES.SET_NOT_FOUND) {
     return (
       <EmptyState

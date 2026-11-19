@@ -1,4 +1,5 @@
 export * from './grading';
+export * from './modes/cloze';
 export * from './modes/dictation';
 export * from './modes/flashcard';
 export * from './modes/mcq';

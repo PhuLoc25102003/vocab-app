@@ -120,6 +120,35 @@ describe('study sessions', () => {
       expect(body.error.code).toBe(ERROR_CODES.STUDY_MODE_UNAVAILABLE);
     });
 
+    it('chế độ Điền từ chỉ dùng thẻ có câu ví dụ chứa từ và chấm ở server', async () => {
+      await prisma.card.update({
+        where: { id: cardIds[0] },
+        data: { example: 'An apple a day keeps the doctor away.' },
+      });
+      const started = await start(owner.token, { setId, mode: 'CLOZE' }).expect(201);
+
+      expect(started.body.data.questions).toEqual([
+        {
+          id: cardIds[0],
+          cardId: cardIds[0],
+          mode: 'CLOZE',
+          prompt: 'An _____ a day keeps the doctor away.',
+          expected: 'apple',
+          hint: 'quả táo',
+        },
+      ]);
+      const { body } = await submit(started.body.data.session.id, owner.token, [
+        answer(cardIds[0]!, 'Apple'),
+      ]).expect(200);
+      expect(body.data.results[0].isCorrect).toBe(true);
+    });
+
+    it('trả 422 khi không có thẻ phù hợp với chế độ', async () => {
+      const { body } = await start(owner.token, { setId, mode: 'CLOZE' }).expect(422);
+
+      expect(body.error.code).toBe(ERROR_CODES.NO_QUESTIONS_FOR_MODE);
+    });
+
     it('trả 422 khi bộ từ chưa có thẻ', async () => {
       await prisma.card.deleteMany({ where: { setId } });
 
