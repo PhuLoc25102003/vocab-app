@@ -14,6 +14,7 @@ import { FlashcardMode } from './flashcard/flashcard-mode';
 import { LearnModeView } from './learn/learn-mode';
 import { MatchModeView } from './match/match-mode';
 import { McqModeView } from './mcq/mcq-mode';
+import { SpeakModeView } from './speak/speak-mode';
 import { TestModeView } from './test/test-mode';
 import { WriteModeView } from './write/write-mode';
 
@@ -38,6 +39,7 @@ export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps
   CLOZE: ClozeModeView,
   MATCH: MatchModeView,
   TEST: TestModeView,
+  SPEAK: SpeakModeView,
 };
 
 /** Chế độ cần nhiều câu cùng lúc. View gọi `onAnswer` lần lượt cho từng câu khi xong vòng. */

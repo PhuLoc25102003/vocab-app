@@ -19,8 +19,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |     54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     10 |     15 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      1 |      4 | Đang làm     |
-| **Toàn dự án**          |                                            | **74** | **94** | **79%**      |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |      4 | Đang làm     |
+| **Toàn dự án**          |                                            | **75** | **94** | **80%**      |
 
 ## Cách cập nhật
 
@@ -201,7 +201,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** học sinh luyện nói được và tiếp tục học khi mất mạng.
 
 - [x] **4.1** Nền chế độ luyện nói: enum `SPEAK`, strategy và API (#190).
-- [ ] **4.4** Giao diện luyện nói: xin quyền micro, nhận dạng giọng nói, thử lại, bỏ qua.
+- [x] **4.4** Giao diện luyện nói: xin quyền micro, nhận dạng giọng nói, thử lại, bỏ qua.
 - [ ] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện.
 - [ ] **4.3** Học offline và đồng bộ tiến độ khi có mạng.
 
