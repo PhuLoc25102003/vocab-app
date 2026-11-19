@@ -97,4 +97,22 @@ describe('ẩn bộ từ vi phạm', () => {
     expect(await publicIds()).toEqual([setId]);
     await getSet(null).expect(200);
   });
+
+  it('GET /admin/stats đếm người dùng, tài khoản khoá, bộ từ, bộ bị ẩn cho ADMIN', async () => {
+    const stats = (token: string | null) => {
+      const call = server().get('/api/v1/admin/stats');
+      return token ? call.set('Authorization', `Bearer ${token}`) : call;
+    };
+    await stats(null).expect(401);
+    await stats(owner.token).expect(403);
+
+    await prisma.user.update({ where: { id: other.id }, data: { lockedAt: new Date() } });
+    await patch(admin.token, `${setId}/hide`, { reason: 'Spam' }).expect(200);
+    await prisma.studySet.create({
+      data: { ownerId: owner.id, title: 'Đã xoá', deletedAt: new Date() },
+    });
+
+    const { body } = await stats(admin.token).expect(200);
+    expect(body.data).toEqual({ users: 3, lockedUsers: 1, sets: 1, hiddenSets: 1 });
+  });
 });

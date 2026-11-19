@@ -58,3 +58,12 @@ export const adminUserListResponseSchema = z.object({
 });
 export type AdminUserList = z.infer<typeof adminUserListResponseSchema>;
 export const adminUserResponseSchema = z.object({ data: adminUserSchema });
+
+export const adminStatsSchema = z.object({
+  users: z.number(),
+  lockedUsers: z.number(),
+  sets: z.number(),
+  hiddenSets: z.number(),
+});
+export type AdminStats = z.infer<typeof adminStatsSchema>;
+export const adminStatsResponseSchema = z.object({ data: adminStatsSchema });
