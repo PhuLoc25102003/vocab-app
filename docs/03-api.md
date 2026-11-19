@@ -25,6 +25,10 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | DELETE | /sets/:id                   | Chủ, ADMIN                | Xoá mềm                                                    |
 | POST   | /sets/:id/duplicate         | Đã đăng nhập              | Sao chép bộ từ xem được về tài khoản                       |
 | PUT    | /sets/:id/cards             | Chủ, ADMIN                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
+| GET    | /folders                    | Đã đăng nhập              | Thư mục của tôi kèm số bộ từ                               |
+| POST   | /folders                    | Đã đăng nhập              | Tạo thư mục                                                |
+| PATCH  | /folders/:id                | Chủ                       | Đổi tên thư mục                                            |
+| DELETE | /folders/:id                | Chủ                       | Xoá thư mục, giữ bộ từ                                     |
 | POST   | /import/preview             | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
 | POST   | /sets/:id/import            | Chủ                       | Lưu kết quả đã xem trước                                   |
 | POST   | /uploads/presign            | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
@@ -90,7 +94,14 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PATCH` và `DELETE /sets/:id` dành cho chủ hoặc ADMIN. `DELETE` là xoá mềm, trả 204.
 - `PUT /sets/:id/cards` dành cho chủ hoặc ADMIN, nhận `{ cards }` là toàn bộ danh sách theo thứ tự mới, tối đa 2.000 thẻ, body tối đa 5 MB. Thẻ có `id` được giữ và cập nhật, thẻ không có `id` được tạo mới, thẻ đang có mà không gửi lên bị xoá cùng tiến độ học của thẻ đó. `phonetic`, `example` không gửi lên sẽ bị xoá. Trả 200 kèm bộ từ và `cards`. `id` không thuộc bộ từ trả 422 `CARD_NOT_IN_SET` và không đổi gì.
 - `POST /sets/:id/duplicate` sao chép bộ từ người gọi xem được về tài khoản của họ, trả 201 kèm thông tin bộ mới. Bản sao có tên thêm ` (bản sao)`, luôn `PRIVATE`, gồm toàn bộ thẻ với `id` mới, không kèm thư mục và tiến độ học. Bộ không xem được trả 404.
-- `folderId` chưa được nhận, sẽ thêm cùng API thư mục ở việc 2.4.
+- `folderId` trên bộ từ sẽ được nhận ở phần 2 của việc 2.4.
+
+## Thư mục
+
+- `GET /folders` nhận `page`, `limit`, trả thư mục của người gọi xếp theo tên: `{ data: [{ id, name, setCount }], meta }`. `setCount` chỉ đếm bộ chưa xoá.
+- `POST /folders` nhận `{ name }` (1 đến 60 ký tự), trả 201. `PATCH /folders/:id` nhận `{ name }`, trả 200. Tên trùng với thư mục khác của cùng người, không phân biệt hoa thường, trả 409 `FOLDER_NAME_TAKEN`.
+- `DELETE /folders/:id` trả 204, bộ từ bên trong được giữ lại với `folderId` là `null`.
+- Chỉ chủ thư mục được sửa và xoá, kể cả ADMIN cũng không. Thư mục không tồn tại trả 404 `FOLDER_NOT_FOUND`.
 
 ## Nhập từ
 

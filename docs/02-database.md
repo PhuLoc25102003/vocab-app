@@ -84,6 +84,7 @@ model Folder {
   owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   sets  StudySet[]
 
+  @@unique([ownerId, name])
   @@index([ownerId])
 }
 
