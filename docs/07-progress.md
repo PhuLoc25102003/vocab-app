@@ -97,7 +97,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy (#153).
 - [x] **1.19** Deploy API lên Render, cấu hình env (gồm `TRUSTED_PROXIES`) và health check (#155).
-- [x] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
+- [x] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS (#161).
 - [x] **1.52** Trang Chính sách bảo mật và Điều khoản sử dụng, cần để publish đăng nhập Google (#159).
 
 ### 1E. Import
