@@ -109,7 +109,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ (#137).
 - [x] **1.23** Web: tải file, dán text, xem trước và sửa lỗi (#142).
 - [x] **1.53** Nhập thêm cột phiên âm (IPA) và câu ví dụ, cả hai không bắt buộc, áp dụng cho text, CSV và XLSX (#165).
-- [x] **1.51** Đọc file XLSX trên trình duyệt bằng `read-excel-file`, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002).
+- [x] **1.51** Đọc file XLSX trên trình duyệt bằng `read-excel-file`, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002) (#167).
 - [ ] **1.54** Nút tải file mẫu `.xlsx` và `.csv` ở trang nhập, nhận diện hàng tiêu đề của file mẫu để tự chọn cột. Cần 1.51 và 1.53.
 
 ### 1F. Chế độ học còn lại và ôn tập
