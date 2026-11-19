@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
+**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
 
 **Việc tiếp theo:**
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     49 |     54 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |     54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **65** | **90** | **72%**      |
+| **Toàn dự án**          |                                            | **66** | **90** | **73%**      |
 
 ## Cách cập nhật
 
@@ -126,7 +126,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** đạt checklist bảo mật, Definition of Done và bản MVP đã lên `main`.
 
 - [x] **1.29** Trang giới thiệu sản phẩm (#93).
-- [ ] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
+- [x] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
 - [ ] **1.31** Sentry cho web và API, theo dõi uptime. Cần tài khoản Sentry.
 - [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie (#133).
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
@@ -208,4 +208,3 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`      |
 | Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt         |
 | Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản |
-| Khôi phục bộ từ đã xoá             | 1.30           | MVP không có thùng rác, xoá hẳn sau 30 ngày |

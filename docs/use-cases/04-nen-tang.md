@@ -42,10 +42,11 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P4. Xoá hẳn bộ từ đã xoá mềm
 
-- **Việc:** 1.30. **Người dùng:** hệ thống. **Trạng thái:** Chờ quyết định, cần xác nhận vì xoá vĩnh viễn dữ liệu.
+- **Việc:** 1.30. **Người dùng:** hệ thống. **Trạng thái:** Đủ. Đã chốt MVP không có thùng rác, xoá hẳn sau 30 ngày.
 - **Phải có:** job chạy mỗi ngày, chỉ xoá bộ có `deletedAt` quá 30 ngày, xoá theo lô, ghi log số lượng, không chạy trùng khi có nhiều instance.
 - **Ngoại lệ:** lỗi giữa chừng thì lần sau chạy tiếp; bộ chưa đủ 30 ngày không bị đụng; dữ liệu học liên quan bị xoá theo cascade.
 - **Cách test:** integration với mốc đúng 30 ngày, trước và sau mốc; hai job chạy cùng lúc; bộ chưa xoá không đổi.
+- **Test đã có:** `sets-purge.integration` gồm quá mốc, đúng mốc, chưa đủ mốc, bộ chưa xoá, cascade dữ liệu học, xoá theo lô, hai lần chạy cùng lúc, bỏ qua khi khoá đang bị giữ.
 
 ## UC-P5. Log và giám sát
 
