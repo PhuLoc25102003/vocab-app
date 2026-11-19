@@ -171,7 +171,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2C. Chế độ học
 
 - [x] **2.7** Chế độ Learn, phần strategy và API: trộn trắc nghiệm và gõ từ theo mức nhớ (#174).
-- [x] **2.13** Giao diện chế độ Learn: vòng 7 câu, câu sai được hỏi lại trong vòng đến khi đúng.
+- [x] **2.13** Giao diện chế độ Learn: vòng 7 câu, câu sai được hỏi lại trong vòng đến khi đúng (#178).
 - [x] **2.8** Chế độ Điền từ (#144).
 - [x] **2.9** Chế độ Ghép cặp (#146).
 - [ ] **2.10** Chế độ Kiểm tra.
