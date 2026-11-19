@@ -68,7 +68,17 @@ test.describe.serial('luồng chính', () => {
     await page.goto('/sets');
     await page.getByRole('link', { name: 'Tạo bộ từ' }).filter({ visible: true }).first().click();
     await page.waitForURL('**/sets/new');
-    await page.getByLabel('Tên bộ từ').fill(setTitle);
+    const titleField = page.getByLabel('Tên bộ từ').filter({ visible: true });
+    await titleField.fill(setTitle);
+
+    // Từ chối rời trang thì vẫn ở lại và giữ dữ liệu đã nhập.
+    page.once('dialog', (dialog) => void dialog.dismiss());
+    await page.getByRole('link', { name: 'Quay lại danh sách' }).click();
+    page.once('dialog', (dialog) => void dialog.dismiss());
+    await page.evaluate(() => window.history.back());
+    await expect(titleField).toHaveValue(setTitle);
+    expect(new URL(page.url()).pathname).toBe('/sets/new');
+
     await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
     for (const [index, { term, definition }] of cards.entries()) {
       await page.getByLabel('Từ', { exact: true }).nth(index).fill(term);
@@ -83,6 +93,15 @@ test.describe.serial('luồng chính', () => {
     await page.goBack();
     await page.waitForURL('**/sets');
     await page.goForward();
+    await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
+
+    // Đồng ý rời trang thì về trang trước và bỏ thay đổi.
+    await page.getByRole('link', { name: 'Sửa bộ từ' }).click();
+    await page.waitForURL('**/edit');
+    await titleField.fill('Tên chưa lưu');
+    page.once('dialog', (dialog) => void dialog.accept());
+    await page.getByRole('link', { name: 'Quay lại bộ từ' }).click();
+    await page.waitForURL(`**${setPath}`);
     await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
   });
 

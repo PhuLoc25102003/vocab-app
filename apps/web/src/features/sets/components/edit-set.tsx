@@ -2,7 +2,6 @@
 
 import type { Card, CardDraft, SetFormValues } from '@vocab/shared';
 import type { Route } from 'next';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { LoadingState } from '@/components/common/loading-state';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,7 +15,6 @@ function toCardDraft({ id, term, definition, phonetic, example }: Card): CardDra
 }
 
 export function EditSet({ id }: { id: string }) {
-  const router = useRouter();
   const set = useEditableSet(id);
   const saveSet = useSaveSet(id);
   const detailHref = `/sets/${id}` as Route;
@@ -48,8 +46,7 @@ export function EditSet({ id }: { id: string }) {
       cards: nextCards,
     });
     toast.success('Đã lưu bộ từ');
-    // Thay mục lịch sử để nút quay lại của trình duyệt không về form đã lưu.
-    router.replace(detailHref);
+    return detailHref;
   };
 
   return (
