@@ -80,6 +80,7 @@ Dự án đang làm MVP, nhiều phần chưa có. Trước khi dùng một thà
 | Đổi Prisma schema                   | `docs/02-database.md`                           | `db-migration` |
 | Auth, phân quyền, dữ liệu nhạy cảm  | `docs/04-security.md`                           | `api-endpoint` |
 | Đặt tên, test, Git, CI, env         | `docs/06-conventions.md`                        | Không có       |
+| Deploy Neon, Render, Vercel         | `docs/08-deploy.md`                             | Không có       |
 | Sắp xếp thư mục, tái sử dụng code   | `docs/01-code-structure.md`                     | Không có       |
 | Quyết định kiến trúc mới            | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
 | Người dùng ra lệnh làm một task     | `docs/07-progress.md`, `docs/use-cases/`        | `ship-task`    |

@@ -11,14 +11,17 @@ interface SecurityHeaderOptions {
  * Vì vậy `script-src` phải có `'unsafe-inline'`, các nguồn ngoài vẫn bị giới hạn.
  */
 export function buildContentSecurityPolicy({ apiUrl, isDev }: SecurityHeaderOptions): string {
-  const apiOrigin = new URL(apiUrl || DEFAULT_API_URL).origin;
+  // Đường dẫn tương đối là API được chuyển tiếp qua chính web, đã nằm trong 'self'.
+  const apiOrigin = apiUrl?.startsWith('/') ? '' : new URL(apiUrl || DEFAULT_API_URL).origin;
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/client${isDev ? " 'unsafe-eval'" : ''}`,
     `style-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/style`,
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    `connect-src 'self' ${apiOrigin} ${GOOGLE_IDENTITY_URL}/${isDev ? ' ws:' : ''}`,
+    ['connect-src', "'self'", apiOrigin, `${GOOGLE_IDENTITY_URL}/`, isDev ? 'ws:' : '']
+      .filter(Boolean)
+      .join(' '),
     `frame-src ${GOOGLE_IDENTITY_URL}/`,
     "object-src 'none'",
     "base-uri 'self'",

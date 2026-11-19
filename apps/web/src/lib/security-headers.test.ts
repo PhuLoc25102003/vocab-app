@@ -16,6 +16,14 @@ describe('buildContentSecurityPolicy', () => {
     );
   });
 
+  it('không thêm nguồn ngoài khi API được chuyển tiếp qua web', () => {
+    const policy = buildContentSecurityPolicy({ apiUrl: '/api/v1', isDev: false });
+
+    expect(directive(policy, 'connect-src')).toBe(
+      "connect-src 'self' https://accounts.google.com/gsi/",
+    );
+  });
+
   it('dùng API local khi chưa cấu hình', () => {
     const policy = buildContentSecurityPolicy({ apiUrl: '', isDev: false });
 
