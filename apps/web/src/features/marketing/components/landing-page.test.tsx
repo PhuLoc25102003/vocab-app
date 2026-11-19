@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { clearSessionMarker, setSessionMarker } from '@/lib/session-marker';
 import { LandingPage } from './landing-page';
@@ -28,6 +28,20 @@ describe('LandingPage', () => {
     for (const link of screen.getAllByRole('link', { name: 'Tạo tài khoản' })) {
       expect(link).toHaveAttribute('href', '/register');
     }
+  });
+
+  it('có link tới chính sách bảo mật và điều khoản ở chân trang', () => {
+    render(<LandingPage />);
+
+    const legal = screen.getByRole('navigation', { name: 'Thông tin pháp lý' });
+    expect(within(legal).getByRole('link', { name: 'Chính sách bảo mật' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    );
+    expect(within(legal).getByRole('link', { name: 'Điều khoản sử dụng' })).toHaveAttribute(
+      'href',
+      '/terms',
+    );
   });
 
   it('đưa người đã đăng nhập vào app', () => {
