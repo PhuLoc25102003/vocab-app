@@ -44,6 +44,15 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 - **Cách test:** integration 401, 403 và thành công; E2E ẩn bộ rồi khách không xem được.
 - **Test đã có:** `hide-set-button.test`, `set-detail.test` (thông báo bị ẩn), E2E ADMIN ẩn bộ rồi khách không xem được, `admin-sets.integration` (401, 403, 400, 404, ẩn rồi khách và người khác không thấy ở danh sách, chi tiết, học; chủ và ADMIN vẫn thấy; bỏ ẩn), `admin-users.test` (web), E2E ADMIN khoá rồi tài khoản không đăng nhập được, mở khoá rồi đăng nhập lại, `admin-users.integration` gồm 401, 403, tìm, tham số sai, khoá rồi bị chặn đăng nhập và mất phiên, mở khoá, tự khoá mình, không tìm thấy.
 
+### UC-X6. Trải nghiệm và giao diện
+
+- **Việc:** 2.16 đến 2.25. **Người dùng:** mọi người. **Trạng thái:** Chưa làm, từ góp ý của người dùng.
+- **Vấn đề đã thấy:** nội dung lệch trái ở màn hình rộng; nút chế độ học trải dài khó hình dung; header có ảnh đại diện nhưng không có tên; `select` mặc định xấu; Tổng quan ít thông tin; Bộ từ và Khám phá trông giống nhau; người học không hiểu khi nào thẻ đến hạn và khi nào được tính là đã thuộc; giọng đọc khó nghe và đọc nhanh.
+- **Quy tắc đang chạy:** trả lời đúng lần đầu thì thẻ hẹn ôn sau 1 ngày; trả lời đúng khi thẻ đã đến hạn thì giãn ra 6 ngày, rồi nhân với hệ số dễ; trả lời sai thì hẹn lại sau 10 phút. Thẻ "đã thuộc" khi khoảng ôn từ 6 ngày (`MASTERED_INTERVAL_DAYS`), nên cần ít nhất hai lần đúng ở hai ngày khác nhau. Học dồn trong cùng ngày không giãn lịch. Việc 2.20 phải nói rõ quy tắc này trên giao diện, không đổi thuật toán.
+- **Phải có:** mỗi trang một hành động chính; đủ loading, empty, error, success; light, dark, 360 px, bàn phím, vùng bấm 44 px; hiệu ứng 150 đến 300 ms và tắt khi `prefers-reduced-motion`; chỉ dùng token trong `docs/05-ui-tokens.md`, thiếu token thì thêm vào tài liệu trước.
+- **Giọng đọc (2.23):** chọn giọng `en-US` hoặc `en-GB` có trên máy, không có thì dùng giọng mặc định và báo cho người dùng; tốc độ chậm khoảng 0,7.
+- **Cách test:** component cho từng trạng thái; E2E audit accessibility ở light, dark, 360 px cho các trang đã đổi; Lighthouse trang giới thiệu không thấp hơn trước.
+
 ## Giai đoạn 3: Lớp học
 
 Cần chốt trước: cách một tài khoản trở thành giáo viên (việc 3.2).
