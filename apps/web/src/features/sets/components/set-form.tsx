@@ -16,7 +16,7 @@ import { FormError } from '@/components/common/form-message';
 import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
-import { useUnsavedGuard } from '../hooks/use-unsaved-guard';
+import { useUnsavedGuard } from '@/lib/use-unsaved-guard';
 import { LANGUAGE_LABELS, VISIBILITY_LABELS } from '../labels';
 import { CardFields, EMPTY_CARD } from './card-fields';
 
