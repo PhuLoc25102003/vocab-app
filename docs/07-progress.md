@@ -161,7 +161,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ### 2B. Nội dung
 
-- [x] **2.4** Thư mục bộ từ trên API và web.
+- [x] **2.4** Thư mục bộ từ trên API và web (#151).
 - [ ] **2.5** Ảnh cho thẻ từ: R2 và `POST /uploads/presign`.
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2.
 
