@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Lưu thẻ đã nhập vào bộ từ (việc 1.22).
-2. Trang nhập từ trên web (việc 1.23).
+1. Trang nhập từ trên web (việc 1.23).
+2. Chế độ Điền từ (việc 2.8).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     40 |     51 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     41 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **53** | **87** | **61%**      |
+| **Toàn dự án**          |                                            | **54** | **87** | **62%**      |
 
 ## Cách cập nhật
 
@@ -104,7 +104,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel và sửa lỗi từng dòng trước khi lưu.
 
 - [x] **1.21** Parser text, CSV và `POST /import/preview`, kèm giới hạn kích thước và số dòng (#135).
-- [ ] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ.
+- [x] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ (#137).
 - [ ] **1.23** Web: tải file, dán text, xem trước và sửa lỗi.
 - [ ] **1.51** Đọc file XLSX cho import, chỉ đọc giá trị, không chạy công thức. Chờ chọn thư viện.
 

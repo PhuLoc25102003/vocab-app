@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { cardInputSchema, MAX_CARDS_PER_SET, setSummarySchema } from './set';
 
 /** Giới hạn nội dung nhập, tương đương file 2 MB. */
 export const IMPORT_MAX_CHARS = 2_000_000;
@@ -60,3 +61,16 @@ export const importPreviewResultSchema = z.object({
 export type ImportPreviewResult = z.infer<typeof importPreviewResultSchema>;
 
 export const importPreviewResponseSchema = z.object({ data: importPreviewResultSchema });
+
+/** Thẻ đã xem trước và sửa trên web, được thêm vào cuối bộ từ có sẵn. */
+export const importCardsSchema = z.object({
+  cards: z
+    .array(cardInputSchema)
+    .min(1, 'Chưa có thẻ nào để nhập')
+    .max(MAX_CARDS_PER_SET, `Mỗi lần nhập tối đa ${MAX_CARDS_PER_SET} thẻ`),
+});
+export type ImportCardsDto = z.infer<typeof importCardsSchema>;
+
+export const importCardsResultSchema = z.object({
+  data: setSummarySchema.extend({ imported: z.number() }),
+});

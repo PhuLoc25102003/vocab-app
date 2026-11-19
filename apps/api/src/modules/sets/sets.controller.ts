@@ -14,13 +14,20 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   createSetSchema,
+  importCardsSchema,
   publicSetQuerySchema,
   replaceCardsSchema,
   updateSetSchema,
   mySetQuerySchema,
   MySetQuery,
 } from '@vocab/shared';
-import type { CreateSetDto, PublicSetQuery, ReplaceCardsDto, UpdateSetDto } from '@vocab/shared';
+import type {
+  CreateSetDto,
+  ImportCardsDto,
+  PublicSetQuery,
+  ReplaceCardsDto,
+  UpdateSetDto,
+} from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CheckOwnership } from '../../common/decorators/check-ownership.decorator';
 import { CurrentUser, OptionalUser } from '../../common/decorators/current-user.decorator';
@@ -92,6 +99,17 @@ export class SetsController {
     @Body(new ZodValidationPipe(replaceCardsSchema)) dto: ReplaceCardsDto,
   ) {
     return this.sets.replaceCards(id, dto);
+  }
+
+  @Post(':id/import')
+  @CheckOwnership('set')
+  @ApiOperation({ summary: 'Thêm thẻ đã nhập vào cuối bộ từ' })
+  @ApiZodBody(importCardsSchema)
+  importCards(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(importCardsSchema)) dto: ImportCardsDto,
+  ) {
+    return this.sets.importCards(id, dto);
   }
 
   @Delete(':id')

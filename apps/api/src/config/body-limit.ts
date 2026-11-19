@@ -7,6 +7,7 @@ const CARD_ROUTES = new Set([
   'POST /api/v1/sets',
   'PUT /api/v1/sets/:id/cards',
   'POST /api/v1/import/preview',
+  'POST /api/v1/sets/:id/import',
 ]);
 
 /** Phải gọi trước khi Nest đăng ký route. */

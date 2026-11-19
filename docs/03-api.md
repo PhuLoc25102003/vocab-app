@@ -95,6 +95,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 ## Nhập từ
 
 - `POST /import/preview` cần đăng nhập, nhận `{ content, options? }`. `content` là text đã dán hoặc nội dung file `.txt`, `.csv` mà web đã đọc, tối đa 2.000.000 ký tự, body tối đa 5 MB. `options` gồm `delimiter` (`auto`, `tab`, `comma`, `semicolon`, `dash` là `-`), `hasHeader`, `termColumn`, `definitionColumn` (đếm từ 1, mặc định 1 và 2). Endpoint chỉ phân tích, không lưu, trả 200 `{ data: { delimiter, columnCount, rows: [{ line, term, definition, errors }] } }`. `line` là số dòng gốc, dòng trống bị bỏ qua. Quá 2.000 dòng trả 422 `IMPORT_TOO_MANY_ROWS` kèm `details: { max, rows }`.
+- `POST /sets/:id/import` dành cho chủ hoặc ADMIN, nhận `{ cards }` gồm 1 đến 2.000 thẻ đã xem trước, body tối đa 5 MB. Thẻ được thêm vào cuối bộ từ trong một transaction, trả 201 `{ data: { ...bộ từ, imported } }`. Tổng số thẻ sau khi nhập vượt 2.000 trả 422 `SET_CARD_LIMIT` kèm `details: { max, current, adding }` và không lưu gì. Nhập vào bộ mới dùng `POST /sets` kèm `cards`.
 - Logic đọc nằm ở `parseImport` trong `@vocab/shared`: bỏ BOM, đọc ô CSV có ngoặc kép, công thức Excel giữ nguyên dạng văn bản. XLSX làm ở việc 1.51.
 
 ## Phiên học
