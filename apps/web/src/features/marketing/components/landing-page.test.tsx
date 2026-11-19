@@ -21,6 +21,10 @@ describe('LandingPage', () => {
     render(<LandingPage />);
 
     expect(screen.getByRole('link', { name: 'Đăng nhập' })).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('link', { name: 'Khám phá bộ từ' })).toHaveAttribute(
+      'href',
+      '/explore',
+    );
     for (const link of screen.getAllByRole('link', { name: 'Tạo tài khoản' })) {
       expect(link).toHaveAttribute('href', '/register');
     }

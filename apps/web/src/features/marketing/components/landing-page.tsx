@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { BRAND_NAME, Logo } from '@/components/common/logo';
 import { SessionLink } from '@/components/common/session-link';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { Button } from '@/components/ui/button';
 
 const MODES = [
   { name: 'Flashcard', description: 'Lật thẻ, rồi tự chấm xem mình đã nhớ hay chưa.' },
@@ -63,7 +65,12 @@ export function LandingPage() {
               {BRAND_NAME} giúp bạn học từ vựng bằng flashcard, viết, nghe và trắc nghiệm, rồi tự
               xếp lịch ôn cho từng thẻ.
             </p>
-            <SessionLink {...START_LINK} />
+            <div className="flex flex-wrap gap-2">
+              <SessionLink {...START_LINK} />
+              <Button asChild variant="secondary">
+                <Link href="/explore">Khám phá bộ từ</Link>
+              </Button>
+            </div>
           </div>
           <SampleCard />
         </section>
@@ -105,7 +112,7 @@ export function LandingPage() {
             Bắt đầu với bộ từ đầu tiên
           </h2>
           <p className="max-w-[65ch] text-text-muted">
-            Có đường dẫn tới một bộ từ công khai thì bạn học thử được ngay, không cần tài khoản.
+            Bạn có thể học thử các bộ từ công khai ngay, không cần tài khoản.
           </p>
           <SessionLink {...START_LINK} />
         </section>

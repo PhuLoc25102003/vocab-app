@@ -86,13 +86,13 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S9. Khám phá bộ từ công khai
 
-- **Việc:** 1.7, 1.36, 1.42. **Người dùng:** khách, người đã đăng nhập. **Trạng thái:** Thiếu (GAP-06).
+- **Việc:** 1.7, 1.36, 1.42. **Người dùng:** khách, người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tìm theo tên, phân trang, từ khoá trên URL, mở trang chi tiết phù hợp với phiên, lối vào từ trang giới thiệu.
 - **Luồng chính:** khách từ trang chủ mở Khám phá, tìm, mở bộ, học thử.
 - **Ngoại lệ:** không có kết quả có nút xem tất cả; từ khoá quá 100 ký tự; số trang vượt quá; lỗi mạng có nút thử lại.
-- **Test đã có:** `sets-public.integration`, `explore-sets.test`.
-- **Test cần thêm:** E2E khách tìm và học thử; E2E người đã đăng nhập tìm rồi sao chép.
-- **Còn thiếu:** `/explore` đang nằm trong vùng bắt đăng nhập. Cần trang công khai dùng chung component, người đã đăng nhập vẫn có menu đầy đủ.
+- **Điều hướng:** khách vào `/explore` được chuyển tới `/public/explore`, người đã đăng nhập ở lại `/explore` với menu đầy đủ.
+- **Test đã có:** `sets-public.integration`, `explore-sets.test`, E2E khách tìm và học thử.
+- **Test cần thêm:** E2E người đã đăng nhập tìm rồi sao chép.
 
 ## UC-S10. Nhập danh sách từ
 
