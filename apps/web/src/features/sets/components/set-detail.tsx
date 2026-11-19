@@ -4,6 +4,7 @@ import type { SetDetail as SetDetailData } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { CopyLinkButton } from '@/components/common/copy-link-button';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
@@ -22,9 +23,17 @@ interface SetDetailProps {
   renderBack?: (set: SetDetailData) => ReactNode;
   /** Tiến độ của người xem, hiện khi bộ từ có thẻ. */
   renderProgress?: (set: SetDetailData) => ReactNode;
+  /** Hành động khi bộ từ chưa có thẻ, theo quyền của người xem. */
+  renderEmptyAction?: (set: SetDetailData) => ReactNode;
 }
 
-export function SetDetail({ id, renderActions, renderBack, renderProgress }: SetDetailProps) {
+export function SetDetail({
+  id,
+  renderActions,
+  renderBack,
+  renderProgress,
+  renderEmptyAction,
+}: SetDetailProps) {
   const set = useSet(id);
 
   if (set.isPending) {
@@ -46,12 +55,15 @@ export function SetDetail({ id, renderActions, renderBack, renderProgress }: Set
       />
       <SetMeta set={set.data}>
         {visibility === 'PUBLIC' ? (
-          <Link
-            href={`/public/sets/${id}` as Route}
-            className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
-          >
-            Xem trang công khai
-          </Link>
+          <>
+            <Link
+              href={`/public/sets/${id}` as Route}
+              className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
+            >
+              Xem trang công khai
+            </Link>
+            <CopyLinkButton path={`/public/sets/${id}`} />
+          </>
         ) : null}
       </SetMeta>
       {cards.length > 0 ? (
@@ -67,7 +79,11 @@ export function SetDetail({ id, renderActions, renderBack, renderProgress }: Set
           <CardList cards={cards} termLang={termLang} defLang={defLang} />
         </>
       ) : (
-        <EmptyState title="Bộ từ này chưa có thẻ" description="Thẻ được thêm sẽ hiện ở đây." />
+        <EmptyState
+          title="Bộ từ này chưa có thẻ"
+          description="Thẻ được thêm sẽ hiện ở đây."
+          action={renderEmptyAction?.(set.data)}
+        />
       )}
     </>
   );

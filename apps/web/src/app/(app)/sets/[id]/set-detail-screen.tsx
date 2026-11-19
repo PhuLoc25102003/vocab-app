@@ -1,6 +1,9 @@
 'use client';
 
+import type { Route } from 'next';
+import Link from 'next/link';
 import { BackLink } from '@/components/common/back-link';
+import { Button } from '@/components/ui/button';
 import { Can } from '@/features/auth/components/can';
 import { DuplicateSetButton, SetOwnerActions } from '@/features/sets/components/set-actions';
 import { SetDetail } from '@/features/sets/components/set-detail';
@@ -18,6 +21,13 @@ export function SetDetailScreen({ id }: { id: string }) {
           fallback={<BackLink href="/explore" label="Quay lại Khám phá" />}
         >
           <BackLink href="/sets" label="Quay lại Bộ từ" />
+        </Can>
+      )}
+      renderEmptyAction={(set) => (
+        <Can action="update" resource={set} fallback={null}>
+          <Button asChild>
+            <Link href={`/sets/${set.id}/edit` as Route}>Thêm thẻ</Link>
+          </Button>
         </Can>
       )}
       renderProgress={(set) => <SetProgressSummary setId={set.id} />}
