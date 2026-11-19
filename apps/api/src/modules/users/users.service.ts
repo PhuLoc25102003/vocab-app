@@ -25,7 +25,8 @@ export class UsersService {
   ) {}
 
   async getMe(userId: string) {
-    return ok({ user: toAuthUser(await this.requireAccount(userId)) });
+    const account = await this.requireAccount(userId);
+    return ok({ user: { ...toAuthUser(account), hasPassword: account.passwordHash !== null } });
   }
 
   async updateMe(
