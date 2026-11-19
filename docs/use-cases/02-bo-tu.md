@@ -44,7 +44,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S5. Xem chi tiết bộ từ
 
-- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Thiếu (GAP-10).
+- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Đủ.
 - **Phải có:**
   - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại.
   - Chủ bộ: sửa, xoá, sao chép đường dẫn khi bộ công khai.
@@ -52,9 +52,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.
 - **Ngoại lệ:** bộ không tồn tại hoặc không có quyền; bộ chưa có thẻ thì ẩn nút học và mời thêm thẻ; lỗi mạng có nút thử lại.
-- **Test đã có:** `sets.integration`, `stats.integration`, `set-detail.test`, `set-progress.test`.
-- **Test cần thêm:** component nút sao chép đường dẫn, gồm trường hợp trình duyệt chặn clipboard.
-- **Còn thiếu:** trạng thái chưa có thẻ hiện chưa có nút đưa tới trang sửa.
+- **Test đã có:** `sets.integration`, `stats.integration`, `set-detail.test`, `set-progress.test`, `copy-link-button.test`.
 
 ## UC-S6. Xoá bộ từ
 
@@ -76,7 +74,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S8. Trang công khai cho khách
 
-- **Việc:** 1.12, 1.46. **Người dùng:** khách, người đã đăng nhập. **Trạng thái:** Thiếu (GAP-10).
+- **Việc:** 1.12, 1.46. **Người dùng:** khách, người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** xem không cần đăng nhập, có metadata cho SEO, nút học thử, mời đăng nhập để sao chép, nút quay lại Khám phá, sao chép đường dẫn.
 - **Luồng chính:** mở đường dẫn được chia sẻ, xem thẻ, học thử, đăng nhập để lưu tiến độ.
 - **Ngoại lệ:** bộ riêng tư hoặc đã xoá hiện "Không tìm thấy bộ từ" và không được index; người đã đăng nhập thấy nút mở trong tài khoản.

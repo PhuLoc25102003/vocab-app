@@ -159,6 +159,10 @@ test.describe.serial('luồng chính', () => {
 
     await expect(guest.getByText(/^Bạn nhớ/)).toHaveText('Bạn nhớ 2 trên 2 thẻ.');
     expect(studyRequests).toEqual([]);
+
+    await guest.getByRole('link', { name: 'Về bộ từ' }).click();
+    await guest.getByRole('link', { name: 'Quay lại Khám phá' }).filter({ visible: true }).click();
+    await guest.waitForURL('**/public/explore');
     await guest.close();
   });
 

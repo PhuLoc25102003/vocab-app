@@ -1,5 +1,7 @@
 import type { Route } from 'next';
 import { notFound } from 'next/navigation';
+import { BackLink } from '@/components/common/back-link';
+import { CopyLinkButton } from '@/components/common/copy-link-button';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
 import { SessionLink } from '@/components/common/session-link';
@@ -19,15 +21,19 @@ export async function PublicSet({ id }: { id: string }) {
 
   return (
     <>
+      <BackLink href="/explore" label="Quay lại Khám phá" />
       <PageHeader
         title={set.title}
         description={set.description ?? undefined}
         actions={
-          <SessionLink
-            variant="secondary"
-            guest={{ href: loginHref, label: 'Đăng nhập để sao chép' }}
-            member={{ href: detailPath as Route, label: 'Mở trong tài khoản' }}
-          />
+          <>
+            <CopyLinkButton path={`/public/sets/${id}`} />
+            <SessionLink
+              variant="secondary"
+              guest={{ href: loginHref, label: 'Đăng nhập để sao chép' }}
+              member={{ href: detailPath as Route, label: 'Mở trong tài khoản' }}
+            />
+          </>
         }
       />
       <SetMeta set={set} />
