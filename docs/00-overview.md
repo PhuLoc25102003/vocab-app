@@ -101,10 +101,10 @@ Thêm chế độ mới = viết một class mới + `registerMode(...)` + một
 
 Dự án đang làm MVP, tiến độ từng việc nằm ở `07-progress.md`. Bảng tech stack ở trên là đích đến, trạng thái thực tế như sau.
 
-| Trạng thái | Thành phần                                                                                                                                                                                                                                                                                |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Đã có      | npm workspaces, Turborepo, Next.js 16, React 19, Tailwind v4, TanStack Query, Zustand, React Hook Form, NestJS 11 + Fastify, Prisma 7, PostgreSQL 17 trong Docker, Zod 4, JWT, helmet, Swagger, Vitest, Testing Library, Supertest, shadcn/ui, Prettier, ESLint 9, CI bằng GitHub Actions |
-| Chưa có    | Redis, R2, Playwright test, Sentry, log Pino có cấu hình, cấu hình deploy                                                                                                                                                                                                                 |
+| Trạng thái | Thành phần                                                                                                                                                                                                                                                                                            |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Đã có      | npm workspaces, Turborepo, Next.js 16, React 19, Tailwind v4, TanStack Query, Zustand, React Hook Form, NestJS 11 + Fastify, Prisma 7, PostgreSQL 17 trong Docker, Zod 4, JWT, helmet, Swagger, Vitest, Playwright, Testing Library, Supertest, shadcn/ui, Prettier, ESLint 9, CI bằng GitHub Actions |
+| Chưa có    | Redis, R2, Sentry, log Pino có cấu hình, cấu hình deploy                                                                                                                                                                                                                                              |
 
 Runtime: Node 24 LTS (`^24.11.0`, bản dùng khi phát triển ghi trong `.nvmrc`), npm 11. Môi trường deploy cũng phải đặt Node 24.
 
