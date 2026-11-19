@@ -96,6 +96,7 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
         <div className="absolute top-2 right-2">
           {flipped ? (
             <AudioButton
+              withSlow
               text={question.expected}
               lang={languages.definition}
               label="Nghe nghĩa"

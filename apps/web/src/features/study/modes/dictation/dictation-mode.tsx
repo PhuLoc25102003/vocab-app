@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2 } from 'lucide-react';
+import { Snail, Volume2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useSpeechSupported } from '@/components/common/audio-button';
 import { Button } from '@/components/ui/button';
@@ -40,15 +40,24 @@ export function DictationModeView(props: StudyModeProps) {
       {...props}
       inputLabel="Nhập từ bạn nghe được"
       prompt={
-        <Button
-          type="button"
-          variant="secondary"
-          className="self-start"
-          onClick={() => speak(question.prompt, languages.term)}
-        >
-          <Volume2 aria-hidden className="size-5" />
-          Nghe lại
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => speak(question.prompt, languages.term)}
+          >
+            <Volume2 aria-hidden className="size-5" />
+            Nghe lại
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => speak(question.prompt, languages.term, { slow: true })}
+          >
+            <Snail aria-hidden className="size-5" />
+            Nghe chậm
+          </Button>
+        </div>
       }
     />
   );
