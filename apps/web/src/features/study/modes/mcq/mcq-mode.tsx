@@ -102,7 +102,13 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
         })}
       </ul>
 
-      <p role="status" className={cn(result?.isCorrect ? 'text-success' : 'text-danger')}>
+      <p
+        role="status"
+        className={cn(
+          result?.isCorrect ? 'feedback-correct text-success' : 'text-danger',
+          result && !result.isCorrect && 'feedback-wrong',
+        )}
+      >
         {result ? (result.isCorrect ? 'Chính xác' : 'Chưa đúng') : ''}
       </p>
 

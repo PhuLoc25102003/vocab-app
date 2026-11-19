@@ -18,10 +18,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong         |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     18 |      27 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     19 |      27 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |       4 | Đang làm     |
-| **Toàn dự án**          |                                            | **83** | **106** | **78%**      |
+| **Toàn dự án**          |                                            | **84** | **106** | **79%**      |
 
 ## Cách cập nhật
 
@@ -198,7 +198,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **2.27** Tổng quan cho ADMIN: số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá.
 - [x] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện dạng danh sách để quản lý, Khám phá là lưới bộ của cộng đồng có tác giả, mô tả và số thẻ; mô tả trang nói rõ vai trò (#212).
 - [x] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị (#216).
-- [ ] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ.
+- [x] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ (#218).
 - [ ] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước.
 
 ## Giai đoạn 3: Lớp học

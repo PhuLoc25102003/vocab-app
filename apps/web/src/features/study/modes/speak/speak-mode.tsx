@@ -96,7 +96,7 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
           role="status"
           className={cn(
             'flex items-center gap-2',
-            result.isCorrect ? 'text-success' : 'text-danger',
+            result.isCorrect ? 'feedback-correct text-success' : 'feedback-wrong text-danger',
           )}
         >
           {result.isCorrect ? (
