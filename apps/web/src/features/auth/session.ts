@@ -9,8 +9,11 @@ const MAX_REFRESH_ATTEMPTS = 3;
 const REFRESH_RETRY_DELAY_MS = 300;
 
 let refreshing: Promise<string | null> | null = null;
+/** Tăng mỗi lần có phiên mới, để kết quả refresh cũ không ghi đè phiên mới hơn. */
+let sessionGeneration = 0;
 
 export function startSession(session: AuthSession): void {
+  sessionGeneration += 1;
   useAuthStore.getState().setSession(session);
   setSessionMarker();
 }
@@ -25,6 +28,7 @@ function wait(ms: number): Promise<void> {
 }
 
 async function runRefresh(): Promise<string | null> {
+  const startedAt = sessionGeneration;
   for (let attempt = 1; ; attempt += 1) {
     try {
       const session = await authApi.refresh();
@@ -38,6 +42,10 @@ async function runRefresh(): Promise<string | null> {
           continue;
         }
         if (error.status === 401 || error.status === 403) {
+          // Người dùng vừa đăng nhập trong lúc chờ: giữ phiên mới, bỏ kết quả cũ.
+          if (sessionGeneration !== startedAt) {
+            return useAuthStore.getState().accessToken;
+          }
           endSession();
           return null;
         }

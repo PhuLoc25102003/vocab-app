@@ -349,7 +349,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
     // Audit mọi màn hình ở bốn kiểu xem, danh sách màn hình tăng theo số chế độ học.
-    test.setTimeout(360_000);
+    test.setTimeout(600_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();
     const memberPaths = [
       '/dashboard',
