@@ -6,21 +6,22 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-2. Đo lại Lighthouse trên production (việc 1.34).
+1. Cải thiện trải nghiệm và giao diện, nhóm 2E (việc 2.16 đến 2.25).
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+3. Đo lại Lighthouse trên production (việc 1.34).
 
 ## Tổng quan
 
 Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng của từng việc.
 
-| Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
-| ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
-| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |     54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     10 |     15 | Đang làm     |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |      4 | Đang làm     |
-| **Toàn dự án**          |                                            | **75** | **94** | **80%**      |
+| Giai đoạn               | Mục tiêu                                   |   Xong |    Tổng | Trạng thái   |
+| ----------------------- | ------------------------------------------ | -----: | ------: | ------------ |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong         |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     10 |      25 | Đang làm     |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      2 |       4 | Đang làm     |
+| **Toàn dự án**          |                                            | **75** | **104** | **72%**      |
 
 ## Cách cập nhật
 
@@ -182,6 +183,21 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá (#184).
 - [x] **2.12** API ẩn và bỏ ẩn bộ từ vi phạm, bộ bị ẩn không còn với người khác (#186).
 - [x] **2.15** Giao diện ẩn bộ từ: nút ẩn kèm lý do cho ADMIN, chủ bộ thấy thông báo bộ đang bị ẩn (#188).
+
+### 2E. Trải nghiệm và giao diện
+
+**Xong khi:** các trang chính cân đối, dễ hiểu, có cá tính riêng; người học hiểu vì sao thẻ đến hạn và khi nào được tính là đã thuộc. Thiết kế theo skill `ui-ux-pro` và `docs/05-ui-tokens.md`, mọi hiệu ứng tôn trọng `prefers-reduced-motion`.
+
+- [ ] **2.16** Bố cục cân đối: nội dung trang căn giữa với độ rộng tối đa nhất quán, form căn giữa, không dồn sang trái ở màn hình rộng.
+- [ ] **2.17** Header hiện tên hiển thị cạnh ảnh đại diện, mở menu tài khoản (Tài khoản, Quản lý người dùng với ADMIN, Đăng xuất).
+- [ ] **2.18** Ô chọn (dropdown) mới thay `select` mặc định: đẹp, đúng token, dùng được bằng bàn phím và trình đọc màn hình.
+- [ ] **2.19** Chế độ học trên trang bộ từ gom thành lưới thẻ có icon và mô tả ngắn, một nút chính "Bắt đầu học", thay hàng nút trải dài.
+- [ ] **2.20** Giải thích "đã thuộc" và "đến hạn": mỗi thẻ hiện mức nhớ (Mới, Đang học, Đã thuộc) và ngày ôn tiếp theo; trang Ôn hôm nay giải thích lịch ôn và hiện thẻ sắp đến hạn; ô "Từ đã thuộc" có chú thích điều kiện.
+- [ ] **2.21** Trang Tổng quan nổi bật hơn: hoạt động 7 ngày, phân bố mức nhớ, bộ đang học dở, việc nên làm tiếp; ADMIN thấy thêm số người dùng, bộ từ, bộ bị ẩn, tài khoản bị khoá.
+- [ ] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện của tôi (tiến độ từng bộ, thư mục, thao tác chủ), Khám phá là cộng đồng (thẻ có tác giả, số thẻ, sao chép nhanh, sắp xếp mới và nhiều thẻ).
+- [ ] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị.
+- [ ] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ.
+- [ ] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước.
 
 ## Giai đoạn 3: Lớp học
 
