@@ -2,12 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1, phần hoàn thiện MVP. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
+**Đang ở:** Giai đoạn 1, bổ sung các chức năng còn thiếu sau khi rà use case trong `docs/use-cases/`. Các phần 1D và 1E đang chờ tài khoản dịch vụ và quyết định thư viện Excel.
 
 **Việc tiếp theo:**
 
-1. Rà accessibility, dark mode, màn hình 360 px và Lighthouse (việc 1.34).
-2. Thêm rate limit chung cho API (issue #95).
+1. Sửa điều hướng sau khi lưu bộ từ (việc 1.37).
+2. Cảnh báo khi rời form chưa lưu (việc 1.38).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     26 |     36 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     26 |     49 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **39** | **72** | **54%**      |
+| **Toàn dự án**          |                                            | **39** | **85** | **46%**      |
 
 ## Cách cập nhật
 
@@ -29,6 +29,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - Khi bắt đầu, thêm `Đang làm: <tên nhánh>` vào cuối dòng.
 - Trong PR của việc đó, đổi `[ ]` thành `[x]`, ghi số PR, cập nhật bảng tổng quan, "Đang ở" và "Việc tiếp theo".
 - Một việc chỉ được tính là xong khi PR đã merge vào `develop`.
+- Trước khi làm, đọc use case của việc trong `docs/use-cases/`.
 
 ## Giai đoạn 0: Nền tảng
 
@@ -128,6 +129,24 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu.
 - [ ] **1.35** PR phát hành từ `develop` vào `main`, kiểm tra production.
 
+### 1H. Bổ sung sau khi rà use case
+
+**Xong khi:** các lỗ hổng trong `docs/use-cases/README.md` đã được xử lý. Làm phần này trước việc 1.34 và 1.35.
+
+- [ ] **1.37** Sau khi tạo hoặc sửa bộ từ, nút quay lại của trình duyệt không về form đã lưu (GAP-01).
+- [ ] **1.38** Cảnh báo khi rời form chưa lưu bằng nút quay lại, nút huỷ hoặc menu (GAP-02).
+- [ ] **1.39** Không mất đáp án khi tải lại hoặc đóng trang, tiếp tục được phiên đang học (GAP-03).
+- [ ] **1.40** Trang tài khoản: đổi tên, đổi mật khẩu, đăng xuất mọi thiết bị, xoá tài khoản (GAP-04).
+- [ ] **1.41** Trang 404 và trang lỗi toàn cục bằng tiếng Việt, có lối quay về (GAP-05).
+- [ ] **1.42** Khách dùng được trang Khám phá (GAP-06).
+- [ ] **1.43** Tìm kiếm và sắp xếp trong danh sách bộ từ của tôi (GAP-07).
+- [ ] **1.44** Tổng quan báo số thẻ đến hạn, chi tiết bộ từ có tiến độ của bộ (GAP-08).
+- [ ] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09).
+- [ ] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10).
+- [ ] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11).
+- [ ] **1.48** Rate limit chung cho API (GAP-12, #95).
+- [ ] **1.49** Quên mật khẩu qua email (GAP-13). Chờ chọn dịch vụ gửi email.
+
 ## Giai đoạn 2: Mở rộng
 
 **Xong khi:** đủ 8 chế độ học, có quản lý thư mục, ảnh và công cụ quản trị.
@@ -184,3 +203,5 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`       |
 | Thư viện đọc Excel                 | 1.21           | Cân nhắc `exceljs`, kiểm tra bảo mật khi làm |
 | Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt          |
+| Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản  |
+| Khôi phục bộ từ đã xoá             | 1.30           | MVP không có thùng rác, xoá hẳn sau 30 ngày  |
