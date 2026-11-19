@@ -43,7 +43,8 @@ export function SetDetail({
     return <SetLoadFailure error={set.error} onRetry={() => void set.refetch()} />;
   }
 
-  const { title, description, visibility, cards, termLang, defLang } = set.data;
+  const { title, description, visibility, cards, termLang, defLang, hiddenAt, hiddenReason } =
+    set.data;
 
   return (
     <>
@@ -53,6 +54,11 @@ export function SetDetail({
         description={description ?? undefined}
         actions={renderActions(set.data)}
       />
+      {hiddenAt ? (
+        <p role="status" className="max-w-[65ch] border-l-4 border-danger-mark pl-3 text-danger">
+          Bộ từ đang bị quản trị viên ẩn khỏi người khác. Lý do: {hiddenReason}
+        </p>
+      ) : null}
       <SetMeta set={set.data}>
         {visibility === 'PUBLIC' ? (
           <>

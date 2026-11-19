@@ -1,8 +1,10 @@
 import {
   adminUserListResponseSchema,
   adminUserResponseSchema,
+  hiddenSetResponseSchema,
   type AdminUser,
   type AdminUserList,
+  type HiddenSet,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -32,4 +34,17 @@ export async function lockUser(id: string, reason: string): Promise<AdminUser> {
 export async function unlockUser(id: string): Promise<AdminUser> {
   const body = await http(`/admin/users/${encodeURIComponent(id)}/unlock`, { method: 'PATCH' });
   return adminUserResponseSchema.parse(body).data;
+}
+
+export async function hideSet(id: string, reason: string): Promise<HiddenSet> {
+  const body = await http(`/admin/sets/${encodeURIComponent(id)}/hide`, {
+    method: 'PATCH',
+    body: JSON.stringify({ reason }),
+  });
+  return hiddenSetResponseSchema.parse(body).data;
+}
+
+export async function unhideSet(id: string): Promise<HiddenSet> {
+  const body = await http(`/admin/sets/${encodeURIComponent(id)}/unhide`, { method: 'PATCH' });
+  return hiddenSetResponseSchema.parse(body).data;
 }

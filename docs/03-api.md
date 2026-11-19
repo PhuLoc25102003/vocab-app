@@ -132,7 +132,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PATCH /admin/users/:id/lock` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, tăng `tokenVersion` và xoá mọi phiên refresh nên tài khoản bị đăng xuất ngay, trả 200 `{ data: user }`. Tự khoá mình trả 422 `CANNOT_LOCK_SELF`. `PATCH /admin/users/:id/unlock` xoá ba trường khoá. Không tìm thấy trả 404 `USER_NOT_FOUND`.
 - Tài khoản bị khoá đăng nhập bằng mật khẩu hoặc Google trả 403 `ACCOUNT_LOCKED`, chỉ sau khi mật khẩu đúng. Refresh trả 401 và access token cũ bị `AuthGuard` từ chối.
 
-- `PATCH /admin/sets/:id/hide` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, trả 200 `{ data: { id, title, hiddenAt, hiddenReason, hiddenById } }`. `PATCH /admin/sets/:id/unhide` xoá ba trường này. Bộ không tồn tại hoặc đã xoá trả 404 `SET_NOT_FOUND`. Bộ bị ẩn không còn trong `GET /sets/public`, và với người không phải chủ hay ADMIN thì `GET /sets/:id`, học, sao chép đều trả 404.
+- `PATCH /admin/sets/:id/hide` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, trả 200 `{ data: { id, title, hiddenAt, hiddenReason, hiddenById } }`. `PATCH /admin/sets/:id/unhide` xoá ba trường này. Bộ không tồn tại hoặc đã xoá trả 404 `SET_NOT_FOUND`. `GET /sets/:id` trả thêm `hiddenAt`, `hiddenReason` để chủ bộ và ADMIN thấy trạng thái ẩn. Bộ bị ẩn không còn trong `GET /sets/public`, và với người không phải chủ hay ADMIN thì `GET /sets/:id`, học, sao chép đều trả 404.
 
 ## Thống kê
 
