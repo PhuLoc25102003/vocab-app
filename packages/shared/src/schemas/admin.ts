@@ -11,6 +11,26 @@ export const adminUserQuerySchema = paginationSchema.extend({
 });
 export type AdminUserQuery = z.infer<typeof adminUserQuerySchema>;
 
+/** Lý do ẩn bộ từ vi phạm, cùng giới hạn với lý do khoá tài khoản. */
+export const hideSetSchema = z.object({
+  reason: z
+    .string('Hãy nhập lý do ẩn')
+    .trim()
+    .min(1, 'Hãy nhập lý do ẩn')
+    .max(LOCK_REASON_MAX_LENGTH, `Lý do tối đa ${LOCK_REASON_MAX_LENGTH} ký tự`),
+});
+export type HideSetDto = z.infer<typeof hideSetSchema>;
+
+export const hiddenSetSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  hiddenAt: z.coerce.date().nullable(),
+  hiddenReason: z.string().nullable(),
+  hiddenById: z.string().nullable(),
+});
+export type HiddenSet = z.infer<typeof hiddenSetSchema>;
+export const hiddenSetResponseSchema = z.object({ data: hiddenSetSchema });
+
 export const lockUserSchema = z.object({
   reason: z
     .string('Hãy nhập lý do khoá')
