@@ -92,6 +92,11 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /sets/:id/duplicate` sao chép bộ từ người gọi xem được về tài khoản của họ, trả 201 kèm thông tin bộ mới. Bản sao có tên thêm ` (bản sao)`, luôn `PRIVATE`, gồm toàn bộ thẻ với `id` mới, không kèm thư mục và tiến độ học. Bộ không xem được trả 404.
 - `folderId` chưa được nhận, sẽ thêm cùng API thư mục ở việc 2.4.
 
+## Nhập từ
+
+- `POST /import/preview` cần đăng nhập, nhận `{ content, options? }`. `content` là text đã dán hoặc nội dung file `.txt`, `.csv` mà web đã đọc, tối đa 2.000.000 ký tự, body tối đa 5 MB. `options` gồm `delimiter` (`auto`, `tab`, `comma`, `semicolon`, `dash` là `-`), `hasHeader`, `termColumn`, `definitionColumn` (đếm từ 1, mặc định 1 và 2). Endpoint chỉ phân tích, không lưu, trả 200 `{ data: { delimiter, columnCount, rows: [{ line, term, definition, errors }] } }`. `line` là số dòng gốc, dòng trống bị bỏ qua. Quá 2.000 dòng trả 422 `IMPORT_TOO_MANY_ROWS` kèm `details: { max, rows }`.
+- Logic đọc nằm ở `parseImport` trong `@vocab/shared`: bỏ BOM, đọc ô CSV có ngoặc kép, công thức Excel giữ nguyên dạng văn bản. XLSX làm ở việc 1.51.
+
 ## Phiên học
 
 - `POST /study/sessions` nhận `{ setId, mode, limit?, dueOnly?, cardIds? }`, trong đó `cardIds` giới hạn phiên ở các thẻ được chọn của bộ từ, trả 201 `{ data: { session, questions, languages } }`, trong đó `languages` là `{ term, definition }` để phát âm. Chỉ học được bộ từ người gọi xem được, nếu không trả 404 `SET_NOT_FOUND`. Chế độ chưa có trả 422 `STUDY_MODE_UNAVAILABLE`, bộ từ không có thẻ trả 422 `SET_HAS_NO_CARDS`. `dueOnly` chỉ lấy thẻ đã đến hạn của người gọi, không còn thẻ thì trả 422 `NO_CARDS_DUE`. Hiện có `FLASHCARD` với đáp án `known` hoặc `unknown`, cùng `WRITE` và `DICTATION` với đáp án là từ người học gõ, `MCQ` với đáp án là một phần tử trong `choices`.
