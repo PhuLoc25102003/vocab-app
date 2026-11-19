@@ -169,7 +169,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [ ] **2.7** Chế độ Learn.
 - [x] **2.8** Chế độ Điền từ (#144).
-- [x] **2.9** Chế độ Ghép cặp.
+- [x] **2.9** Chế độ Ghép cặp (#146).
 - [ ] **2.10** Chế độ Kiểm tra.
 
 ### 2D. Quản trị
