@@ -1,5 +1,6 @@
 import type { Metadata, Route } from 'next';
 import { BackLink } from '@/components/common/back-link';
+import { PageContainer } from '@/components/common/page-container';
 import { PageHeader } from '@/components/common/page-header';
 import { ImportWizard } from '@/features/import/components/import-wizard';
 
@@ -10,7 +11,7 @@ export default async function ImportPage({ searchParams }: PageProps<'/sets/impo
   const id = typeof setId === 'string' && setId ? setId : undefined;
 
   return (
-    <>
+    <PageContainer width="narrow">
       {id ? (
         <BackLink href={`/sets/${id}` as Route} label="Quay lại bộ từ" />
       ) : (
@@ -21,6 +22,6 @@ export default async function ImportPage({ searchParams }: PageProps<'/sets/impo
         description="Dán từ Quizlet, Excel, Google Sheets hoặc chọn file .txt, .csv, .xlsx. Mỗi dòng là một thẻ."
       />
       <ImportWizard key={id ?? 'new'} setId={id} />
-    </>
+    </PageContainer>
   );
 }

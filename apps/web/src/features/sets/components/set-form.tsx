@@ -142,7 +142,7 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
   });
 
   return (
-    <form onSubmit={submit} noValidate className="flex max-w-[720px] flex-col gap-6">
+    <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
       {errors.root?.message ? <FormError>{errors.root.message}</FormError> : null}
       <SetDetailsFields initialValues={initialValues} register={register} errors={errors} />
       <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />

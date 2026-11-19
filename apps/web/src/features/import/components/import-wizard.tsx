@@ -77,7 +77,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   if (setId && target.isPending) {
     return (
       <LoadingState label="Đang tải bộ từ">
-        <Skeleton className="h-48 max-w-[720px]" />
+        <Skeleton className="h-48 w-full" />
       </LoadingState>
     );
   }
@@ -149,7 +149,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   }
 
   return (
-    <div className="flex max-w-[720px] flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <ImportPreview rows={rows} columns={columns} onChange={setRows} />
       <form
         onSubmit={submit}

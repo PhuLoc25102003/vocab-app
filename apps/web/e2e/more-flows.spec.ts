@@ -104,6 +104,12 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
   test('tạo, sửa rồi tìm thấy bộ từ trong danh sách', async () => {
     await page.goto('/sets/new');
+    // Trang form căn giữa ở màn hình rộng, tiêu đề thẳng hàng với form.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const heading = await page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' }).boundingBox();
+    const form = await page.locator('main form').first().boundingBox();
+    expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
+    expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
     await visibleField(page, 'Tên bộ từ').fill(firstTitle);
     await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
     await page.getByRole('button', { name: 'Thêm thẻ' }).click();
@@ -342,7 +348,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   });
 
   test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
-    test.setTimeout(240_000);
+    // Audit mọi màn hình ở bốn kiểu xem, danh sách màn hình tăng theo số chế độ học.
+    test.setTimeout(360_000);
     const guest = await (await browser.newContext({ baseURL })).newPage();
     const memberPaths = [
       '/dashboard',
@@ -486,6 +493,8 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   browser,
   baseURL,
 }) => {
+  // Luồng dài: hai lần đăng ký, khoá, mở khoá rồi ẩn bộ từ, máy CI cần hơn 30 giây.
+  test.setTimeout(90_000);
   const target = `e2e-target-${stamp}@example.com`;
   const adminEmail = `e2e-admin-${stamp}@example.com`;
   const targetPage = await (await browser.newContext({ baseURL })).newPage();
@@ -520,6 +529,9 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
 
   await admin.getByRole('button', { name: `Mở khoá ${target}` }).click();
   await expect(admin.getByText('Đang hoạt động', { exact: false })).toBeVisible();
+  // Form có thể được làm mới sau lần bị từ chối, nên điền lại trước khi đăng nhập.
+  await visibleField(targetPage, 'Email').fill(target);
+  await visibleField(targetPage, 'Mật khẩu').fill(password);
   await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
   await targetPage.waitForURL('**/dashboard');
 
