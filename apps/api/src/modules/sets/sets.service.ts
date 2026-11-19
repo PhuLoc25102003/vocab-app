@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
+  MAX_CARDS_PER_SET,
+  type ImportCardsDto,
   type CreateSetDto,
   type PublicSetQuery,
   type ReplaceCardsDto,
@@ -63,6 +65,23 @@ export class SetsService {
       throw setNotFound();
     }
     return ok(set);
+  }
+
+  async importCards(id: string, { cards }: ImportCardsDto) {
+    const result = await this.sets.appendCards(id, cards);
+    if (result.status === 'not_found') {
+      throw setNotFound();
+    }
+    if (result.status === 'limit') {
+      const room = MAX_CARDS_PER_SET - result.current;
+      throw new AppError(
+        ERROR_CODES.SET_CARD_LIMIT,
+        `Bộ từ đang có ${result.current} thẻ, chỉ thêm được ${room} thẻ nữa`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        { max: MAX_CARDS_PER_SET, current: result.current, adding: cards.length },
+      );
+    }
+    return ok({ ...result.set, imported: cards.length });
   }
 
   async remove(id: string): Promise<void> {

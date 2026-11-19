@@ -1,7 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
+  MAX_CARDS_PER_SET,
   SET_TITLE_MAX_LENGTH,
+  type CardInput,
   type CreateSetDto,
   type PublicSetQuery,
   type ReplaceCardsDto,
@@ -47,6 +49,13 @@ const CARD_SELECT = {
 /** Ghi 2.000 thẻ có thể lâu hơn mức mặc định 5 giây của transaction. */
 const BULK_CARDS_TIMEOUT_MS = 30_000;
 const COPY_TITLE_SUFFIX = ' (bản sao)';
+
+type SetSummaryRow = Prisma.StudySetGetPayload<{ select: typeof SET_SUMMARY_SELECT }>;
+
+export type AppendCardsResult =
+  | { status: 'ok'; set: SetSummaryRow }
+  | { status: 'limit'; current: number }
+  | { status: 'not_found' };
 
 export interface SetViewer {
   id: string;
@@ -298,6 +307,51 @@ export class SetsRepository extends BaseRepository {
             cards: { select: CARD_SELECT, orderBy: { position: 'asc' } },
           },
         });
+      },
+      { timeout: BULK_CARDS_TIMEOUT_MS },
+    );
+  }
+
+  /**
+   * Thêm thẻ vào cuối bộ từ. Điều kiện số thẻ nằm trong cùng câu lệnh cập nhật `cardCount`,
+   * nên hai lần nhập cùng lúc không thể vượt giới hạn.
+   */
+  appendCards(setId: string, cards: CardInput[]): Promise<AppendCardsResult> {
+    return this.prisma.$transaction(
+      async (tx): Promise<AppendCardsResult> => {
+        const { count } = await tx.studySet.updateMany({
+          where: {
+            id: setId,
+            deletedAt: null,
+            cardCount: { lte: MAX_CARDS_PER_SET - cards.length },
+          },
+          data: { cardCount: { increment: cards.length } },
+        });
+        if (count === 0) {
+          const set = await tx.studySet.findFirst({
+            where: { id: setId, deletedAt: null },
+            select: { cardCount: true },
+          });
+          return set ? { status: 'limit', current: set.cardCount } : { status: 'not_found' };
+        }
+
+        const last = await tx.card.aggregate({ where: { setId }, _max: { position: true } });
+        const start = (last._max.position ?? -1) + 1;
+        await tx.card.createMany({
+          data: cards.map(({ term, definition, phonetic, example }, index) => ({
+            setId,
+            position: start + index,
+            term,
+            definition,
+            phonetic: phonetic ?? null,
+            example: example ?? null,
+          })),
+        });
+        const set = await tx.studySet.findUniqueOrThrow({
+          where: { id: setId },
+          select: SET_SUMMARY_SELECT,
+        });
+        return { status: 'ok', set };
       },
       { timeout: BULK_CARDS_TIMEOUT_MS },
     );
