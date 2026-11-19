@@ -168,7 +168,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2C. Chế độ học
 
 - [ ] **2.7** Chế độ Learn.
-- [x] **2.8** Chế độ Điền từ.
+- [x] **2.8** Chế độ Điền từ (#144).
 - [ ] **2.9** Chế độ Ghép cặp.
 - [ ] **2.10** Chế độ Kiểm tra.
 
