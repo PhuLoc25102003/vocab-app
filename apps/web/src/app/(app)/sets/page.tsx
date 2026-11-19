@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
-import { MySets } from '@/features/sets/components/my-sets';
 import { SetRowsLoading } from '@/features/sets/components/set-rows';
+import { MySetsScreen } from './my-sets-screen';
 
 export const metadata: Metadata = { title: 'Bộ từ' };
 
@@ -25,7 +25,7 @@ export default function SetsPage() {
         }
       />
       <Suspense fallback={<SetRowsLoading count={5} />}>
-        <MySets />
+        <MySetsScreen />
       </Suspense>
     </>
   );
