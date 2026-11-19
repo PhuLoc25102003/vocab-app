@@ -17,18 +17,20 @@ Khi có tên miền chung, ví dụ `app.` và `api.` cùng một tên miền, c
 
 ## Render (API)
 
-| Mục               | Giá trị                                                                   |
-| ----------------- | ------------------------------------------------------------------------- |
-| Runtime, region   | Node, Singapore                                                           |
-| Build command     | `npm ci && npm run build -w @vocab/shared && npm run build -w @vocab/api` |
-| Start command     | `npm run prisma:deploy -w @vocab/api && npm run start -w @vocab/api`      |
-| Health check path | `/api/v1/health`                                                          |
+| Mục               | Giá trị                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| Runtime, region   | Node, Singapore                                                                         |
+| Build command     | `npm ci --include=dev && npm run build -w @vocab/shared && npm run build -w @vocab/api` |
+| Start command     | `npm run prisma:deploy -w @vocab/api && npm run start -w @vocab/api`                    |
+| Health check path | `/api/v1/health`                                                                        |
 
-Gói Free không có bước pre-deploy nên migration chạy trong start command. Gói Free ngủ sau 15 phút không có request, lần đầu mở lại mất khoảng 50 giây.
+`--include=dev` là bắt buộc: có `NODE_ENV=production` thì `npm ci` bỏ dev dependency, trong khi build cần Prisma CLI, Nest CLI và TypeScript. Gói Free không có bước pre-deploy nên migration chạy trong start command. Gói Free ngủ sau 15 phút không có request, lần đầu mở lại mất khoảng 50 giây.
 
 Biến môi trường: `NODE_ENV=production`, `NODE_VERSION=24.11.0`, `DATABASE_URL`, `DIRECT_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (mỗi biến tạo bằng `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`), `CORS_ORIGINS` là địa chỉ Vercel, `REFRESH_COOKIE_SAME_SITE=lax`, `TRUSTED_PROXIES=2`, `LOG_LEVEL=info`.
 
 `TRUSTED_PROXIES=2` nghĩa là tin hai tầng proxy: Vercel chuyển tiếp rồi tới load balancer của Render. Sau khi deploy, đăng nhập rồi xem trường `req.ip` trong log của Render. Nếu đó là IP của bạn thì đúng, nếu là IP của máy chủ Vercel thì tăng lên 3.
+
+Hiện API chạy ở `https://vocab-app-rj0t.onrender.com`, deploy từ nhánh `develop` cho đến khi phát hành vào `main` (việc 1.35). Biến `JWT_*` tạo bằng nút Generate của Render.
 
 ## Vercel (web)
 
