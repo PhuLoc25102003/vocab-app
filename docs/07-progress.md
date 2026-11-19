@@ -138,7 +138,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.39** Không mất đáp án khi tải lại hoặc đóng trang, tiếp tục được phiên đang học (GAP-03, #107).
 - [x] **1.40** Trang tài khoản: đổi tên, đổi mật khẩu, đăng xuất mọi thiết bị, xoá tài khoản (GAP-04, #111).
 - [x] **1.41** Trang 404 và trang lỗi toàn cục bằng tiếng Việt, có lối quay về (GAP-05, #113).
-- [x] **1.42** Khách dùng được trang Khám phá (GAP-06).
+- [x] **1.42** Khách dùng được trang Khám phá (GAP-06, #115).
 - [ ] **1.43** Tìm kiếm và sắp xếp trong danh sách bộ từ của tôi (GAP-07).
 - [ ] **1.44** Tổng quan báo số thẻ đến hạn, chi tiết bộ từ có tiến độ của bộ (GAP-08).
 - [ ] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09).
