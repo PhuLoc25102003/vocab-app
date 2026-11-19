@@ -44,6 +44,22 @@ function renderExplore() {
 }
 
 describe('ExploreSets', () => {
+  it('đưa khách tới trang công khai của bộ từ', async () => {
+    vi.mocked(listPublicSets).mockResolvedValue(result);
+    navigation.params = new URLSearchParams();
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <ExploreSets audience="guest" />
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByRole('link', { name: 'Trái cây' })).toHaveAttribute(
+      'href',
+      '/public/sets/s1',
+    );
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     navigation.params = new URLSearchParams();

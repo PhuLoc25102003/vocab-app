@@ -13,7 +13,14 @@ const dateFormat = new Intl.DateTimeFormat('vi-VN', {
 
 type SetRow = SetSummary & Partial<Pick<PublicSetSummary, 'owner'>>;
 
-export function SetRows({ sets }: { sets: SetRow[] }) {
+interface SetRowsProps {
+  sets: SetRow[];
+  hrefFor?: (id: string) => Route;
+}
+
+const memberSetHref = (id: string) => `/sets/${id}` as Route;
+
+export function SetRows({ sets, hrefFor = memberSetHref }: SetRowsProps) {
   return (
     <ul className="border-t border-border">
       {sets.map(({ id, title, visibility, cardCount, updatedAt, owner }) => (
@@ -23,7 +30,7 @@ export function SetRows({ sets }: { sets: SetRow[] }) {
         >
           <div className="min-w-0 flex-1 basis-56">
             <Link
-              href={`/sets/${id}` as Route}
+              href={hrefFor(id)}
               className="block text-h3 break-words after:absolute after:inset-0"
             >
               {title}

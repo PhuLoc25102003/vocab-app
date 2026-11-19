@@ -23,6 +23,11 @@ export function proxy(request: NextRequest): NextResponse {
     return NextResponse.next();
   }
 
+  // Khách vẫn tìm được bộ từ công khai, không cần đăng nhập.
+  if (pathname === '/explore') {
+    return NextResponse.redirect(new URL(`/public/explore${search}`, request.url));
+  }
+
   const loginUrl = new URL('/login', request.url);
   loginUrl.searchParams.set('next', `${pathname}${search}`);
   return NextResponse.redirect(loginUrl);

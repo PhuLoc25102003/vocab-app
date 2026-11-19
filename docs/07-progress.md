@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Cho khách dùng trang Khám phá (việc 1.42).
-2. Tìm kiếm và sắp xếp bộ từ của tôi (việc 1.43).
+1. Tìm kiếm và sắp xếp bộ từ của tôi (việc 1.43).
+2. Báo thẻ đến hạn và tiến độ theo bộ (việc 1.44).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     31 |     49 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     32 |     49 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **44** | **85** | **52%**      |
+| **Toàn dự án**          |                                            | **45** | **85** | **53%**      |
 
 ## Cách cập nhật
 
@@ -138,7 +138,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.39** Không mất đáp án khi tải lại hoặc đóng trang, tiếp tục được phiên đang học (GAP-03, #107).
 - [x] **1.40** Trang tài khoản: đổi tên, đổi mật khẩu, đăng xuất mọi thiết bị, xoá tài khoản (GAP-04, #111).
 - [x] **1.41** Trang 404 và trang lỗi toàn cục bằng tiếng Việt, có lối quay về (GAP-05, #113).
-- [ ] **1.42** Khách dùng được trang Khám phá (GAP-06).
+- [x] **1.42** Khách dùng được trang Khám phá (GAP-06, #115).
 - [ ] **1.43** Tìm kiếm và sắp xếp trong danh sách bộ từ của tôi (GAP-07).
 - [ ] **1.44** Tổng quan báo số thẻ đến hạn, chi tiết bộ từ có tiến độ của bộ (GAP-08).
 - [ ] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09).

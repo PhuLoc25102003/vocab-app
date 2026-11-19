@@ -138,7 +138,13 @@ test.describe.serial('luồng chính', () => {
       }
     });
 
-    await guest.goto(`/public${setPath}`);
+    await guest.goto('/');
+    await guest.getByRole('link', { name: 'Khám phá bộ từ' }).click();
+    await guest.waitForURL('**/public/explore');
+    await guest.getByRole('searchbox', { name: 'Tìm bộ từ theo tên' }).fill(setTitle);
+    await guest.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await guest.getByRole('link', { name: setTitle }).click();
+    await guest.waitForURL(`**/public${setPath}`);
     await expect(guest.getByRole('heading', { name: setTitle })).toBeVisible();
     await guest.getByRole('link', { name: 'Học thử' }).click();
     for (let index = 0; index < cards.length; index += 1) {

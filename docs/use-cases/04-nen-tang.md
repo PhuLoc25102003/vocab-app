@@ -26,7 +26,7 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 - **Phải có:** thông điệp chính, thẻ mẫu, 4 chế độ học, cách dùng, nút theo phiên đăng nhập, chỉ nêu tính năng đã có.
 - **Ngoại lệ:** người đã đăng nhập thấy nút vào app; JavaScript chưa chạy xong vẫn đọc được nội dung.
 - **Test đã có:** `landing-page.test`, E2E đăng ký từ trang chủ, kiểm tra light, dark 360 px.
-- **Khi đổi sau này:** thêm lối vào Khám phá ở việc 1.42 và nhắc import sau khi làm xong 1.23.
+- **Khi đổi sau này:** nhắc import sau khi làm xong 1.23.
 
 ## UC-P3. Triển khai môi trường thật
 

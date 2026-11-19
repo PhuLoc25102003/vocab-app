@@ -24,15 +24,23 @@ function toQuery(value: string | null): string {
   return q.success ? (q.data ?? '') : '';
 }
 
-function exploreHref(q: string, page = 1): Route {
+type ExploreAudience = 'member' | 'guest';
+
+const AUDIENCE_PATHS: Record<ExploreAudience, { list: string; set: (id: string) => Route }> = {
+  member: { list: '/explore', set: (id) => `/sets/${id}` as Route },
+  guest: { list: '/public/explore', set: (id) => `/public/sets/${id}` as Route },
+};
+
+function exploreHref(list: string, q: string, page = 1): Route {
   const params = new URLSearchParams();
   if (q) params.set(QUERY_FIELD, q);
   if (page > 1) params.set('page', String(page));
   const query = params.toString();
-  return (query ? `/explore?${query}` : '/explore') as Route;
+  return (query ? `${list}?${query}` : list) as Route;
 }
 
-export function ExploreSets() {
+export function ExploreSets({ audience = 'member' }: { audience?: ExploreAudience }) {
+  const paths = AUDIENCE_PATHS[audience];
   const router = useRouter();
   const searchParams = useSearchParams();
   const q = toQuery(searchParams.get(QUERY_FIELD));
@@ -41,7 +49,7 @@ export function ExploreSets() {
   const search = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = new FormData(event.currentTarget).get(QUERY_FIELD);
-    router.push(exploreHref(typeof value === 'string' ? value.trim() : ''));
+    router.push(exploreHref(paths.list, typeof value === 'string' ? value.trim() : ''));
   };
 
   return (
@@ -65,12 +73,21 @@ export function ExploreSets() {
           Tìm
         </Button>
       </form>
-      <ExploreResults q={q} page={page} />
+      <ExploreResults q={q} page={page} audience={audience} />
     </>
   );
 }
 
-function ExploreResults({ q, page }: { q: string; page: number }) {
+function ExploreResults({
+  q,
+  page,
+  audience,
+}: {
+  q: string;
+  page: number;
+  audience: ExploreAudience;
+}) {
+  const paths = AUDIENCE_PATHS[audience];
   const sets = usePublicSets({ page, limit: EXPLORE_PAGE_SIZE, q });
 
   if (sets.isPending) {
@@ -94,7 +111,7 @@ function ExploreResults({ q, page }: { q: string; page: number }) {
         description={`Chưa có bộ từ công khai nào khớp với "${q}".`}
         action={
           <Button asChild variant="secondary">
-            <Link href={exploreHref('')}>Xem tất cả</Link>
+            <Link href={exploreHref(paths.list, '')}>Xem tất cả</Link>
           </Button>
         }
       />
@@ -112,7 +129,7 @@ function ExploreResults({ q, page }: { q: string; page: number }) {
         description="Danh sách ngắn hơn số trang này."
         action={
           <Button asChild variant="secondary">
-            <Link href={exploreHref(q)}>Về trang đầu</Link>
+            <Link href={exploreHref(paths.list, q)}>Về trang đầu</Link>
           </Button>
         }
       />
@@ -121,11 +138,11 @@ function ExploreResults({ q, page }: { q: string; page: number }) {
 
   return (
     <>
-      <SetRows sets={data} />
+      <SetRows sets={data} hrefFor={paths.set} />
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}
-        hrefFor={(target) => exploreHref(q, target)}
+        hrefFor={(target) => exploreHref(paths.list, q, target)}
       />
     </>
   );
