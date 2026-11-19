@@ -17,7 +17,8 @@ export class TokenUserRepository extends BaseRepository {
 
   findActiveById(id: string): Promise<TokenUser | null> {
     return this.prisma.user.findFirst({
-      where: { id, deletedAt: null },
+      // Tài khoản bị khoá coi như không còn hiệu lực.
+      where: { id, deletedAt: null, lockedAt: null },
       select: { id: true, role: true, tokenVersion: true },
     });
   }

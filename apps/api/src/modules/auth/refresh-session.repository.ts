@@ -38,6 +38,7 @@ export class RefreshSessionRepository extends BaseRepository {
             role: true,
             tokenVersion: true,
             deletedAt: true,
+            lockedAt: true,
           },
         },
       },

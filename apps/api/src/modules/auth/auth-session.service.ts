@@ -92,11 +92,15 @@ export class AuthSessionService {
       await this.sessions.deleteFamily(session.familyId);
       throw new InvalidRefreshTokenError();
     }
-    if (session.expiresAt.getTime() <= Date.now() || session.user.deletedAt) {
+    if (
+      session.expiresAt.getTime() <= Date.now() ||
+      session.user.deletedAt ||
+      session.user.lockedAt
+    ) {
       throw new InvalidRefreshTokenError();
     }
 
-    const { deletedAt: _deletedAt, tokenVersion, ...user } = session.user;
+    const { deletedAt: _deletedAt, lockedAt: _lockedAt, tokenVersion, ...user } = session.user;
     const { issued, record } = await this.issue(
       { id: user.id, role: user.role, tokenVersion },
       session.familyId,

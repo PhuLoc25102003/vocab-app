@@ -49,6 +49,8 @@ Hai lớp kiểm tra, đều là guard dùng chung, không viết lại trong se
 | Xem kết quả của lớp | Không | Không        | Lớp của mình | Có    |
 | Quản lý người dùng  | Không | Không        | Không        | Có    |
 
+ADMIN khoá tài khoản qua `/admin/users/:id/lock`: tăng `tokenVersion`, xoá mọi phiên refresh, đăng nhập trả 403 `ACCOUNT_LOCKED` chỉ khi mật khẩu đúng để không lộ trạng thái khoá cho người đoán mật khẩu. ADMIN không tự khoá được mình.
+
 Mặc định **mọi route đều cần đăng nhập**: `AuthGuard` đặt global, route công khai phải ghi rõ `@Public()`. Quên gắn decorator thì route bị khoá, không bị lộ.
 
 ```ts

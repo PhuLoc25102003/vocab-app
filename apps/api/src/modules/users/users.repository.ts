@@ -12,11 +12,12 @@ const ACCOUNT_SELECT = {
   displayName: true,
   role: true,
   tokenVersion: true,
+  lockedAt: true,
 } as const;
 
 type NewUser = Pick<RegisterInput, 'email' | 'displayName'> & { passwordHash: string };
 type NewGoogleUser = Pick<RegisterInput, 'email' | 'displayName'> & { googleId: string };
-export type Account = AuthUser & { tokenVersion: number };
+export type Account = AuthUser & { tokenVersion: number; lockedAt: Date | null };
 export type UserCredentials = Account & { passwordHash: string | null };
 
 @Injectable()

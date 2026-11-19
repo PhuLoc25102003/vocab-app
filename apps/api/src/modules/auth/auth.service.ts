@@ -17,6 +17,17 @@ function toAuthUser({ id, email, displayName, role }: Account): AuthUser {
   return { id, email, displayName, role };
 }
 
+/** Tài khoản bị ADMIN khoá không được tạo phiên mới. Chỉ báo sau khi đã xác thực xong. */
+function assertNotLocked(account: Account) {
+  if (account.lockedAt) {
+    throw new AppError(
+      ERROR_CODES.ACCOUNT_LOCKED,
+      'Tài khoản đã bị khoá. Hãy liên hệ quản trị viên.',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}
+
 function toSessionResult(user: AuthUser, session: IssuedSession) {
   return {
     body: ok({ user, accessToken: session.accessToken }),
@@ -51,6 +62,7 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
+    assertNotLocked(account);
 
     return toSessionResult(toAuthUser(account), await this.sessions.start(account, client));
   }
@@ -71,6 +83,7 @@ export class AuthService {
         HttpStatus.CONFLICT,
       );
     }
+    assertNotLocked(account);
     return toSessionResult(toAuthUser(account), await this.sessions.start(account, client));
   }
 
