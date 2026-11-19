@@ -200,7 +200,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** học sinh luyện nói được và tiếp tục học khi mất mạng.
 
-- [x] **4.1** Nền chế độ luyện nói: enum `SPEAK`, strategy và API.
+- [x] **4.1** Nền chế độ luyện nói: enum `SPEAK`, strategy và API (#190).
 - [ ] **4.4** Giao diện luyện nói: xin quyền micro, nhận dạng giọng nói, thử lại, bỏ qua.
 - [ ] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện.
 - [ ] **4.3** Học offline và đồng bộ tiến độ khi có mạng.
