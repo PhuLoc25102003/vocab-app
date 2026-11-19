@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Rà accessibility, dark mode, màn hình 360 px và Lighthouse (việc 1.34).
-2. Chọn dịch vụ email cho quên mật khẩu (việc 1.49).
+1. Chế độ Điền từ (việc 2.8).
+2. Rà Performance theo hướng bạn chọn (việc 1.34).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     38 |     49 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     39 |     50 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **51** | **85** | **60%**      |
+| **Toàn dự án**          |                                            | **52** | **86** | **60%**      |
 
 ## Cách cập nhật
 
@@ -123,7 +123,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **1.29** Trang giới thiệu sản phẩm (#93).
 - [ ] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày.
-- [ ] **1.31** Log Pino có ẩn dữ liệu nhạy cảm, Sentry cho web và API, theo dõi uptime.
+- [ ] **1.31** Sentry cho web và API, theo dõi uptime. Cần tài khoản Sentry.
+- [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie (#133).
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
 - [x] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính (#98).
 - [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu. Accessibility đã đạt, Performance còn 85 đến 88.

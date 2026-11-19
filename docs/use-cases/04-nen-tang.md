@@ -49,10 +49,11 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P5. Log và giám sát
 
-- **Việc:** 1.31. **Người dùng:** người vận hành. **Trạng thái:** Chưa làm, phần Sentry và uptime cần tài khoản.
+- **Việc:** 1.50 (log), 1.31 (Sentry, uptime). **Người dùng:** người vận hành. **Trạng thái:** Log đã xong, phần Sentry và uptime cần tài khoản.
 - **Phải có:** log JSON bằng Pino có `requestId`, ẩn mật khẩu, token, cookie; Sentry cho web và API; theo dõi `/health`.
 - **Ngoại lệ:** thiếu DSN thì app vẫn chạy; lỗi 4xx nghiệp vụ không gửi Sentry.
-- **Cách test:** integration log không chứa giá trị nhạy cảm; tạo lỗi thử trên staging và thấy trong Sentry; tắt API và nhận cảnh báo uptime.
+- **Test đã có:** `logging.integration.test` kiểm tra log là JSON có `reqId`, không chứa mật khẩu, token, cookie, query string.
+- **Cách test còn lại:** tạo lỗi thử trên staging và thấy trong Sentry; tắt API và nhận cảnh báo uptime.
 
 ## UC-P6. Bảo mật
 

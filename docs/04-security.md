@@ -87,7 +87,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [x] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.
 - [x] CSRF: refresh cookie chỉ dùng ở `/auth/*`, kiểm tra header `Origin`; các API khác dùng Bearer nên không bị CSRF.
 - [ ] Secret chỉ nằm trong biến môi trường của Render/Vercel; `.env` trong `.gitignore`; config validate bằng Zod lúc khởi động, thiếu là không chạy. Phần trong repo đã đạt, phần Render và Vercel kiểm tra khi triển khai.
-- [ ] Log không ghi mật khẩu, token, cookie (cấu hình `redact` của Pino). Làm ở việc 1.31.
+- [x] Log không ghi mật khẩu, token, cookie: `redact` của Pino trong `apps/api/src/config/logger.ts`, query string bị bỏ khỏi URL trong log.
 - [x] `npm audit` và Dependabot bật trong CI.
 - [x] Dữ liệu học sinh: chỉ thu email và tên hiển thị; có nút xoá tài khoản xoá hẳn dữ liệu.
 

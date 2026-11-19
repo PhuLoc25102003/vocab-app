@@ -3,6 +3,7 @@ import cookie from '@fastify/cookie';
 import type { ModuleMetadata } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
+import type { FastifyServerOptions } from 'fastify';
 import { AppModule } from '../../src/app.module';
 import { applyBodyLimits } from '../../src/config/body-limit';
 
@@ -12,13 +13,18 @@ import { applyBodyLimits } from '../../src/config/body-limit';
  */
 export async function createTestApp(
   extra: Pick<ModuleMetadata, 'controllers'> = {},
+  adapterOptions: Pick<FastifyServerOptions, 'loggerInstance'> = {},
 ): Promise<NestFastifyApplication> {
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
     ...extra,
   }).compile();
 
-  const adapter = new FastifyAdapter({ genReqId: () => randomUUID(), trustProxy: 'loopback' });
+  const adapter = new FastifyAdapter({
+    genReqId: () => randomUUID(),
+    trustProxy: 'loopback',
+    ...adapterOptions,
+  });
   applyBodyLimits(adapter);
 
   const app = moduleRef.createNestApplication<NestFastifyApplication>(adapter, { logger: false });
