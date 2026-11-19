@@ -144,6 +144,42 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expectScore(page, cards.length);
   });
 
+  test('học kỹ: trả lời sai thì được hỏi lại trong vòng, học đến hết', async () => {
+    await page.goto(`${setPath}/study/learn`);
+    const result = page.getByText(/^Bạn nhớ/);
+    const answerBox = page.getByLabel('Nhập từ');
+    let answered = 0;
+    let sawRetry = false;
+    while (answered < 20 && !(await result.isVisible())) {
+      await expect(
+        answerBox
+          .or(page.getByRole('heading', { level: 1 }))
+          .or(result)
+          .first(),
+      ).toBeVisible();
+      if (await result.isVisible()) break;
+      sawRetry ||= await page.getByText('Hỏi lại câu trả lời sai').isVisible();
+      // Câu đầu tiên cố ý trả lời sai để câu đó được hỏi lại.
+      const correct = answered > 0;
+      if (await answerBox.isVisible()) {
+        const prompt = await page.locator('p[lang="vi"]').first().innerText();
+        const card = cards.find(({ definition }) => definition === prompt);
+        await answerBox.fill(correct ? (card?.term ?? '') : 'sai');
+        await page.getByRole('button', { name: 'Kiểm tra' }).click();
+      } else {
+        const term = await page.getByRole('heading', { level: 1 }).innerText();
+        const card = cards.find((item) => item.term === term);
+        const other = cards.find((item) => item !== card);
+        const pick = correct ? card?.definition : other?.definition;
+        await page.getByRole('button', { name: new RegExp(pick ?? '') }).click();
+      }
+      await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+      answered += 1;
+    }
+    expect(sawRetry).toBe(true);
+    await expect(result).toHaveText(`Bạn nhớ ${cards.length - 1} trên ${cards.length} thẻ.`);
+  });
+
   test('ghép cặp từ với nghĩa', async () => {
     await page.goto(`${setPath}/study/match`);
     const terms = page.getByRole('list', { name: 'Từ' });
@@ -273,6 +309,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       '/review',
       '/account',
       `${setPath}/study/flashcard`,
+      `${setPath}/study/learn`,
       `${setPath}/study/write`,
       `${setPath}/study/dictation`,
       `${setPath}/study/mcq`,

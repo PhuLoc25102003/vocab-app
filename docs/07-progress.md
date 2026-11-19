@@ -2,13 +2,12 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
+**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49) và Performance (1.34). Giai đoạn 2 đã có Learn, Điền từ, Ghép cặp và thư mục bộ từ.
 
 **Việc tiếp theo:**
 
 1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 2. Đo lại Lighthouse trên production (việc 1.34).
-3. Giao diện chế độ Learn (việc 2.13).
 
 ## Tổng quan
 
@@ -18,10 +17,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |     54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      4 |     13 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      5 |     13 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **67** | **91** | **74%**      |
+| **Toàn dự án**          |                                            | **68** | **91** | **75%**      |
 
 ## Cách cập nhật
 
@@ -172,7 +171,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2C. Chế độ học
 
 - [x] **2.7** Chế độ Learn, phần strategy và API: trộn trắc nghiệm và gõ từ theo mức nhớ (#174).
-- [ ] **2.13** Giao diện chế độ Learn: vòng 7 câu, câu sai được hỏi lại trong vòng đến khi đúng.
+- [x] **2.13** Giao diện chế độ Learn: vòng 7 câu, câu sai được hỏi lại trong vòng đến khi đúng (#178).
 - [x] **2.8** Chế độ Điền từ (#144).
 - [x] **2.9** Chế độ Ghép cặp (#146).
 - [ ] **2.10** Chế độ Kiểm tra.

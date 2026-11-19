@@ -35,6 +35,7 @@ function pageHref(page: number): Route {
 
 const REVIEW_MODES = [
   { slug: 'flashcard', label: 'Flashcard' },
+  { slug: 'learn', label: 'Học kỹ' },
   { slug: 'write', label: 'Viết' },
   { slug: 'dictation', label: 'Nghe viết' },
   { slug: 'mcq', label: 'Trắc nghiệm' },

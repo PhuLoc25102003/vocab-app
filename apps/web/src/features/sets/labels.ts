@@ -20,6 +20,7 @@ export const LANGUAGE_LABELS: Record<string, string> = {
 /** Các chế độ đã có giao diện, chế độ đầu tiên là nút chính. */
 export const STUDY_ENTRIES = [
   { slug: 'flashcard', label: 'Bắt đầu học', guestLabel: 'Học thử' },
+  { slug: 'learn', label: 'Học kỹ', guestLabel: 'Học kỹ' },
   { slug: 'write', label: 'Luyện viết', guestLabel: 'Luyện viết' },
   { slug: 'dictation', label: 'Nghe viết', guestLabel: 'Nghe viết' },
   { slug: 'mcq', label: 'Trắc nghiệm', guestLabel: 'Trắc nghiệm' },
