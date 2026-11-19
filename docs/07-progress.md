@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Deploy web lên Vercel (việc 1.20): Production theo nhánh `develop`, đặt Google Client ID, kiểm tra đăng nhập.
-2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+2. Đo lại Lighthouse trên production (việc 1.34).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     45 |     52 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     46 |     52 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **61** | **88** | **69%**      |
+| **Toàn dự án**          |                                            | **62** | **88** | **70%**      |
 
 ## Cách cập nhật
 
@@ -97,7 +97,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy (#153).
 - [x] **1.19** Deploy API lên Render, cấu hình env (gồm `TRUSTED_PROXIES`) và health check (#155).
-- [ ] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
+- [x] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
 - [x] **1.52** Trang Chính sách bảo mật và Điều khoản sử dụng, cần để publish đăng nhập Google (#159).
 
 ### 1E. Import

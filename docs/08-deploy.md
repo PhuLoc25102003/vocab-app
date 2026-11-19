@@ -41,11 +41,27 @@ Hiện API chạy ở `https://vocab-app-rj0t.onrender.com`, deploy từ nhánh 
 
 Biến mới dùng lúc build phải khai báo trong `env` của `turbo.json`, nếu không Turborepo bỏ biến đó và `rewrites` không được tạo, `/api/v1` trả 404.
 
-Biến môi trường: `NEXT_PUBLIC_API_URL=/api/v1`, `API_INTERNAL_URL=https://<tên>.onrender.com/api/v1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` để trống nếu chưa bật Google.
+Biến môi trường: `NEXT_PUBLIC_API_URL=/api/v1`, `API_INTERNAL_URL=https://<tên>.onrender.com/api/v1`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` để trống nếu chưa bật Google. Chọn loại Config, tick Production và Preview. Biến `NEXT_PUBLIC_*` nằm trong code gửi xuống trình duyệt nên không phải secret, và chỉ có tác dụng sau khi build lại.
+
+Lần deploy đầu khi tạo project luôn lên Production. Các lần sau chỉ nhánh trong **Settings**, **Environments**, **Production**, **Branch Tracking** mới lên Production, nhánh khác thành Preview. Đặt nhánh này là `develop` cho đến khi phát hành vào `main`, giống Render. Bản Preview cần lên ngay thì dùng **Promote to Production**.
+
+Hiện web chạy ở `https://vocab-app-nine-psi.vercel.app`.
+
+## Google OAuth
+
+Web dùng nút đăng nhập của Google, API kiểm tra token với cùng Client ID. Đặt Client ID ở cả hai nơi: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` trên Vercel, `GOOGLE_CLIENT_ID` trên Render. Hai giá trị khác nhau thì API từ chối đăng nhập.
+
+1. Google Cloud, **Google Auth Platform**, **Clients**: tạo client loại Web application. Thêm địa chỉ web và `http://localhost:3000` vào **Authorized JavaScript origins**, không cần redirect URI và client secret.
+2. **Branding**: điền tên app, email hỗ trợ, trang chủ, `/privacy`, `/terms`. **Authorized domains** là tên máy đầy đủ, ví dụ `vocab-app-nine-psi.vercel.app`, vì `vercel.app` là tên miền dùng chung. Không tải logo, có logo thì phải chờ Google duyệt.
+3. **Audience**: **Publish app**. App chỉ xin email và tên nên không cần Google duyệt. Để chế độ Testing thì chỉ email trong **Test users** đăng nhập được.
+
+Khi đổi địa chỉ web, cập nhật **Authorized JavaScript origins** và **Authorized domains**.
 
 ## Kiểm tra sau khi deploy
 
 1. `https://<tên>.onrender.com/api/v1/health` trả `{"status":"ok","db":"up"}`.
 2. `https://<web>.vercel.app/api/v1/health` trả cùng kết quả, tức chuyển tiếp đã chạy.
-3. Đăng ký, đăng nhập, tải lại trang vẫn còn đăng nhập, kể cả trên Safari.
-4. Tạo bộ từ, học một phiên, xem thống kê.
+3. Đăng ký, đăng nhập, tải lại trang vẫn còn đăng nhập, kể cả trên Safari. Cookie `refresh_token` có `HttpOnly`, `Secure`, `SameSite=Lax`.
+4. Trang đăng nhập có nút Google và đăng nhập Google được.
+5. `/privacy` và `/terms` mở được, footer trang chủ có link tới hai trang.
+6. Tạo bộ từ, học một phiên, xem thống kê.
