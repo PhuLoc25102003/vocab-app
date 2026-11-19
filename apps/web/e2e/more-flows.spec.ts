@@ -451,3 +451,48 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await other.close();
   });
 });
+
+test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá không đăng nhập được', async ({
+  browser,
+  baseURL,
+}) => {
+  const target = `e2e-target-${stamp}@example.com`;
+  const adminEmail = `e2e-admin-${stamp}@example.com`;
+  const targetPage = await (await browser.newContext({ baseURL })).newPage();
+  await signUp(targetPage, 'Người bị khoá', target);
+
+  const admin = await (await browser.newContext({ baseURL })).newPage();
+  await signUp(admin, 'Quản trị E2E', adminEmail);
+  const promoted = spawnSync('node', ['e2e/run-sql.mjs'], {
+    input: `UPDATE "User" SET role = 'ADMIN' WHERE email = '${adminEmail}';`,
+    encoding: 'utf8',
+  });
+  expect(promoted.status, promoted.stderr).toBe(0);
+
+  await admin.goto('/account');
+  await admin.getByRole('link', { name: 'Quản lý người dùng' }).click();
+  await admin.waitForURL('**/admin/users');
+  await admin.getByLabel('Tìm theo email hoặc tên').fill(target);
+  await admin.getByRole('button', { name: 'Tìm', exact: true }).click();
+  await admin.getByRole('button', { name: `Khoá ${target}` }).click();
+  await admin.getByLabel('Lý do khoá').fill('Kiểm thử khoá tài khoản');
+  await admin.getByRole('button', { name: 'Khoá tài khoản' }).click();
+  await expect(admin.getByText('Đã khoá: Kiểm thử khoá tài khoản')).toBeVisible();
+
+  await targetPage.reload();
+  await targetPage.waitForURL('**/login**');
+  await visibleField(targetPage, 'Email').fill(target);
+  await visibleField(targetPage, 'Mật khẩu').fill(password);
+  await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await expect(
+    targetPage.getByText('Tài khoản đã bị khoá. Hãy liên hệ quản trị viên.'),
+  ).toBeVisible();
+
+  await admin.getByRole('button', { name: `Mở khoá ${target}` }).click();
+  await expect(admin.getByText('Đang hoạt động', { exact: false })).toBeVisible();
+  await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await targetPage.waitForURL('**/dashboard');
+
+  await admin.context().close();
+  await targetPage.context().close();
+});
