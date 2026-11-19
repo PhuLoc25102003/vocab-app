@@ -58,15 +58,20 @@ export function refreshSession(): Promise<string | null> {
   return refreshing;
 }
 
+/** Xoá mọi dữ liệu của phiên trên trình duyệt. */
+export function leaveSession(): void {
+  clearSessionMarker();
+  getQueryClient().clear();
+  useAuthStore.getState().clearSession('signed-out');
+}
+
 export async function signOut(): Promise<void> {
   try {
     await authApi.logout();
   } catch {
     // Vẫn rời phiên trên thiết bị này dù máy chủ không phản hồi.
   }
-  clearSessionMarker();
-  getQueryClient().clear();
-  useAuthStore.getState().clearSession('signed-out');
+  leaveSession();
 }
 
 configureHttpAuth({

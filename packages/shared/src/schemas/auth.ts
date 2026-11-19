@@ -65,6 +65,18 @@ export const updateAccountSchema = z
   });
 export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;
 
+export const changeDisplayNameSchema = z.object({ displayName: displayNameSchema });
+export type ChangeDisplayNameInput = z.infer<typeof changeDisplayNameSchema>;
+
+export const changePasswordSchema = z.object({
+  currentPassword: existingPasswordSchema,
+  newPassword: newPasswordSchema,
+});
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
+export const confirmPasswordSchema = z.object({ password: existingPasswordSchema });
+export type ConfirmPasswordInput = z.infer<typeof confirmPasswordSchema>;
+
 export const deleteAccountSchema = z.object({
   password: existingPasswordSchema.optional(),
 });
@@ -83,3 +95,11 @@ export const authSessionSchema = z.object({
   accessToken: z.string(),
 });
 export type AuthSession = z.infer<typeof authSessionSchema>;
+
+export const accountSchema = authUserSchema.extend({ hasPassword: z.boolean() });
+export type Account = z.infer<typeof accountSchema>;
+
+export const accountResponseSchema = z.object({ data: z.object({ user: accountSchema }) });
+export const updateAccountResponseSchema = z.object({
+  data: z.object({ user: authUserSchema, accessToken: z.string().optional() }),
+});

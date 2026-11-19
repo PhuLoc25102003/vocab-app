@@ -68,6 +68,7 @@ describe('tài khoản', () => {
           email: account.email,
           displayName: 'An',
           role: 'STUDENT',
+          hasPassword: true,
         },
       },
     });

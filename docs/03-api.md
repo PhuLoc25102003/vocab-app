@@ -75,7 +75,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 ## Tài khoản
 
-- `GET /users/me` trả `{ "data": { "user": { id, email, displayName, role } } }`.
+- `GET /users/me` trả `{ "data": { "user": { id, email, displayName, role, hasPassword } } }`.
 - `PATCH /users/me` nhận `displayName`, hoặc `currentPassword` cùng `newPassword`. Khi đổi mật khẩu, mọi phiên cũ kết thúc, response có thêm `accessToken` và cookie refresh mới cho thiết bị đang dùng. Sai mật khẩu hiện tại trả 422 `WRONG_PASSWORD`.
 - `DELETE /users/me` nhận `{ password }`, trả 204 và xoá cookie. Tài khoản không có mật khẩu không cần gửi `password`.
 - Xoá tài khoản xoá luôn bộ từ của người đó, kèm tiến độ và phiên học của người khác trên các bộ từ này.
