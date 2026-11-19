@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Quản trị người dùng (việc 2.11).
-2. Chốt thiết kế cho chế độ Learn (2.7) và Kiểm tra (2.10).
+1. Deploy API lên Render (việc 1.19).
+2. Deploy web lên Vercel (việc 1.20).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     42 |     51 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     43 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **58** | **87** | **67%**      |
+| **Toàn dự án**          |                                            | **59** | **87** | **68%**      |
 
 ## Cách cập nhật
 
@@ -95,7 +95,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** merge vào `main` tự deploy, đăng nhập và học được trên URL production.
 
-- [ ] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy.
+- [x] **1.18** Neon, `DIRECT_URL`, chạy `prisma migrate deploy` khi deploy (#153).
 - [ ] **1.19** Deploy API lên Render, cấu hình env (gồm `TRUSTED_PROXIES`) và health check.
 - [ ] **1.20** Deploy web lên Vercel, cấu hình domain, cookie refresh và CORS.
 

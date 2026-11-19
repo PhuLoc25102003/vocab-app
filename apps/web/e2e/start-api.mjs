@@ -11,6 +11,11 @@ Object.assign(process.env, {
   JWT_ACCESS_SECRET: 'e2e-access-secret-chi-dung-khi-test-0001',
   JWT_REFRESH_SECRET: 'e2e-refresh-secret-chi-dung-khi-test-001',
   GOOGLE_CLIENT_ID: '',
+  // Bài audit mở hàng chục trang trong vài giây, nhanh hơn người thật rất nhiều.
+  // Giới hạn request có test riêng trong rate-limit.integration.test.ts.
+  RATE_LIMIT_USER_PER_MINUTE: '1000',
+  RATE_LIMIT_GUEST_PER_MINUTE: '3000',
+  LOG_LEVEL: 'warn',
 });
 
 // `migrate deploy` tự tạo database nếu chưa có.

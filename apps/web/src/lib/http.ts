@@ -1,6 +1,12 @@
 import { apiErrorSchema } from '@vocab/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+/**
+ * Trình duyệt gọi `NEXT_PUBLIC_API_URL`, có thể là đường dẫn tương đối `/api/v1` được chuyển tiếp.
+ * Server của web không gọi được đường dẫn tương đối, nên dùng `API_INTERNAL_URL` nếu có.
+ * Biến không có tiền tố `NEXT_PUBLIC_` luôn rỗng ở trình duyệt.
+ */
+const API_URL =
+  process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 
 export class HttpError extends Error {
   constructor(

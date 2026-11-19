@@ -76,23 +76,25 @@ Migration chỉ "thêm" an toàn (thêm cột cho phép null, thêm bảng); đ�
 
 ## Biến môi trường
 
-| Biến                                                                     | Nơi dùng                            | Ghi chú                                                                               |
-| ------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                                           | API                                 | Chuỗi kết nối (local Docker / Neon có pooling)                                        |
-| `DIRECT_URL`                                                             | API                                 | Chưa dùng. Kết nối trực tiếp cho migration khi lên Neon                               |
-| `PORT`, `NODE_ENV`                                                       | API                                 | Mặc định `4000`, `development`                                                        |
-| `POSTGRES_PORT`                                                          | `docker-compose.yml` (`.env` ở gốc) | Cổng host của Postgres, mặc định `5432`                                               |
-| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                | API                                 | Hai chuỗi ngẫu nhiên khác nhau, ≥ 32 byte                                             |
-| `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`                                      | API                                 | `15m`, `30d`                                                                          |
-| `CORS_ORIGINS`                                                           | API                                 | Domain FE, phân cách bằng dấu phẩy                                                    |
-| `TRUSTED_PROXIES`                                                        | API                                 | IP hoặc CIDR của proxy trước API, để rate limit đọc đúng IP. Local để trống           |
-| `REFRESH_COOKIE_SAME_SITE`, `REFRESH_COOKIE_DOMAIN`                      | API                                 | Thuộc tính cookie refresh, mặc định `lax` và không đặt domain                         |
-| `GOOGLE_CLIENT_ID`                                                       | API                                 | Client ID để kiểm tra Google ID token. Để trống thì tắt đăng nhập Google              |
-| `LOG_LEVEL`                                                              | API                                 | Mức log của Pino, mặc định `info`. Đặt `silent` để tắt                                |
-| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | API                                 | Chưa dùng. Lưu ảnh, âm thanh                                                          |
-| `SENTRY_DSN`                                                             | API + Web                           | Chưa dùng. Giám sát lỗi                                                               |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`                                           | Web                                 | Trùng `GOOGLE_CLIENT_ID`. Để trống thì ẩn nút Google                                  |
-| `NEXT_PUBLIC_API_URL`                                                    | Web                                 | URL backend; tiền tố `NEXT_PUBLIC_` nghĩa là lộ ra trình duyệt, không để secret ở đây |
+| Biến                                                                     | Nơi dùng                            | Ghi chú                                                                                                                         |
+| ------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                           | API                                 | Chuỗi kết nối (local Docker / Neon có pooling)                                                                                  |
+| `DIRECT_URL`                                                             | API                                 | Kết nối trực tiếp tới Neon cho migration. Để trống thì dùng `DATABASE_URL`                                                      |
+| `PORT`, `NODE_ENV`                                                       | API                                 | Mặc định `4000`, `development`                                                                                                  |
+| `POSTGRES_PORT`                                                          | `docker-compose.yml` (`.env` ở gốc) | Cổng host của Postgres, mặc định `5432`                                                                                         |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                | API                                 | Hai chuỗi ngẫu nhiên khác nhau, ≥ 32 byte                                                                                       |
+| `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`                                      | API                                 | `15m`, `30d`                                                                                                                    |
+| `CORS_ORIGINS`                                                           | API                                 | Domain FE, phân cách bằng dấu phẩy                                                                                              |
+| `TRUSTED_PROXIES`                                                        | API                                 | IP hoặc CIDR của proxy trước API, hoặc số tầng proxy (ví dụ `2` khi đi qua Vercel rồi Render). Local để trống                   |
+| `REFRESH_COOKIE_SAME_SITE`, `REFRESH_COOKIE_DOMAIN`                      | API                                 | Thuộc tính cookie refresh, mặc định `lax` và không đặt domain                                                                   |
+| `GOOGLE_CLIENT_ID`                                                       | API                                 | Client ID để kiểm tra Google ID token. Để trống thì tắt đăng nhập Google                                                        |
+| `LOG_LEVEL`                                                              | API                                 | Mức log của Pino, mặc định `info`. Đặt `silent` để tắt                                                                          |
+| `RATE_LIMIT_USER_PER_MINUTE`, `RATE_LIMIT_GUEST_PER_MINUTE`              | API                                 | Số request mỗi phút, mặc định 100 cho người dùng và 300 cho mỗi IP khách. E2E đặt cao hơn                                       |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | API                                 | Chưa dùng. Lưu ảnh, âm thanh                                                                                                    |
+| `SENTRY_DSN`                                                             | API + Web                           | Chưa dùng. Giám sát lỗi                                                                                                         |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`                                           | Web                                 | Trùng `GOOGLE_CLIENT_ID`. Để trống thì ẩn nút Google                                                                            |
+| `NEXT_PUBLIC_API_URL`                                                    | Web                                 | URL backend; tiền tố `NEXT_PUBLIC_` nghĩa là lộ ra trình duyệt, không để secret ở đây                                           |
+| `API_INTERNAL_URL`                                                       | Web                                 | Địa chỉ API mà server của web gọi và chuyển tiếp `/api/v1` tới. Chỉ đặt khi web và API không chung tên miền, xem `08-deploy.md` |
 
 Khi deploy đăng nhập Google: thêm địa chỉ web `https` vào **Authorized JavaScript origins** của Google OAuth Client, đặt hai biến Client ID trên API và web rồi deploy lại, sau đó bấm **Publish app** trong mục Audience. Google không nhận origin có dấu `*`, nên link preview phải thêm từng cái nếu cần.
 
@@ -140,6 +142,6 @@ npm run prisma:generate -w @vocab/api
 - Tên file component đổi từ PascalCase sang kebab-case, khớp code và shadcn/ui.
 - `packages/shared/constants.ts` đổi thành `packages/shared/src/constants.ts`.
 - Bảng biến môi trường bổ sung `PORT`, `NODE_ENV`, `POSTGRES_PORT` và ghi rõ biến nào chưa dùng.
-- `DIRECT_URL` chưa được dùng. Migration lấy `DATABASE_URL` trong `prisma.config.ts`, khi dùng Neon cần cập nhật file này.
+- Migration dùng `DIRECT_URL` nếu có, nếu không thì `DATABASE_URL` (`apps/api/prisma.config.ts`). Cách deploy xem `08-deploy.md`.
 - ISR đổi từ `revalidate` sang `use cache` + `cacheLife`, vì app bật Cache Components và Next.js báo lỗi nếu route còn export `revalidate`.
 - Thêm mục hiện trạng công cụ.
