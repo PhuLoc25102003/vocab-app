@@ -1,5 +1,6 @@
 import type { Question, StudyLanguages, StudyMode, UserAnswer } from '@vocab/shared';
 import type { ComponentType } from 'react';
+import { ClozeModeView } from './cloze/cloze-mode';
 import { DictationModeView } from './dictation/dictation-mode';
 import { FlashcardMode } from './flashcard/flashcard-mode';
 import { McqModeView } from './mcq/mcq-mode';
@@ -20,4 +21,5 @@ export const STUDY_VIEWS: Partial<Record<StudyMode, ComponentType<StudyModeProps
   WRITE: WriteModeView,
   DICTATION: DictationModeView,
   MCQ: McqModeView,
+  CLOZE: ClozeModeView,
 };

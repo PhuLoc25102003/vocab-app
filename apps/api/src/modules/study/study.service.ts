@@ -82,6 +82,13 @@ export class StudyService {
     }
 
     const questions = getMode(mode).buildQuestions(cards, { limit });
+    if (questions.length === 0) {
+      throw new AppError(
+        ERROR_CODES.NO_QUESTIONS_FOR_MODE,
+        'Bộ từ chưa có thẻ phù hợp với chế độ này',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
     const session = await this.study.createSession(viewer.id, setId, mode, questions.length);
     const languages = { term: set.termLang, definition: set.defLang };
     return ok({ session, questions, languages });

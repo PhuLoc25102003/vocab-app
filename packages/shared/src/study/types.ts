@@ -17,6 +17,8 @@ export interface StudyCard {
   id: string;
   term: string;
   definition: string;
+  /** Câu ví dụ, chế độ Điền từ cần có. */
+  example?: string | null;
 }
 
 export interface StudyOptions {
@@ -32,6 +34,8 @@ export interface Question {
   prompt: string;
   expected: string;
   choices?: string[];
+  /** Gợi ý hiện kèm câu hỏi, ví dụ nghĩa của từ trong chế độ Điền từ. */
+  hint?: string;
 }
 
 export interface UserAnswer {

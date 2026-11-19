@@ -6,8 +6,8 @@ Cập nhật lần cuối: 2026-11-19
 
 **Việc tiếp theo:**
 
-1. Chế độ Điền từ (việc 2.8).
-2. Chọn thư viện Excel cho việc 1.51.
+1. Chế độ Ghép cặp (việc 2.9).
+2. Chế độ Learn (việc 2.7).
 
 ## Tổng quan
 
@@ -16,11 +16,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     42 |     51 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     43 |     51 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      0 |     12 | Chưa bắt đầu |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **55** | **87** | **63%**      |
+| **Toàn dự án**          |                                            | **56** | **87** | **64%**      |
 
 ## Cách cập nhật
 
@@ -168,7 +168,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2C. Chế độ học
 
 - [ ] **2.7** Chế độ Learn.
-- [ ] **2.8** Chế độ Điền từ.
+- [x] **2.8** Chế độ Điền từ (#144).
 - [ ] **2.9** Chế độ Ghép cặp.
 - [ ] **2.10** Chế độ Kiểm tra.
 
