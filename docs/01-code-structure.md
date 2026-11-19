@@ -40,6 +40,7 @@ src/
 │   ├── (app)/sets/[id]/study/[mode]/page.tsx
 │   └── (app)/sets/new, import
 ├── features/                     # mỗi tính năng tự chứa
+│   ├── marketing/   { components/landing-page.tsx }
 │   ├── auth/        { api.ts, hooks/, components/, store.ts }
 │   ├── sets/        { api.ts, hooks/use-sets.ts, components/set-card.tsx ... }
 │   ├── import/      { parsers/, components/import-preview.tsx }

@@ -31,7 +31,7 @@ Nếu cổng 5432 đã bận, đặt `POSTGRES_PORT` trong `.env` ở gốc và 
 ```text
 apps/web/src
   app/                 Routing, layout: (marketing), (auth), (app)
-  features/<tên>/      api.ts, hooks/, components/, store: auth, sets, import, study, stats
+  features/<tên>/      api.ts, hooks/, components/, store: marketing, auth, sets, import, study, stats
   components/ui/       Thành phần cơ bản
   components/common/   Thành phần dùng chung
   lib/                 http.ts, query-client.ts, speech.ts
