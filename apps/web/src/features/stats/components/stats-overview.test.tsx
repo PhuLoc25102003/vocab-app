@@ -7,7 +7,13 @@ import { StatsOverview } from './stats-overview';
 
 vi.mock('@/lib/http', () => ({ http: vi.fn() }));
 
-const emptyStats = { streakDays: 0, masteredCards: 0, answersToday: 0, hardCards: [] };
+const emptyStats = {
+  streakDays: 0,
+  masteredCards: 0,
+  answersToday: 0,
+  dueCards: 0,
+  hardCards: [],
+};
 
 function renderStats() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -27,6 +33,7 @@ describe('StatsOverview', () => {
         streakDays: 3,
         masteredCards: 12,
         answersToday: 7,
+        dueCards: 3,
         hardCards: [
           { cardId: 'c1', setId: 's1', term: 'apple', definition: 'quả táo', wrongCount: 4 },
         ],
@@ -38,6 +45,7 @@ describe('StatsOverview', () => {
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'apple' })).toHaveAttribute('href', '/sets/s1');
     expect(screen.getByText('Sai 4 lần')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ôn ngay' })).toHaveAttribute('href', '/review');
   });
 
   it('gợi ý bắt đầu khi chưa học', async () => {

@@ -44,7 +44,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S5. Xem chi tiết bộ từ
 
-- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Thiếu (GAP-08, GAP-10).
+- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Thiếu (GAP-10).
 - **Phải có:**
   - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại.
   - Chủ bộ: sửa, xoá, sao chép đường dẫn khi bộ công khai.
@@ -52,8 +52,8 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.
 - **Ngoại lệ:** bộ không tồn tại hoặc không có quyền; bộ chưa có thẻ thì ẩn nút học và mời thêm thẻ; lỗi mạng có nút thử lại.
-- **Test đã có:** `sets.integration`, `set-detail.test`.
-- **Test cần thêm:** integration số liệu tiến độ theo từng người; component nút sao chép đường dẫn, gồm trường hợp trình duyệt chặn clipboard.
+- **Test đã có:** `sets.integration`, `stats.integration`, `set-detail.test`, `set-progress.test`.
+- **Test cần thêm:** component nút sao chép đường dẫn, gồm trường hợp trình duyệt chặn clipboard.
 - **Còn thiếu:** trạng thái chưa có thẻ hiện chưa có nút đưa tới trang sửa.
 
 ## UC-S6. Xoá bộ từ
