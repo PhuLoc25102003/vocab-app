@@ -2,12 +2,15 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1 còn các việc chờ tài khoản dịch vụ (1D, Sentry), thư viện Excel (1.51), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
+**Đang ở:** Giai đoạn 1 còn phần nhập từ (XLSX, phiên âm và ví dụ, file mẫu), các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49), xác nhận xoá dữ liệu (1.30) và Performance (1.34). Giai đoạn 2 đã có Điền từ, Ghép cặp và thư mục bộ từ.
 
 **Việc tiếp theo:**
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-2. Đo lại Lighthouse trên production (việc 1.34).
+1. Nhập cột phiên âm và câu ví dụ (việc 1.53).
+2. Đọc file XLSX bằng `read-excel-file` (việc 1.51).
+3. Tải file mẫu ở trang nhập (việc 1.54).
+4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+5. Đo lại Lighthouse trên production (việc 1.34).
 
 ## Tổng quan
 
@@ -16,11 +19,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |   Xong |   Tổng | Trạng thái   |
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     46 |     52 | Đang làm     |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     46 |     54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      3 |     12 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **62** | **88** | **70%**      |
+| **Toàn dự án**          |                                            | **62** | **90** | **69%**      |
 
 ## Cách cập nhật
 
@@ -102,12 +105,14 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ### 1E. Import
 
-**Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel và sửa lỗi từng dòng trước khi lưu.
+**Xong khi:** người dùng nhập được danh sách từ text, CSV, Excel, kèm phiên âm và câu ví dụ nếu có, tải được file mẫu và sửa lỗi từng dòng trước khi lưu.
 
 - [x] **1.21** Parser text, CSV và `POST /import/preview`, kèm giới hạn kích thước và số dòng (#135).
 - [x] **1.22** `POST /sets/:id/import`: lưu bằng transaction, tối đa 2.000 thẻ (#137).
 - [x] **1.23** Web: tải file, dán text, xem trước và sửa lỗi (#142).
-- [ ] **1.51** Đọc file XLSX cho import, chỉ đọc giá trị, không chạy công thức. Chờ chọn thư viện.
+- [ ] **1.53** Nhập thêm cột phiên âm (IPA) và câu ví dụ, cả hai không bắt buộc, áp dụng cho text, CSV và XLSX.
+- [ ] **1.51** Đọc file XLSX trên trình duyệt bằng `read-excel-file`, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002).
+- [ ] **1.54** Nút tải file mẫu `.xlsx` và `.csv` ở trang nhập, nhận diện hàng tiêu đề của file mẫu để tự chọn cột. Cần 1.51 và 1.53.
 
 ### 1F. Chế độ học còn lại và ôn tập
 
@@ -201,10 +206,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ## Quyết định cần chốt
 
-| Quyết định                         | Cần trước việc | Đề xuất                                      |
-| ---------------------------------- | -------------- | -------------------------------------------- |
-| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`       |
-| Thư viện đọc Excel                 | 1.51           | Cân nhắc `exceljs`, kiểm tra bảo mật khi làm |
-| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt          |
-| Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản  |
-| Khôi phục bộ từ đã xoá             | 1.30           | MVP không có thùng rác, xoá hẳn sau 30 ngày  |
+| Quyết định                         | Cần trước việc | Đề xuất                                     |
+| ---------------------------------- | -------------- | ------------------------------------------- |
+| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`      |
+| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt         |
+| Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản |
+| Khôi phục bộ từ đã xoá             | 1.30           | MVP không có thùng rác, xoá hẳn sau 30 ngày |
