@@ -36,4 +36,5 @@ export const adminUserListResponseSchema = z.object({
   data: z.array(adminUserSchema),
   meta: paginationMetaSchema,
 });
+export type AdminUserList = z.infer<typeof adminUserListResponseSchema>;
 export const adminUserResponseSchema = z.object({ data: adminUserSchema });

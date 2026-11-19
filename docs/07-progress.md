@@ -17,10 +17,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | -----: | ------------ |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |     13 | Xong         |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |     54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      7 |     14 | Đang làm     |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      8 |     14 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |      8 | Chưa bắt đầu |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      0 |      3 | Chưa bắt đầu |
-| **Toàn dự án**          |                                            | **70** | **92** | **76%**      |
+| **Toàn dự án**          |                                            | **71** | **92** | **77%**      |
 
 ## Cách cập nhật
 
@@ -179,7 +179,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 ### 2D. Quản trị
 
 - [x] **2.11** API quản trị người dùng: `GET /admin/users`, khoá và mở khoá tài khoản (#182).
-- [ ] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá.
+- [x] **2.14** Trang quản lý người dùng cho ADMIN: tìm, khoá kèm lý do, mở khoá (#184).
 - [ ] **2.12** Ẩn nội dung vi phạm.
 
 ## Giai đoạn 3: Lớp học
