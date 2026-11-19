@@ -12,7 +12,10 @@ export const metadata: Metadata = {
 export default function PublicExplorePage() {
   return (
     <>
-      <PageHeader title="Khám phá" description="Tìm bộ từ công khai và học thử ngay." />
+      <PageHeader
+        title="Khám phá"
+        description="Bộ từ công khai do cộng đồng tạo. Mở một bộ để học thử ngay."
+      />
       <Suspense fallback={<SetRowsLoading count={5} />}>
         <ExploreSets audience="guest" />
       </Suspense>
