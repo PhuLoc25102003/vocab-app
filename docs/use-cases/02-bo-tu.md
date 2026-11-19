@@ -14,7 +14,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S2. Tạo bộ từ
 
-- **Việc:** 1.7, 1.11, 1.37, 1.38. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-01, GAP-02).
+- **Việc:** 1.7, 1.11, 1.37, 1.38. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu (GAP-02).
 - **Phải có:** tên, mô tả, ngôn ngữ từ và nghĩa, phạm vi Riêng tư hoặc Công khai, soạn thẻ, nút lưu, nút huỷ, nút quay lại.
 - **Luồng chính:** từ `/sets` bấm "Tạo bộ từ", nhập, lưu, thấy thông báo và tới trang chi tiết. Nút quay lại của trình duyệt phải về `/sets`, không về form đã lưu.
 - **Ngoại lệ:**
@@ -23,8 +23,8 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Bấm lưu nhiều lần: chỉ tạo một bộ.
   - Đã nhập mà rời trang: hỏi xác nhận.
 - **Test đã có:** `sets.integration`, `set-form.test`, E2E tạo bộ công khai.
-- **Test cần thêm:** E2E tạo xong bấm quay lại về `/sets`; E2E form đang nhập rồi bấm "Huỷ", menu và nút quay lại đều hỏi xác nhận.
-- **Còn thiếu:** dùng `router.replace` sau khi lưu; cảnh báo rời trang trong app, hiện chỉ có khi đóng tab.
+- **Test cần thêm:** E2E form đang nhập rồi bấm "Huỷ", menu và nút quay lại đều hỏi xác nhận.
+- **Còn thiếu:** cảnh báo rời trang trong app, hiện chỉ có khi đóng tab.
 
 ## UC-S3. Soạn thẻ từ
 
@@ -38,7 +38,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S4. Sửa bộ từ
 
-- **Việc:** 1.7, 1.8, 1.11, 1.37, 1.38. **Người dùng:** chủ bộ, ADMIN. **Trạng thái:** Thiếu (GAP-01, GAP-02).
+- **Việc:** 1.7, 1.8, 1.11, 1.37, 1.38. **Người dùng:** chủ bộ, ADMIN. **Trạng thái:** Thiếu (GAP-02).
 - **Phải có:** form điền sẵn, lưu thông tin và thẻ, quay lại chi tiết.
 - **Luồng chính:** từ chi tiết bấm "Sửa bộ từ", đổi nội dung, lưu, về chi tiết thấy dữ liệu mới. Nút quay lại của trình duyệt không mở lại form đã lưu.
 - **Ngoại lệ:** không có quyền hoặc bộ đã xoá; lỗi khi lưu giữ nguyên nội dung; rời trang khi chưa lưu phải hỏi xác nhận.

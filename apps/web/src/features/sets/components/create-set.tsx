@@ -18,7 +18,8 @@ export function CreateSet() {
       cards: cards.map(({ id: _id, ...card }) => card),
     });
     toast.success('Đã lưu bộ từ');
-    router.push(`/sets/${created.id}` as Route);
+    // Thay mục lịch sử để nút quay lại của trình duyệt không về form đã lưu.
+    router.replace(`/sets/${created.id}` as Route);
   };
 
   return <SetForm cancelHref="/sets" defaultValues={EMPTY_SET_FORM} onSubmit={save} />;
