@@ -8,11 +8,12 @@ vi.mock('@/components/common/theme-toggle', () => ({ ThemeToggle: () => null }))
 describe('LandingPage', () => {
   afterEach(clearSessionMarker);
 
-  it('giới thiệu sản phẩm và đủ bốn chế độ học', () => {
+  it('giới thiệu sản phẩm, đủ chín chế độ học và lịch ôn', () => {
     render(<LandingPage />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('ôn đúng lúc');
-    for (const mode of ['Flashcard', 'Viết', 'Nghe viết', 'Trắc nghiệm']) {
+    expect(screen.getByRole('heading', { name: /Lịch ôn tự giãn/ })).toBeInTheDocument();
+    for (const mode of ['Flashcard', 'Học kỹ', 'Viết', 'Nghe viết', 'Trắc nghiệm', 'Luyện nói']) {
       expect(screen.getByText(mode)).toBeInTheDocument();
     }
   });
