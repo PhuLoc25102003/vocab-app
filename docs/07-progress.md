@@ -144,7 +144,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.45** Học lại riêng thẻ sai, chọn chế độ khi ôn thẻ đến hạn (GAP-09, #121).
 - [x] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10, #123).
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
-- [x] **1.48** Rate limit chung cho API (GAP-12, #95).
+- [x] **1.48** Rate limit chung cho API (GAP-12, #95, #127).
 - [ ] **1.49** Quên mật khẩu qua email (GAP-13). Chờ chọn dịch vụ gửi email.
 
 ## Giai đoạn 2: Mở rộng
