@@ -80,7 +80,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [x] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
 - [x] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
 - [x] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.
-- [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`). Đã có giới hạn 2.000.000 ký tự, 2.000 dòng và tổng 2.000 thẻ trên API, công thức được lưu như văn bản. Web chỉ nhận `.txt`, `.csv` tối đa 2 MB, kiểm tra MIME và từ chối file nhị phân. XLSX làm ở việc 1.51: đọc trên trình duyệt bằng `read-excel-file`, chặn file trên 2 MB trước khi giải nén, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002).
+- [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`). Đã có giới hạn 2.000.000 ký tự, 2.000 dòng và tổng 2.000 thẻ trên API, công thức được lưu như văn bản. Web nhận `.txt`, `.csv`, `.xlsx` tối đa 2 MB và kiểm tra MIME. File văn bản có byte NUL bị từ chối. File `.xlsx` được đọc trên trình duyệt bằng `read-excel-file`, chặn file trên 2 MB trước khi giải nén, chỉ đọc sheet đầu tiên, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002). File `.xls` cũ bị từ chối.
 - [ ] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp`. Chưa có tính năng upload.
 - [x] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy. Chỗ dùng duy nhất là script giao diện có nội dung cố định.
 - [x] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
@@ -96,6 +96,8 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 `apps/web/src/lib/security-headers.ts` tạo header cho mọi route. CSP chỉ cho gọi origin của `NEXT_PUBLIC_API_URL` và Google Identity. Giá trị này được đọc lúc build, đổi API thì phải build lại.
 
 `script-src` có `'unsafe-inline'` vì app dùng prerender một phần, phần tĩnh không nhận được nonce theo request. CSP vì vậy không chặn được script nội tuyến nếu có lỗi XSS, nên React escape và lệnh cấm `dangerouslySetInnerHTML` vẫn là lớp bảo vệ chính. Môi trường dev có thêm `'unsafe-eval'` và `ws:`.
+
+`worker-src 'self' blob:` cho phép `read-excel-file` đọc file Excel trong worker tạo từ `blob:` (ADR 0002).
 
 ## Đã điều chỉnh so với spec gốc
 

@@ -9,7 +9,8 @@ Người dùng cần nhập danh sách từ từ file Excel (việc 1.51). Luồ
 
 ## Quyết định
 
-- Dùng **`read-excel-file`** trong `apps/web`, đọc file ngay trên trình duyệt. Thư viện được tải lazy bằng `import()` chỉ khi người dùng chọn file `.xlsx`, để không làm nặng bundle của các trang khác.
+- Dùng **`read-excel-file`** (bản `read-excel-file/browser`, ghim phiên bản) trong `apps/web`, đọc file ngay trên trình duyệt. Thư viện được tải lazy bằng `import()` chỉ khi người dùng chọn file `.xlsx`, để không làm nặng bundle của các trang khác.
+- Bản `browser` phân tích file trong Web Worker tạo từ `blob:`, nên CSP có `worker-src 'self' blob:`. Bản `universal` không dùng worker cho phần đọc XML, nhưng phần giải nén vẫn có thể tạo worker với file lớn, nên không tránh được quy tắc này.
 - Chỉ đọc sheet đầu tiên. Mỗi ô lấy **giá trị Excel đã tính sẵn và lưu trong file**, không tính lại công thức. Ô có công thức nhưng không có giá trị lưu sẵn được coi là ô trống.
 - Các hàng được chuyển thành text ngăn bằng tab, ký tự tab và xuống dòng trong ô được thay bằng dấu cách, rồi gửi `POST /import/preview` với `delimiter: 'tab'`. API và `parseImport` không phải đọc file nhị phân.
 - Chỉ nhận `.xlsx`. File `.xls` (định dạng cũ) vẫn bị từ chối và web hướng dẫn lưu lại thành `.xlsx` hoặc CSV.
@@ -23,6 +24,8 @@ Người dùng cần nhập danh sách từ từ file Excel (việc 1.51). Luồ
 ## Hệ quả
 
 - Thêm dependency `read-excel-file` cho `@vocab/web`. Kiểm tra `npm audit` khi cài và theo dõi qua Dependabot.
+- CSP thêm `worker-src 'self' blob:`. Vì `script-src` đã có `'unsafe-inline'`, quy tắc này gần như không mở thêm bề mặt tấn công: chỉ script đã chạy trên trang mới tạo được worker từ `blob:`.
+- Test dựng file XLSX bằng `fflate` (devDependency) trong `src/test/build-xlsx.ts`, không commit file nhị phân.
 - Kết quả đọc file phụ thuộc trình duyệt, nên `read-file.ts` cần test với file XLSX mẫu, gồm file hỏng, file rỗng, ô công thức và dấu tiếng Việt.
 - File quá 2 MB bị chặn trước khi giải nén.
 

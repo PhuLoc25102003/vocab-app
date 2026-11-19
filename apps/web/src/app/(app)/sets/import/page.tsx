@@ -18,7 +18,7 @@ export default async function ImportPage({ searchParams }: PageProps<'/sets/impo
       )}
       <PageHeader
         title={id ? 'Nhập thêm thẻ' : 'Nhập danh sách từ'}
-        description="Dán từ Quizlet, Excel, Google Sheets hoặc chọn file .txt, .csv. Mỗi dòng là một thẻ."
+        description="Dán từ Quizlet, Excel, Google Sheets hoặc chọn file .txt, .csv, .xlsx. Mỗi dòng là một thẻ."
       />
       <ImportWizard key={id ?? 'new'} setId={id} />
     </>

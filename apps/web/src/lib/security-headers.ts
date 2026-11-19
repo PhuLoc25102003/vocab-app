@@ -22,6 +22,8 @@ export function buildContentSecurityPolicy({ apiUrl, isDev }: SecurityHeaderOpti
     ['connect-src', "'self'", apiOrigin, `${GOOGLE_IDENTITY_URL}/`, isDev ? 'ws:' : '']
       .filter(Boolean)
       .join(' '),
+    // `read-excel-file` đọc file Excel trong worker tạo từ `blob:` (ADR 0002).
+    "worker-src 'self' blob:",
     `frame-src ${GOOGLE_IDENTITY_URL}/`,
     "object-src 'none'",
     "base-uri 'self'",
