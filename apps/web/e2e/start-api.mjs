@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { API_DIR, useE2eDatabase } from './database.mjs';
+import { API_DIR, selectE2eDatabase } from './database.mjs';
 
-useE2eDatabase();
+selectE2eDatabase();
 Object.assign(process.env, {
   NODE_ENV: 'test',
   PORT: process.env.E2E_API_PORT,

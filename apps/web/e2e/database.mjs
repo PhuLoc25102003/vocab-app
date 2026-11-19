@@ -5,7 +5,7 @@ export const API_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../../a
 const E2E_DATABASE = 'vocab_e2e';
 
 /** Dùng cùng máy chủ Postgres nhưng database riêng, không đụng dữ liệu dev. */
-export function useE2eDatabase() {
+export function selectE2eDatabase() {
   try {
     process.loadEnvFile(resolve(API_DIR, '.env'));
   } catch {

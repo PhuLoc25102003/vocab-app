@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { API_DIR, useE2eDatabase } from './database.mjs';
+import { API_DIR, selectE2eDatabase } from './database.mjs';
 
 // Chỉ dùng để dựng tình huống test mà giao diện không tạo được, ví dụ thẻ đã đến hạn.
-useE2eDatabase();
+selectE2eDatabase();
 const result = spawnSync('npx prisma db execute --stdin', {
   cwd: API_DIR,
   shell: true,
