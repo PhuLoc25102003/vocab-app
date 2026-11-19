@@ -9,9 +9,9 @@ import { createSet, getSet, replaceCards, updateSet } from '../api';
 import { CreateSet } from './create-set';
 import { EditSet } from './edit-set';
 
-const navigation = vi.hoisted(() => ({ replace: vi.fn() }));
+const navigation = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: navigation.replace }) }));
+vi.mock('next/navigation', () => ({ useRouter: () => navigation }));
 vi.mock('../api');
 
 const summary: SetSummary = {
@@ -112,6 +112,37 @@ describe('EditSet', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Bạn không có quyền');
     expect(navigation.replace).not.toHaveBeenCalled();
+  });
+
+  it('hỏi lại khi rời form chưa lưu bằng liên kết', async () => {
+    const confirm = vi
+      .spyOn(window, 'confirm')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    renderWithQuery(<CreateSet />);
+    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Trái cây');
+
+    await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
+    expect(confirm).toHaveBeenCalledTimes(1);
+    expect(navigation.push).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('Tên bộ từ')).toHaveValue('Trái cây');
+
+    await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    confirm.mockRestore();
+  });
+
+  it('không hỏi khi form chưa đổi', async () => {
+    const confirm = vi.spyOn(window, 'confirm');
+    renderWithQuery(<CreateSet />);
+    screen.getByRole('link', { name: 'Huỷ' }).addEventListener('click', (event) => {
+      event.preventDefault();
+    });
+
+    await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
+
+    expect(confirm).not.toHaveBeenCalled();
+    confirm.mockRestore();
   });
 
   it('hiện trạng thái đang tải', () => {

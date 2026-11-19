@@ -9,12 +9,14 @@ import {
 } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
+import { useUnsavedGuard } from '../hooks/use-unsaved-guard';
 import { LANGUAGE_LABELS, VISIBILITY_LABELS } from '../labels';
 import { CardFields, EMPTY_CARD } from './card-fields';
 
@@ -93,10 +95,12 @@ function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsP
 interface SetFormProps {
   cancelHref: Route;
   defaultValues: SetFormInput;
-  onSubmit: (values: SetFormValues) => Promise<void>;
+  /** Lưu dữ liệu và trả về trang cần tới. */
+  onSubmit: (values: SetFormValues) => Promise<Route>;
 }
 
 export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
+  const router = useRouter();
   const [initialValues] = useState(defaultValues);
   const hasMounted = useRef(false);
   const {
@@ -121,18 +125,14 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
     hasMounted.current = true;
   }, [initialValues, reset]);
 
-  useEffect(() => {
-    if (!isDirty) {
-      return;
-    }
-    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [isDirty]);
+  const releaseGuard = useUnsavedGuard(isDirty);
 
   const submit = handleSubmit(async (values) => {
     try {
-      await onSubmit(values);
+      const nextHref = await onSubmit(values);
+      await releaseGuard();
+      // Thay mục lịch sử để nút quay lại của trình duyệt không về form đã lưu.
+      router.replace(nextHref);
     } catch (error) {
       const message = applyFormError(error, FIELDS, setError);
       if (message) {
