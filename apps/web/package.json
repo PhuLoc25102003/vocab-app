@@ -45,6 +45,7 @@
     "@vocab/eslint-config": "*",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "fake-indexeddb": "6.2.7",
     "jsdom": "^31.0.1",
     "tailwindcss": "4.3.3",
     "typescript": "~5.9.3",

@@ -101,7 +101,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 `Permissions-Policy` cho `microphone=(self)` để chế độ Luyện nói dùng micro của chính trang; camera và vị trí vẫn bị chặn. Chrome gửi âm thanh nhận dạng tới dịch vụ của Google, app không lưu âm thanh, chỉ gửi câu nhận dạng được lên API.
 
-Service worker `public/sw.js` chỉ lưu tạm tài nguyên tĩnh có mã băm (`/_next/static`, icon) và trang `/offline`, không lưu request `/api/` hay trang có dữ liệu người dùng, nên đăng xuất không để lại dữ liệu riêng trong bộ nhớ tạm.
+Service worker `public/sw.js` chỉ lưu tạm tài nguyên tĩnh có mã băm (`/_next/static`, icon) và trang `/offline`, không lưu request `/api/` hay trang có dữ liệu người dùng, nên đăng xuất không để lại dữ liệu riêng trong bộ nhớ tạm. Bộ từ người dùng tải về máy nằm trong IndexedDB `vocab-offline` và bị xoá khi đăng xuất.
 
 `worker-src 'self' blob:` cho phép `read-excel-file` đọc file Excel trong worker tạo từ `blob:` (ADR 0002).
 

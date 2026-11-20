@@ -89,7 +89,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 
 ### UC-O2. Cài đặt và học offline
 
-- **Việc:** 4.2, 4.3. **Người dùng:** người học. **Trạng thái:** Đã có 4.2: `manifest.webmanifest` (mở vào Tổng quan, `standalone`), icon PNG 192 và 512 từ `/pwa-icon/[size]`, `public/sw.js` lưu tạm `/_next/static` và icon, điều hướng khi mất mạng trả `/offline`, không lưu request `/api/`. Test `manifest.test`, E2E `pwa.spec`. Còn học offline và đồng bộ (4.3).
+- **Việc:** 4.2, 4.3, 4.5. **Người dùng:** người học. **Trạng thái:** Đã có 4.2: `manifest.webmanifest` (mở vào Tổng quan, `standalone`), icon PNG 192 và 512 từ `/pwa-icon/[size]`, `public/sw.js` lưu tạm `/_next/static` và icon, điều hướng khi mất mạng trả `/offline`, không lưu request `/api/`. Test `manifest.test`, E2E `pwa.spec`. Đã có 4.3: `lib/offline-store.ts` lưu bộ từ trong IndexedDB, nút Tải về máy, Cập nhật bản offline, Xoá bản offline ở trang bộ từ, báo khi hết dung lượng; trang `/offline` liệt kê bộ đã tải và xem thẻ; đăng xuất xoá cơ sở dữ liệu offline. Còn học khi mất mạng và đồng bộ đáp án (4.5).
 - **Phải có:** manifest, cài lên thiết bị, chọn bộ để tải về, học khi mất mạng, hàng đợi đáp án đồng bộ khi có mạng.
 - **Ngoại lệ:** bộ đã đổi khi offline; học trên hai thiết bị; hết dung lượng; đăng xuất phải xoá dữ liệu offline.
 - **Cách test:** E2E chế độ offline của Playwright; integration gửi trùng đáp án; thủ công trên Android và iOS.
