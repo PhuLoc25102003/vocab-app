@@ -239,8 +239,11 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect
       .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
       .toBe(true);
-    await page.getByRole('button', { name: 'Tải về máy' }).click();
-    await expect(page.getByRole('button', { name: 'Xoá bản offline' })).toBeVisible();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Tải về máy' }).click();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Xoá bản offline' })).toBeVisible();
+    await page.keyboard.press('Escape');
 
     await page.context().setOffline(true);
     await page.goto('/offline').catch(() => undefined);
@@ -311,7 +314,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     const importPath = new URL(page.url()).pathname;
 
     // File Excel đi qua worker `blob:`, nên bước này kiểm tra luôn CSP của bản production.
-    await page.getByRole('link', { name: 'Nhập thêm thẻ' }).click();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Nhập thêm thẻ' }).click();
     await expect(page.getByText(/bộ đang có 2 thẻ/)).toBeVisible();
     await page.locator('input[type="file"]').setInputFiles({
       name: 'tu-them.xlsx',
@@ -355,8 +359,12 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(page.getByText(`${folderName} (0 bộ)`)).toBeVisible();
 
     await page.goto(setPath);
-    await page.getByLabel('Thư mục', { exact: true }).selectOption({ label: folderName });
-    await expect(page.getByText('Đã chuyển thư mục')).toBeVisible();
+    await page.getByRole('button', { name: /^Thư mục: chưa xếp/ }).click();
+    await page.getByRole('menuitemradio', { name: folderName }).click();
+    await expect(page.getByText('Đã chuyển vào thư mục')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: `Thư mục: ${folderName}. Đổi thư mục` }),
+    ).toBeVisible();
 
     await page.goto('/sets');
     await page.getByLabel('Thư mục', { exact: true }).selectOption({ label: `${folderName} (1)` });
@@ -499,7 +507,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(other.getByRole('heading', { name: copyTitle })).toBeVisible();
 
     await page.goto(setPath);
-    await page.getByRole('button', { name: 'Xoá bộ từ' }).click();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Xoá bộ từ' }).click();
     await page
       .getByRole('group', { name: 'Xác nhận xoá' })
       .getByRole('button', { name: 'Xoá bộ từ' })
