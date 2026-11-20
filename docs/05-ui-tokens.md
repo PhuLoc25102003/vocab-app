@@ -216,6 +216,7 @@ Mọi thao tác xoá hoặc không hoàn tác được (xoá bộ từ, thư m�
 - Lỗi từ máy chủ hiện ngay trong hộp thoại, không đóng. Trường cần nhập thêm (mật khẩu khi xoá tài khoản) đặt trong hộp thoại.
 - Ở 360 px hai nút xếp dọc, nút xác nhận ở trên; từ 640 px xếp ngang, nút xác nhận bên phải.
 - Dòng thẻ trống mới thêm được xoá ngay, không hỏi.
+- Rời trang tạo, sửa bộ từ hoặc nhập từ file khi còn dữ liệu chưa lưu dùng `useUnsavedGuard` (`components/common/use-unsaved-guard.tsx`): link và nút quay lại trong app hiện hộp thoại "Rời trang khi chưa lưu?" với "Ở lại" và "Rời trang"; đóng tab hoặc tải lại dùng hộp thoại mặc định của trình duyệt qua `beforeunload`. Không dùng `window.confirm`.
 
 ## Phản hồi khi học
 
