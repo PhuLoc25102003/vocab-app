@@ -100,7 +100,7 @@ Chỉ merge khi **tất cả** điều kiện đều đúng:
 
 - [ ] PR nhắm vào `develop`
 - [ ] `Verify` và `E2E` xanh trên commit mới nhất
-- [ ] `mergeStateStatus` là `CLEAN`, hoặc `UNSTABLE` chỉ vì check `Vercel` báo hết lượt deploy (giới hạn gói miễn phí, ngoài repo) trong khi `Verify` và `E2E` xanh; ghi rõ điều này trong báo cáo
+- [ ] `mergeStateStatus` là `CLEAN`, hoặc `UNSTABLE` chỉ vì check `Vercel` báo hết lượt deploy hoặc bị bỏ qua bởi `vercel-ignore-build.sh` (nhánh PR không build Preview) trong khi `Verify` và `E2E` xanh; ghi rõ điều này trong báo cáo
 - [ ] Lệnh ở bước 5 đều qua và `code-review` không còn "Chưa đạt"
 - [ ] Không rơi vào mục "Dừng lại và hỏi"
 
