@@ -80,7 +80,7 @@ test.describe.serial('luồng chính', () => {
     await expect(titleField).toHaveValue(setTitle);
     expect(new URL(page.url()).pathname).toBe('/sets/new');
 
-    await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
+    await page.getByRole('radio', { name: 'Công khai' }).check();
     for (const [index, { term, definition }] of cards.entries()) {
       await page.getByLabel('Từ', { exact: true }).nth(index).fill(term);
       await page.getByLabel('Nghĩa', { exact: true }).nth(index).fill(definition);

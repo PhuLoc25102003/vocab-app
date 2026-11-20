@@ -70,7 +70,7 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 
 ### UC-X8. Nhập, tạo bộ từ và trang công khai dễ hiểu hơn (góp ý ngày 2026-11-20)
 
-- **Việc:** 2.37 đến 2.40. **Người dùng:** học sinh, chủ bộ từ, khách. **Trạng thái:** Đang làm. Đã có 2.37 (`import-source.test`: tóm tắt cách đọc, nhãn cột có giá trị, báo ký tự đã nhận, chỉ một cột thì mở sẵn) và 2.38 (`lib/xlsx.ts` thêm tên sheet, kiểu ô, độ rộng cột, cố định hàng; `template-file.test` kiểm tra hai sheet và chỉ đọc sheet đầu; đã mở bằng Excel).
+- **Việc:** 2.37 đến 2.40. **Người dùng:** học sinh, chủ bộ từ, khách. **Trạng thái:** Đang làm. Đã có 2.37 (`import-source.test`: tóm tắt cách đọc, nhãn cột có giá trị, báo ký tự đã nhận, chỉ một cột thì mở sẵn) và 2.38 (`lib/xlsx.ts` thêm tên sheet, kiểu ô, độ rộng cột, cố định hàng; `template-file.test` kiểm tra hai sheet và chỉ đọc sheet đầu; đã mở bằng Excel) và 2.39 (`VisibilityField` trong `components/common` dùng chung cho form bộ từ và trang nhập; mô tả tự giãn bằng `field-sizing: content`; `set-form.test` kiểm tra đảo ngôn ngữ và mô tả từng lựa chọn).
 - **Vấn đề đã thấy:**
   - Trang nhập: người dùng không hiểu "Ký tự phân cách" là gì; năm ô chọn cột hiện ra cùng lúc dù trang đã tự nhận cột; không biết "Cột 1" là cột nào trong dữ liệu của mình.
   - File mẫu `.csv`: Excel cài tiếng Việt dùng dấu `;` làm dấu phân cách danh sách nên mở file mẫu ra thấy cả dòng `Từ,Nghĩa,Phiên âm,Ví dụ` dồn vào cột A.
