@@ -83,9 +83,12 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
 
   // Giáo viên giao bài trắc nghiệm.
   await teacher.getByRole('button', { name: 'Giao bài' }).click();
-  const form = teacher.getByRole('form', { name: 'Giao bài mới' });
+  const form = teacher.getByRole('dialog', { name: 'Giao bài' });
   await form.getByLabel('Bộ từ').selectOption(setId);
-  await form.getByLabel('Chế độ học').selectOption('MCQ');
+  // Chỉ giữ Trắc nghiệm trong lộ trình mặc định.
+  for (const mode of [/Flashcard/, /Ghép cặp/, /Luyện viết/]) {
+    await form.getByRole('checkbox', { name: mode }).uncheck();
+  }
   await form.getByRole('button', { name: 'Giao bài' }).click();
   const assigned = teacher.getByRole('list', { name: 'Bài đã giao' });
   await expect(assigned.getByRole('link', { name: new RegExp(setTitle) })).toBeVisible();
