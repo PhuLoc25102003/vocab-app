@@ -6,6 +6,8 @@ import { AuthSessionService } from './auth-session.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GoogleIdentityService } from './google-identity.service';
+import { PasswordResetRepository } from './password-reset.repository';
+import { PasswordResetService } from './password-reset.service';
 import { PasswordService } from './password.service';
 import { RefreshCookie } from './refresh-cookie';
 import { RefreshSessionRepository } from './refresh-session.repository';
@@ -17,6 +19,8 @@ import { RefreshSessionRepository } from './refresh-session.repository';
     AuthService,
     AuthSessionService,
     GoogleIdentityService,
+    PasswordResetRepository,
+    PasswordResetService,
     PasswordService,
     RefreshCookie,
     RefreshSessionRepository,

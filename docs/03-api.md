@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -14,6 +14,8 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /auth/refresh                                  | Cookie refresh            | Cấp cặp token mới (rotation)                               |
 | POST   | /auth/logout                                   | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
 | POST   | /auth/logout-all                               | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
+| POST   | /auth/forgot-password                          | Công khai                 | Gửi email liên kết đặt lại mật khẩu, trả 202               |
+| POST   | /auth/reset-password                           | Công khai                 | Đặt mật khẩu mới bằng token trong email                    |
 | GET    | /users/me                                      | Đã đăng nhập              | Thông tin tài khoản                                        |
 | PATCH  | /users/me                                      | Đã đăng nhập              | Sửa tên, mật khẩu                                          |
 | DELETE | /users/me                                      | Đã đăng nhập              | Xoá hẳn tài khoản và dữ liệu                               |
@@ -100,6 +102,8 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /auth/google` nhận `{ credential }` là Google ID token, trả 200 cùng dạng với đăng nhập. Lần đầu tạo tài khoản `STUDENT` không có mật khẩu, các lần sau nhận ra người dùng theo Google ID. Token không hợp lệ hoặc email Google chưa xác minh trả 401 `GOOGLE_TOKEN_INVALID`. Email trùng tài khoản mật khẩu thì gộp vào tài khoản đó, đồng thời xoá mật khẩu cũ và kết thúc mọi phiên cũ. Email đã gắn với Google ID khác trả 409 `GOOGLE_EMAIL_IN_USE`. Chưa đặt `GOOGLE_CLIENT_ID` hoặc không tải được khoá của Google trả 503. `Origin` ngoài `CORS_ORIGINS` trả 403.
 - `POST /auth/refresh` đọc cookie, trả 200 cùng dạng với đăng nhập và đặt cookie mới. Cookie sai hoặc phiên đã thu hồi trả 401 `REFRESH_TOKEN_INVALID` và xoá cookie. Request khác vừa xoay vòng cùng token trả 409 `REFRESH_IN_PROGRESS`, cookie giữ nguyên, client gửi lại một lần. `Origin` ngoài `CORS_ORIGINS` trả 403.
 - `POST /auth/logout` và `POST /auth/logout-all` cần access token, trả 204 và xoá cookie.
+- `POST /auth/forgot-password` nhận `{ email }`, luôn trả 202 `{ "data": { "message": "..." } }` cùng một thông báo, dù email có tài khoản hay không. Tài khoản tồn tại và chưa bị khoá thì nhận email có liên kết `${WEB_ORIGIN}/reset-password?token=...`, sống 30 phút. Liên kết mới làm liên kết cũ hết hiệu lực. Chưa cấu hình Brevo thì API dùng bộ gửi thư trong bộ nhớ, chỉ ghi log cảnh báo.
+- `POST /auth/reset-password` nhận `{ token, password }`, trả 200 `{ "data": { "message": "..." } }`, kết thúc mọi phiên cũ. Token sai, hết hạn hoặc đã dùng trả 400 `RESET_TOKEN_INVALID`. Hai endpoint dùng chung giới hạn tần suất với đăng ký.
 - Route cần đăng nhập trả 401 `TOKEN_EXPIRED` khi access token hết hạn, 401 `UNAUTHORIZED` khi thiếu hoặc sai token.
 - Vượt giới hạn trả 429 `TOO_MANY_REQUESTS` kèm header `Retry-After` (giây).
 

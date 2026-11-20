@@ -28,6 +28,12 @@ const envSchema = z.object({
   RATE_LIMIT_REGISTER_PER_MINUTE: z.coerce.number().int().min(1).default(3),
   /** Số lần gọi `/auth/refresh` mỗi phút cho một IP. */
   RATE_LIMIT_REFRESH_PER_MINUTE: z.coerce.number().int().min(1).default(60),
+  /** Để trống thì không gửi thư thật, thư được ghi log và giữ trong bộ nhớ (docs/08-deploy.md). */
+  BREVO_API_KEY: z.string().trim().default(''),
+  /** Địa chỉ gửi đã xác minh trong Brevo. */
+  EMAIL_FROM: z.string().trim().default(''),
+  /** Địa chỉ web để tạo liên kết trong thư. Để trống thì lấy origin đầu tiên của CORS_ORIGINS. */
+  WEB_ORIGIN: z.string().trim().default(''),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

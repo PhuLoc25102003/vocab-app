@@ -41,7 +41,7 @@ Mỗi use case gồm: việc liên quan, người dùng, trạng thái, phải c
 
 ## Lỗ hổng đã phát hiện
 
-Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file tiến độ. GAP-01 đến GAP-12 đã xử lý xong, GAP-13 đang chờ chọn dịch vụ gửi email.
+Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file tiến độ. GAP-01 đến GAP-12 đã xử lý xong, GAP-13 đã có API (1.49a), còn trang web (1.49b).
 
 | Mã     | Vấn đề                                                                                       | Bằng chứng  | Mức | Việc |
 | ------ | -------------------------------------------------------------------------------------------- | ----------- | --- | ---- |
@@ -102,5 +102,5 @@ Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file t
 | 1.44             | UC-S5, UC-L11                                   |
 | 1.45             | UC-L3, UC-L10                                   |
 | 1.46             | UC-S5, UC-S8                                    |
-| 1.49             | UC-A9                                           |
+| 1.49a, 1.49b     | UC-A9                                           |
 | 2.1 đến 4.3      | [Lộ trình](05-lo-trinh.md)                      |

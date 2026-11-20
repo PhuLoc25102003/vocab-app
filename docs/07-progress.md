@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Quên mật khẩu với bộ gửi thư giả và adapter Brevo (việc 1.49).
+1. Trang quên mật khẩu và đặt lại mật khẩu trên web (việc 1.49b).
 2. Rate limit và cache dùng chung qua adapter Upstash, thiếu khoá thì dùng bộ nhớ (việc 2.1, 2.2).
 3. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
 4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
@@ -23,11 +23,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |    Xong |    Tổng | Trạng thái |
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      53 | Đang làm   |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      51 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **118** | **126** | **94%**    |
+| **Toàn dự án**          |                                            | **119** | **127** | **94%**    |
 
 ## Cách cập nhật
 
@@ -162,7 +162,8 @@ Không tính vào tổng số việc.
 - [x] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10, #123).
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
 - [x] **1.48** Rate limit chung cho API (GAP-12, #95, #127).
-- [ ] **1.49** Quên mật khẩu qua email (GAP-13). Gửi bằng Brevo qua adapter `Mailer`, ở máy và trong test dùng bộ gửi giả; thiếu `BREVO_API_KEY` thì không gửi thật và ghi log.
+- [x] **1.49a** API quên mật khẩu (GAP-13, #300): `POST /auth/forgot-password`, `POST /auth/reset-password`, bảng `PasswordResetToken`, adapter `Mailer` gửi qua Brevo, thiếu `BREVO_API_KEY` thì dùng bộ gửi thư trong bộ nhớ và ghi log.
+- [ ] **1.49b** Trang `/forgot-password`, `/reset-password` và liên kết "Quên mật khẩu?" ở trang đăng nhập.
 
 ## Giai đoạn 2: Mở rộng
 

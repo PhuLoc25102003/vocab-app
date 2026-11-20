@@ -39,6 +39,18 @@ export const registerSchema = z.object({
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
+export const forgotPasswordSchema = z.object({ email: emailSchema });
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+
+/** Token trong liên kết đặt lại mật khẩu là 32 byte base64url, 43 ký tự. */
+export const resetPasswordSchema = z.object({
+  token: z
+    .string('Liên kết không hợp lệ')
+    .regex(/^[A-Za-z0-9_-]{32,128}$/, 'Liên kết không hợp lệ'),
+  password: newPasswordSchema,
+});
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+
 export const loginSchema = z.object({
   email: emailSchema,
   password: existingPasswordSchema,
