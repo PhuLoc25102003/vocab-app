@@ -84,7 +84,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 - [x] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.
 - [x] Chống mass assignment: DTO chỉ cho phép trường được liệt kê; không bao giờ nhận `role`, `ownerId` từ client.
 - [ ] Import file: giới hạn 2 MB, chỉ nhận `.csv .xlsx .txt`, kiểm tra MIME, không chạy công thức Excel; chặn CSV injection khi export (ký tự đầu `= + - @`). Đã có giới hạn 2.000.000 ký tự, 2.000 dòng và tổng 2.000 thẻ trên API, công thức được lưu như văn bản. Web nhận `.txt`, `.csv`, `.xlsx` tối đa 2 MB và kiểm tra MIME. File văn bản có byte NUL bị từ chối. File `.xlsx` được đọc trên trình duyệt bằng `read-excel-file`, chặn file trên 2 MB trước khi giải nén, chỉ đọc sheet đầu tiên, chỉ lấy giá trị đã tính sẵn, không chạy công thức (ADR 0002). File `.xls` cũ bị từ chối.
-- [ ] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp`. Chưa có tính năng upload.
+- [x] Upload ảnh qua presigned URL có hạn 5 phút, giới hạn 1 MB, chỉ `image/png|jpeg|webp` (việc 2.5a). Chữ ký SigV4 gồm `content-type` và `content-length` nên không tải được tệp khác đã khai báo. Thẻ chỉ nhận ảnh dưới `${R2_PUBLIC_URL}/cards/`. Ảnh tải lên mà không lưu vào thẻ chưa được dọn tự động.
 - [x] XSS: React tự escape; cấm `dangerouslySetInnerHTML` với nội dung người dùng; đặt Content-Security-Policy. Chỗ dùng duy nhất là script giao diện có nội dung cố định.
 - [x] Header bảo mật bằng `helmet` (BE) và `headers()` trong `next.config` (FE).
 - [x] CORS chỉ cho phép domain FE trong `CORS_ORIGINS`, `credentials: true`.

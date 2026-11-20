@@ -11,6 +11,7 @@ import {
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
+import { UploadsService } from '../uploads/uploads.service';
 import { PublicSetCache } from './public-set-cache';
 import { SetsRepository, type SetViewer } from './sets.repository';
 
@@ -27,6 +28,7 @@ export class SetsService {
   constructor(
     private readonly sets: SetsRepository,
     private readonly cache: PublicSetCache,
+    private readonly uploads: UploadsService,
   ) {}
 
   async listMine(ownerId: string, query: MySetQuery) {
@@ -61,6 +63,7 @@ export class SetsService {
   }
 
   async create(ownerId: string, dto: CreateSetDto) {
+    this.uploads.assertCardImages(dto.cards);
     return ok(await this.sets.create(ownerId, dto));
   }
 
@@ -95,6 +98,7 @@ export class SetsService {
   }
 
   async replaceCards(id: string, dto: ReplaceCardsDto) {
+    this.uploads.assertCardImages(dto.cards);
     const set = await this.sets.replaceCards(id, dto);
     if (!set) {
       throw setNotFound();

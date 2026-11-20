@@ -113,7 +113,7 @@ Làm sau khi phát hành vào `main`, vì staging sẽ theo `develop`.
 
 1. Đăng ký Cloudflare, vào **R2 Object Storage**, bật R2 (cần thêm thẻ thanh toán nhưng gói Free có 10 GB và không tính tiền tải xuống).
 2. **Create bucket** tên `vocab-media`, location Asia Pacific.
-3. Trong bucket, **Settings**, **Public access**, bật **R2.dev subdomain** và chép địa chỉ công khai. **CORS Policy** cho phép `PUT`, `GET` từ địa chỉ web production và staging.
+3. Trong bucket, **Settings**, **Public access**, bật **R2.dev subdomain** và chép địa chỉ công khai. **CORS Policy** cho phép `PUT`, `GET` từ địa chỉ web production và staging, `AllowedHeaders` là `content-type`.
 4. **R2**, **Manage API tokens**, **Create API token**, quyền **Object Read & Write**, chỉ bucket `vocab-media`. Chép Account ID, Access Key ID, Secret Access Key.
 5. Render, Environment: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET=vocab-media`, `R2_PUBLIC_URL` là địa chỉ công khai ở bước 3.
 6. Âm thanh TTS (2.6) cần thêm một dịch vụ đọc văn bản (ví dụ Google Cloud Text-to-Speech, có gói miễn phí nhưng cần thẻ). Chưa có thì app tiếp tục dùng giọng đọc của trình duyệt như hiện nay.

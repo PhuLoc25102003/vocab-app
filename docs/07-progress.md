@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
+1. Giao diện thêm ảnh cho thẻ (việc 2.5b).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -22,10 +22,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      52 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      37 |      40 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      38 |      41 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **122** | **127** | **96%**    |
+| **Toàn dự án**          |                                            | **123** | **128** | **96%**    |
 
 ## Cách cập nhật
 
@@ -176,7 +176,8 @@ Không tính vào tổng số việc.
 ### 2B. Nội dung
 
 - [x] **2.4** Thư mục bộ từ trên API và web (#151).
-- [ ] **2.5** Ảnh cho thẻ từ: `POST /uploads/presign` qua adapter lưu trữ R2, test dùng bộ lưu trữ giả; thiếu khoá R2 thì ẩn nút thêm ảnh.
+- [x] **2.5a** API ảnh cho thẻ: `GET /uploads/config`, `POST /uploads/presign` qua adapter `ObjectStorage` (R2, ký SigV4), thẻ nhận `imageUrl` trong kho của app; thiếu khoá R2 thì trả 503 (#308).
+- [ ] **2.5b** Giao diện ảnh cho thẻ: nút thêm ảnh trong trình sửa thẻ (ẩn khi chưa bật), xem trước, gỡ ảnh, hiện ảnh khi học; CSP cho phép domain ảnh.
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2. Cần chọn dịch vụ TTS; chưa có thì giữ giọng đọc của trình duyệt.
 
 ### 2C. Chế độ học

@@ -263,14 +263,19 @@ export class SetsRepository extends BaseRepository {
 
         const existing = await tx.card.findMany({ where: { setId }, select: { id: true } });
         const existingIds = new Set(existing.map(({ id }) => id));
-        const rows = cards.map(({ id, term, definition, phonetic, example }, position) => ({
-          id,
-          position,
-          term,
-          definition,
-          phonetic: phonetic ?? null,
-          example: example ?? null,
-        }));
+        const rows = cards.map(
+          ({ id, term, definition, phonetic, example, imageUrl }, position) => ({
+            id,
+            position,
+            term,
+            definition,
+            phonetic: phonetic ?? null,
+            example: example ?? null,
+            imageUrl: imageUrl ?? null,
+            // Client cũ không gửi `imageUrl`: giữ ảnh đang có thay vì xoá.
+            keepImage: imageUrl === undefined,
+          }),
+        );
 
         const unknown = rows.flatMap(({ id }, index) =>
           id && !existingIds.has(id)
@@ -308,6 +313,7 @@ export class SetsRepository extends BaseRepository {
                 "definition" = input."definition",
                 "phonetic" = input."phonetic",
                 "example" = input."example",
+                "imageUrl" = CASE WHEN input."keepImage" THEN card."imageUrl" ELSE input."imageUrl" END,
                 "updatedAt" = now() AT TIME ZONE 'UTC'
             FROM unnest(
               ${kept.map(({ id }) => id)}::text[],
@@ -315,20 +321,23 @@ export class SetsRepository extends BaseRepository {
               ${kept.map(({ term }) => term)}::text[],
               ${kept.map(({ definition }) => definition)}::text[],
               ${kept.map(({ phonetic }) => phonetic)}::text[],
-              ${kept.map(({ example }) => example)}::text[]
-            ) AS input("id", "position", "term", "definition", "phonetic", "example")
+              ${kept.map(({ example }) => example)}::text[],
+              ${kept.map(({ imageUrl }) => imageUrl)}::text[],
+              ${kept.map(({ keepImage }) => keepImage)}::boolean[]
+            ) AS input("id", "position", "term", "definition", "phonetic", "example", "imageUrl", "keepImage")
             WHERE card."id" = input."id"
               AND card."setId" = ${setId}
-              AND (card."position", card."term", card."definition", card."phonetic", card."example")
+              AND (card."position", card."term", card."definition", card."phonetic", card."example", card."imageUrl")
                 IS DISTINCT FROM
-                (input."position", input."term", input."definition", input."phonetic", input."example")
+                (input."position", input."term", input."definition", input."phonetic", input."example",
+                 CASE WHEN input."keepImage" THEN card."imageUrl" ELSE input."imageUrl" END)
           `;
         }
 
         const added = rows.filter(({ id }) => !id);
         if (added.length > 0) {
           await tx.card.createMany({
-            data: added.map(({ id: _id, ...row }) => ({ ...row, setId })),
+            data: added.map(({ id: _id, keepImage: _keep, ...row }) => ({ ...row, setId })),
           });
         }
 
