@@ -1,10 +1,10 @@
 import { Suspense, type ReactNode } from 'react';
-import { AppNav, AppNavFallback } from '@/components/common/app-nav';
 import { Logo } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
 import { OfflineSync } from '@/features/study/components/offline-sync';
 import { AccountMenu } from '@/features/auth/components/account-menu';
+import { RoleNav } from '@/features/auth/components/role-nav';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -18,9 +18,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
           <Logo href="/dashboard" />
-          <Suspense fallback={<AppNavFallback />}>
-            <AppNav />
-          </Suspense>
+          <RoleNav />
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
             <AccountMenu />

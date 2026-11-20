@@ -127,7 +127,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 
 ### UC-C1. Lớp và thành viên
 
-- **Việc:** 3.1, 3.2, 3.3, 3.8. **Người dùng:** giáo viên, học sinh.
+- **Việc:** 3.1, 3.2, 3.3, 3.7a, 3.8, 3.9, 3.11. **Người dùng:** giáo viên, học sinh. **Web giáo viên (3.7a):** mục "Lớp học" chỉ hiện với TEACHER và ADMIN (`RoleNav`); `/classes` liệt kê lớp đang dạy hoặc đã lưu trữ (`?archived=1`), nút "Tạo lớp" mở form tên và mô tả, tạo xong tới trang lớp; `/classes/:id` có khối mã lớp lớn với "Sao chép mã" và "Đổi mã" (hỏi xác nhận vì mã cũ hết hiệu lực), danh sách học sinh kèm ngày vào lớp, xoá học sinh và lưu trữ lớp đều hỏi xác nhận; lớp của giáo viên khác báo "Không tìm thấy lớp"; học sinh mở `/classes` thấy "Trang dành cho giáo viên" cho tới khi có 3.8. Test `teacher-classes.test`, `class-detail.test`, `app-nav.test`.
 - **Phải có:** yêu cầu quyền giáo viên và ADMIN duyệt; tạo, sửa, lưu trữ lớp; mã tham gia có thể đổi; xoá thành viên; học sinh rời lớp.
 - **Ngoại lệ:** mã sai hoặc đã đổi; tham gia hai lần; học sinh không xem được danh sách lớp của người khác.
 - **Cách test:** integration phân quyền đầy đủ; E2E giáo viên tạo lớp, học sinh tham gia.

@@ -49,6 +49,7 @@ export const config = {
     '/explore/:path*',
     '/review/:path*',
     '/account/:path*',
+    '/classes/:path*',
     '/login',
     '/register',
     '/public/sets/:id',
