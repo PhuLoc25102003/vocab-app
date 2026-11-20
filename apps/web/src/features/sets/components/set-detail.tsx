@@ -1,8 +1,6 @@
 'use client';
 
 import type { SetDetail as SetDetailData } from '@vocab/shared';
-import type { Route } from 'next';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { CopyLinkButton } from '@/components/common/copy-link-button';
 import { EmptyState } from '@/components/common/empty-state';
@@ -66,17 +64,7 @@ export function SetDetail({
       ) : null}
       <SetMeta set={set.data}>
         {renderMeta?.(set.data)}
-        {visibility === 'PUBLIC' ? (
-          <>
-            <Link
-              href={`/public/sets/${id}` as Route}
-              className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
-            >
-              Xem trang công khai
-            </Link>
-            <CopyLinkButton path={`/public/sets/${id}`} />
-          </>
-        ) : null}
+        {visibility === 'PUBLIC' ? <CopyLinkButton path={`/public/sets/${id}`} /> : null}
       </SetMeta>
       {cards.length > 0 ? (
         <>
