@@ -6,56 +6,59 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 
 ## Danh sách endpoint
 
-| Method | Path                         | Quyền                     | Mô tả                                                      |
-| ------ | ---------------------------- | ------------------------- | ---------------------------------------------------------- |
-| POST   | /auth/register               | Công khai                 | Đăng ký email + mật khẩu, trả 202                          |
-| POST   | /auth/login                  | Công khai                 | Trả access token, đặt cookie refresh                       |
-| POST   | /auth/google                 | Công khai                 | Đăng nhập bằng Google ID token                             |
-| POST   | /auth/refresh                | Cookie refresh            | Cấp cặp token mới (rotation)                               |
-| POST   | /auth/logout                 | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
-| POST   | /auth/logout-all             | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
-| GET    | /users/me                    | Đã đăng nhập              | Thông tin tài khoản                                        |
-| PATCH  | /users/me                    | Đã đăng nhập              | Sửa tên, mật khẩu                                          |
-| DELETE | /users/me                    | Đã đăng nhập              | Xoá hẳn tài khoản và dữ liệu                               |
-| GET    | /sets                        | Đã đăng nhập              | Bộ từ của tôi, phân trang                                  |
-| GET    | /sets/public                 | Công khai                 | Tìm bộ từ công khai                                        |
-| POST   | /sets                        | STUDENT+                  | Tạo bộ từ kèm danh sách thẻ                                |
-| GET    | /sets/:id                    | Chủ, ADMIN hoặc bộ PUBLIC | Chi tiết + thẻ                                             |
-| PATCH  | /sets/:id                    | Chủ, ADMIN                | Sửa thông tin                                              |
-| DELETE | /sets/:id                    | Chủ, ADMIN                | Xoá mềm                                                    |
-| POST   | /sets/:id/duplicate          | Đã đăng nhập              | Sao chép bộ từ xem được về tài khoản                       |
-| PUT    | /sets/:id/cards              | Chủ, ADMIN                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
-| GET    | /folders                     | Đã đăng nhập              | Thư mục của tôi kèm số bộ từ                               |
-| POST   | /folders                     | Đã đăng nhập              | Tạo thư mục                                                |
-| PATCH  | /folders/:id                 | Chủ                       | Đổi tên thư mục                                            |
-| DELETE | /folders/:id                 | Chủ                       | Xoá thư mục, giữ bộ từ                                     |
-| GET    | /classes                     | TEACHER, ADMIN            | Lớp tôi dạy kèm số thành viên                              |
-| POST   | /classes                     | TEACHER, ADMIN            | Tạo lớp, server sinh mã tham gia                           |
-| GET    | /classes/:id                 | Giáo viên của lớp, ADMIN  | Chi tiết lớp                                               |
-| PATCH  | /classes/:id                 | Giáo viên của lớp, ADMIN  | Sửa tên, mô tả, lưu trữ hoặc mở lại lớp                    |
-| POST   | /classes/:id/join-code       | Giáo viên của lớp, ADMIN  | Đổi mã tham gia                                            |
-| POST   | /classes/join                | Đã đăng nhập              | Tham gia lớp bằng mã                                       |
-| GET    | /classes/joined              | Đã đăng nhập              | Lớp tôi đã tham gia                                        |
-| DELETE | /classes/:id/members/me      | Thành viên                | Rời lớp                                                    |
-| GET    | /classes/:id/members         | Giáo viên của lớp, ADMIN  | Thành viên của lớp                                         |
-| DELETE | /classes/:id/members/:userId | Giáo viên của lớp, ADMIN  | Xoá học sinh khỏi lớp                                      |
-| GET    | /admin/users                 | ADMIN                     | Danh sách người dùng, tìm theo email hoặc tên              |
-| PATCH  | /admin/users/:id/lock        | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
-| PATCH  | /admin/users/:id/unlock      | ADMIN                     | Mở khoá tài khoản                                          |
-| GET    | /admin/stats                 | ADMIN                     | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
-| PATCH  | /admin/sets/:id/hide         | ADMIN                     | Ẩn bộ từ vi phạm kèm lý do                                 |
-| PATCH  | /admin/sets/:id/unhide       | ADMIN                     | Bỏ ẩn bộ từ                                                |
-| POST   | /import/preview              | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
-| POST   | /sets/:id/import             | Chủ                       | Lưu kết quả đã xem trước                                   |
-| POST   | /uploads/presign             | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
-| POST   | /study/sessions              | Đã đăng nhập              | Bắt đầu phiên, trả câu hỏi theo mode                       |
-| POST   | /study/sessions/:id/answers  | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
-| PATCH  | /study/sessions/:id/finish   | Chủ phiên                 | Kết thúc, trả kết quả                                      |
-| GET    | /review/due                  | Đã đăng nhập              | Thẻ đến hạn ôn hôm nay                                     |
-| GET    | /stats/sets/:id              | Người xem được bộ từ      | Tiến độ của tôi trong bộ từ                                |
-| GET    | /stats/overview              | Đã đăng nhập              | Streak, số từ đã thuộc, từ hay sai                         |
-| GET    | /health                      | Công khai                 | Kiểm tra API + kết nối DB                                  |
-| GET    | /admin/users                 | ADMIN                     | Quản lý người dùng                                         |
+| Method | Path                                   | Quyền                     | Mô tả                                                      |
+| ------ | -------------------------------------- | ------------------------- | ---------------------------------------------------------- |
+| POST   | /auth/register                         | Công khai                 | Đăng ký email + mật khẩu, trả 202                          |
+| POST   | /auth/login                            | Công khai                 | Trả access token, đặt cookie refresh                       |
+| POST   | /auth/google                           | Công khai                 | Đăng nhập bằng Google ID token                             |
+| POST   | /auth/refresh                          | Cookie refresh            | Cấp cặp token mới (rotation)                               |
+| POST   | /auth/logout                           | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
+| POST   | /auth/logout-all                       | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
+| GET    | /users/me                              | Đã đăng nhập              | Thông tin tài khoản                                        |
+| PATCH  | /users/me                              | Đã đăng nhập              | Sửa tên, mật khẩu                                          |
+| DELETE | /users/me                              | Đã đăng nhập              | Xoá hẳn tài khoản và dữ liệu                               |
+| GET    | /sets                                  | Đã đăng nhập              | Bộ từ của tôi, phân trang                                  |
+| GET    | /sets/public                           | Công khai                 | Tìm bộ từ công khai                                        |
+| POST   | /sets                                  | STUDENT+                  | Tạo bộ từ kèm danh sách thẻ                                |
+| GET    | /sets/:id                              | Chủ, ADMIN hoặc bộ PUBLIC | Chi tiết + thẻ                                             |
+| PATCH  | /sets/:id                              | Chủ, ADMIN                | Sửa thông tin                                              |
+| DELETE | /sets/:id                              | Chủ, ADMIN                | Xoá mềm                                                    |
+| POST   | /sets/:id/duplicate                    | Đã đăng nhập              | Sao chép bộ từ xem được về tài khoản                       |
+| PUT    | /sets/:id/cards                        | Chủ, ADMIN                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
+| GET    | /folders                               | Đã đăng nhập              | Thư mục của tôi kèm số bộ từ                               |
+| POST   | /folders                               | Đã đăng nhập              | Tạo thư mục                                                |
+| PATCH  | /folders/:id                           | Chủ                       | Đổi tên thư mục                                            |
+| DELETE | /folders/:id                           | Chủ                       | Xoá thư mục, giữ bộ từ                                     |
+| GET    | /classes                               | TEACHER, ADMIN            | Lớp tôi dạy kèm số thành viên                              |
+| POST   | /classes                               | TEACHER, ADMIN            | Tạo lớp, server sinh mã tham gia                           |
+| GET    | /classes/:id                           | Giáo viên của lớp, ADMIN  | Chi tiết lớp                                               |
+| PATCH  | /classes/:id                           | Giáo viên của lớp, ADMIN  | Sửa tên, mô tả, lưu trữ hoặc mở lại lớp                    |
+| POST   | /classes/:id/join-code                 | Giáo viên của lớp, ADMIN  | Đổi mã tham gia                                            |
+| POST   | /classes/join                          | Đã đăng nhập              | Tham gia lớp bằng mã                                       |
+| GET    | /classes/joined                        | Đã đăng nhập              | Lớp tôi đã tham gia                                        |
+| DELETE | /classes/:id/members/me                | Thành viên                | Rời lớp                                                    |
+| GET    | /classes/:id/members                   | Giáo viên của lớp, ADMIN  | Thành viên của lớp                                         |
+| DELETE | /classes/:id/members/:userId           | Giáo viên của lớp, ADMIN  | Xoá học sinh khỏi lớp                                      |
+| GET    | /classes/:id/assignments               | Giáo viên của lớp, ADMIN  | Bài đã giao, hạn gần nhất trước                            |
+| POST   | /classes/:id/assignments               | Giáo viên của lớp, ADMIN  | Giao bộ từ kèm chế độ và hạn nộp                           |
+| DELETE | /classes/:id/assignments/:assignmentId | Giáo viên của lớp, ADMIN  | Huỷ bài giao                                               |
+| GET    | /admin/users                           | ADMIN                     | Danh sách người dùng, tìm theo email hoặc tên              |
+| PATCH  | /admin/users/:id/lock                  | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
+| PATCH  | /admin/users/:id/unlock                | ADMIN                     | Mở khoá tài khoản                                          |
+| GET    | /admin/stats                           | ADMIN                     | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
+| PATCH  | /admin/sets/:id/hide                   | ADMIN                     | Ẩn bộ từ vi phạm kèm lý do                                 |
+| PATCH  | /admin/sets/:id/unhide                 | ADMIN                     | Bỏ ẩn bộ từ                                                |
+| POST   | /import/preview                        | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
+| POST   | /sets/:id/import                       | Chủ                       | Lưu kết quả đã xem trước                                   |
+| POST   | /uploads/presign                       | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
+| POST   | /study/sessions                        | Đã đăng nhập              | Bắt đầu phiên, trả câu hỏi theo mode                       |
+| POST   | /study/sessions/:id/answers            | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
+| PATCH  | /study/sessions/:id/finish             | Chủ phiên                 | Kết thúc, trả kết quả                                      |
+| GET    | /review/due                            | Đã đăng nhập              | Thẻ đến hạn ôn hôm nay                                     |
+| GET    | /stats/sets/:id                        | Người xem được bộ từ      | Tiến độ của tôi trong bộ từ                                |
+| GET    | /stats/overview                        | Đã đăng nhập              | Streak, số từ đã thuộc, từ hay sai                         |
+| GET    | /health                                | Công khai                 | Kiểm tra API + kết nối DB                                  |
+| GET    | /admin/users                           | ADMIN                     | Quản lý người dùng                                         |
 
 ## Chuẩn request / response
 
@@ -125,6 +128,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /classes/:id/join-code` trả 200 với mã mới, mã cũ hết hiệu lực ngay, thành viên đã có vẫn ở trong lớp.
 - `POST /classes/join` nhận `{ joinCode }`, bỏ khoảng trắng và không phân biệt hoa thường, trả 200 `{ data: { id, name, description, teacherName, joinedAt } }`. Tham gia lại trả cùng kết quả, không tạo bản ghi trùng. Mã sai định dạng trả 400; mã không có, đã đổi hoặc lớp đã lưu trữ trả 404 `CLASS_NOT_FOUND`; giáo viên của lớp trả 422 `CLASS_TEACHER_CANNOT_JOIN`.
 - `GET /classes/joined` nhận `page`, `limit`, trả lớp đã tham gia chưa lưu trữ, mới tham gia trước.
+- `POST /classes/:id/assignments` nhận `{ setId, mode, dueAt? }`, `dueAt` là ISO 8601 có múi giờ (lưu UTC), bỏ trống hoặc `null` là không có hạn; trả 201 `{ data: { id, classId, setId, setTitle, mode, dueAt, createdAt } }`. Giáo viên chỉ giao bộ của mình (bộ của người khác hoặc đã xoá trả 404 `SET_NOT_FOUND`), ADMIN giao được mọi bộ. Bộ `PRIVATE` trả 422 `SET_NOT_SHAREABLE`. `GET /classes/:id/assignments` nhận `page`, `limit`, xếp hạn gần nhất trước, bài không có hạn xếp cuối. `DELETE /classes/:id/assignments/:assignmentId` trả 204, bài không thuộc lớp trả 404 `ASSIGNMENT_NOT_FOUND`.
 - `GET /classes/:id/members` nhận `page`, `limit`, trả `{ data: [{ userId, displayName, joinedAt }], meta }` theo thứ tự tham gia, không trả email. `DELETE /classes/:id/members/me` (rời lớp) và `DELETE /classes/:id/members/:userId` trả 204, người không ở trong lớp trả 404 `CLASS_MEMBER_NOT_FOUND`.
 - Chỉ chủ thư mục được sửa và xoá, kể cả ADMIN cũng không. Thư mục không tồn tại trả 404 `FOLDER_NOT_FOUND`.
 

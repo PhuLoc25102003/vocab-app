@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { studyModeSchema } from '../study/types';
 import { paginationMetaSchema, paginationSchema } from './pagination';
 
 export const CLASS_NAME_MAX_LENGTH = 80;
@@ -111,3 +112,30 @@ export const joinedClassListSchema = z.object({
 export type JoinedClassList = z.infer<typeof joinedClassListSchema>;
 
 export const joinedClassResponseSchema = z.object({ data: joinedClassSchema });
+
+export const createAssignmentSchema = z.object({
+  setId: z.string('Hãy chọn bộ từ').min(1, 'Hãy chọn bộ từ').max(64),
+  mode: studyModeSchema,
+  /** Thời điểm hết hạn theo ISO 8601, bỏ trống là không có hạn. */
+  dueAt: z.iso.datetime({ offset: true, message: 'Hạn nộp không hợp lệ' }).nullable().optional(),
+});
+export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>;
+
+export const assignmentListQuerySchema = paginationSchema;
+
+export const assignmentSchema = z.object({
+  id: z.string(),
+  classId: z.string(),
+  setId: z.string(),
+  setTitle: z.string(),
+  mode: studyModeSchema,
+  dueAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+export type Assignment = z.infer<typeof assignmentSchema>;
+
+export const assignmentListSchema = z.object({
+  data: z.array(assignmentSchema),
+  meta: paginationMetaSchema,
+});
+export type AssignmentList = z.infer<typeof assignmentListSchema>;

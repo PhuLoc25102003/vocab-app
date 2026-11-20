@@ -12,6 +12,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
+  assignmentListQuerySchema,
+  createAssignmentSchema,
+  type CreateAssignmentInput,
   classListQuerySchema,
   classMemberListQuerySchema,
   createClassSchema,
@@ -27,6 +30,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { AssignmentsService } from './assignments.service';
 import { ClassMembersService } from './class-members.service';
 import { ClassesService } from './classes.service';
 
@@ -38,6 +42,7 @@ export class ClassesController {
   constructor(
     private readonly classes: ClassesService,
     private readonly members: ClassMembersService,
+    private readonly assignments: AssignmentsService,
   ) {}
 
   @Get()
@@ -101,5 +106,38 @@ export class ClassesController {
   @ApiOperation({ summary: 'Xoá học sinh khỏi lớp' })
   removeMember(@Param('id') id: string, @Param('userId') userId: string): Promise<void> {
     return this.members.remove(id, userId);
+  }
+
+  @Get(':id/assignments')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Bài đã giao cho lớp, hạn gần nhất lên trước' })
+  listAssignments(
+    @Param('id') id: string,
+    @Query(new ZodValidationPipe(assignmentListQuerySchema)) query: Pagination,
+  ) {
+    return this.assignments.list(id, query);
+  }
+
+  @Post(':id/assignments')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Giao bộ từ cho lớp kèm chế độ học và hạn nộp' })
+  @ApiZodBody(createAssignmentSchema)
+  createAssignment(
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserData,
+    @Body(new ZodValidationPipe(createAssignmentSchema)) dto: CreateAssignmentInput,
+  ) {
+    return this.assignments.create(id, user, dto);
+  }
+
+  @Delete(':id/assignments/:assignmentId')
+  @CheckOwnership('class')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Huỷ bài giao' })
+  removeAssignment(
+    @Param('id') id: string,
+    @Param('assignmentId') assignmentId: string,
+  ): Promise<void> {
+    return this.assignments.remove(id, assignmentId);
   }
 }
