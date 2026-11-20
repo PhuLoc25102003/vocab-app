@@ -22,7 +22,7 @@ import {
   type ClipboardEvent,
   type ReactNode,
 } from 'react';
-import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
+import { useForm, useWatch, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
@@ -101,7 +101,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     handleSubmit,
     getValues,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<ImportPreviewInput, unknown, ImportPreviewDto>({
     resolver: zodResolver(importPreviewSchema),
@@ -171,8 +171,8 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     }
   });
 
-  const content = watch('content');
-  const watched = watch('options');
+  const content = useWatch({ control, name: 'content' });
+  const watched = useWatch({ control, name: 'options' });
   const options = {
     delimiter: watched?.delimiter ?? 'auto',
     hasHeader: watched?.hasHeader ?? false,

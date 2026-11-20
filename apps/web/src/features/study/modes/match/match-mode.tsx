@@ -167,7 +167,6 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
 
       {done ? (
         <div className="mt-auto flex flex-col">
-          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- đưa người dùng bàn phím tới bước tiếp */}
           <Button autoFocus onClick={finishRound}>
             Tiếp tục
           </Button>

@@ -2,14 +2,14 @@
 
 import { getMode, type GradeResult } from '@vocab/shared';
 import { Check, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 
 export function McqModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
-  const choices = question.choices ?? [];
+  const choices = useMemo(() => question.choices ?? [], [question.choices]);
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
   const shownAt = useRef(0);
