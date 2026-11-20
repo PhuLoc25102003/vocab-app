@@ -24,9 +24,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       6 |      10 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       7 |      11 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **110** | **123** | **89%**    |
+| **Toàn dự án**          |                                            | **111** | **124** | **90%**    |
 
 ## Cách cập nhật
 
@@ -231,6 +231,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.5** API giáo viên giao bộ từ cho lớp kèm chế độ và hạn nộp, xem và huỷ bài giao (#267).
 - [x] **3.10** API học sinh xem bài cần làm của các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.
+- [x] **3.11** Lệnh `npm run user:set-role -w @vocab/api -- <email> <vai trò>` gán ADMIN, TEACHER hoặc STUDENT để test và cấp quyền tạm khi chưa chốt việc 3.2.
 - [ ] **3.7** Web cho giáo viên.
 - [ ] **3.8** Web cho học sinh trong lớp.
 

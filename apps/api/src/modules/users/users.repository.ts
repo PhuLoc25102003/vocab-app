@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { AuthUser, RegisterInput } from '@vocab/shared';
+import type { AuthUser, RegisterInput, Role } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -112,6 +112,16 @@ export class UsersRepository extends BaseRepository {
       }),
     ]);
     return account;
+  }
+
+  /** Đổi vai trò theo email, dùng cho lệnh quản trị. Trả `null` nếu không có tài khoản. */
+  async setRoleByEmail(email: string, role: Role): Promise<Account | null> {
+    const { count } = await this.prisma.user.updateMany({
+      where: { email, deletedAt: null },
+      data: { role },
+    });
+    if (count === 0) return null;
+    return this.prisma.user.findUnique({ where: { email }, select: ACCOUNT_SELECT });
   }
 
   /** Xoá hẳn. Dữ liệu liên quan bị xoá theo `onDelete: Cascade`. */
