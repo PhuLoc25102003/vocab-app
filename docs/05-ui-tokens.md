@@ -224,6 +224,10 @@ Mọi thao tác xoá hoặc không hoàn tác được (xoá bộ từ, thư m�
 - Dòng thẻ trống mới thêm được xoá ngay, không hỏi.
 - Rời trang tạo, sửa bộ từ hoặc nhập từ file khi còn dữ liệu chưa lưu dùng `useUnsavedGuard` (`components/common/use-unsaved-guard.tsx`): link và nút quay lại trong app hiện hộp thoại "Rời trang khi chưa lưu?" với "Ở lại" và "Rời trang"; đóng tab hoặc tải lại dùng hộp thoại mặc định của trình duyệt qua `beforeunload`. Không dùng `window.confirm`.
 
+## Lộ trình "Bắt đầu học"
+
+Nút chính "Bắt đầu học" trên trang bộ từ mở `/sets/:id/study/path`, chạy lần lượt Xem thẻ → Trắc nghiệm → Ghép cặp → Luyện viết (`PATH_STEPS` trong `features/study/path-steps.ts`). Dòng mô tả dưới tiêu đề "Chọn cách học" nói rõ thứ tự này. Trong phiên, dưới thanh tiến độ có hàng chip các bước: bước đã xong viền và nền `primary-soft` kèm dấu tích, bước đang học nền `primary` chữ `primary-fg` (`aria-current="step"`), bước sau viền `border` chữ `text-muted`. Màn kết quả mỗi bước có nút chính "Bước tiếp: <tên bước>"; bước cuối có hộp viền `primary` chúc mừng đã đi hết lộ trình. Bước không dùng được với bộ từ thì tự bỏ qua. Flashcard là một ô trong lưới chế độ như các chế độ khác.
+
 ## Phản hồi khi học
 
 Đúng dùng lớp `feedback-correct` (nảy nhẹ 200 ms), sai dùng `feedback-wrong` (rung ngang 240 ms), định nghĩa trong `globals.css` và tắt khi `prefers-reduced-motion`. Chuyển động chỉ đi kèm icon và chữ, không thay chúng.
