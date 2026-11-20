@@ -3,16 +3,26 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import {
+  detectDelimiter,
   detectTemplateHeader,
   importPreviewSchema,
+  readFirstRecord,
+  type DetectedDelimiter,
   type ImportDelimiter,
   type ImportPreviewDto,
   type ImportPreviewInput,
   type ImportPreviewResult,
 } from '@vocab/shared';
-import { Download, FileUp } from 'lucide-react';
-import { useId, useRef, useState, type ChangeEvent, type ClipboardEvent } from 'react';
-import { useForm } from 'react-hook-form';
+import { Download, FileUp, SlidersHorizontal } from 'lucide-react';
+import {
+  useId,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ClipboardEvent,
+  type ReactNode,
+} from 'react';
+import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
@@ -21,15 +31,37 @@ import { previewImport } from '../api';
 import { IMPORT_FILE_ACCEPT, ImportFileError, readImportFile } from '../read-file';
 import { downloadTemplate, type TemplateFormat } from '../template-file';
 
-export const DELIMITER_LABELS: Record<ImportDelimiter, string> = {
-  auto: 'Tự nhận',
-  tab: 'Tab',
-  comma: 'Dấu phẩy ( , )',
-  semicolon: 'Chấm phẩy ( ; )',
-  dash: 'Gạch ngang ( - )',
+const DELIMITER_LABELS: Record<ImportDelimiter, string> = {
+  auto: 'Tự nhận (nên dùng)',
+  tab: 'Phím Tab: dán từ Excel, Google Sheets',
+  comma: 'Dấu phẩy: apple, quả táo',
+  semicolon: 'Dấu chấm phẩy: apple; quả táo',
+  dash: 'Gạch ngang: apple - quả táo',
 };
 
+/** Tên ngắn của ký tự đã tự nhận, dùng trong câu "Đã nhận: ...". */
+const DETECTED_NAMES: Record<DetectedDelimiter, string> = {
+  tab: 'phím Tab',
+  comma: 'dấu phẩy',
+  semicolon: 'dấu chấm phẩy',
+  dash: 'gạch ngang',
+};
+
+const DELIMITER_FIELD = 'Từ và nghĩa cách nhau bằng';
 const COLUMN_CHOICES = Array.from({ length: 10 }, (_, index) => index + 1);
+const SAMPLE_LENGTH = 24;
+
+const shorten = (value: string) =>
+  value.length > SAMPLE_LENGTH ? `${value.slice(0, SAMPLE_LENGTH - 1)}…` : value;
+
+/** Ký tự thật dùng để tách và các ô của dòng đầu, để nhãn cột hiện giá trị người dùng nhận ra. */
+function readFirstRow(content: string, delimiter: ImportDelimiter) {
+  if (!content.trim()) {
+    return { detected: null, fields: [] };
+  }
+  const detected = delimiter === 'auto' ? detectDelimiter(content) : delimiter;
+  return { detected, fields: readFirstRecord(content, detected).map((field) => field.trim()) };
+}
 const PLACEHOLDER =
   'apple\tquả táo\nbanana\tquả chuối\n\nMỗi dòng một thẻ, từ và nghĩa cách nhau bằng tab, dấu phẩy hoặc " - ".';
 
@@ -62,12 +94,14 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   const [fileError, setFileError] = useState<string | null>(null);
   const [templateError, setTemplateError] = useState<string | null>(null);
   const [usesTemplate, setUsesTemplate] = useState(false);
+  const [editingOptions, setEditingOptions] = useState(false);
   const preview = useMutation({ mutationFn: previewImport });
   const {
     register,
     handleSubmit,
     getValues,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ImportPreviewInput, unknown, ImportPreviewDto>({
     resolver: zodResolver(importPreviewSchema),
@@ -137,9 +171,40 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     }
   });
 
+  const content = watch('content');
+  const watched = watch('options');
+  const options = {
+    delimiter: watched?.delimiter ?? 'auto',
+    hasHeader: watched?.hasHeader ?? false,
+    termColumn: watched?.termColumn ?? 1,
+    definitionColumn: watched?.definitionColumn ?? 2,
+    phoneticColumn: watched?.phoneticColumn,
+    exampleColumn: watched?.exampleColumn,
+  };
+  const { detected, fields } = readFirstRow(content, options.delimiter);
+  const singleColumn = detected !== null && fields.length < 2;
+  const optionsOpen = editingOptions || singleColumn || errors.options !== undefined;
+
+  const columnLabel = (column: number) => {
+    const sample = fields[column - 1];
+    return sample ? `Cột ${column}: ${shorten(sample)}` : `Cột ${column}`;
+  };
+  const columnSummary = [
+    `từ ở cột ${options.termColumn}`,
+    `nghĩa ở cột ${options.definitionColumn}`,
+    options.phoneticColumn ? `phiên âm ở cột ${options.phoneticColumn}` : null,
+    options.exampleColumn ? `ví dụ ở cột ${options.exampleColumn}` : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
+  const delimiterSummary =
+    detected === null
+      ? 'Trang tự nhận cách ngăn cách sau khi bạn dán hoặc chọn file.'
+      : `Cách nhau bằng ${DETECTED_NAMES[detected]}.`;
+
   const columnOptions = COLUMN_CHOICES.map((column) => (
     <option key={column} value={column}>
-      Cột {column}
+      {columnLabel(column)}
     </option>
   ));
   const optionalColumnOptions = [
@@ -153,12 +218,12 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
       {preview.error ? <FormError>{formErrorMessage(preview.error)}</FormError> : null}
       <section aria-labelledby="template-title" className="flex flex-col gap-2">
-        <h2 id="template-title" className="text-h3">
-          File mẫu
-        </h2>
+        <StepTitle id="template-title" step={1}>
+          Lấy file mẫu <span className="font-normal text-text-muted">(không bắt buộc)</span>
+        </StepTitle>
         <p className="max-w-[65ch] text-text-muted">
-          Mỗi dòng là một thẻ. Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống. Giữ
-          nguyên hàng tiêu đề của file mẫu để trang tự chọn cột.
+          Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống. Giữ nguyên hàng tiêu đề
+          để trang tự chọn cột.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="secondary" onClick={() => void saveTemplate('xlsx')}>
@@ -172,7 +237,10 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         </div>
         {templateError ? <FormError>{templateError}</FormError> : null}
       </section>
-      <div className="flex flex-col gap-2">
+      <section aria-labelledby="source-title" className="flex flex-col gap-2">
+        <StepTitle id="source-title" step={2}>
+          Đưa danh sách vào
+        </StepTitle>
         <TextareaField
           label="Dán danh sách từ"
           placeholder={PLACEHOLDER}
@@ -208,52 +276,45 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         </div>
         {fileError ? <FormError>{fileError}</FormError> : null}
         <p className="text-small text-text-muted" aria-live="polite">
-          {usesTemplate ? 'Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn bên dưới.' : ''}
+          {usesTemplate ? 'Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn.' : ''}
         </p>
-      </div>
+      </section>
 
-      <fieldset className="grid gap-4 sm:grid-cols-3">
-        <legend className="mb-2 text-h3">Cách đọc</legend>
-        <SelectField label="Ký tự phân cách" {...register('options.delimiter')}>
-          {Object.entries(DELIMITER_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </SelectField>
-        <SelectField label="Cột từ" {...register('options.termColumn')}>
-          {columnOptions}
-        </SelectField>
-        <SelectField
-          label="Cột nghĩa"
-          error={errors.options?.definitionColumn?.message}
-          {...register('options.definitionColumn')}
-        >
-          {columnOptions}
-        </SelectField>
-        <SelectField
-          label="Cột phiên âm (không bắt buộc)"
-          error={errors.options?.phoneticColumn?.message}
-          {...register('options.phoneticColumn')}
-        >
-          {optionalColumnOptions}
-        </SelectField>
-        <SelectField
-          label="Cột ví dụ (không bắt buộc)"
-          error={errors.options?.exampleColumn?.message}
-          {...register('options.exampleColumn')}
-        >
-          {optionalColumnOptions}
-        </SelectField>
-        <label className="flex min-h-11 items-center gap-3 text-body sm:col-span-3">
-          <input
-            type="checkbox"
-            className="size-11 shrink-0 accent-primary"
-            {...register('options.hasHeader')}
+      <section aria-labelledby="options-title" className="flex flex-col gap-3">
+        <StepTitle id="options-title" step={3}>
+          Kiểm tra cách đọc
+        </StepTitle>
+        {singleColumn ? (
+          <FormError>
+            Chưa tách được từ và nghĩa. Hãy chọn đúng ký tự ngăn cách từ và nghĩa trong danh sách
+            của bạn.
+          </FormError>
+        ) : null}
+        {optionsOpen ? (
+          <OptionsFields
+            register={register}
+            errors={errors}
+            delimiterHint={
+              options.delimiter === 'auto' && detected !== null
+                ? `Đã nhận: ${DETECTED_NAMES[detected]}.`
+                : undefined
+            }
+            columnOptions={columnOptions}
+            optionalColumnOptions={optionalColumnOptions}
           />
-          Dòng đầu là tiêu đề, bỏ qua khi nhập
-        </label>
-      </fieldset>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="max-w-[65ch] text-text-muted" aria-live="polite">
+              {delimiterSummary} Lấy {columnSummary}
+              {options.hasHeader ? ', bỏ dòng tiêu đề.' : '.'}
+            </p>
+            <Button type="button" variant="secondary" onClick={() => setEditingOptions(true)}>
+              <SlidersHorizontal aria-hidden className="size-4" />
+              Đổi cách đọc
+            </Button>
+          </div>
+        )}
+      </section>
 
       <div>
         <Button type="submit" loading={preview.isPending}>
@@ -261,5 +322,96 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         </Button>
       </div>
     </form>
+  );
+}
+
+function StepTitle({ id, step, children }: { id: string; step: number; children: ReactNode }) {
+  return (
+    <h2 id={id} className="flex items-center gap-3 text-h3">
+      <span
+        aria-hidden
+        className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-small font-semibold text-primary"
+      >
+        {step}
+      </span>
+      <span>
+        <span className="sr-only">Bước {step}: </span>
+        {children}
+      </span>
+    </h2>
+  );
+}
+
+interface OptionsFieldsProps {
+  register: UseFormRegister<ImportPreviewInput>;
+  errors: FieldErrors<ImportPreviewInput>;
+  delimiterHint: string | undefined;
+  columnOptions: ReactNode;
+  optionalColumnOptions: ReactNode;
+}
+
+function OptionsFields({
+  register,
+  errors,
+  delimiterHint,
+  columnOptions,
+  optionalColumnOptions,
+}: OptionsFieldsProps) {
+  const headerHintId = useId();
+  return (
+    <fieldset className="grid gap-4 sm:grid-cols-2">
+      <legend className="sr-only">Cách đọc danh sách</legend>
+      <div className="sm:col-span-2">
+        <SelectField
+          label={DELIMITER_FIELD}
+          hint={delimiterHint}
+          {...register('options.delimiter')}
+        >
+          {Object.entries(DELIMITER_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </SelectField>
+      </div>
+      <SelectField label="Cột từ" {...register('options.termColumn')}>
+        {columnOptions}
+      </SelectField>
+      <SelectField
+        label="Cột nghĩa"
+        error={errors.options?.definitionColumn?.message}
+        {...register('options.definitionColumn')}
+      >
+        {columnOptions}
+      </SelectField>
+      <SelectField
+        label="Cột phiên âm (không bắt buộc)"
+        error={errors.options?.phoneticColumn?.message}
+        {...register('options.phoneticColumn')}
+      >
+        {optionalColumnOptions}
+      </SelectField>
+      <SelectField
+        label="Cột ví dụ (không bắt buộc)"
+        error={errors.options?.exampleColumn?.message}
+        {...register('options.exampleColumn')}
+      >
+        {optionalColumnOptions}
+      </SelectField>
+      <div className="flex flex-col sm:col-span-2">
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 text-body">
+          <input
+            type="checkbox"
+            className="size-5 shrink-0 accent-primary"
+            aria-describedby={headerHintId}
+            {...register('options.hasHeader')}
+          />
+          Dòng đầu là tiêu đề, bỏ qua khi nhập
+        </label>
+        <p id={headerHintId} className="pl-8 text-small text-text-muted">
+          Bật nếu dòng đầu là tên cột như Từ, Nghĩa.
+        </p>
+      </div>
+    </fieldset>
   );
 }
