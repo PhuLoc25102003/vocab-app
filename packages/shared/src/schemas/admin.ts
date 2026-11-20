@@ -40,6 +40,10 @@ export const lockUserSchema = z.object({
 });
 export type LockUserDto = z.infer<typeof lockUserSchema>;
 
+/** ADMIN đổi vai trò trực tiếp, ví dụ cấp quyền giáo viên (việc 3.2). */
+export const setUserRoleSchema = z.object({ role: roleSchema });
+export type SetUserRoleDto = z.infer<typeof setUserRoleSchema>;
+
 export const adminUserSchema = z.object({
   id: z.string(),
   email: z.string(),

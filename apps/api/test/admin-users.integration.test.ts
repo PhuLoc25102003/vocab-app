@@ -116,4 +116,29 @@ describe('admin users', () => {
     expect(missing.body.error.code).toBe(ERROR_CODES.USER_NOT_FOUND);
     await patch(admin.token, 'khong-co/unlock').expect(404);
   });
+
+  it('ADMIN cấp quyền giáo viên, học sinh dùng được quyền mới ngay', async () => {
+    await patch(studentToken, `${studentId}/role`, { role: 'TEACHER' }).expect(403);
+    await server()
+      .get('/api/v1/classes')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .expect(403);
+
+    const { body } = await patch(admin.token, `${studentId}/role`, { role: 'TEACHER' }).expect(200);
+
+    expect(body.data).toMatchObject({ id: studentId, role: 'TEACHER' });
+    // Vai trò đọc từ database ở mỗi request, token cũ vẫn dùng được với quyền mới.
+    await server()
+      .get('/api/v1/classes')
+      .set('Authorization', `Bearer ${studentToken}`)
+      .expect(200);
+  });
+
+  it('không tự đổi vai trò, vai trò sai trả 400, người không tồn tại trả 404', async () => {
+    const self = await patch(admin.token, `${admin.id}/role`, { role: 'STUDENT' }).expect(422);
+    expect(self.body.error.code).toBe(ERROR_CODES.CANNOT_CHANGE_OWN_ROLE);
+    await patch(admin.token, `${studentId}/role`, { role: 'OWNER' }).expect(400);
+    const missing = await patch(admin.token, 'khong-co/role', { role: 'TEACHER' }).expect(404);
+    expect(missing.body.error.code).toBe(ERROR_CODES.USER_NOT_FOUND);
+  });
 });

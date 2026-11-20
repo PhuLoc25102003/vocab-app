@@ -2,7 +2,14 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { lockUserSchema, paginationSchema, type AdminUser, type LockUserDto } from '@vocab/shared';
+import {
+  lockUserSchema,
+  paginationSchema,
+  roleSchema,
+  type AdminUser,
+  type LockUserDto,
+  type Role,
+} from '@vocab/shared';
 import type { Route } from 'next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -10,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { FormField, TextareaField } from '@/components/common/form-field';
+import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { Pagination } from '@/components/common/pagination';
@@ -18,7 +25,14 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import { adminKeys, ADMIN_USERS_PAGE_SIZE, listAdminUsers, lockUser, unlockUser } from '../api';
+import {
+  adminKeys,
+  ADMIN_USERS_PAGE_SIZE,
+  listAdminUsers,
+  lockUser,
+  setUserRole,
+  unlockUser,
+} from '../api';
 
 const ROLE_LABELS: Record<AdminUser['role'], string> = {
   STUDENT: 'Học sinh',
@@ -85,6 +99,14 @@ function UserRow({ user }: { user: AdminUser }) {
     },
     onError: (error) => toast.error(formErrorMessage(error)),
   });
+  const changeRole = useMutation({
+    mutationFn: (role: Role) => setUserRole(user.id, role),
+    onSuccess: async (updated) => {
+      await queryClient.invalidateQueries({ queryKey: adminKeys.users });
+      toast.success(`Đã đổi ${updated.email} thành ${ROLE_LABELS[updated.role]}`);
+    },
+    onError: (error) => toast.error(formErrorMessage(error)),
+  });
 
   return (
     <li className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border py-3">
@@ -99,6 +121,24 @@ function UserRow({ user }: { user: AdminUser }) {
             'Đang hoạt động'
           )}
         </p>
+      </div>
+      <div className="w-40">
+        <SelectField
+          label="Vai trò"
+          aria-label={`Vai trò của ${user.email}`}
+          value={user.role}
+          disabled={changeRole.isPending}
+          onChange={(event) => {
+            const role = roleSchema.safeParse(event.target.value);
+            if (role.success && role.data !== user.role) changeRole.mutate(role.data);
+          }}
+        >
+          {roleSchema.options.map((role) => (
+            <option key={role} value={role}>
+              {ROLE_LABELS[role]}
+            </option>
+          ))}
+        </SelectField>
       </div>
       {/* Không khoá tài khoản quản trị từ đây, nên ADMIN cũng không tự khoá mình. */}
       {user.role === 'ADMIN' ? null : user.lockedAt ? (
