@@ -67,7 +67,11 @@ export interface SetViewer {
   role: Role;
 }
 
-/** Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại. */
+/**
+ * Quyền xem nằm ngay trong truy vấn: không xem được thì coi như không tồn tại.
+ * Bộ `CLASS` mở cho giáo viên và thành viên của lớp chưa lưu trữ đã được giao bộ đó;
+ * rời lớp hay lớp bị lưu trữ là mất quyền xem ngay.
+ */
 export function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
   if (viewer?.role === 'ADMIN') {
     return {};
@@ -75,7 +79,24 @@ export function visibleTo(viewer: SetViewer | null): Prisma.StudySetWhereInput {
   return {
     OR: [
       { visibility: 'PUBLIC', hiddenAt: null, owner: { deletedAt: null } },
-      ...(viewer ? [{ ownerId: viewer.id }] : []),
+      ...(viewer
+        ? [
+            { ownerId: viewer.id },
+            {
+              visibility: 'CLASS' as const,
+              hiddenAt: null,
+              owner: { deletedAt: null },
+              assignments: {
+                some: {
+                  class: {
+                    archivedAt: null,
+                    OR: [{ teacherId: viewer.id }, { members: { some: { userId: viewer.id } } }],
+                  },
+                },
+              },
+            },
+          ]
+        : []),
     ],
   };
 }
