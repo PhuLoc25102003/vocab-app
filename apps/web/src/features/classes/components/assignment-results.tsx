@@ -5,11 +5,10 @@ import {
   paginationSchema,
   STUDY_MODE_LABELS,
   type AssignmentResult,
-  type AssignmentStatus,
   type AssignmentSummary,
 } from '@vocab/shared';
-import { CircleAlert, CircleCheck, CircleDashed, type LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { BackLink } from '@/components/common/back-link';
 import { EmptyState } from '@/components/common/empty-state';
@@ -19,7 +18,6 @@ import { PageHeader } from '@/components/common/page-header';
 import { Pagination } from '@/components/common/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
-import { cn } from '@/lib/utils';
 import {
   classKeys,
   getAssignmentSummary,
@@ -27,26 +25,8 @@ import {
   listAssignments,
   RESULTS_PAGE_SIZE,
 } from '../api';
+import { percent, StatusLabel } from './status-label';
 import { formatDateTime } from '../format';
-
-const STATUS: Record<AssignmentStatus, { label: string; icon: LucideIcon; className: string }> = {
-  done: { label: 'Đã làm', icon: CircleCheck, className: 'text-success' },
-  pending: { label: 'Chưa làm', icon: CircleDashed, className: 'text-text-muted' },
-  overdue: { label: 'Quá hạn', icon: CircleAlert, className: 'text-danger' },
-};
-
-function StatusLabel({ status }: { status: AssignmentStatus }) {
-  const { label, icon: Icon, className } = STATUS[status];
-  return (
-    <span className={cn('flex items-center gap-1 font-medium', className)}>
-      <Icon aria-hidden className="size-4 shrink-0" />
-      {label}
-    </span>
-  );
-}
-
-const percent = (correct: number, total: number) =>
-  total > 0 ? Math.round((correct / total) * 100) : 0;
 
 function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
@@ -106,10 +86,15 @@ function SummaryView({ summary }: { summary: AssignmentSummary }) {
   );
 }
 
-function ResultRow({ row }: { row: AssignmentResult }) {
+function ResultRow({ classId, row }: { classId: string; row: AssignmentResult }) {
   return (
     <li className="grid min-h-14 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b border-border py-2 last:border-b-0 sm:grid-cols-[2fr_1fr_1fr_1fr]">
-      <span className="font-medium wrap-anywhere">{row.displayName}</span>
+      <Link
+        href={`/classes/${classId}/members/${row.userId}` as Route}
+        className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
+      >
+        {row.displayName}
+      </Link>
       <StatusLabel status={row.status} />
       <span className="text-small text-text-muted">
         {row.completedAt ? `Xong ${formatDateTime(row.completedAt)}` : '—'}
@@ -157,7 +142,7 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
     <>
       <ul aria-label="Kết quả từng học sinh" className="flex flex-col">
         {data.map((row) => (
-          <ResultRow key={row.userId} row={row} />
+          <ResultRow key={row.userId} classId={classId} row={row} />
         ))}
       </ul>
       <Pagination

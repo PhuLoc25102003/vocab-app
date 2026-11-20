@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { paginationSchema, type Class, type ClassMember } from '@vocab/shared';
 import { Archive, ArchiveRestore, Copy, RefreshCw, Trash2 } from 'lucide-react';
 import type { Route } from 'next';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -105,7 +106,13 @@ function MemberRow({ classId, member }: { classId: string; member: ClassMember }
   return (
     <li className="flex min-h-14 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
       <span className="flex min-w-0 flex-col">
-        <span className="font-medium wrap-anywhere">{member.displayName}</span>
+        <Link
+          href={`/classes/${classId}/members/${member.userId}` as Route}
+          className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
+        >
+          {member.displayName}
+          <span className="sr-only">, xem kết quả</span>
+        </Link>
         <span className="text-small text-text-muted">Vào lớp {formatDate(member.joinedAt)}</span>
       </span>
       <Button

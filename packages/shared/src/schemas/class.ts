@@ -88,6 +88,8 @@ export const classMemberSchema = z.object({
 });
 export type ClassMember = z.infer<typeof classMemberSchema>;
 
+export const classMemberResponseSchema = z.object({ data: classMemberSchema });
+
 export const classMemberListSchema = z.object({
   data: z.array(classMemberSchema),
   meta: paginationMetaSchema,
