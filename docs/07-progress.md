@@ -19,8 +19,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      4 |       5 | Đang làm     |
-| **Toàn dự án**          |                                            | **89** | **107** | **83%**      |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      5 |       6 | Đang làm     |
+| **Toàn dự án**          |                                            | **90** | **108** | **83%**      |
 
 ## Cách cập nhật
 
@@ -221,7 +221,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **4.4** Giao diện luyện nói: xin quyền micro, nhận dạng giọng nói, thử lại, bỏ qua (#192).
 - [x] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện (#226).
 - [x] **4.3** Tải bộ từ về máy (IndexedDB), xem thẻ ở trang offline, xoá dữ liệu offline khi đăng xuất (#228).
-- [ ] **4.5** Học khi mất mạng bằng phiên học trên máy, hàng đợi đáp án đồng bộ khi có mạng.
+- [x] **4.5** Học Flashcard khi mất mạng với bộ đã tải, phiên đã xong vào hàng đợi trên máy; service worker lưu sẵn mã của trang offline.
+- [ ] **4.6** Gửi hàng đợi phiên học offline lên máy chủ khi có mạng và đã đăng nhập.
 
 ## Quyết định cần chốt
 
