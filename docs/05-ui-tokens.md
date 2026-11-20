@@ -189,7 +189,11 @@ Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. 
 
 ## Thẻ bộ từ
 
-Bộ từ ở Bộ từ, Khám phá và "Bộ từ gần đây" của Tổng quan dùng `SetCardGrid` trong `features/sets/components/set-cards.tsx`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
+Bộ từ ở Bộ từ, Khám phá, "Bộ từ gần đây" của Tổng quan và Ôn hôm nay dùng khung `SetCardShell` trong `components/common/set-card-shell.tsx`; danh sách bộ từ của feature sets bọc nó trong `SetCardGrid`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
+
+## Trang Ôn hôm nay
+
+Đầu trang là khối tóm tắt nền `board`, chữ `board-fg` và `board-muted`, bo `lg`: số thẻ đến hạn cỡ `text-card`, số bộ có thẻ đến hạn, ô chọn chế độ ôn (chữ trong ô giữ màu `text`) và nút chính nền `board-fg` chữ `board` "Ôn bộ đầu tiên". Dưới đó "Khi nào thẻ đến hạn ôn?" là `details` trông như nút: viền `border-strong`, icon thông tin màu `primary`, chữ "Xem cách tính" và mũi tên xoay 180° khi mở, nền `primary-soft` khi rê chuột; nội dung là bốn bước lịch ôn xếp hai cột. Bộ đến hạn dùng `SetCardShell` với nhãn "Đến hạn", số thẻ đến hạn và nút "Ôn ngay".
 
 ## Thư mục trên trang Bộ từ
 

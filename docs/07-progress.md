@@ -8,7 +8,7 @@ Giai đoạn 3 đã có schema lớp học (3.1) API giáo viên quản lý lớ
 
 **Việc tiếp theo:**
 
-1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.35, 2.36, 2.34, 2.31, 2.32).
+1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.36, 2.34, 2.31, 2.32).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34).
 
@@ -20,10 +20,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     26 |      36 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     27 |      36 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      3 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **98** | **118** | **83%**    |
+| **Toàn dự án**          |                                            | **99** | **118** | **84%**    |
 
 ## Cách cập nhật
 
@@ -206,7 +206,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng có ô lọc, mở và đóng thư mục kèm đường dẫn, tạo, đổi tên, xoá ngay trên cột; mỗi thẻ bộ từ có menu chuyển vào hoặc gỡ khỏi thư mục (#251).
 - [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
 - [ ] **2.34** Kéo thả thẻ bộ từ vào thư mục trên cột thư mục, thả vào "Chưa xếp thư mục" để gỡ; dùng được bằng chuột và cảm ứng, menu của thẻ vẫn là cách cho bàn phím.
-- [ ] **2.35** Thiết kế lại trang Ôn hôm nay: khối tóm tắt nổi bật (số thẻ đến hạn, chế độ ôn, nút ôn tất cả), bộ đến hạn dùng thẻ bộ từ chung, "Khi nào thẻ đến hạn ôn?" là nút rõ ràng có icon và mũi tên.
+- [x] **2.35** Thiết kế lại trang Ôn hôm nay: khối tóm tắt nổi bật (số thẻ đến hạn, chế độ ôn, nút ôn tất cả), bộ đến hạn dùng thẻ bộ từ chung, "Khi nào thẻ đến hạn ôn?" là nút rõ ràng có icon và mũi tên.
 - [ ] **2.36** Rời trang khi đang tạo, sửa bộ từ hoặc nhập từ file mà có dữ liệu chưa lưu: chuyển trang trong app hỏi bằng hộp thoại của app (không dùng `window.confirm`); đóng tab hoặc tải lại vẫn dùng hộp thoại của trình duyệt vì trình duyệt không cho tuỳ biến. Chưa nhập gì thì không hỏi.
 - [ ] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được.
 - [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục (#247).
