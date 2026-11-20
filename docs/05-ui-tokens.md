@@ -187,6 +187,17 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
 
+## Ô ngày giờ
+
+Dùng `DateTimeField` trong `components/common/date-time-field.tsx`, không dùng `input type="datetime-local"` hay `type="date"` vì ô gốc hiện theo ngôn ngữ máy (`mm/dd/yyyy`, AM/PM) và màu của trình duyệt.
+
+- `fieldset` có `legend` là nhãn. Hàng trên: ô ngày (`aria-label="Ngày"`, gõ `dd/mm/yyyy`, nhận cả `-` và `.`), nút biểu tượng lịch 44 px, ô giờ (`aria-label="Giờ"`, 24 tiếng, gõ `2130` hay `9` cũng được, rời ô thì chuẩn hoá thành `21:30`). Ngày không có thật hoặc giờ sai thì ô có `aria-invalid`.
+- Hàng dưới là chip chọn nhanh cao 44 px, viền `border`, rê chuột viền `primary` nền `primary-soft`: Hết hôm nay, Ngày mai, 1 tuần (đều 23:59) và Không có hạn.
+- Lịch nằm trong phần tử `popover="auto"` nên ở lớp trên cùng, không bị cắt trong hộp thoại có thanh cuộn; Esc và bấm ra ngoài thì đóng. Đặt ngay dưới nút lịch, canh phải theo nút, thiếu chỗ thì lên trên, luôn cách mép màn hình 8 px. Rộng 312 px nên vừa 360 px.
+- Lịch: tiêu đề "Tháng 11, 2026" giữa hai nút Tháng trước, Tháng sau; tuần bắt đầu thứ Hai (T2 đến CN); ô ngày 44 px. Ngày chọn nền `primary` chữ `primary-fg`, hôm nay viền `primary` chữ `primary` (`aria-current="date"`), ngày trước `disablePast` hoặc `minDay` mờ 40% và không bấm được. Phím mũi tên đi qua ngày (lên xuống một tuần), Enter chọn; chọn xong lịch đóng và focus về ô ngày.
+- Giá trị nằm trong ô ẩn `name` dạng `YYYY-MM-DDTHH:mm` theo giờ máy (rỗng khi không có hạn, `invalid` khi gõ sai), nơi dùng đổi sang ISO trước khi gửi.
+- Không gọi `new Date()` lúc render: ngày hôm nay chỉ đọc khi bấm chip hoặc mở lịch, vì Next cấm giá trị thay đổi theo thời điểm khi prerender.
+
 ## Danh sách thẻ khi tạo và sửa bộ từ
 
 Thẻ nằm trong một khung cuộn riêng (`role="region"`, nhãn "Danh sách thẻ", `tabIndex=0` để cuộn bằng bàn phím): viền `border`, nền `surface`, bo `md`, cao tối đa 60% chiều cao màn hình (`60dvh`), tối thiểu 192 px, `overscroll-contain` để cuộn trong khung không kéo cả trang. Nút "Thêm thẻ" và "Lưu bộ từ" nằm ngay dưới khung nên luôn gần tay. Thêm thẻ thì ô "Từ" của thẻ mới nhận focus và khung tự cuộn tới.

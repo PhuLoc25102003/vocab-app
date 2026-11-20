@@ -14,9 +14,10 @@ import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { DateTimeField } from '@/components/common/date-time-field';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { FormField, SelectField } from '@/components/common/form-field';
+import { SelectField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,7 @@ import { formatDateTime } from '../format';
 
 type FieldErrors = Partial<Record<'setId' | 'dueAt', string>>;
 
-/** `datetime-local` không có múi giờ, hiểu theo giờ máy của giáo viên rồi đổi sang ISO. */
+/** Giá trị `YYYY-MM-DDTHH:mm` không có múi giờ, hiểu theo giờ máy của giáo viên rồi đổi sang ISO. */
 function toIsoDue(local: string): string | null {
   if (!local) return null;
   const date = new Date(local);
@@ -140,11 +141,11 @@ function AssignForm({ classId, onDone }: { classId: string; onDone: () => void }
             </option>
           ))}
         </SelectField>
-        <FormField
+        <DateTimeField
           label="Hạn nộp (không bắt buộc)"
           name="dueAt"
-          type="datetime-local"
-          hint="Bỏ trống nếu bài không có hạn."
+          disablePast
+          hint="Bỏ trống nếu bài không có hạn. Giờ mặc định là 23:59."
           error={errors.dueAt}
         />
       </div>
