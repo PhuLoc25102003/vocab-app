@@ -10,13 +10,13 @@ import {
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
-import { useUnsavedGuard } from '@/lib/use-unsaved-guard';
+import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
 import { LANGUAGE_LABELS, VISIBILITY_LABELS } from '../labels';
 import { CardFields, EMPTY_CARD } from './card-fields';
 
@@ -92,6 +92,18 @@ function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsP
   );
 }
 
+function hasContent({ title, description, cards }: SetFormInput): boolean {
+  const filled = (value: string | null | undefined) => Boolean(value?.trim());
+  return (
+    filled(title) ||
+    filled(description) ||
+    cards.some(
+      ({ term, definition, phonetic, example }) =>
+        filled(term) || filled(definition) || filled(phonetic) || filled(example),
+    )
+  );
+}
+
 interface SetFormProps {
   cancelHref: Route;
   defaultValues: SetFormInput;
@@ -110,6 +122,7 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
     reset,
     setError,
     setFocus,
+    getValues,
     formState: { errors, isDirty, isSubmitting },
   } = useForm<SetFormInput, unknown, SetFormValues>({
     resolver: zodResolver(setFormSchema),
@@ -125,12 +138,18 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
     hasMounted.current = true;
   }, [initialValues, reset]);
 
-  const releaseGuard = useUnsavedGuard(isDirty);
+  // Sửa bộ có sẵn thì mọi thay đổi đều đáng hỏi. Tạo bộ mới thì chỉ hỏi khi đã gõ nội dung,
+  // không hỏi khi chỉ thêm rồi xoá dòng trống.
+  const hasData = useCallback(
+    () => hasContent(initialValues) || hasContent(getValues()),
+    [getValues, initialValues],
+  );
+  const guard = useUnsavedGuard(isDirty, hasData);
 
   const submit = handleSubmit(async (values) => {
     try {
       const nextHref = await onSubmit(values);
-      await releaseGuard();
+      await guard.release();
       // Thay mục lịch sử để nút quay lại của trình duyệt không về form đã lưu.
       router.replace(nextHref);
     } catch (error) {
@@ -143,6 +162,7 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
 
   return (
     <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
+      {guard.dialog}
       {errors.root?.message ? <FormError>{errors.root.message}</FormError> : null}
       <SetDetailsFields initialValues={initialValues} register={register} errors={errors} />
       <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />

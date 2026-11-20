@@ -2,10 +2,12 @@
 
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ConfirmDialog } from './confirm-dialog';
 
-const LEAVE_MESSAGE = 'Bạn có thay đổi chưa lưu. Rời trang và bỏ các thay đổi này?';
 const HISTORY_TIMEOUT_MS = 500;
+
+type PendingLeave = { kind: 'link'; target: string } | { kind: 'back' };
 
 function internalTarget(event: MouseEvent): string | null {
   const isPlainClick =
@@ -27,15 +29,35 @@ function internalTarget(event: MouseEvent): string | null {
     : null;
 }
 
+interface UnsavedGuard {
+  /** Gỡ chặn, phải gọi trước khi tự chuyển trang sau khi lưu. */
+  release: () => Promise<void>;
+  /** Hộp thoại hỏi lại, đặt ở bất kỳ đâu trong form. */
+  dialog: ReactNode;
+}
+
 /**
- * Hỏi lại khi rời form chưa lưu. App Router không có sự kiện chuyển trang, nên liên kết
- * được chặn từ pha capture, còn nút quay lại được chặn bằng một mục lịch sử phụ.
- * Trả về hàm gỡ chặn, phải gọi trước khi tự chuyển trang sau khi lưu.
+ * Hỏi lại khi rời form chưa lưu. Chuyển trang trong app (link, nút quay lại) hỏi bằng
+ * `ConfirmDialog`. Đóng tab hay tải lại chỉ dùng được hộp thoại của trình duyệt qua
+ * `beforeunload`, nội dung do trình duyệt quyết định.
+ *
+ * App Router không có sự kiện chuyển trang, nên liên kết được chặn từ pha capture, còn nút
+ * quay lại được chặn bằng một mục lịch sử phụ. `hasData` được gọi đúng lúc rời trang để form
+ * chỉ có thay đổi rỗng (thêm rồi xoá dòng trống) không bị hỏi.
  */
-export function useUnsavedGuard(isDirty: boolean): () => Promise<void> {
+export function useUnsavedGuard(
+  isDirty: boolean,
+  hasData: () => boolean = () => true,
+): UnsavedGuard {
   const router = useRouter();
   const hasGuardEntry = useRef(false);
   const released = useRef(false);
+  const hasDataRef = useRef(hasData);
+  const [pending, setPending] = useState<PendingLeave | null>(null);
+
+  useEffect(() => {
+    hasDataRef.current = hasData;
+  }, [hasData]);
 
   const removeGuardEntry = useCallback(
     () =>
@@ -75,19 +97,22 @@ export function useUnsavedGuard(isDirty: boolean): () => Promise<void> {
       hasGuardEntry.current = true;
     }
 
+    const shouldAsk = () => !released.current && hasDataRef.current();
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!released.current) {
+      if (shouldAsk()) {
         event.preventDefault();
       }
     };
     const guardLink = (event: MouseEvent) => {
-      const target = released.current ? null : internalTarget(event);
-      if (!target) {
+      const target = internalTarget(event);
+      if (!target || released.current) {
         return;
       }
       event.preventDefault();
       event.stopPropagation();
-      if (window.confirm(LEAVE_MESSAGE)) {
+      if (shouldAsk()) {
+        setPending({ kind: 'link', target });
+      } else {
         void release().then(() => router.push(target as Route));
       }
     };
@@ -95,14 +120,16 @@ export function useUnsavedGuard(isDirty: boolean): () => Promise<void> {
       if (released.current) {
         return;
       }
-      hasGuardEntry.current = false;
-      if (window.confirm(LEAVE_MESSAGE)) {
+      if (!shouldAsk()) {
+        // Mục phụ đã bị lấy ra, lùi thêm một bước để thật sự quay lại.
+        hasGuardEntry.current = false;
         released.current = true;
         window.history.back();
-      } else {
-        window.history.pushState(null, '', location.href);
-        hasGuardEntry.current = true;
+        return;
       }
+      // Giữ người dùng ở lại trang trong lúc hỏi: đặt lại mục phụ vừa bị lấy ra.
+      window.history.pushState(null, '', location.href);
+      setPending({ kind: 'back' });
     };
 
     window.addEventListener('beforeunload', warnBeforeUnload);
@@ -123,5 +150,30 @@ export function useUnsavedGuard(isDirty: boolean): () => Promise<void> {
     [],
   );
 
-  return release;
+  const leave = () => {
+    const current = pending;
+    setPending(null);
+    if (current?.kind === 'link') {
+      void release().then(() => router.push(current.target as Route));
+    } else if (current?.kind === 'back') {
+      // Bỏ mục phụ vừa đặt lại và trang hiện tại.
+      released.current = true;
+      hasGuardEntry.current = false;
+      window.history.go(-2);
+    }
+  };
+
+  const dialog = (
+    <ConfirmDialog
+      open={pending !== null}
+      onOpenChange={(open) => !open && setPending(null)}
+      title="Rời trang khi chưa lưu?"
+      description="Những gì bạn vừa nhập ở trang này sẽ mất."
+      confirmLabel="Rời trang"
+      cancelLabel="Ở lại"
+      onConfirm={leave}
+    />
+  );
+
+  return { release, dialog };
 }

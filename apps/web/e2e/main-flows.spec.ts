@@ -71,11 +71,12 @@ test.describe.serial('luồng chính', () => {
     const titleField = page.getByLabel('Tên bộ từ').filter({ visible: true });
     await titleField.fill(setTitle);
 
-    // Từ chối rời trang thì vẫn ở lại và giữ dữ liệu đã nhập.
-    page.once('dialog', (dialog) => void dialog.dismiss());
+    // Rời trang trong app hỏi bằng hộp thoại của app; chọn "Ở lại" thì giữ dữ liệu đã nhập.
+    const leaveDialog = page.getByRole('dialog', { name: 'Rời trang khi chưa lưu?' });
     await page.getByRole('link', { name: 'Quay lại danh sách' }).click();
-    page.once('dialog', (dialog) => void dialog.dismiss());
+    await leaveDialog.getByRole('button', { name: 'Ở lại' }).click();
     await page.evaluate(() => window.history.back());
+    await leaveDialog.getByRole('button', { name: 'Ở lại' }).click();
     await expect(titleField).toHaveValue(setTitle);
     expect(new URL(page.url()).pathname).toBe('/sets/new');
 
@@ -99,8 +100,8 @@ test.describe.serial('luồng chính', () => {
     await page.getByRole('link', { name: 'Sửa bộ từ' }).click();
     await page.waitForURL('**/edit');
     await titleField.fill('Tên chưa lưu');
-    page.once('dialog', (dialog) => void dialog.accept());
     await page.getByRole('link', { name: 'Quay lại bộ từ' }).click();
+    await leaveDialog.getByRole('button', { name: 'Rời trang' }).click();
     await page.waitForURL(`**${setPath}`);
     await expect(page.getByRole('heading', { name: setTitle })).toBeVisible();
   });

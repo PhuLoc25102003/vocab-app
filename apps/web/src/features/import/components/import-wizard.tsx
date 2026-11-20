@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import { useUnsavedGuard } from '@/lib/use-unsaved-guard';
+import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
 import { getImportTarget, importAsNewSet, importIntoSet } from '../api';
 import { ImportPreview } from './import-preview';
 import { ImportSource, type ImportExtraColumns } from './import-source';
@@ -61,7 +61,8 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     resolver: zodResolver(newSetSchema),
     defaultValues: { title: '', visibility: 'PRIVATE' },
   });
-  const releaseGuard = useUnsavedGuard(Boolean(rows?.length) && !save.isSuccess);
+  // Chỉ hỏi khi đã có dòng dữ liệu xem trước, trang trống thì rời tự do.
+  const guard = useUnsavedGuard(Boolean(rows?.length) && !save.isSuccess);
 
   // Next giữ trang đã rời ở trạng thái ẩn, nên mở lại thì bắt đầu từ đầu.
   useEffect(() => {
@@ -124,7 +125,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
       const id = await save.mutateAsync(details);
       await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
       toast.success(`Đã nhập ${rows.length} thẻ`);
-      await releaseGuard();
+      await guard.release();
       router.replace(`/sets/${id}` as Route);
     } catch {
       // Lỗi hiện qua `save.error`.
@@ -150,6 +151,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   return (
     <div className="flex w-full flex-col gap-6">
+      {guard.dialog}
       <ImportPreview rows={rows} columns={columns} onChange={setRows} />
       <form
         onSubmit={submit}

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ERROR_CODES, type SetDetail, type SetSummary } from '@vocab/shared';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Activity, type ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -114,26 +114,27 @@ describe('EditSet', () => {
     expect(navigation.replace).not.toHaveBeenCalled();
   });
 
-  it('hỏi lại khi rời form chưa lưu bằng liên kết', async () => {
-    const confirm = vi
-      .spyOn(window, 'confirm')
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true);
+  it('hỏi lại bằng hộp thoại của app khi rời form chưa lưu bằng liên kết', async () => {
+    const confirm = vi.spyOn(window, 'confirm');
     renderWithQuery(<CreateSet />);
     await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Trái cây');
 
     await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
-    expect(confirm).toHaveBeenCalledTimes(1);
+    const dialog = await screen.findByRole('dialog', { name: 'Rời trang khi chưa lưu?' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Ở lại' }));
     expect(navigation.push).not.toHaveBeenCalled();
     expect(screen.getByLabelText('Tên bộ từ')).toHaveValue('Trái cây');
 
     await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
+    await userEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: 'Rời trang' }),
+    );
     await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    expect(confirm).not.toHaveBeenCalled();
     confirm.mockRestore();
   });
 
   it('không hỏi khi form chưa đổi', async () => {
-    const confirm = vi.spyOn(window, 'confirm');
     renderWithQuery(<CreateSet />);
     screen.getByRole('link', { name: 'Huỷ' }).addEventListener('click', (event) => {
       event.preventDefault();
@@ -141,8 +142,20 @@ describe('EditSet', () => {
 
     await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
 
-    expect(confirm).not.toHaveBeenCalled();
-    confirm.mockRestore();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('không hỏi khi chỉ thêm rồi xoá dòng trống, chưa gõ nội dung', async () => {
+    renderWithQuery(<CreateSet />);
+    await userEvent.click(screen.getByRole('button', { name: 'Thêm thẻ' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ 2' }));
+    screen.getByRole('link', { name: 'Huỷ' }).addEventListener('click', (event) => {
+      event.preventDefault();
+    });
+
+    await userEvent.click(screen.getByRole('link', { name: 'Huỷ' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('hiện trạng thái đang tải', () => {
