@@ -27,13 +27,8 @@ import {
   removeMember,
   updateClass,
 } from '../api';
+import { formatDate } from '../format';
 import { ClassAssignments } from './class-assignments';
-
-const dateFormat = new Intl.DateTimeFormat('vi-VN', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
 
 function useClassMutation<T>(mutationFn: (value: T) => Promise<unknown>) {
   const queryClient = useQueryClient();
@@ -111,9 +106,7 @@ function MemberRow({ classId, member }: { classId: string; member: ClassMember }
     <li className="flex min-h-14 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
       <span className="flex min-w-0 flex-col">
         <span className="font-medium wrap-anywhere">{member.displayName}</span>
-        <span className="text-small text-text-muted">
-          Vào lớp {dateFormat.format(new Date(member.joinedAt))}
-        </span>
+        <span className="text-small text-text-muted">Vào lớp {formatDate(member.joinedAt)}</span>
       </span>
       <Button
         variant="ghost"
@@ -298,7 +291,7 @@ export function ClassDetail({ id }: { id: string }) {
           role="status"
           className="max-w-[65ch] border-l-4 border-border-strong pl-3 text-text-muted"
         >
-          Lớp đã lưu trữ ngày {dateFormat.format(new Date(klass.data.archivedAt))}.
+          Lớp đã lưu trữ ngày {formatDate(klass.data.archivedAt)}.
         </p>
       ) : null}
       <JoinCodePanel klass={klass.data} />

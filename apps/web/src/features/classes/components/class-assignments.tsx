@@ -9,6 +9,8 @@ import {
   type StudyMode,
 } from '@vocab/shared';
 import { CalendarClock, ClipboardList, Trash2 } from 'lucide-react';
+import type { Route } from 'next';
+import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
@@ -27,14 +29,7 @@ import {
   listMySetsForAssigning,
   removeAssignment,
 } from '../api';
-
-const dueFormat = new Intl.DateTimeFormat('vi-VN', {
-  hour: '2-digit',
-  minute: '2-digit',
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
+import { formatDateTime } from '../format';
 
 type FieldErrors = Partial<Record<'setId' | 'dueAt', string>>;
 
@@ -174,14 +169,20 @@ function AssignmentRow({ classId, item, now }: { classId: string; item: Assignme
   return (
     <li className="flex min-h-16 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
       <span className="flex min-w-0 flex-col gap-1">
-        <span className="font-medium wrap-anywhere">{item.setTitle}</span>
+        <Link
+          href={`/classes/${classId}/assignments/${item.id}` as Route}
+          className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
+        >
+          {item.setTitle}
+          <span className="sr-only">, xem kết quả</span>
+        </Link>
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-text-muted">
           <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
             {STUDY_MODE_LABELS[item.mode]}
           </span>
           <span className="flex items-center gap-1">
             <CalendarClock aria-hidden className="size-4" />
-            {item.dueAt ? `Hạn ${dueFormat.format(new Date(item.dueAt))}` : 'Không có hạn'}
+            {item.dueAt ? `Hạn ${formatDateTime(item.dueAt)}` : 'Không có hạn'}
           </span>
           {overdue ? <span className="font-medium text-danger">Đã quá hạn</span> : null}
         </span>

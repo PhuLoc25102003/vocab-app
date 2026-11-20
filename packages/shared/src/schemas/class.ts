@@ -205,6 +205,8 @@ export const assignmentSummarySchema = z.object({
 });
 export type AssignmentSummary = z.infer<typeof assignmentSummarySchema>;
 
+export const assignmentSummaryResponseSchema = z.object({ data: assignmentSummarySchema });
+
 export const memberResultListQuerySchema = paginationSchema;
 
 export const memberResultSchema = assignmentSchema.extend(resultScoreShape);
