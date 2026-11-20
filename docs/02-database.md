@@ -184,12 +184,16 @@ model StudySession {
   finishedAt DateTime?
   correct    Int       @default(0)
   total      Int       @default(0)
+  /// Phiên học làm cho một bài giao; xoá bài giao thì phiên vẫn còn, chỉ bỏ liên kết.
+  assignmentId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  set      StudySet  @relation(fields: [setId], references: [id], onDelete: Cascade)
-  attempts Attempt[]
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  set        StudySet    @relation(fields: [setId], references: [id], onDelete: Cascade)
+  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  attempts   Attempt[]
 
   @@index([userId, startedAt])
+  @@index([assignmentId, userId])
 }
 
 model Attempt {
@@ -243,15 +247,35 @@ model Assignment {
   classId   String
   setId     String
   mode      StudyMode
+  /// Các chế độ phải làm, theo thứ tự. Thay cho `mode` (giữ lại đến lần deploy sau rồi mới xoá).
+  modes     StudyMode[] @default([])
   dueAt     DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  class Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
-  set   StudySet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  class       Class                  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  set         StudySet               @relation(fields: [setId], references: [id], onDelete: Cascade)
+  sessions    StudySession[]
+  submissions AssignmentSubmission[]
 
   @@index([classId, dueAt])
   @@index([setId])
+}
+
+/// Bài nộp của một học sinh cho một bài giao. Nộp một lần; điểm (phần trăm) chốt lúc nộp, null khi
+/// bài chỉ có chế độ không chấm điểm. `late`: nộp sau `dueAt`.
+model AssignmentSubmission {
+  assignmentId String
+  userId       String
+  submittedAt  DateTime @default(now())
+  score        Int?
+  late         Boolean  @default(false)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([assignmentId, userId])
+  @@index([userId])
 }
 ```
 
@@ -263,6 +287,7 @@ model Assignment {
 - Xoá bộ từ là soft delete (`deletedAt`). `SetsPurgeService` xoá hẳn bộ có `deletedAt` quá 30 ngày, kèm thẻ, phiên học, câu trả lời và tiến độ theo cascade. Job chạy khoảng 1 phút sau khi API khởi động và mỗi 24 giờ (Render gói Free ngủ khi rảnh nên không dùng giờ cố định), xoá theo lô 200 bộ, giữ `pg_try_advisory_xact_lock` để nhiều instance không chạy trùng, ghi log số bộ đã xoá. MVP không có thùng rác, bộ đã xoá không khôi phục được.
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
 - `Class`, `ClassMember`, `Assignment` (việc 3.1) là nền cho lớp học, chưa có API. `Class.joinCode` duy nhất toàn hệ thống, giáo viên đổi mã bằng cách ghi mã mới. Lớp lưu trữ có `archivedAt`, không xoá. `ClassMember` có khoá chính `(classId, userId)` nên một học sinh không vào một lớp hai lần. `Assignment.dueAt` lưu UTC, `null` là không có hạn. Xoá giáo viên hoặc lớp thì xoá theo thành viên và bài giao; xoá học sinh chỉ xoá tư cách thành viên; bộ từ bị xoá hẳn (sau 30 ngày soft delete) thì bài giao của bộ đó bị xoá theo.
+- Việc 5.10: `Assignment.modes` là danh sách chế độ phải làm theo thứ tự, thay cho `mode` (cột `mode` giữ đến lần deploy sau rồi mới xoá; bài cũ được backfill `[mode]`, bài mới ghi cả hai). `StudySession.assignmentId` (null được) gắn phiên học với bài giao, xoá bài giao thì `SET NULL`. `AssignmentSubmission` khoá chính `(assignmentId, userId)` nên mỗi học sinh nộp một lần; `score` là phần trăm chốt lúc nộp (null khi chỉ có Flashcard), `late` khi nộp sau `dueAt`; xoá bài giao hoặc người dùng thì xoá theo bài nộp. Migration backfill bài nộp từ phiên đã xong cùng bộ, cùng chế độ sau lúc giao của thành viên lớp: thời điểm là lần xong đầu, điểm là phiên tốt nhất.
 
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 

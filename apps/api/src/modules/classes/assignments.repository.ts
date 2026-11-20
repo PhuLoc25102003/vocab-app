@@ -48,7 +48,11 @@ export class AssignmentsRepository extends BaseRepository {
   }
 
   async create(data: { classId: string; setId: string; mode: StudyMode; dueAt: Date | null }) {
-    const row = await this.prisma.assignment.create({ data, select: ASSIGNMENT_SELECT });
+    // Ghi cả `modes` để bài mới giống bài đã backfill; API nhiều chế độ (5.11) sẽ nhận danh sách.
+    const row = await this.prisma.assignment.create({
+      data: { ...data, modes: [data.mode] },
+      select: ASSIGNMENT_SELECT,
+    });
     return toAssignment(row);
   }
 
