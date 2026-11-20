@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
   type AssignmentStatus,
-  type CreateAssignmentInput,
+  type CreateAssignmentDto,
   type Pagination,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
@@ -18,26 +18,36 @@ export class AssignmentsService {
    * Giáo viên chỉ giao bộ của mình, ADMIN giao được mọi bộ. Bộ riêng tư thì học sinh không
    * xem được, nên phải đổi sang Lớp học hoặc Công khai trước.
    */
-  async create(classId: string, user: CurrentUserData, dto: CreateAssignmentInput) {
+  async create(classId: string, user: CurrentUserData, dto: CreateAssignmentDto) {
     const set = await this.assignments.findSet(dto.setId);
     if (!set || (user.role !== 'ADMIN' && set.ownerId !== user.id)) {
       throw new AppError(ERROR_CODES.SET_NOT_FOUND, 'Không tìm thấy bộ từ', HttpStatus.NOT_FOUND, [
         { path: 'setId', code: 'not_found', message: 'Không tìm thấy bộ từ của bạn' },
       ]);
     }
-    if (set.visibility === 'PRIVATE') {
+    const shareSet = set.visibility === 'PRIVATE';
+    if (shareSet && !dto.shareToClass) {
       throw new AppError(
         ERROR_CODES.SET_NOT_SHAREABLE,
-        'Bộ từ đang riêng tư. Hãy đổi sang Lớp học hoặc Công khai rồi giao lại.',
+        'Bộ từ đang riêng tư. Đồng ý cho học sinh trong lớp xem bộ này để giao.',
         HttpStatus.UNPROCESSABLE_ENTITY,
-        [{ path: 'setId', code: 'private', message: 'Bộ từ đang riêng tư' }],
+        [{ path: 'shareToClass', code: 'private', message: 'Bộ từ đang riêng tư' }],
+      );
+    }
+    if (dto.modes.includes('MATCH') && set.cardCount < 2) {
+      throw new AppError(
+        ERROR_CODES.VALIDATION_ERROR,
+        'Ghép cặp cần bộ có ít nhất 2 thẻ',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        [{ path: 'modes', code: 'too_few_cards', message: 'Ghép cặp cần ít nhất 2 thẻ' }],
       );
     }
     const assignment = await this.assignments.create({
       classId,
       setId: dto.setId,
-      mode: dto.mode,
+      modes: dto.modes,
       dueAt: dto.dueAt ? new Date(dto.dueAt) : null,
+      shareSet,
     });
     return ok(assignment);
   }

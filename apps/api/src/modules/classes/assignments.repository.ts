@@ -9,6 +9,7 @@ const ASSIGNMENT_SELECT = {
   classId: true,
   setId: true,
   mode: true,
+  modes: true,
   dueAt: true,
   createdAt: true,
   set: { select: { title: true } },
@@ -43,15 +44,28 @@ export class AssignmentsRepository extends BaseRepository {
   findSet(setId: string) {
     return this.prisma.studySet.findFirst({
       where: { id: setId, deletedAt: null },
-      select: { ownerId: true, visibility: true },
+      select: { ownerId: true, visibility: true, cardCount: true },
     });
   }
 
-  async create(data: { classId: string; setId: string; mode: StudyMode; dueAt: Date | null }) {
-    // Ghi cả `modes` để bài mới giống bài đã backfill; API nhiều chế độ (5.11) sẽ nhận danh sách.
-    const row = await this.prisma.assignment.create({
-      data: { ...data, modes: [data.mode] },
-      select: ASSIGNMENT_SELECT,
+  /** Tạo bài giao; `shareSet` đổi bộ riêng tư sang `CLASS` trong cùng transaction. */
+  async create(data: {
+    classId: string;
+    setId: string;
+    modes: StudyMode[];
+    dueAt: Date | null;
+    shareSet: boolean;
+  }) {
+    const { shareSet, modes, ...rest } = data;
+    const row = await this.prisma.$transaction(async (tx) => {
+      if (shareSet) {
+        await tx.studySet.update({ where: { id: rest.setId }, data: { visibility: 'CLASS' } });
+      }
+      // `mode` giữ chế độ đầu cho code cũ đọc tới khi xoá cột (docs/02-database.md, việc 5.10).
+      return tx.assignment.create({
+        data: { ...rest, mode: modes[0] ?? 'FLASHCARD', modes },
+        select: ASSIGNMENT_SELECT,
+      });
     });
     return toAssignment(row);
   }

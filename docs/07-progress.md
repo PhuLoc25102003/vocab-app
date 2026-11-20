@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: 5.11 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+1. Giai đoạn 5 theo thứ tự: 5.12 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -282,7 +282,7 @@ Không tính vào tổng số việc.
 ### 5D. Giao bài và nộp bài
 
 - [x] **5.10** Schema: `Assignment.modes`, `StudySession.assignmentId`, bảng `AssignmentSubmission`, backfill bài cũ và bài nộp từ phiên đã xong; cập nhật `docs/02-database.md` (GAP-17, #337).
-- [ ] **5.11** API giao bài nhiều chế độ (1 đến 5, kiểm tra chế độ dùng được với bộ); giao bộ riêng tư cần `shareToClass` và đổi bộ sang `CLASS` trong cùng transaction. Cần 5.10 (GAP-17, GAP-18).
+- [x] **5.11** API giao bài nhiều chế độ (1 đến 5, kiểm tra chế độ dùng được với bộ); giao bộ riêng tư cần `shareToClass` và đổi bộ sang `CLASS` trong cùng transaction. Cần 5.10 (GAP-17, GAP-18, #339).
 - [ ] **5.12** API làm và nộp bài: phiên học nhận `assignmentId`, `GET /classes/assignments/:id`, `POST /classes/assignments/:id/submit`, tính đúng hạn, trễ, bỏ lỡ và điểm; danh sách bài cần làm trả trạng thái mới, sắp xếp theo trạng thái ở API và phân trang trên web. Cần 5.10.
 - [ ] **5.13** Web modal giao bài: chọn bộ có tìm kiếm, chọn và sắp thứ tự chế độ (mặc định lộ trình đề xuất), cảnh báo bộ riêng tư, `DateTimeField`. Cần 5.3, 5.4, 5.11.
 - [ ] **5.14** Web học sinh làm bài: trang bài tập có danh sách chế độ và nút "Tiếp tục", phiên học mang `?assignment=`, màn kết quả về bài tập hoặc chế độ tiếp, nút Nộp bài có xác nhận, trạng thái Đã nộp hoặc Nộp trễ. Cần 5.12.
