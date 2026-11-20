@@ -4,7 +4,14 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
-import { getClass, listMembers, regenerateJoinCode, removeMember, updateClass } from '../api';
+import {
+  getClass,
+  listAssignments,
+  listMembers,
+  regenerateJoinCode,
+  removeMember,
+  updateClass,
+} from '../api';
 import { ClassDetail } from './class-detail';
 
 const navigation = vi.hoisted(() => ({ params: new URLSearchParams() }));
@@ -12,6 +19,7 @@ vi.mock('next/navigation', () => ({ useSearchParams: () => navigation.params }))
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
   getClass: vi.fn(),
+  listAssignments: vi.fn(),
   listMembers: vi.fn(),
   regenerateJoinCode: vi.fn(),
   removeMember: vi.fn(),
@@ -46,6 +54,10 @@ describe('ClassDetail', () => {
     vi.clearAllMocks();
     vi.mocked(getClass).mockResolvedValue(klass);
     vi.mocked(listMembers).mockResolvedValue(members);
+    vi.mocked(listAssignments).mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 100, total: 0 },
+    });
   });
 
   it('hiện mã lớp lớn và danh sách học sinh', async () => {

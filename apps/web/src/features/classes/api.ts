@@ -1,11 +1,18 @@
 import {
+  assignmentListSchema,
+  assignmentResponseSchema,
   classListSchema,
   classMemberListSchema,
   classResponseSchema,
+  setListSchema,
+  type Assignment,
+  type AssignmentList,
   type Class,
   type ClassList,
   type ClassMemberList,
+  type CreateAssignmentInput,
   type CreateClassInput,
+  type SetSummary,
   type UpdateClassInput,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
@@ -18,6 +25,8 @@ export const classKeys = {
   list: (archived: boolean, page: number) => ['classes', 'list', archived, page] as const,
   detail: (id: string) => ['classes', 'detail', id] as const,
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
+  assignments: (id: string) => ['classes', 'assignments', id] as const,
+  mySets: ['classes', 'my-sets'] as const,
 };
 
 const classPath = (id: string) => `/classes/${encodeURIComponent(id)}`;
@@ -57,4 +66,37 @@ export async function listMembers(id: string, page: number): Promise<ClassMember
 
 export async function removeMember(id: string, userId: string): Promise<void> {
   await http(`${classPath(id)}/members/${encodeURIComponent(userId)}`, { method: 'DELETE' });
+}
+
+export const ASSIGNMENTS_PAGE_SIZE = 100;
+
+/** Bài đã giao của lớp, hạn gần nhất trước. Một lớp hiếm khi quá 100 bài nên lấy một trang. */
+export async function listAssignments(id: string): Promise<AssignmentList> {
+  const params = new URLSearchParams({ page: '1', limit: String(ASSIGNMENTS_PAGE_SIZE) });
+  return assignmentListSchema.parse(
+    await http(`${classPath(id)}/assignments?${params.toString()}`),
+  );
+}
+
+export async function createAssignment(
+  id: string,
+  dto: CreateAssignmentInput,
+): Promise<Assignment> {
+  const body = await http(`${classPath(id)}/assignments`, {
+    method: 'POST',
+    body: JSON.stringify(dto),
+  });
+  return assignmentResponseSchema.parse(body).data;
+}
+
+export async function removeAssignment(id: string, assignmentId: string): Promise<void> {
+  await http(`${classPath(id)}/assignments/${encodeURIComponent(assignmentId)}`, {
+    method: 'DELETE',
+  });
+}
+
+/** Bộ từ của giáo viên để chọn khi giao bài, mới sửa trước. */
+export async function listMySetsForAssigning(): Promise<SetSummary[]> {
+  const params = new URLSearchParams({ page: '1', limit: '100', sort: '-updatedAt' });
+  return setListSchema.parse(await http(`/sets?${params.toString()}`)).data;
 }
