@@ -157,17 +157,25 @@ const cardDraftSchema = z
     definition: z.string(),
     phonetic: z.string(),
     example: z.string(),
+    /** `null` là đã gỡ ảnh, bỏ trống là thẻ chưa từng có ảnh. */
+    imageUrl: z.string().nullable().optional(),
   })
-  .transform(({ id, term, definition, phonetic, example }, context) => {
+  .transform(({ id, term, definition, phonetic, example, imageUrl }, context) => {
     const optional = {
       phonetic: phonetic.trim() || undefined,
       example: example.trim() || undefined,
     };
-    const isBlank = !term.trim() && !definition.trim() && !optional.phonetic && !optional.example;
+    const isBlank =
+      !term.trim() && !definition.trim() && !optional.phonetic && !optional.example && !imageUrl;
     if (!id && isBlank) {
       return null;
     }
-    const card = cardInputSchema.safeParse({ term, definition, ...optional });
+    const card = cardInputSchema.safeParse({
+      term,
+      definition,
+      ...optional,
+      ...(imageUrl === undefined ? {} : { imageUrl }),
+    });
     if (!card.success) {
       card.error.issues.forEach(({ path, message }) =>
         context.addIssue({ code: 'custom', path, message }),

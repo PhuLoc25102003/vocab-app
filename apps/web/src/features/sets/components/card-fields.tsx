@@ -7,6 +7,7 @@ import {
   type SetFormValues,
 } from '@vocab/shared';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import {
   useFieldArray,
@@ -18,6 +19,9 @@ import {
 import { FormField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { getUploadConfig } from '../api';
+import { setKeys } from '../query-keys';
+import { CardImageField } from './card-image-field';
 
 export const EMPTY_CARD: CardDraft = { term: '', definition: '', phonetic: '', example: '' };
 
@@ -39,6 +43,13 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
     name: 'cards',
     keyName: 'key',
   });
+  // Chưa bật kho ảnh, đang tải hoặc lỗi thì không hiện ô ảnh.
+  const uploads = useQuery({
+    queryKey: setKeys.uploadConfig,
+    queryFn: getUploadConfig,
+    staleTime: 5 * 60_000,
+  });
+  const imagesEnabled = uploads.data?.images === true;
   const listError = errors?.root?.message ?? errors?.message;
   const isFull = fields.length >= MAX_CARDS_PER_SET;
 
@@ -180,6 +191,13 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                     error={cardErrors?.example?.message}
                     {...register(`cards.${index}.example`)}
                   />
+                  {imagesEnabled ? (
+                    <CardImageField
+                      control={control}
+                      index={index}
+                      error={cardErrors?.imageUrl?.message}
+                    />
+                  ) : null}
                 </div>
               </li>
             );
