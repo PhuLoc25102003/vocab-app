@@ -19,6 +19,15 @@ export async function applyAuditView(page: Page, view: AuditView) {
 /** Trả về danh sách lỗi của màn hình đang mở, rỗng là đạt. */
 export async function auditPage(page: Page, label: string): Promise<string[]> {
   await page.waitForLoadState('networkidle');
+  // Đo giữa lúc chữ đang hiện dần thì axe báo thiếu tương phản. Bỏ qua hiệu ứng lặp vô hạn.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
   const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
   const issues = violations.flatMap(({ id, nodes }) =>
     nodes.slice(0, 4).map(({ target }) => `${label}: axe ${id} ${target.join(' ')}`),
