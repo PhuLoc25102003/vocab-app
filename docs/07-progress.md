@@ -264,7 +264,7 @@ Không tính vào tổng số việc.
 ### 5A. Sửa lỗi
 
 - [x] **5.1** Mục "Đăng xuất" kẹt ở "Đang đăng xuất" sau khi đăng nhập lại: đặt lại state khi người dùng đổi, test đăng xuất rồi đăng nhập lại (GAP-14, #317).
-- [x] **5.2** Luyện nói: nút micro tròn, trạng thái "Đang nghe… hãy đọc to từ" có hiệu ứng toả nhẹ (tắt khi giảm chuyển động), nút Dừng, `aria-live` (GAP-15).
+- [x] **5.2** Luyện nói: nút micro tròn, trạng thái "Đang nghe… hãy đọc to từ" có hiệu ứng toả nhẹ (tắt khi giảm chuyển động), nút Dừng, `aria-live` (GAP-15, #319).
 
 ### 5B. Nền giao diện
 
