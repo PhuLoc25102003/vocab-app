@@ -4,16 +4,15 @@ Cập nhật lần cuối: 2026-11-20
 
 **Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (3.2), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
-Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý lớp (3.3), API thành viên lớp (3.9), quyền xem bộ `CLASS` (3.4) API giao bộ từ (3.5) và API học sinh xem bài cần làm (3.10).
+Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý lớp (3.3), API thành viên lớp (3.9), quyền xem bộ `CLASS` (3.4) API giao bộ từ (3.5) API học sinh xem bài cần làm (3.10) và API kết quả lớp (3.6).
 
 **Việc tiếp theo:**
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. API kết quả lớp (việc 3.6).
-2. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
-3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -24,9 +23,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       7 |      11 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       8 |      11 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **111** | **124** | **90%**    |
+| **Toàn dự án**          |                                            | **112** | **124** | **90%**    |
 
 ## Cách cập nhật
 
@@ -230,8 +229,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.4** Quyền xem bộ từ có `visibility = CLASS` (#265).
 - [x] **3.5** API giáo viên giao bộ từ cho lớp kèm chế độ và hạn nộp, xem và huỷ bài giao (#267).
 - [x] **3.10** API học sinh xem bài cần làm của các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn.
-- [ ] **3.6** API kết quả theo lớp và theo học sinh.
-- [x] **3.11** Lệnh `npm run user:set-role -w @vocab/api -- <email> <vai trò>` gán ADMIN, TEACHER hoặc STUDENT để test và cấp quyền tạm khi chưa chốt việc 3.2.
+- [x] **3.6** API kết quả theo lớp và theo học sinh: số liệu cả lớp của bài giao, kết quả từng học sinh, kết quả một học sinh qua các bài giao.
+- [x] **3.11** Lệnh `npm run user:set-role -w @vocab/api -- <email> <vai trò>` gán ADMIN, TEACHER hoặc STUDENT để test và cấp quyền tạm khi chưa chốt việc 3.2 (#283).
 - [ ] **3.7** Web cho giáo viên.
 - [ ] **3.8** Web cho học sinh trong lớp.
 

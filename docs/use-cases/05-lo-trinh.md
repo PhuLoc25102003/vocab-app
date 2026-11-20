@@ -141,7 +141,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 
 ### UC-C3. Kết quả lớp
 
-- **Việc:** 3.6, 3.7. **Người dùng:** giáo viên.
+- **Việc:** 3.6, 3.7. **Người dùng:** giáo viên. **Trạng thái:** Đang làm. Đã có 3.6 (ba API: số liệu cả lớp của bài giao gồm đã làm, quá hạn, điểm trung bình, 5 từ hay sai; kết quả từng học sinh; kết quả một học sinh qua các bài giao. Hoàn thành tính theo lần học xong đầu tiên, điểm lấy lần tốt nhất, học sinh đã rời lớp không tính; test `class-results.integration`).
 - **Phải có:** tỉ lệ hoàn thành, điểm theo học sinh, từ cả lớp hay sai, trạng thái chưa có dữ liệu.
 - **Ngoại lệ:** học sinh đã rời lớp; lớp đông phải phân trang; giáo viên khác không xem được.
 - **Cách test:** integration số liệu và quyền; kiểm tra truy vấn với dữ liệu lớn.

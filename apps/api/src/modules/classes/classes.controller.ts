@@ -13,6 +13,8 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   assignmentListQuerySchema,
+  assignmentResultListQuerySchema,
+  memberResultListQuerySchema,
   createAssignmentSchema,
   type CreateAssignmentInput,
   classListQuerySchema,
@@ -32,6 +34,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { AssignmentsService } from './assignments.service';
 import { ClassMembersService } from './class-members.service';
+import { ClassResultsService } from './class-results.service';
 import { ClassesService } from './classes.service';
 
 @ApiTags('classes')
@@ -43,6 +46,7 @@ export class ClassesController {
     private readonly classes: ClassesService,
     private readonly members: ClassMembersService,
     private readonly assignments: AssignmentsService,
+    private readonly results: ClassResultsService,
   ) {}
 
   @Get()
@@ -139,5 +143,34 @@ export class ClassesController {
     @Param('assignmentId') assignmentId: string,
   ): Promise<void> {
     return this.assignments.remove(id, assignmentId);
+  }
+
+  @Get(':id/assignments/:assignmentId/summary')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Số liệu cả lớp của bài giao: đã làm, quá hạn, điểm, từ hay sai' })
+  assignmentSummary(@Param('id') id: string, @Param('assignmentId') assignmentId: string) {
+    return this.results.summary(id, assignmentId);
+  }
+
+  @Get(':id/assignments/:assignmentId/results')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Kết quả từng học sinh của bài giao, ai vào lớp trước đứng trước' })
+  assignmentResults(
+    @Param('id') id: string,
+    @Param('assignmentId') assignmentId: string,
+    @Query(new ZodValidationPipe(assignmentResultListQuerySchema)) query: Pagination,
+  ) {
+    return this.results.assignmentResults(id, assignmentId, query);
+  }
+
+  @Get(':id/members/:userId/results')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Kết quả của một học sinh qua các bài giao của lớp' })
+  memberResults(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Query(new ZodValidationPipe(memberResultListQuerySchema)) query: Pagination,
+  ) {
+    return this.results.memberResults(id, userId, query);
   }
 }
