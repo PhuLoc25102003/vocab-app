@@ -22,6 +22,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Bấm lưu nhiều lần: chỉ tạo một bộ.
   - Đã nhập mà rời trang: hỏi xác nhận.
 - **Test đã có:** `sets.integration`, `set-form.test`, E2E tạo bộ công khai.
+- **Sắp đổi:** form gọn hơn và "Ai xem được" có mô tả từng lựa chọn (việc 2.39, UC-X8).
 
 ## UC-S3. Soạn thẻ từ
 
@@ -80,6 +81,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 - **Ngoại lệ:** bộ riêng tư hoặc đã xoá hiện "Không tìm thấy bộ từ" và không được index; người đã đăng nhập thấy nút mở trong tài khoản.
 - **Test đã có:** `sets-public.integration`, `public-set.test`, E2E khách học thử.
 - **Test cần thêm:** E2E đổi bộ sang riêng tư thì đường dẫn công khai hết hiệu lực, kể cả khi trang đã được cache.
+- **Sắp đổi:** thiết kế mới, người đã đăng nhập được chuyển vào `/sets/:id` (việc 2.40, UC-X8).
 
 ## UC-S9. Khám phá bộ từ công khai
 
@@ -113,3 +115,4 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 - **Điểm vào:** nút "Nhập từ file" ở trang Bộ từ mở `/sets/import`, nút "Nhập thêm thẻ" của chủ bộ từ mở `/sets/import?setId=...`.
 - **Test đã có:** `parse.test`, `template.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test` (gồm XLSX hợp lệ, hỏng, rỗng, ô công thức, dấu tiếng Việt và IPA, file `.xls`), `import-source.test` (gồm nhận diện tiêu đề mẫu khi chọn file và khi dán), `template-file.test`, `import-preview.test`, `import-wizard.test` (gồm cột phiên âm, ví dụ, cột trùng, lưu thẻ có phiên âm và ví dụ), E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi tải file `.xlsx` có cột phiên âm để nhập thêm vào bộ có sẵn, tải file mẫu `.xlsx` rồi chọn lại để kiểm tra tự chọn cột, audit accessibility trang nhập.
 - **Test cần thêm:** mở file mẫu `.xlsx` bằng Excel và LibreOffice thật (thủ công).
+- **Sắp đổi:** trang chia ba bước, đổi tên "Ký tự phân cách", file mẫu `.xlsx` có định dạng và sheet hướng dẫn, bỏ mẫu `.csv` (việc 2.37, 2.38, UC-X8).

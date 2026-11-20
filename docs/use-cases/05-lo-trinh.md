@@ -68,6 +68,59 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 - **Ngoại lệ:** chưa có thư mục nào thì không hiện chip thư mục; kéo thả thất bại thì thẻ về chỗ cũ và báo lỗi; mất mạng giữa lộ trình thì giữ bước đang làm.
 - **Cách test:** component test cho menu, chip thư mục, lộ trình chuyển bước; E2E kéo thả bằng bàn phím và chuột, học hết lộ trình; audit accessibility ở light, dark và 360 px.
 
+### UC-X8. Nhập, tạo bộ từ và trang công khai dễ hiểu hơn (góp ý ngày 2026-11-20)
+
+- **Việc:** 2.37 đến 2.40. **Người dùng:** học sinh, chủ bộ từ, khách. **Trạng thái:** Chưa làm.
+- **Vấn đề đã thấy:**
+  - Trang nhập: người dùng không hiểu "Ký tự phân cách" là gì; năm ô chọn cột hiện ra cùng lúc dù trang đã tự nhận cột; không biết "Cột 1" là cột nào trong dữ liệu của mình.
+  - File mẫu `.csv`: Excel cài tiếng Việt dùng dấu `;` làm dấu phân cách danh sách nên mở file mẫu ra thấy cả dòng `Từ,Nghĩa,Phiên âm,Ví dụ` dồn vào cột A.
+  - File mẫu `.xlsx`: đúng cột nhưng sơ sài: tiêu đề giống dữ liệu, cột hẹp, chỉ 3 dòng, không có hướng dẫn.
+  - Form tạo bộ từ: phần thông tin chung cao, mô tả chiếm nhiều chỗ, "Ai xem được" là ô chọn không nói rõ từng lựa chọn khác nhau ra sao.
+  - Trang công khai `/public/sets/:id` vẫn là thiết kế cũ (hàng 9 nút trải dài) và chủ bộ không biết vì sao cần link "Xem trang công khai".
+
+#### 2.37, Trang nhập dễ hiểu
+
+- **Phải có:**
+  - Trang chia ba bước có số: **1. Lấy file mẫu** (không bắt buộc), **2. Đưa danh sách vào** (dán hoặc chọn file), **3. Kiểm tra cách đọc**, cuối trang là nút "Xem trước".
+  - Ô "Ký tự phân cách" đổi tên thành **"Từ và nghĩa cách nhau bằng"**, các lựa chọn có ví dụ: "Tự nhận (nên dùng)", "Phím Tab: dán từ Excel, Google Sheets", "Dấu phẩy: `apple, quả táo`", "Dấu chấm phẩy: `apple; quả táo`", "Gạch ngang: `apple - quả táo`". Dưới ô có dòng "Đã nhận: Tab" khi đang ở Tự nhận và đã có dữ liệu.
+  - Ô chọn cột ghi kèm giá trị dòng đầu của cột đó: "Cột 1: apple", "Cột 2: quả táo". Chưa có dữ liệu thì chỉ ghi "Cột 1".
+  - Khi đã nhận ra tiêu đề file mẫu hoặc tự nhận được ký tự, bước 3 thu gọn thành một dòng tóm tắt ("Từ ở cột 1, nghĩa ở cột 2, bỏ dòng tiêu đề") và nút "Đổi cách đọc" để mở đầy đủ. Lỗi ở bước 3 thì tự mở ra.
+  - Ô "Dòng đầu là tiêu đề" có giải thích ngắn: "Bật nếu dòng đầu là tên cột như Từ, Nghĩa".
+- **Ngoại lệ:** dữ liệu chỉ có một cột thì báo "Chưa tách được từ và nghĩa, hãy chọn cách ngăn cách khác"; dòng đầu rỗng thì ô cột không ghi giá trị; giá trị dài cắt bớt với dấu ba chấm.
+- **Không đổi:** API `POST /import/preview`, schema `ImportOptions`, giới hạn 2 MB và 2.000 thẻ.
+
+#### 2.38, File mẫu rõ ràng
+
+- **Phải có:**
+  - Chỉ còn một nút **"Tải file mẫu Excel (.xlsx)"**. Bỏ nút tải mẫu `.csv`; trang vẫn nhận file `.csv` và `.txt` khi tải lên.
+  - Sheet đầu tên "Từ vựng": hàng tiêu đề giữ đúng `Từ`, `Nghĩa`, `Phiên âm`, `Ví dụ` để tự nhận cột vẫn chạy; tiêu đề in đậm, có nền, cột bắt buộc (`Từ`, `Nghĩa`) nền đậm hơn cột không bắt buộc; cố định hàng tiêu đề khi cuộn; độ rộng cột vừa nội dung; 6 đến 8 dòng ví dụ gồm từ đơn, cụm từ, dòng không có phiên âm, dòng không có ví dụ.
+  - Sheet thứ hai "Hướng dẫn": mỗi cột dùng để làm gì, cột nào bắt buộc, giới hạn 2.000 thẻ, chỉ sheet đầu được đọc, xoá dòng ví dụ trước khi nhập.
+  - `lib/xlsx.ts` thêm được kiểu chữ, nền, độ rộng cột và cố định hàng; vẫn không thêm thư viện mới.
+- **Ngoại lệ:** mở được bằng Excel, LibreOffice, Google Sheets, Numbers; tải file mẫu về rồi chọn lại ngay thì xem trước ra đúng các dòng ví dụ, không đọc sheet "Hướng dẫn".
+
+#### 2.39, Form tạo và sửa bộ từ gọn
+
+- **Phải có:**
+  - Tên bộ từ một hàng; mô tả mặc định 2 dòng và tự giãn khi gõ dài.
+  - "Ngôn ngữ của từ" và "Ngôn ngữ của nghĩa" chung một hàng, giữa là nút đảo chiều có nhãn cho trình đọc màn hình.
+  - "Ai xem được" thành nhóm hai lựa chọn dạng thẻ (radio), mỗi lựa chọn có mô tả:
+    - **Riêng tư:** chỉ mình bạn xem và học. Không hiện ở Khám phá.
+    - **Công khai:** ai có đường dẫn đều xem và học thử được, kể cả người chưa đăng nhập. Hiện ở Khám phá, người đã đăng nhập sao chép được về tài khoản của họ.
+  - Bộ đang ở `CLASS` (sau giai đoạn 3) vẫn hiện lựa chọn hiện tại, chưa cho chọn `CLASS` ở form này.
+  - Áp dụng cho cả trang tạo, trang sửa và ô "Ai xem được" ở trang nhập vào bộ mới.
+- **Ngoại lệ:** 360 px thì ngôn ngữ xuống hai hàng, nút đảo chiều vẫn bấm được; hai ngôn ngữ trùng nhau thì vẫn cho lưu như hiện tại.
+
+#### 2.40, Trang công khai theo thiết kế mới
+
+- **Vì sao cần trang công khai:** đây là trang duy nhất người **chưa đăng nhập** xem được một bộ từ: đường dẫn chia sẻ qua Zalo, Facebook; kết quả tìm kiếm Google (có metadata SEO); Khám phá của khách. Không có trang này thì bộ Công khai chỉ có ý nghĩa với người đã có tài khoản.
+- **Ai xem được:** mọi người khi bộ ở Công khai và không bị ADMIN ẩn. Bộ Riêng tư, Lớp học, bị ẩn hoặc đã xoá thì báo "Không tìm thấy bộ từ".
+- **Phải có:**
+  - Khách: header giống trang bộ từ (tên, mô tả, dòng thông tin tác giả, số thẻ), nút "Sao chép đường dẫn" và "Đăng nhập để sao chép"; nút chính "Học thử" và lưới chế độ học dùng chung `StudyModeGrid` (dạng cho khách); danh sách thẻ như trang bộ từ; dải mời đăng ký để lưu tiến độ.
+  - Người đã đăng nhập mở `/public/sets/:id` thì chuyển thẳng tới `/sets/:id`, giống cách `/explore` đang làm.
+  - Trang bộ từ của chủ bỏ link "Xem trang công khai", chỉ giữ "Sao chép đường dẫn" khi bộ Công khai.
+- **Ngoại lệ:** bộ chưa có thẻ hiện trạng thái trống; chuyển bộ sang Riêng tư thì đường dẫn cũ báo không tìm thấy; trang vẫn render phía server để giữ SEO.
+- **Cách test:** component test cho bước nhập, nhãn cột có giá trị, ô ngăn cách, nhóm "Ai xem được", trang công khai cho khách; unit test file mẫu (hai sheet, tiêu đề, kiểu chữ) và đọc lại file mẫu chỉ lấy sheet đầu; E2E tải file mẫu rồi nhập lại, khách mở trang công khai học thử, người đã đăng nhập mở đường dẫn công khai được chuyển vào app; audit accessibility ở light, dark, 360 px; mở file mẫu bằng Excel thật (thủ công).
+
 ## Giai đoạn 3: Lớp học
 
 Cần chốt trước: cách một tài khoản trở thành giáo viên (việc 3.2).
