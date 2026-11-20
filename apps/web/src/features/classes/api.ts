@@ -48,6 +48,7 @@ export const classKeys = {
   member: (id: string, userId: string) => ['classes', 'member', id, userId] as const,
   memberResults: (id: string, userId: string) => ['classes', 'member-results', id, userId] as const,
   myAssignments: ['classes', 'my-assignments'] as const,
+  myAssignmentsPage: (page: number) => ['classes', 'my-assignments', page] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
   results: (id: string, assignmentId: string, page: number) =>
     ['classes', 'results', id, assignmentId, page] as const,
@@ -167,8 +168,15 @@ export async function listJoinedClasses(page = 1): Promise<JoinedClassList> {
   return joinedClassListSchema.parse(await http(`/classes/joined?${params.toString()}`));
 }
 
-export async function listMyAssignments(): Promise<MyAssignmentList> {
-  return myAssignmentListSchema.parse(await http(`/classes/assignments?${ONE_PAGE}`));
+export const MY_ASSIGNMENTS_PAGE_SIZE = 20;
+
+/** Bài cần làm, máy chủ đã xếp: bỏ lỡ, chưa nộp theo hạn, đã nộp. */
+export async function listMyAssignments(page = 1): Promise<MyAssignmentList> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(MY_ASSIGNMENTS_PAGE_SIZE),
+  });
+  return myAssignmentListSchema.parse(await http(`/classes/assignments?${params.toString()}`));
 }
 
 export async function leaveClass(id: string): Promise<void> {

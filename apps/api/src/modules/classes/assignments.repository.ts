@@ -9,6 +9,9 @@ function isUniqueViolation(error: unknown): boolean {
   return error instanceof Object && 'code' in error && error.code === 'P2002';
 }
 
+/** Học sinh hiếm khi có quá ngần này bài; danh sách bài cần làm sắp theo trạng thái trong bộ nhớ. */
+export const MEMBER_ASSIGNMENT_LIMIT = 500;
+
 const ASSIGNMENT_SELECT = {
   id: true,
   classId: true,
@@ -25,6 +28,7 @@ interface AssignmentRow {
   classId: string;
   setId: string;
   mode: StudyMode;
+  modes: StudyMode[];
   dueAt: Date | null;
   createdAt: Date;
   set: { title: string };
@@ -100,20 +104,31 @@ export class AssignmentsRepository extends BaseRepository {
    * Bài giao của các lớp người học đã tham gia, lớp chưa lưu trữ và bộ chưa xoá.
    * Kèm lần học xong đầu tiên đúng bộ và chế độ, tính từ lúc giao.
    */
-  async findForMember(userId: string, query: Pagination) {
+  async findForMember(userId: string) {
     const where = {
       class: { archivedAt: null, members: { some: { userId } } },
       set: { deletedAt: null },
     };
-    const [rows, total] = await Promise.all([
-      this.prisma.assignment.findMany({
-        where,
-        select: { ...ASSIGNMENT_SELECT, class: { select: { name: true } } },
-        orderBy: [{ dueAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }],
-        ...toSkipTake(query),
-      }),
-      this.prisma.assignment.count({ where }),
-    ]);
+    // Lấy hết (tối đa MEMBER_ASSIGNMENT_LIMIT) để sắp theo trạng thái rồi mới cắt trang ở service.
+    const rows = await this.prisma.assignment.findMany({
+      where,
+      select: { ...ASSIGNMENT_SELECT, class: { select: { name: true } } },
+      orderBy: [{ dueAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }],
+      take: MEMBER_ASSIGNMENT_LIMIT,
+    });
+    const ids = rows.map(({ id }) => id);
+    const [submissions, linked] = ids.length
+      ? await Promise.all([
+          this.prisma.assignmentSubmission.findMany({
+            where: { userId, assignmentId: { in: ids } },
+            select: { assignmentId: true, late: true },
+          }),
+          this.prisma.studySession.findMany({
+            where: { userId, assignmentId: { in: ids }, finishedAt: { not: null } },
+            select: { assignmentId: true, mode: true },
+          }),
+        ])
+      : [[], []];
     const sessions = rows.length
       ? await this.prisma.studySession.findMany({
           where: {
@@ -140,9 +155,13 @@ export class AssignmentsRepository extends BaseRepository {
         ...toAssignment(row),
         className: klass.name,
         completedAt: finished?.finishedAt?.toISOString() ?? null,
+        submission: submissions.find(({ assignmentId }) => assignmentId === row.id) ?? null,
+        doneModes: new Set(
+          linked.filter(({ assignmentId }) => assignmentId === row.id).map(({ mode }) => mode),
+        ).size,
       };
     });
-    return { items, total };
+    return items;
   }
 
   /** Bài giao của lớp người này đang ở (lớp chưa lưu trữ, bộ chưa xoá). */

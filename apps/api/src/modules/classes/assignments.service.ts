@@ -5,6 +5,7 @@ import {
   type AssignmentStatus,
   type CreateAssignmentDto,
   type Pagination,
+  type ProgressStatus,
   type StudyMode,
   type Submission,
 } from '@vocab/shared';
@@ -134,13 +135,33 @@ export class AssignmentsService {
     return ok(toSubmission(created));
   }
 
+  /** Bỏ lỡ lên đầu, rồi bài chưa nộp theo hạn gần nhất, bài đã nộp xuống cuối. */
   async listForMember(userId: string, query: Pagination, now = new Date()) {
-    const { items, total } = await this.assignments.findForMember(userId, query);
-    const withStatus = items.map((item) => ({
-      ...item,
-      status: assignmentStatus(item.completedAt, item.dueAt, now),
-    }));
-    return paginated(withStatus, total, query);
+    const items = await this.assignments.findForMember(userId);
+    const rank: Record<ProgressStatus, number> = {
+      missed: 0,
+      in_progress: 1,
+      todo: 1,
+      late: 2,
+      submitted: 2,
+    };
+    const withStatus = items
+      .map(({ submission, ...item }) => {
+        const modes = item.modes.length ? item.modes : [item.mode];
+        return {
+          ...item,
+          modes,
+          status: assignmentStatus(item.completedAt, item.dueAt, now),
+          progressStatus: progressStatus(submission, item.doneModes, item.dueAt, now),
+        };
+      })
+      .map((item, index) => ({ item, index }))
+      .sort(
+        (a, b) => rank[a.item.progressStatus] - rank[b.item.progressStatus] || a.index - b.index,
+      )
+      .map(({ item }) => item);
+    const start = (query.page - 1) * query.limit;
+    return paginated(withStatus.slice(start, start + query.limit), withStatus.length, query);
   }
 }
 
@@ -170,6 +191,17 @@ export function assignmentScore(progress: AssignmentModeProgress[]): number | nu
   return graded.length
     ? Math.round(graded.reduce((sum, score) => sum + score, 0) / graded.length)
     : null;
+}
+
+export function progressStatus(
+  submission: { late: boolean } | null,
+  doneModes: number,
+  dueAt: string | null,
+  now: Date,
+): ProgressStatus {
+  if (submission) return submission.late ? 'late' : 'submitted';
+  if (dueAt && new Date(dueAt) < now) return 'missed';
+  return doneModes > 0 ? 'in_progress' : 'todo';
 }
 
 export function assignmentStatus(

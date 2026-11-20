@@ -35,6 +35,9 @@ const assignment = (overrides: Partial<MyAssignment>): MyAssignment => ({
   createdAt: '2026-11-01T00:00:00.000Z',
   status: 'pending',
   completedAt: null,
+  modes: ['MCQ'],
+  progressStatus: 'todo',
+  doneModes: 0,
   ...overrides,
 });
 const page = <T,>(data: T[]) => ({ data, meta: { page: 1, limit: 100, total: data.length } });
@@ -54,24 +57,33 @@ describe('StudentClasses', () => {
     vi.mocked(listJoinedClasses).mockResolvedValue(page([joined]));
     vi.mocked(listMyAssignments).mockResolvedValue(
       page([
-        assignment({ id: 'a1', setTitle: 'Đã xong', status: 'done' }),
-        assignment({ id: 'a2', setTitle: 'Viết lại', mode: 'WRITE', setId: 's2' }),
-        assignment({ id: 'a3', setTitle: 'Trễ', status: 'overdue', setId: 's3' }),
+        assignment({ id: 'a3', setTitle: 'Trễ', progressStatus: 'missed', setId: 's3' }),
+        assignment({
+          id: 'a2',
+          setTitle: 'Viết lại',
+          mode: 'WRITE',
+          modes: ['WRITE', 'MCQ'],
+          doneModes: 1,
+          progressStatus: 'in_progress',
+          setId: 's2',
+        }),
+        assignment({ id: 'a1', setTitle: 'Đã xong', progressStatus: 'submitted' }),
       ]),
     );
   });
 
-  it('bài chưa làm lên trước, mỗi bài mở đúng chế độ học', async () => {
+  it('giữ thứ tự máy chủ, hiện trạng thái bài nộp và số chế độ đã xong', async () => {
     renderPage();
 
     const links = within(await screen.findByRole('list', { name: 'Bài cần làm' })).getAllByRole(
       'link',
     );
     expect(links.map((link) => link.textContent)).toEqual([
-      expect.stringContaining('Quá hạn'),
-      expect.stringContaining('Cần làm'),
-      expect.stringContaining('Đã làm'),
+      expect.stringContaining('Bỏ lỡ'),
+      expect.stringContaining('Đang làm'),
+      expect.stringContaining('Đã nộp'),
     ]);
+    expect(links[1]).toHaveTextContent('1/2 chế độ');
     expect(links[1]).toHaveAttribute('href', '/sets/s2/study/write');
     expect(links[1]).toHaveTextContent('Luyện viết');
     expect(links[1]).toHaveTextContent('10A1');
