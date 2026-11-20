@@ -138,6 +138,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 - **Phải có:** bộ `CLASS` chỉ thành viên xem được; giao bộ từ, chế độ, hạn nộp; học sinh thấy bài cần làm.
 - **Ngoại lệ:** học sinh vào lớp sau khi đã giao; quá hạn; bộ bị xoá sau khi giao; học sinh rời lớp mất quyền xem.
 - **Cách test:** integration quyền `CLASS`; test mốc hạn nộp theo giờ Việt Nam; E2E giao bài, học, trạng thái hoàn thành.
+- **E2E đã có:** `classes.spec.ts`: giáo viên tạo lớp (bỏ trống mô tả), giao bộ trắc nghiệm; học sinh vào lớp bằng mã chữ thường, thấy "Cần làm", mở bài, làm xong thì thành "Đã làm"; giáo viên thấy 1/1, điểm 3/3 và trang của học sinh; audit accessibility năm trang lớp học ở light và dark 360 px.
 
 ### UC-C3. Kết quả lớp
 

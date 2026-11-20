@@ -49,7 +49,8 @@ function CreateClassForm({ onCancel }: { onCancel: () => void }) {
 
   const submit = form.handleSubmit(async (dto) => {
     try {
-      const created = await create.mutateAsync(dto);
+      // Mô tả trống thành `null` sau khi qua schema, API tạo lớp chỉ nhận chuỗi nên bỏ hẳn trường.
+      const created = await create.mutateAsync(dto.description ? dto : { name: dto.name });
       await queryClient.invalidateQueries({ queryKey: classKeys.all });
       toast.success(`Đã tạo lớp ${created.name}`);
       router.push(`/classes/${created.id}` as Route);
