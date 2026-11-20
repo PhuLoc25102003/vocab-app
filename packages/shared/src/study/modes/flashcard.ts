@@ -15,12 +15,13 @@ export class FlashcardMode implements StudyModeStrategy {
   readonly mode = 'FLASHCARD' as const;
 
   buildQuestions(cards: StudyCard[], { limit }: StudyOptions): Question[] {
-    return cards.slice(0, limit ?? cards.length).map(({ id, term, definition }) => ({
+    return cards.slice(0, limit ?? cards.length).map(({ id, term, definition, imageUrl }) => ({
       id,
       cardId: id,
       mode: this.mode,
       prompt: term,
       expected: definition,
+      ...(imageUrl ? { imageUrl } : {}),
     }));
   }
 

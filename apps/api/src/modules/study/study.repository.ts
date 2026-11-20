@@ -52,7 +52,7 @@ export class StudyRepository extends BaseRepository {
         cards: {
           where: dueAt ? dueCardWhere(viewer.id, dueAt) : undefined,
           orderBy: { position: 'asc' },
-          select: { id: true, term: true, definition: true, example: true },
+          select: { id: true, term: true, definition: true, example: true, imageUrl: true },
         },
       },
     });

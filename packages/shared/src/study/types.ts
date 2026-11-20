@@ -33,6 +33,8 @@ export interface StudyCard {
   definition: string;
   /** Câu ví dụ, chế độ Điền từ cần có. */
   example?: string | null;
+  /** Ảnh minh hoạ, chỉ chế độ không lộ đáp án mới đưa vào câu hỏi. */
+  imageUrl?: string | null;
   /**
    * Mức nhớ của người học, chế độ Learn dùng để chọn dạng câu. Không có nghĩa là chưa biết,
    * như với khách hoặc khi API dựng lại câu hỏi để chấm.
@@ -58,6 +60,8 @@ export interface Question {
   choices?: string[];
   /** Gợi ý hiện kèm câu hỏi, ví dụ nghĩa của từ trong chế độ Điền từ. */
   hint?: string;
+  /** Ảnh minh hoạ nghĩa của thẻ, hiện cùng nghĩa. */
+  imageUrl?: string;
 }
 
 export interface UserAnswer {

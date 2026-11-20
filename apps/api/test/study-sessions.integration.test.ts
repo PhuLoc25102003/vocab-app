@@ -85,6 +85,20 @@ describe('study sessions', () => {
       ]);
     });
 
+    it('Flashcard và Luyện viết kèm ảnh của thẻ, Trắc nghiệm thì không để khỏi lộ đáp án', async () => {
+      const image = 'https://pub.r2.dev/cards/u1/tao.png';
+      await prisma.card.updateMany({ where: { term: 'apple' }, data: { imageUrl: image } });
+      const imageOf = (body: { data: { questions: { prompt: string; imageUrl?: string }[] } }) =>
+        body.data.questions.map(({ imageUrl }) => imageUrl ?? null);
+
+      const flashcard = await start(owner.token, { setId, mode: 'FLASHCARD' }).expect(201);
+      expect(imageOf(flashcard.body)).toEqual([image, null]);
+      const write = await start(owner.token, { setId, mode: 'WRITE' }).expect(201);
+      expect(imageOf(write.body)).toEqual([image, null]);
+      const mcq = await start(owner.token, { setId, mode: 'MCQ' }).expect(201);
+      expect(imageOf(mcq.body)).toEqual([null, null]);
+    });
+
     it('trả đáp án lựa chọn cho chế độ Trắc nghiệm', async () => {
       const { body } = await start(owner.token, { setId, mode: 'MCQ' }).expect(201);
 
