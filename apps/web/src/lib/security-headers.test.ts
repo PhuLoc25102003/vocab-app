@@ -8,11 +8,11 @@ function directive(policy: string, name: string): string {
 }
 
 describe('buildContentSecurityPolicy', () => {
-  it('chỉ cho gọi API và Google', () => {
+  it('chỉ cho gọi API, Google và URL tải ảnh lên R2', () => {
     const connect = directive(buildContentSecurityPolicy({ apiUrl, isDev: false }), 'connect-src');
 
     expect(connect).toBe(
-      "connect-src 'self' https://api.example.com https://accounts.google.com/gsi/",
+      "connect-src 'self' https://api.example.com https://accounts.google.com/gsi/ https://*.r2.cloudflarestorage.com",
     );
   });
 
@@ -20,8 +20,14 @@ describe('buildContentSecurityPolicy', () => {
     const policy = buildContentSecurityPolicy({ apiUrl: '/api/v1', isDev: false });
 
     expect(directive(policy, 'connect-src')).toBe(
-      "connect-src 'self' https://accounts.google.com/gsi/",
+      "connect-src 'self' https://accounts.google.com/gsi/ https://*.r2.cloudflarestorage.com",
     );
+  });
+
+  it('chỉ hiện ảnh của app và ảnh thẻ trên R2', () => {
+    const policy = buildContentSecurityPolicy({ apiUrl, isDev: false });
+
+    expect(directive(policy, 'img-src')).toBe("img-src 'self' data: blob: https://*.r2.dev");
   });
 
   it('dùng API local khi chưa cấu hình', () => {

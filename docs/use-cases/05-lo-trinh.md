@@ -20,10 +20,11 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 
 ### UC-X3. Ảnh và âm thanh cho thẻ
 
-- **Việc:** 2.5a (API, xong), 2.5b (giao diện), 2.6. **Người dùng:** chủ bộ từ. **Cách làm:** lưu trữ qua interface `ObjectStorage`, bản R2 tự ký URL theo SigV4 (không cần SDK) khi có đủ `R2_*`, test dùng R2 với khoá giả vì ký URL không cần mạng. Thiếu khoá R2 thì API trả 503 cho `POST /uploads/presign` và web ẩn nút thêm ảnh. TTS (2.6) cần chọn dịch vụ đọc văn bản, chưa có thì giữ giọng đọc của trình duyệt.
+- **Việc:** 2.5a (API, xong), 2.5b (trình sửa và trang bộ từ, xong), 2.5c (ảnh khi học), 2.6. **Người dùng:** chủ bộ từ. **Cách làm:** lưu trữ qua interface `ObjectStorage`, bản R2 tự ký URL theo SigV4 (không cần SDK) khi có đủ `R2_*`, test dùng R2 với khoá giả vì ký URL không cần mạng. Thiếu khoá R2 thì API trả 503 cho `POST /uploads/presign` và web ẩn nút thêm ảnh. TTS (2.6) cần chọn dịch vụ đọc văn bản, chưa có thì giữ giọng đọc của trình duyệt.
 - **Phải có:** URL ký sẵn 5 phút, ảnh PNG, JPEG, WebP tối đa 1 MB, xem trước, xoá ảnh; âm thanh TTS được lưu lại và dùng chung cho cùng từ, cùng ngôn ngữ.
 - **Ngoại lệ:** sai loại hoặc quá dung lượng; tải lên dở; dịch vụ lưu trữ lỗi thì quay về Web Speech; CSP phải cho phép domain ảnh.
-- **Cách test:** integration ký URL và quyền; bộ lưu trữ giả; E2E thêm ảnh rồi thấy trong lúc học.
+- **Test đã có:** `sigv4.test`, `uploads.integration` (ký URL, quyền, loại và dung lượng ảnh, ảnh ngoài kho), `card-image-field.test` (chọn, tải lên, xem trước, gỡ, lỗi), `security-headers.test`; E2E chạy với khoá R2 giả để audit trình sửa có ô ảnh.
+- **Còn thiếu:** ảnh khi học (2.5c); E2E tải ảnh thật lên R2 cần tài khoản Cloudflare.
 
 ### UC-X4. Bốn chế độ học mới
 

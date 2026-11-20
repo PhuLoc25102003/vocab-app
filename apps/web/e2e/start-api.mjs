@@ -20,6 +20,12 @@ Object.assign(process.env, {
   // Mỗi lần mở trang gọi /auth/refresh một lần.
   RATE_LIMIT_REFRESH_PER_MINUTE: '1000',
   LOG_LEVEL: 'warn',
+  // Khoá R2 giả để trình sửa thẻ hiện ô ảnh khi audit. Ký URL không cần mạng, E2E không tải ảnh thật.
+  R2_ACCOUNT_ID: 'e2e',
+  R2_ACCESS_KEY_ID: 'e2e',
+  R2_SECRET_ACCESS_KEY: 'e2e',
+  R2_BUCKET: 'vocab-e2e',
+  R2_PUBLIC_URL: 'https://pub-e2e.r2.dev',
 });
 
 // `migrate deploy` tự tạo database nếu chưa có.

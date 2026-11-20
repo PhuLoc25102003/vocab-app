@@ -96,7 +96,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 
 ## Header bảo mật của web
 
-`apps/web/src/lib/security-headers.ts` tạo header cho mọi route. CSP chỉ cho gọi origin của `NEXT_PUBLIC_API_URL` và Google Identity. Giá trị này được đọc lúc build, đổi API thì phải build lại.
+`apps/web/src/lib/security-headers.ts` tạo header cho mọi route. CSP chỉ cho gọi origin của `NEXT_PUBLIC_API_URL`, Google Identity và `https://*.r2.cloudflarestorage.com` (tải ảnh lên bằng URL ký sẵn); `img-src` thêm `https://*.r2.dev` cho ảnh của thẻ. Đổi R2 sang tên miền riêng thì phải sửa CSP. Giá trị này được đọc lúc build, đổi API thì phải build lại.
 
 `script-src` có `'unsafe-inline'` vì app dùng prerender một phần, phần tĩnh không nhận được nonce theo request. CSP vì vậy không chặn được script nội tuyến nếu có lỗi XSS, nên React escape và lệnh cấm `dangerouslySetInnerHTML` vẫn là lớp bảo vệ chính. Môi trường dev có thêm `'unsafe-eval'` và `ws:`.
 

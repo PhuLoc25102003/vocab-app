@@ -10,8 +10,16 @@ import { EMPTY_CARD } from './card-fields';
 import { SetForm } from './set-form';
 import { SetLoadFailure } from './set-load-failure';
 
-function toCardDraft({ id, term, definition, phonetic, example }: Card): CardDraft {
-  return { id, term, definition, phonetic: phonetic ?? '', example: example ?? '' };
+function toCardDraft({ id, term, definition, phonetic, example, imageUrl }: Card): CardDraft {
+  return {
+    id,
+    term,
+    definition,
+    phonetic: phonetic ?? '',
+    example: example ?? '',
+    // Thẻ chưa có ảnh thì không gửi `imageUrl`, gỡ ảnh mới gửi `null`.
+    ...(imageUrl ? { imageUrl } : {}),
+  };
 }
 
 export function EditSet({ id }: { id: string }) {

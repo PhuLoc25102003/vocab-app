@@ -1,5 +1,7 @@
 const GOOGLE_IDENTITY_URL = 'https://accounts.google.com/gsi';
 const DEFAULT_API_URL = 'http://localhost:4000/api/v1';
+const R2_PUBLIC_ORIGIN = 'https://*.r2.dev';
+const R2_UPLOAD_ORIGIN = 'https://*.r2.cloudflarestorage.com';
 
 interface SecurityHeaderOptions {
   apiUrl?: string;
@@ -17,9 +19,17 @@ export function buildContentSecurityPolicy({ apiUrl, isDev }: SecurityHeaderOpti
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/client${isDev ? " 'unsafe-eval'" : ''}`,
     `style-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/style`,
-    "img-src 'self' data: blob:",
+    // Ảnh của thẻ nằm ở R2: đọc qua địa chỉ công khai `*.r2.dev`, tải lên bằng URL ký sẵn.
+    `img-src 'self' data: blob: ${R2_PUBLIC_ORIGIN}`,
     "font-src 'self'",
-    ['connect-src', "'self'", apiOrigin, `${GOOGLE_IDENTITY_URL}/`, isDev ? 'ws:' : '']
+    [
+      'connect-src',
+      "'self'",
+      apiOrigin,
+      `${GOOGLE_IDENTITY_URL}/`,
+      R2_UPLOAD_ORIGIN,
+      isDev ? 'ws:' : '',
+    ]
       .filter(Boolean)
       .join(' '),
     // `read-excel-file` đọc file Excel trong worker tạo từ `blob:` (ADR 0002).
