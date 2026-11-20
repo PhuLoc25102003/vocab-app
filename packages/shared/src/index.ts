@@ -11,3 +11,4 @@ export * from './import/parse';
 export * from './import/template';
 export * from './schemas/admin';
 export * from './schemas/folder';
+export * from './schemas/class';

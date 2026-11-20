@@ -1,0 +1,88 @@
+import { Injectable } from '@nestjs/common';
+import type { ClassListQuery } from '@vocab/shared';
+import { BaseRepository } from '../../common/base/base.repository';
+import { toSkipTake } from '../../common/base/pagination';
+import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+
+const CLASS_SELECT = {
+  id: true,
+  name: true,
+  description: true,
+  joinCode: true,
+  archivedAt: true,
+  createdAt: true,
+  _count: { select: { members: true } },
+} as const;
+
+interface ClassRow {
+  id: string;
+  name: string;
+  description: string | null;
+  joinCode: string;
+  archivedAt: Date | null;
+  createdAt: Date;
+  _count: { members: number };
+}
+
+function toClass({ _count, archivedAt, createdAt, ...rest }: ClassRow) {
+  return {
+    ...rest,
+    archivedAt: archivedAt?.toISOString() ?? null,
+    createdAt: createdAt.toISOString(),
+    memberCount: _count.members,
+  };
+}
+
+export interface ClassChanges {
+  name?: string;
+  description?: string | null;
+  archivedAt?: Date | null;
+  joinCode?: string;
+}
+
+@Injectable()
+export class ClassesRepository extends BaseRepository {
+  constructor(prisma: PrismaService) {
+    super(prisma);
+  }
+
+  async findByTeacher(teacherId: string, query: ClassListQuery) {
+    const where = { teacherId, archivedAt: query.archived ? { not: null } : null };
+    const [rows, total] = await Promise.all([
+      this.prisma.class.findMany({
+        where,
+        select: CLASS_SELECT,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        ...toSkipTake(query),
+      }),
+      this.prisma.class.count({ where }),
+    ]);
+    return { items: rows.map(toClass), total };
+  }
+
+  async findById(id: string) {
+    const row = await this.prisma.class.findUnique({ where: { id }, select: CLASS_SELECT });
+    return row ? toClass(row) : null;
+  }
+
+  async create(
+    teacherId: string,
+    data: { name: string; description: string | null },
+    joinCode: string,
+  ) {
+    const row = await this.prisma.class.create({
+      data: { teacherId, ...data, joinCode },
+      select: CLASS_SELECT,
+    });
+    return toClass(row);
+  }
+
+  async update(id: string, changes: ClassChanges) {
+    const row = await this.prisma.class.update({
+      where: { id },
+      data: changes,
+      select: CLASS_SELECT,
+    });
+    return toClass(row);
+  }
+}
