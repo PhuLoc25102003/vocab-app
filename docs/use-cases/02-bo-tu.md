@@ -81,7 +81,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 - **Ngoại lệ:** bộ riêng tư hoặc đã xoá hiện "Không tìm thấy bộ từ" và không được index; người đã đăng nhập thấy nút mở trong tài khoản.
 - **Test đã có:** `sets-public.integration`, `public-set.test`, E2E khách học thử.
 - **Test cần thêm:** E2E đổi bộ sang riêng tư thì đường dẫn công khai hết hiệu lực, kể cả khi trang đã được cache.
-- **Sắp đổi:** thiết kế mới, người đã đăng nhập được chuyển vào `/sets/:id` (việc 2.40, UC-X8).
+- **Đã đổi (2.40, UC-X8):** header như trang bộ từ, nút chính "Học thử" và lưới chế độ học dùng chung, dải mời tạo tài khoản cuối trang. Người có phiên mở `/public/sets/:id` được `proxy` chuyển sang `/sets/:id`. Trang bộ từ của chủ bỏ link "Xem trang công khai", giữ "Sao chép đường dẫn".
 
 ## UC-S9. Khám phá bộ từ công khai
 

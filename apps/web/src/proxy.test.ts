@@ -47,4 +47,14 @@ describe('proxy', () => {
   it('cho khách vào trang đăng ký', () => {
     expect(proxy(requestTo('/register')).headers.get('location')).toBeNull();
   });
+
+  it('đưa người có phiên từ trang công khai vào trang bộ từ trong app', () => {
+    expect(proxy(requestTo('/public/sets/abc', true)).headers.get('location')).toBe(
+      'http://localhost:3000/sets/abc',
+    );
+  });
+
+  it('cho khách xem trang công khai', () => {
+    expect(proxy(requestTo('/public/sets/abc')).headers.get('location')).toBeNull();
+  });
 });

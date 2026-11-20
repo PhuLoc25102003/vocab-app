@@ -4,6 +4,8 @@ import { SESSION_MARKER_COOKIE } from '@/lib/session-marker';
 
 const AUTH_PAGES = new Set(['/login', '/register']);
 const HOME_PATH = '/dashboard';
+/** Trang công khai của một bộ từ, không gồm trang học thử bên trong. */
+const PUBLIC_SET_PATH = /^\/public\/sets\/([^/]+)\/?$/;
 
 /** Người đã đăng nhập đi tiếp tới `next`, trừ khi `next` lại là trang đăng nhập. */
 function signedInTarget(request: NextRequest): URL {
@@ -18,6 +20,13 @@ export function proxy(request: NextRequest): NextResponse {
 
   if (AUTH_PAGES.has(pathname)) {
     return hasSession ? NextResponse.redirect(signedInTarget(request)) : NextResponse.next();
+  }
+  // Người đã đăng nhập xem bộ từ trong app để có tiến độ, lộ trình và nút sao chép.
+  const publicSet = PUBLIC_SET_PATH.exec(pathname);
+  if (publicSet) {
+    return hasSession
+      ? NextResponse.redirect(new URL(`/sets/${publicSet[1]}${search}`, request.url))
+      : NextResponse.next();
   }
   if (hasSession) {
     return NextResponse.next();
@@ -42,5 +51,6 @@ export const config = {
     '/account/:path*',
     '/login',
     '/register',
+    '/public/sets/:id',
   ],
 };
