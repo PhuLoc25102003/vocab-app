@@ -23,9 +23,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      30 |      36 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       3 |       9 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       4 |      10 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **102** | **118** | **86%**    |
+| **Toàn dự án**          |                                            | **103** | **119** | **87%**    |
 
 ## Cách cập nhật
 
@@ -223,7 +223,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia (#241).
 - [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia (#243).
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
-- [ ] **3.5** API giao bộ từ và theo dõi hạn nộp.
+- [x] **3.5** API giáo viên giao bộ từ cho lớp kèm chế độ và hạn nộp, xem và huỷ bài giao.
+- [ ] **3.10** API học sinh xem bài cần làm của các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.
 - [ ] **3.7** Web cho giáo viên.
 - [ ] **3.8** Web cho học sinh trong lớp.
