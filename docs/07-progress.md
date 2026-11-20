@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
+1. Web cho giáo viên giao bài và xem kết quả (việc 3.7b, 3.7c), web cho học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -23,9 +23,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       8 |      11 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       9 |      13 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **112** | **124** | **90%**    |
+| **Toàn dự án**          |                                            | **113** | **126** | **90%**    |
 
 ## Cách cập nhật
 
@@ -231,7 +231,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.10** API học sinh xem bài cần làm của các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn.
 - [x] **3.6** API kết quả theo lớp và theo học sinh: số liệu cả lớp của bài giao, kết quả từng học sinh, kết quả một học sinh qua các bài giao.
 - [x] **3.11** Lệnh `npm run user:set-role -w @vocab/api -- <email> <vai trò>` gán ADMIN, TEACHER hoặc STUDENT để test và cấp quyền tạm khi chưa chốt việc 3.2 (#283).
-- [ ] **3.7** Web cho giáo viên.
+- [x] **3.7a** Web giáo viên quản lý lớp: mục "Lớp học" trên menu cho TEACHER và ADMIN, danh sách lớp đang dạy và đã lưu trữ, tạo lớp, trang lớp có mã tham gia lớn (sao chép, đổi mã), danh sách học sinh, xoá học sinh, lưu trữ và mở lại lớp.
+- [ ] **3.7b** Web giáo viên giao bài: trong trang lớp chọn bộ từ, chế độ, hạn nộp; xem và huỷ bài đã giao.
+- [ ] **3.7c** Web giáo viên xem kết quả: trang bài giao có số liệu cả lớp, từ hay sai, kết quả từng học sinh; trang kết quả của một học sinh.
 - [ ] **3.8** Web cho học sinh trong lớp.
 
 ## Giai đoạn 4: Luyện nói và offline
