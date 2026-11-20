@@ -57,7 +57,7 @@ describe('FolderManager', () => {
     await vi.waitFor(() => expect(renameFolder).toHaveBeenCalledWith('f1', 'Lớp 11'));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Xoá Lớp 10' }));
-    const confirm = screen.getByRole('group', { name: 'Xác nhận xoá Lớp 10' });
+    const confirm = screen.getByRole('dialog', { name: 'Xoá thư mục "Lớp 10"?' });
     await userEvent.click(within(confirm).getByRole('button', { name: 'Xoá thư mục' }));
 
     await vi.waitFor(() => expect(deleteFolder).toHaveBeenCalledWith('f1'));

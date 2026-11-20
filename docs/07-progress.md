@@ -8,7 +8,7 @@ Giai đoạn 3 đã có schema lớp học (3.1) API giáo viên quản lý lớ
 
 **Việc tiếp theo:**
 
-1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.29 đến 2.33).
+1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.29 đến 2.32).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34).
 
@@ -20,10 +20,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     23 |      33 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     24 |      33 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      3 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **95** | **115** | **83%**    |
+| **Toàn dự án**          |                                            | **96** | **115** | **83%**    |
 
 ## Cách cập nhật
 
@@ -206,7 +206,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng, mở và đóng thư mục, kéo thả bộ từ vào thư mục, gỡ khỏi thư mục, thao tác bằng bàn phím thay cho kéo thả.
 - [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
 - [ ] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được.
-- [ ] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, thành viên, phiên đăng nhập) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục.
+- [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục.
 - [x] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước (#220).
 
 ## Giai đoạn 3: Lớp học

@@ -55,7 +55,7 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 
 ### UC-X7. Sắp xếp và học gọn hơn (góp ý ngày 2026-11-20)
 
-- **Việc:** 2.28 đến 2.33. **Người dùng:** học sinh, chủ bộ từ. **Trạng thái:** Đang làm. Đã có 2.28.
+- **Việc:** 2.28 đến 2.33. **Người dùng:** học sinh, chủ bộ từ. **Trạng thái:** Đang làm. Đã có 2.28 và 2.33.
 - **2.28, Header trang bộ từ:** chủ bộ chỉ thấy "Sửa bộ từ" và nút menu "Thao tác khác" (nhập thêm thẻ, tải, cập nhật hoặc xoá bản offline, xoá bộ từ có xác nhận). Thư mục là chip trên dòng thông tin, bấm để chuyển hoặc gỡ thư mục. Người xem khác thấy "Sao chép bộ từ" và nút tải về máy.
 - **2.29, Thẻ bộ từ dùng chung:** Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan dùng cùng một thẻ: tên, mô tả hai dòng, số thẻ, phạm vi, ngày cập nhật hoặc tác giả. Lưới 1 cột ở 360 px, 2 cột ở 768 px, 3 cột từ 1024 px.
 - **2.30, Thư mục kiểu trình quản lý file:** trang Bộ từ có cột thư mục bên trái (Tất cả, Chưa xếp thư mục, từng thư mục kèm số bộ), cột cuộn riêng và có ô lọc khi nhiều thư mục. Bấm một thư mục để mở, có đường dẫn "Bộ từ / Lớp 6" và nút đóng về Tất cả. Kéo thẻ bộ từ thả vào thư mục để chuyển, thả vào "Chưa xếp thư mục" để gỡ. Mỗi thẻ có menu "Chuyển vào thư mục" và "Gỡ khỏi thư mục" cho bàn phím và màn hình cảm ứng. Tạo, đổi tên, xoá thư mục ngay trên cột thư mục. Ở 360 px cột thư mục thành hàng chip cuộn ngang.

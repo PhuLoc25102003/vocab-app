@@ -193,6 +193,16 @@ Dùng `Menu`, `MenuContent`, `MenuItem`, `MenuRadioItem` trong `components/ui/me
 
 Header của trang chỉ có tối đa hai nút: một nút chính của trang và một nút menu "Thao tác khác" (icon ba chấm, có `aria-label`). Thao tác ít dùng như nhập thêm thẻ, tải về máy, xoá nằm trong menu. Thông tin có thể đổi nhanh như thư mục là chip trên dòng thông tin, bấm để mở menu chọn.
 
+## Hộp thoại xác nhận
+
+Mọi thao tác xoá hoặc không hoàn tác được (xoá bộ từ, thư mục, bản offline, thẻ đã có nội dung, đăng xuất mọi thiết bị, xoá tài khoản) hỏi lại bằng `ConfirmDialog` trong `components/common/confirm-dialog.tsx`. Không thay nội dung tại chỗ bằng câu hỏi vì làm xô lệch bố cục.
+
+- Dùng thẻ `dialog` gốc với `showModal()`: khoá focus trong hộp thoại, Esc và bấm nền `overlay` thì huỷ, đóng xong focus trở về nút đã mở. Render qua portal ra `body` để form của hộp thoại không lồng trong form của trang.
+- Tiêu đề nói rõ xoá gì (`Xoá bộ từ "Hương 1"?`), mô tả nói hậu quả. Nút huỷ nhận focus đầu tiên. Nút xác nhận dùng biến thể `danger` của `Button` (viền `danger-mark`, nền `danger-soft`, chữ `danger`, đạt AA ở cả hai theme) và hiện vòng quay khi đang xoá; lúc đó không đóng được hộp thoại.
+- Lỗi từ máy chủ hiện ngay trong hộp thoại, không đóng. Trường cần nhập thêm (mật khẩu khi xoá tài khoản) đặt trong hộp thoại.
+- Ở 360 px hai nút xếp dọc, nút xác nhận ở trên; từ 640 px xếp ngang, nút xác nhận bên phải.
+- Dòng thẻ trống mới thêm được xoá ngay, không hỏi.
+
 ## Phản hồi khi học
 
 Đúng dùng lớp `feedback-correct` (nảy nhẹ 200 ms), sai dùng `feedback-wrong` (rung ngang 240 ms), định nghĩa trong `globals.css` và tắt khi `prefers-reduced-motion`. Chuyển động chỉ đi kèm icon và chữ, không thay chúng.

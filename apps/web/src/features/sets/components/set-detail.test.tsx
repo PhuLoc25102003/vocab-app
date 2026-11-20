@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ERROR_CODES, type SetDetail as SetDetailData } from '@vocab/shared';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -117,24 +117,15 @@ describe('SetOwnerActions', () => {
   const startDelete = async () => {
     await userEvent.click(screen.getByRole('button', { name: 'Thao tác khác' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Xoá bộ từ' }));
+    return screen.findByRole('dialog', { name: 'Xoá bộ từ "Trái cây"?' });
   };
-  const confirmDelete = () => userEvent.click(screen.getByRole('button', { name: 'Xoá bộ từ' }));
-
-  it('chỉ xoá sau khi xác nhận rồi về danh sách', async () => {
-    vi.mocked(deleteSet).mockResolvedValue();
-    renderWithQuery(<SetOwnerActions set={set} />);
-    await startDelete();
-    expect(deleteSet).not.toHaveBeenCalled();
-
-    await confirmDelete();
-
-    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
-    expect(vi.mocked(deleteSet).mock.calls[0]?.[0]).toBe('s1');
-    expect(toasts.success).toHaveBeenCalledWith('Đã xoá bộ từ');
-  });
 
   it('header chỉ có nút sửa và menu, nhập thêm thẻ nằm trong menu', async () => {
     renderWithQuery(<SetOwnerActions set={set} />);
+    expect(screen.getByRole('link', { name: 'Sửa bộ từ' })).toHaveAttribute(
+      'href',
+      '/sets/s1/edit',
+    );
     expect(screen.queryByRole('link', { name: 'Nhập thêm thẻ' })).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Thao tác khác' }));
@@ -146,29 +137,36 @@ describe('SetOwnerActions', () => {
     expect(screen.getByRole('menuitem', { name: 'Tải về máy' })).toBeInTheDocument();
   });
 
-  it('huỷ được khi đang xác nhận', async () => {
+  it('hỏi bằng hộp thoại, chỉ xoá sau khi xác nhận rồi về danh sách', async () => {
+    vi.mocked(deleteSet).mockResolvedValue();
     renderWithQuery(<SetOwnerActions set={set} />);
-    await startDelete();
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Giữ lại' })).toHaveFocus());
-    await userEvent.click(screen.getByRole('button', { name: 'Giữ lại' }));
+    const dialog = await startDelete();
+    expect(deleteSet).not.toHaveBeenCalled();
 
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Thao tác khác' })).toHaveFocus(),
-    );
-    expect(screen.getByRole('link', { name: 'Sửa bộ từ' })).toHaveAttribute(
-      'href',
-      '/sets/s1/edit',
-    );
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá bộ từ' }));
+
+    await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
+    expect(vi.mocked(deleteSet).mock.calls[0]?.[0]).toBe('s1');
+    expect(toasts.success).toHaveBeenCalledWith('Đã xoá bộ từ');
+  });
+
+  it('huỷ thì đóng hộp thoại, không xoá', async () => {
+    renderWithQuery(<SetOwnerActions set={set} />);
+    const dialog = await startDelete();
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Huỷ' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(deleteSet).not.toHaveBeenCalled();
   });
 
-  it('báo lỗi và ở lại trang khi không xoá được', async () => {
+  it('báo lỗi trong hộp thoại và ở lại trang khi không xoá được', async () => {
     vi.mocked(deleteSet).mockRejectedValue(new HttpError('Bạn không có quyền', 403, 'FORBIDDEN'));
     renderWithQuery(<SetOwnerActions set={set} />);
-    await startDelete();
-    await confirmDelete();
+    const dialog = await startDelete();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá bộ từ' }));
 
-    await waitFor(() => expect(toasts.error).toHaveBeenCalledWith('Bạn không có quyền'));
+    expect(await within(dialog).findByText('Bạn không có quyền')).toBeInTheDocument();
     expect(navigation.push).not.toHaveBeenCalled();
   });
 });

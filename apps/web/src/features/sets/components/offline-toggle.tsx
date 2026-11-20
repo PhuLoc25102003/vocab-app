@@ -5,6 +5,7 @@ import { Download, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { MenuItem } from '@/components/ui/menu';
 import {
   getOfflineSet,
@@ -72,28 +73,76 @@ function useOfflineSet(set: SetDetail) {
     }
   };
 
-  const run = () => void (state === 'saved' ? remove() : save());
-  return { ...ACTIONS[state], busy, run };
+  return { ...ACTIONS[state], state, busy, save, remove };
+}
+
+type OfflineSetControls = ReturnType<typeof useOfflineSet>;
+
+/** Hỏi lại trước khi xoá bản đã tải, vì xoá rồi thì mất mạng sẽ không xem được. */
+function RemoveOfflineDialog({
+  offline,
+  open,
+  onOpenChange,
+}: {
+  offline: OfflineSetControls;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <ConfirmDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Xoá bản offline?"
+      description="Bộ từ vẫn còn trên tài khoản, chỉ không xem được khi mất mạng cho tới khi bạn tải lại."
+      confirmLabel="Xoá bản offline"
+      pending={offline.busy}
+      onConfirm={() => void offline.remove().then(() => onOpenChange(false))}
+    />
+  );
 }
 
 /** Tải bộ từ về máy để xem khi mất mạng, hoặc xoá bản đã tải. */
 export function OfflineToggle({ set }: { set: SetDetail }) {
-  const { label, Icon, busy, run } = useOfflineSet(set);
+  const offline = useOfflineSet(set);
+  const [confirming, setConfirming] = useState(false);
+  const { label, Icon, busy, state } = offline;
   return (
-    <Button variant="secondary" loading={busy} onClick={run}>
-      <Icon aria-hidden className="size-4" />
-      {label}
-    </Button>
+    <>
+      <Button
+        variant="secondary"
+        loading={busy && !confirming}
+        onClick={() => (state === 'saved' ? setConfirming(true) : void offline.save())}
+      >
+        <Icon aria-hidden className="size-4" />
+        {label}
+      </Button>
+      <RemoveOfflineDialog offline={offline} open={confirming} onOpenChange={setConfirming} />
+    </>
   );
 }
 
-/** Cùng hành động như `OfflineToggle`, đặt trong menu thao tác của bộ từ. */
-export function OfflineMenuItem({ set }: { set: SetDetail }) {
-  const { label, Icon, busy, run } = useOfflineSet(set);
-  return (
-    <MenuItem disabled={busy} onSelect={run}>
+/**
+ * Cùng hành động như `OfflineToggle` cho menu thao tác. Hộp thoại nằm ngoài menu vì menu đóng
+ * lại khi chọn mục, nên gọi hook ở cấp chứa menu rồi truyền vào đây.
+ */
+export function useOfflineMenu(set: SetDetail) {
+  const offline = useOfflineSet(set);
+  const [confirming, setConfirming] = useState(false);
+  const { label, Icon, busy, state } = offline;
+
+  const item = (
+    <MenuItem
+      disabled={busy}
+      onSelect={() =>
+        state === 'saved' ? setTimeout(() => setConfirming(true)) : void offline.save()
+      }
+    >
       <Icon aria-hidden className="size-4" />
       {label}
     </MenuItem>
   );
+  const dialog = (
+    <RemoveOfflineDialog offline={offline} open={confirming} onOpenChange={setConfirming} />
+  );
+  return { item, dialog };
 }

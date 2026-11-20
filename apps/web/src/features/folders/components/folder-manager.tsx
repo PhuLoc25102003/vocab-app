@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { FormField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { applyFormError, formErrorMessage } from '@/lib/form-errors';
 import { useCreateFolder, useDeleteFolder, useFolders, useRenameFolder } from '../hooks';
 
@@ -66,6 +67,7 @@ function NameForm({ label, submitLabel, defaultName = '', onSave, onCancel }: Na
 
 function FolderRow({ folder }: { folder: Folder }) {
   const [mode, setMode] = useState<'view' | 'rename' | 'confirm'>('view');
+  const [error, setError] = useState<string | null>(null);
   const rename = useRenameFolder();
   const remove = useDeleteFolder();
 
@@ -90,44 +92,41 @@ function FolderRow({ folder }: { folder: Folder }) {
       <p className="min-w-0 flex-1 wrap-anywhere">
         {folder.name} <span className="text-small text-text-muted">({folder.setCount} bộ)</span>
       </p>
-      {mode === 'confirm' ? (
-        <div role="group" aria-label={`Xác nhận xoá ${folder.name}`} className="flex gap-2">
-          <Button
-            variant="secondary"
-            className="text-danger"
-            loading={remove.isPending}
-            onClick={() =>
-              // Dòng này biến mất khi danh sách tải lại, nên không dùng callback của `mutate`.
-              void remove
-                .mutateAsync(folder.id)
-                .then(() => toast.success('Đã xoá thư mục, bộ từ vẫn được giữ'))
-                .catch((error: unknown) => toast.error(formErrorMessage(error)))
-            }
-          >
-            Xoá thư mục
-          </Button>
-          <Button variant="ghost" onClick={() => setMode('view')}>
-            Giữ lại
-          </Button>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            aria-label={`Đổi tên ${folder.name}`}
-            onClick={() => setMode('rename')}
-          >
-            Đổi tên
-          </Button>
-          <Button
-            variant="ghost"
-            aria-label={`Xoá ${folder.name}`}
-            onClick={() => setMode('confirm')}
-          >
-            Xoá
-          </Button>
-        </div>
-      )}
+      <div className="flex gap-2">
+        <Button
+          variant="ghost"
+          aria-label={`Đổi tên ${folder.name}`}
+          onClick={() => setMode('rename')}
+        >
+          Đổi tên
+        </Button>
+        <Button
+          variant="ghost"
+          aria-label={`Xoá ${folder.name}`}
+          onClick={() => {
+            setError(null);
+            setMode('confirm');
+          }}
+        >
+          Xoá
+        </Button>
+      </div>
+      <ConfirmDialog
+        open={mode === 'confirm'}
+        onOpenChange={(open) => setMode(open ? 'confirm' : 'view')}
+        title={`Xoá thư mục "${folder.name}"?`}
+        description={`${folder.setCount} bộ từ trong thư mục vẫn được giữ lại, chỉ không còn nằm trong thư mục này.`}
+        confirmLabel="Xoá thư mục"
+        pending={remove.isPending}
+        error={error}
+        onConfirm={() =>
+          // Dòng này biến mất khi danh sách tải lại, nên không dùng callback của `mutate`.
+          void remove
+            .mutateAsync(folder.id)
+            .then(() => toast.success('Đã xoá thư mục, bộ từ vẫn được giữ'))
+            .catch((reason: unknown) => setError(formErrorMessage(reason)))
+        }
+      />
     </div>
   );
 }

@@ -12,6 +12,8 @@ const buttonVariants = cva(
         primary: 'bg-primary text-primary-fg hover:bg-primary-hover',
         secondary: 'border border-border-strong bg-surface hover:bg-primary-soft',
         ghost: 'hover:bg-primary-soft',
+        // Nền nhạt và chữ đỏ giữ tương phản AA ở cả hai theme, kể cả khi `--danger` sáng ở dark.
+        danger: 'border-2 border-danger-mark bg-danger-soft text-danger hover:bg-surface',
       },
       size: {
         default: 'px-4 py-2',
