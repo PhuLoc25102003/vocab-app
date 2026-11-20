@@ -187,6 +187,12 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
 
+## Menu thao tác
+
+Dùng `Menu`, `MenuContent`, `MenuItem`, `MenuRadioItem` trong `components/ui/menu.tsx` (Radix Dropdown Menu), không tự viết danh sách nổi. Mục cao tối thiểu 44 px, nền `primary-soft` khi được chọn bằng chuột hoặc bàn phím, mục xoá dùng `danger` và đặt cuối sau một đường kẻ. Menu tự cuộn khi dài hơn khoảng trống trên màn hình.
+
+Header của trang chỉ có tối đa hai nút: một nút chính của trang và một nút menu "Thao tác khác" (icon ba chấm, có `aria-label`). Thao tác ít dùng như nhập thêm thẻ, tải về máy, xoá nằm trong menu. Thông tin có thể đổi nhanh như thư mục là chip trên dòng thông tin, bấm để mở menu chọn.
+
 ## Phản hồi khi học
 
 Đúng dùng lớp `feedback-correct` (nảy nhẹ 200 ms), sai dùng `feedback-wrong` (rung ngang 240 ms), định nghĩa trong `globals.css` và tắt khi `prefers-reduced-motion`. Chuyển động chỉ đi kèm icon và chữ, không thay chúng.

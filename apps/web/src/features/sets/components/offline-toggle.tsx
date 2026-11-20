@@ -1,10 +1,11 @@
 'use client';
 
 import type { SetDetail } from '@vocab/shared';
-import { Download, Trash2 } from 'lucide-react';
+import { Download, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { MenuItem } from '@/components/ui/menu';
 import {
   getOfflineSet,
   OfflineStorageError,
@@ -18,8 +19,16 @@ const SAVE_ERRORS = {
   failed: 'Không tải được bộ từ về máy. Hãy thử lại.',
 } as const;
 
-/** Tải bộ từ về máy để xem khi mất mạng, hoặc xoá bản đã tải. */
-export function OfflineToggle({ set }: { set: SetDetail }) {
+type OfflineState = 'missing' | 'saved' | 'outdated';
+
+const ACTIONS = {
+  missing: { label: 'Tải về máy', Icon: Download },
+  outdated: { label: 'Cập nhật bản offline', Icon: RefreshCw },
+  saved: { label: 'Xoá bản offline', Icon: Trash2 },
+} as const;
+
+/** Trạng thái bản tải về máy của bộ từ và hành động phù hợp: tải, cập nhật hoặc xoá. */
+function useOfflineSet(set: SetDetail) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [savedUpdatedAt, setSavedUpdatedAt] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -33,7 +42,8 @@ export function OfflineToggle({ set }: { set: SetDetail }) {
       .catch(() => undefined);
   }, [set.id]);
 
-  const outdated = savedAt !== null && savedUpdatedAt !== String(set.updatedAt);
+  const state: OfflineState =
+    savedAt === null ? 'missing' : savedUpdatedAt === String(set.updatedAt) ? 'saved' : 'outdated';
 
   const save = async () => {
     setBusy(true);
@@ -62,18 +72,28 @@ export function OfflineToggle({ set }: { set: SetDetail }) {
     }
   };
 
-  if (savedAt && !outdated) {
-    return (
-      <Button variant="secondary" loading={busy} onClick={() => void remove()}>
-        <Trash2 aria-hidden className="size-4" />
-        Xoá bản offline
-      </Button>
-    );
-  }
+  const run = () => void (state === 'saved' ? remove() : save());
+  return { ...ACTIONS[state], busy, run };
+}
+
+/** Tải bộ từ về máy để xem khi mất mạng, hoặc xoá bản đã tải. */
+export function OfflineToggle({ set }: { set: SetDetail }) {
+  const { label, Icon, busy, run } = useOfflineSet(set);
   return (
-    <Button variant="secondary" loading={busy} onClick={() => void save()}>
-      <Download aria-hidden className="size-4" />
-      {outdated ? 'Cập nhật bản offline' : 'Tải về máy'}
+    <Button variant="secondary" loading={busy} onClick={run}>
+      <Icon aria-hidden className="size-4" />
+      {label}
     </Button>
+  );
+}
+
+/** Cùng hành động như `OfflineToggle`, đặt trong menu thao tác của bộ từ. */
+export function OfflineMenuItem({ set }: { set: SetDetail }) {
+  const { label, Icon, busy, run } = useOfflineSet(set);
+  return (
+    <MenuItem disabled={busy} onSelect={run}>
+      <Icon aria-hidden className="size-4" />
+      {label}
+    </MenuItem>
   );
 }

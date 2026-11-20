@@ -114,28 +114,47 @@ describe('SetDetail', () => {
 describe('SetOwnerActions', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  const startDelete = () => userEvent.click(screen.getByRole('button', { name: 'Xoá bộ từ' }));
+  const startDelete = async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Thao tác khác' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Xoá bộ từ' }));
+  };
+  const confirmDelete = () => userEvent.click(screen.getByRole('button', { name: 'Xoá bộ từ' }));
 
   it('chỉ xoá sau khi xác nhận rồi về danh sách', async () => {
     vi.mocked(deleteSet).mockResolvedValue();
-    renderWithQuery(<SetOwnerActions id="s1" />);
+    renderWithQuery(<SetOwnerActions set={set} />);
     await startDelete();
     expect(deleteSet).not.toHaveBeenCalled();
 
-    await startDelete();
+    await confirmDelete();
 
     await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/sets'));
     expect(vi.mocked(deleteSet).mock.calls[0]?.[0]).toBe('s1');
     expect(toasts.success).toHaveBeenCalledWith('Đã xoá bộ từ');
   });
 
+  it('header chỉ có nút sửa và menu, nhập thêm thẻ nằm trong menu', async () => {
+    renderWithQuery(<SetOwnerActions set={set} />);
+    expect(screen.queryByRole('link', { name: 'Nhập thêm thẻ' })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Thao tác khác' }));
+
+    expect(await screen.findByRole('menuitem', { name: 'Nhập thêm thẻ' })).toHaveAttribute(
+      'href',
+      '/sets/import?setId=s1',
+    );
+    expect(screen.getByRole('menuitem', { name: 'Tải về máy' })).toBeInTheDocument();
+  });
+
   it('huỷ được khi đang xác nhận', async () => {
-    renderWithQuery(<SetOwnerActions id="s1" />);
+    renderWithQuery(<SetOwnerActions set={set} />);
     await startDelete();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Giữ lại' })).toHaveFocus());
     await userEvent.click(screen.getByRole('button', { name: 'Giữ lại' }));
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Xoá bộ từ' })).toHaveFocus());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Thao tác khác' })).toHaveFocus(),
+    );
     expect(screen.getByRole('link', { name: 'Sửa bộ từ' })).toHaveAttribute(
       'href',
       '/sets/s1/edit',
@@ -145,9 +164,9 @@ describe('SetOwnerActions', () => {
 
   it('báo lỗi và ở lại trang khi không xoá được', async () => {
     vi.mocked(deleteSet).mockRejectedValue(new HttpError('Bạn không có quyền', 403, 'FORBIDDEN'));
-    renderWithQuery(<SetOwnerActions id="s1" />);
+    renderWithQuery(<SetOwnerActions set={set} />);
     await startDelete();
-    await startDelete();
+    await confirmDelete();
 
     await waitFor(() => expect(toasts.error).toHaveBeenCalledWith('Bạn không có quyền'));
     expect(navigation.push).not.toHaveBeenCalled();

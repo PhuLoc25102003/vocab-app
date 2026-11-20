@@ -34,18 +34,30 @@ export function SetDetailScreen({ id }: { id: string }) {
           </Button>
         </Can>
       )}
+      renderMeta={(set) =>
+        // API chỉ trả `folderId` cho chủ bộ từ.
+        set.folderId !== undefined ? (
+          <Can action="update" resource={set} fallback={null}>
+            <SetFolderPicker setId={set.id} folderId={set.folderId} />
+          </Can>
+        ) : null
+      }
       renderProgress={(set) => <SetProgressSummary setId={set.id} />}
       renderCardExtra={(cardId) => <CardMasteryBadge setId={id} cardId={cardId} />}
       renderActions={(set) => (
         <>
-          <Can action="update" resource={set} fallback={<DuplicateSetButton id={set.id} />}>
-            <SetOwnerActions id={set.id} />
-            {/* API chỉ trả `folderId` cho chủ bộ từ. */}
-            {set.folderId !== undefined ? (
-              <SetFolderPicker setId={set.id} folderId={set.folderId} />
-            ) : null}
+          <Can
+            action="update"
+            resource={set}
+            fallback={
+              <>
+                <DuplicateSetButton id={set.id} />
+                <OfflineToggle set={set} />
+              </>
+            }
+          >
+            <SetOwnerActions set={set} />
           </Can>
-          <OfflineToggle set={set} />
           <Can action="moderate-content">
             <HideSetButton setId={set.id} hidden={Boolean(set.hiddenAt)} />
           </Can>

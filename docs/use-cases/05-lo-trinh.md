@@ -53,6 +53,18 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 - **Giọng đọc (2.23):** chọn giọng `en-US` hoặc `en-GB` có trên máy, không có thì dùng giọng mặc định và báo cho người dùng; tốc độ chậm khoảng 0,7.
 - **Cách test:** component cho từng trạng thái; E2E audit accessibility ở light, dark, 360 px cho các trang đã đổi; Lighthouse trang giới thiệu không thấp hơn trước.
 
+### UC-X7. Sắp xếp và học gọn hơn (góp ý ngày 2026-11-20)
+
+- **Việc:** 2.28 đến 2.33. **Người dùng:** học sinh, chủ bộ từ. **Trạng thái:** Đang làm. Đã có 2.28.
+- **2.28, Header trang bộ từ:** chủ bộ chỉ thấy "Sửa bộ từ" và nút menu "Thao tác khác" (nhập thêm thẻ, tải, cập nhật hoặc xoá bản offline, xoá bộ từ có xác nhận). Thư mục là chip trên dòng thông tin, bấm để chuyển hoặc gỡ thư mục. Người xem khác thấy "Sao chép bộ từ" và nút tải về máy.
+- **2.29, Thẻ bộ từ dùng chung:** Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan dùng cùng một thẻ: tên, mô tả hai dòng, số thẻ, phạm vi, ngày cập nhật hoặc tác giả. Lưới 1 cột ở 360 px, 2 cột ở 768 px, 3 cột từ 1024 px.
+- **2.30, Thư mục kiểu trình quản lý file:** trang Bộ từ có cột thư mục bên trái (Tất cả, Chưa xếp thư mục, từng thư mục kèm số bộ), cột cuộn riêng và có ô lọc khi nhiều thư mục. Bấm một thư mục để mở, có đường dẫn "Bộ từ / Lớp 6" và nút đóng về Tất cả. Kéo thẻ bộ từ thả vào thư mục để chuyển, thả vào "Chưa xếp thư mục" để gỡ. Mỗi thẻ có menu "Chuyển vào thư mục" và "Gỡ khỏi thư mục" cho bàn phím và màn hình cảm ứng. Tạo, đổi tên, xoá thư mục ngay trên cột thư mục. Ở 360 px cột thư mục thành hàng chip cuộn ngang.
+- **2.31, Lộ trình "Bắt đầu học":** nút chính chạy các bước liên tiếp trên cùng bộ từ: Xem thẻ → Trắc nghiệm → Ghép cặp → Luyện viết. Bước không dùng được (bộ quá ít thẻ cho Ghép cặp) thì bỏ qua. Thanh bước cho biết đang ở bước nào, mỗi bước lưu phiên học như chế độ lẻ, cuối lộ trình có màn tổng kết. Flashcard thành một chế độ riêng trong lưới "Chọn cách học".
+- **2.32, Khung thẻ khi tạo và sửa bộ từ:** danh sách thẻ nằm trong khung cao tối đa khoảng 60% màn hình, có thanh cuộn riêng; thêm thẻ thì khung tự cuộn tới thẻ mới và đặt focus vào ô thuật ngữ; nút lưu luôn thấy được.
+- **2.33, Xác nhận xoá bằng hộp thoại:** mọi thao tác xoá dùng chung một `ConfirmDialog`: tiêu đề nói rõ xoá gì ("Xoá bộ từ "Hương 1"?"), hậu quả (không khôi phục được, bộ từ trong thư mục được giữ lại), nút huỷ nhận focus đầu tiên, nút xoá màu `danger` và hiện trạng thái đang xoá. Esc hoặc bấm ra ngoài thì huỷ, đóng xong focus trả về nút đã mở. Bố cục trang không đổi khi hỏi xác nhận. Lỗi khi xoá hiện ngay trong hộp thoại, không đóng.
+- **Ngoại lệ:** chưa có thư mục nào thì không hiện chip thư mục; kéo thả thất bại thì thẻ về chỗ cũ và báo lỗi; mất mạng giữa lộ trình thì giữ bước đang làm.
+- **Cách test:** component test cho menu, chip thư mục, lộ trình chuyển bước; E2E kéo thả bằng bàn phím và chuột, học hết lộ trình; audit accessibility ở light, dark và 360 px.
+
 ## Giai đoạn 3: Lớp học
 
 Cần chốt trước: cách một tài khoản trở thành giáo viên (việc 3.2).
