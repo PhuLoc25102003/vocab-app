@@ -76,7 +76,7 @@ export function SetCardGrid<T extends SetCardData>({
             </div>
             <Link
               href={hrefFor(id)}
-              className="line-clamp-2 text-h3 wrap-anywhere after:absolute after:inset-0 after:rounded-md"
+              className="line-clamp-2 min-h-11 text-h3 wrap-anywhere after:absolute after:inset-0 after:rounded-md"
             >
               {title}
             </Link>
