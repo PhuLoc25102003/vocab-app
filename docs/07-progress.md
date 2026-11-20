@@ -272,7 +272,7 @@ Không tính vào tổng số việc.
 - [x] **5.4** `DateTimeField` tiếng Việt: `dd/mm/yyyy`, giờ 24 tiếng, màu theo token, nút nhanh Hết hôm nay, Ngày mai, 1 tuần; thay `datetime-local` (GAP-22, #323, #325).
 - [x] **5.5** Chống tràn chữ toàn site: `min-w-0`, `break-words`, cắt dòng cho tên và mô tả ở thẻ, hàng, header; test chuỗi 120 ký tự không dấu cách ở 360 px (GAP-25, #326).
 - [ ] **5.6** Thẻ bộ từ gọn hơn: cao khoảng 112 px, mô tả 1 dòng, lưới 4 cột từ 1280 px; cập nhật mục "Thẻ bộ từ" trong `docs/05-ui-tokens.md` (GAP-24).
-- [x] **5.7** Phân trang cho các danh sách còn tải hết: bài đã giao (`?apage=`), lớp đã tham gia (`?cpage=`), thẻ trên trang bộ từ và trang công khai (50 thẻ, nút bấm); "Bài cần làm" và kết quả một học sinh chuyển sang 5.12, 5.15 vì đang sắp xếp và tính tổng ở trình duyệt (GAP-26).
+- [x] **5.7** Phân trang cho các danh sách còn tải hết: bài đã giao (`?apage=`), lớp đã tham gia (`?cpage=`), thẻ trên trang bộ từ và trang công khai (50 thẻ, nút bấm); "Bài cần làm" và kết quả một học sinh chuyển sang 5.12, 5.15 vì đang sắp xếp và tính tổng ở trình duyệt (GAP-26, #330).
 - [ ] **5.8** Chuyển form còn chèn trong trang sang modal: tạo và sửa lớp, tham gia lớp, tạo và đổi tên thư mục, khoá tài khoản, ẩn bộ từ. Cần 5.3 (GAP-21).
 
 ### 5C. Tài khoản
