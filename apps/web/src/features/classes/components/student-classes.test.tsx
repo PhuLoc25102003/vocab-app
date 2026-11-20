@@ -7,6 +7,8 @@ import { HttpError } from '@/lib/http';
 import { joinClass, leaveClass, listJoinedClasses, listMyAssignments } from '../api';
 import { StudentClasses } from './student-classes';
 
+const navigation = vi.hoisted(() => ({ params: new URLSearchParams() }));
+vi.mock('next/navigation', () => ({ useSearchParams: () => navigation.params }));
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
   joinClass: vi.fn(),
@@ -125,5 +127,23 @@ describe('StudentClasses', () => {
 
     expect(await screen.findByText('Bạn chưa vào lớp nào')).toBeInTheDocument();
     expect(screen.getByText(/Chưa có bài nào/)).toBeInTheDocument();
+  });
+
+  it('lớp đã tham gia đọc số trang từ cpage và có nút chuyển trang', async () => {
+    navigation.params = new URLSearchParams('cpage=2');
+    vi.mocked(listJoinedClasses).mockResolvedValue({
+      data: [joined],
+      meta: { page: 2, limit: 20, total: 25 },
+    });
+    vi.mocked(listMyAssignments).mockResolvedValue(page([]));
+    renderPage();
+
+    expect(await screen.findByText('Trang 2/2')).toBeInTheDocument();
+    expect(listJoinedClasses).toHaveBeenCalledWith(2);
+    expect(screen.getByRole('link', { name: 'Trang trước' })).toHaveAttribute(
+      'href',
+      '/classes?cpage=1',
+    );
+    navigation.params = new URLSearchParams();
   });
 });

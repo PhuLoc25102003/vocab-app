@@ -41,8 +41,10 @@ export const classKeys = {
   detail: (id: string) => ['classes', 'detail', id] as const,
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
   assignments: (id: string) => ['classes', 'assignments', id] as const,
+  assignmentsPage: (id: string, page: number) => ['classes', 'assignments', id, page] as const,
   mySets: ['classes', 'my-sets'] as const,
   joined: ['classes', 'joined'] as const,
+  joinedPage: (page: number) => ['classes', 'joined', page] as const,
   member: (id: string, userId: string) => ['classes', 'member', id, userId] as const,
   memberResults: (id: string, userId: string) => ['classes', 'member-results', id, userId] as const,
   myAssignments: ['classes', 'my-assignments'] as const,
@@ -90,11 +92,11 @@ export async function removeMember(id: string, userId: string): Promise<void> {
   await http(`${classPath(id)}/members/${encodeURIComponent(userId)}`, { method: 'DELETE' });
 }
 
-export const ASSIGNMENTS_PAGE_SIZE = 100;
+export const ASSIGNMENTS_PAGE_SIZE = 20;
 
-/** Bài đã giao của lớp, hạn gần nhất trước. Một lớp hiếm khi quá 100 bài nên lấy một trang. */
-export async function listAssignments(id: string): Promise<AssignmentList> {
-  const params = new URLSearchParams({ page: '1', limit: String(ASSIGNMENTS_PAGE_SIZE) });
+/** Bài đã giao của lớp, hạn gần nhất trước. */
+export async function listAssignments(id: string, page = 1): Promise<AssignmentList> {
+  const params = new URLSearchParams({ page: String(page), limit: String(ASSIGNMENTS_PAGE_SIZE) });
   return assignmentListSchema.parse(
     await http(`${classPath(id)}/assignments?${params.toString()}`),
   );
@@ -147,7 +149,10 @@ export async function listAssignmentResults(
   );
 }
 
-/** Học sinh hiếm khi ở quá 100 lớp hoặc có quá 100 bài, nên lấy một trang. */
+/**
+ * Bài cần làm và kết quả một học sinh lấy một trang 100 mục vì đang sắp xếp và tính tổng ở
+ * trình duyệt; phân trang cùng API mới ở việc 5.12 và 5.15.
+ */
 const ONE_PAGE = new URLSearchParams({ page: '1', limit: '100' }).toString();
 
 export async function joinClass(dto: JoinClassInput): Promise<JoinedClass> {
@@ -155,8 +160,11 @@ export async function joinClass(dto: JoinClassInput): Promise<JoinedClass> {
   return joinedClassResponseSchema.parse(body).data;
 }
 
-export async function listJoinedClasses(): Promise<JoinedClassList> {
-  return joinedClassListSchema.parse(await http(`/classes/joined?${ONE_PAGE}`));
+export const JOINED_PAGE_SIZE = 20;
+
+export async function listJoinedClasses(page = 1): Promise<JoinedClassList> {
+  const params = new URLSearchParams({ page: String(page), limit: String(JOINED_PAGE_SIZE) });
+  return joinedClassListSchema.parse(await http(`/classes/joined?${params.toString()}`));
 }
 
 export async function listMyAssignments(): Promise<MyAssignmentList> {

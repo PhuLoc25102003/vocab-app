@@ -183,6 +183,14 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 | Biến CSS           | `--dur-*`, `--font-be-vietnam` | `--duration-*`, `--font-be-vietnam-pro`                                          | Khớp code hiện tại                             |
 | Theme Tailwind     | Giữ bảng mặc định              | Xoá màu, cỡ chữ, bo góc, đổ bóng mặc định                                        | Lỗi dùng sai lộ ra ngay                        |
 
+## Phân trang
+
+Danh sách có thể dài hơn một màn hình thì phân trang bằng `Pagination` (`components/common/pagination.tsx`), không tải hết rồi bắt cuộn mãi: nút Trước, Sau (viền `border-strong`, 44 px) và "Trang x/y" ở giữa; chỉ có một trang thì ẩn.
+
+- Danh sách chính của trang (bộ từ, Khám phá, lớp, người dùng, bài đã giao, học sinh, lớp đã tham gia) để số trang trong URL bằng `hrefFor` để nút quay lại và tải lại giữ đúng trang. Hai danh sách trên cùng trang dùng tham số riêng và giữ tham số của nhau (trang lớp: `page` cho học sinh, `apage` cho bài đã giao).
+- Danh sách nằm trong một phần của trang đã tải đủ dữ liệu (thẻ trong trang bộ từ và trang công khai, 50 thẻ một trang) đổi trang bằng `onPageChange`, rồi cuộn về đầu danh sách. `ol` có `start` để số thứ tự liền mạch, nhãn "Thẻ 51 đến 100 trên 120".
+- Ngoại lệ: danh sách thẻ trong trình soạn bộ từ dùng khung cuộn riêng.
+
 ## Chữ dài
 
 Tên bộ, mô tả, tên người dùng, tên lớp, thư mục và thuật ngữ do người dùng nhập, có thể là chuỗi rất dài không có dấu cách (đường dẫn, từ ghép). Không để chữ tràn khỏi thẻ, hàng hay menu và không để trang cuộn ngang ở 360 px.

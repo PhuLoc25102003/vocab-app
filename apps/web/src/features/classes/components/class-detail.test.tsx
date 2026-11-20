@@ -125,4 +125,36 @@ describe('ClassDetail', () => {
       '/classes',
     );
   });
+
+  it('bài đã giao phân trang riêng, link giữ số trang của danh sách học sinh', async () => {
+    navigation.params = new URLSearchParams('page=2&apage=3');
+    vi.mocked(listMembers).mockResolvedValue({
+      ...members,
+      meta: { page: 2, limit: 50, total: 60 },
+    });
+    vi.mocked(listAssignments).mockResolvedValue({
+      data: [
+        {
+          id: 'a1',
+          classId: 'c1',
+          setId: 's1',
+          setTitle: 'Unit 1',
+          mode: 'MCQ',
+          dueAt: null,
+          createdAt: '2026-11-01T00:00:00.000Z',
+        },
+      ],
+      meta: { page: 3, limit: 20, total: 45 },
+    });
+    renderDetail();
+
+    const assignments = await screen.findByRole('region', { name: 'Bài đã giao' });
+    expect(await within(assignments).findByText('Trang 3/3')).toBeInTheDocument();
+    expect(listAssignments).toHaveBeenCalledWith('c1', 3);
+    expect(within(assignments).getByRole('link', { name: 'Trang trước' })).toHaveAttribute(
+      'href',
+      '/classes/c1?page=2&apage=2',
+    );
+    navigation.params = new URLSearchParams();
+  });
 });

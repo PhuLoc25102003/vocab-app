@@ -144,7 +144,15 @@ function MemberRow({ classId, member }: { classId: string; member: ClassMember }
   );
 }
 
-function Members({ klass, page }: { klass: Class; page: number }) {
+function Members({
+  klass,
+  page,
+  hrefFor,
+}: {
+  klass: Class;
+  page: number;
+  hrefFor: (page: number) => Route;
+}) {
   const members = useQuery({
     queryKey: classKeys.members(klass.id, page),
     queryFn: () => listMembers(klass.id, page),
@@ -186,7 +194,7 @@ function Members({ klass, page }: { klass: Class; page: number }) {
         <Pagination
           page={meta.page}
           pageCount={Math.ceil(meta.total / MEMBERS_PAGE_SIZE)}
-          hrefFor={(next) => `/classes/${klass.id}?page=${next}` as Route}
+          hrefFor={hrefFor}
         />
       </>
     );
@@ -253,7 +261,18 @@ function ArchiveButton({ klass }: { klass: Class }) {
 
 export function ClassDetail({ id }: { id: string }) {
   const searchParams = useSearchParams();
-  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('page') ?? undefined);
+  const readPage = (key: string) =>
+    paginationSchema.shape.page.catch(1).parse(searchParams.get(key) ?? undefined);
+  const page = readPage('page');
+  const assignmentsPage = readPage('apage');
+  // Hai danh sách phân trang riêng trên cùng trang: giữ số trang của danh sách kia trong URL.
+  const classHref = (members: number, assignments: number) => {
+    const params = new URLSearchParams();
+    if (members > 1) params.set('page', String(members));
+    if (assignments > 1) params.set('apage', String(assignments));
+    const query = params.toString();
+    return `/classes/${id}${query ? `?${query}` : ''}` as Route;
+  };
   const klass = useQuery({ queryKey: classKeys.detail(id), queryFn: () => getClass(id) });
 
   if (klass.isPending) {
@@ -302,8 +321,17 @@ export function ClassDetail({ id }: { id: string }) {
         </p>
       ) : null}
       <JoinCodePanel klass={klass.data} />
-      <ClassAssignments classId={klass.data.id} archived={klass.data.archivedAt !== null} />
-      <Members klass={klass.data} page={page} />
+      <ClassAssignments
+        classId={klass.data.id}
+        archived={klass.data.archivedAt !== null}
+        page={assignmentsPage}
+        hrefFor={(next) => classHref(page, next)}
+      />
+      <Members
+        klass={klass.data}
+        page={page}
+        hrefFor={(next) => classHref(next, assignmentsPage)}
+      />
     </>
   );
 }
