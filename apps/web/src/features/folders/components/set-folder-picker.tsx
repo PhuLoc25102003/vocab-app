@@ -46,10 +46,12 @@ export function SetFolderPicker({
     if (next === folderId) {
       return;
     }
-    move.mutate(next, {
-      onSuccess: () => toast.success(next ? 'Đã chuyển vào thư mục' : 'Đã gỡ khỏi thư mục'),
-      onError: (error) => toast.error(formErrorMessage(error)),
-    });
+    // Dùng promise thay vì callback của `mutate`: gỡ bộ khỏi thư mục đang xem làm nút này
+    // unmount trước khi request xong, khi đó TanStack Query bỏ qua callback và mất thông báo.
+    move.mutateAsync(next).then(
+      () => toast.success(next ? 'Đã chuyển vào thư mục' : 'Đã gỡ khỏi thư mục'),
+      (error: unknown) => toast.error(formErrorMessage(error)),
+    );
   };
 
   return (
