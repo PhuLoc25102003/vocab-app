@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: nền giao diện 5.3 đến 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+1. Giai đoạn 5 theo thứ tự: nền giao diện 5.4 đến 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       2 |      23 | Đang làm   |
-| **Toàn dự án**          |                                            | **127** | **152** | **84%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       3 |      23 | Đang làm   |
+| **Toàn dự án**          |                                            | **128** | **152** | **84%**    |
 
 ## Cách cập nhật
 
@@ -268,7 +268,7 @@ Không tính vào tổng số việc.
 
 ### 5B. Nền giao diện
 
-- [ ] **5.3** `FormDialog` dùng chung với `ConfirmDialog` (focus, Esc hỏi lại khi đã nhập, lỗi trong modal, toàn màn hình ở 360 px); ghi quy tắc "form ngắn trong modal" vào `docs/05-ui-tokens.md` (GAP-21).
+- [x] **5.3** `FormDialog` dùng chung với `ConfirmDialog` (focus, Esc hỏi lại khi đã nhập, lỗi trong modal, toàn màn hình ở 360 px); ghi quy tắc "form ngắn trong modal" vào `docs/05-ui-tokens.md` (GAP-21).
 - [ ] **5.4** `DateTimeField` tiếng Việt: `dd/mm/yyyy`, giờ 24 tiếng, màu theo token, nút nhanh Hết hôm nay, Ngày mai, 1 tuần; thay `datetime-local` (GAP-22).
 - [ ] **5.5** Chống tràn chữ toàn site: `min-w-0`, `break-words`, cắt dòng cho tên và mô tả ở thẻ, hàng, header; test chuỗi 120 ký tự không dấu cách ở 360 px (GAP-25).
 - [ ] **5.6** Thẻ bộ từ gọn hơn: cao khoảng 112 px, mô tả 1 dòng, lưới 4 cột từ 1280 px; cập nhật mục "Thẻ bộ từ" trong `docs/05-ui-tokens.md` (GAP-24).
