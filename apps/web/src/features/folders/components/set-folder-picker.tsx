@@ -94,7 +94,7 @@ export function SetFolderPicker({
             <MenuSeparator />
             <MenuItem onSelect={() => choose(NO_FOLDER)}>
               <FolderMinus aria-hidden className="size-4" />
-              Gỡ khỏi thư mục {current.name}
+              <span className="min-w-0 truncate">Gỡ khỏi thư mục {current.name}</span>
             </MenuItem>
           </>
         ) : null}

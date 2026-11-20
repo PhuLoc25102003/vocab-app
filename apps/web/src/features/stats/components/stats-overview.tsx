@@ -116,7 +116,7 @@ export function StatsOverview() {
               >
                 <Link
                   href={`/sets/${setId}` as Route}
-                  className="inline-flex min-h-11 min-w-11 items-center font-card break-words"
+                  className="inline-flex min-h-11 min-w-11 items-center font-card wrap-anywhere"
                 >
                   {term}
                 </Link>

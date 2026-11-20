@@ -190,7 +190,9 @@ function JoinedRow({ item }: { item: JoinedClass }) {
     <li className="flex min-h-16 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
       <span className="flex min-w-0 flex-col">
         <span className="font-medium wrap-anywhere">{item.name}</span>
-        <span className="text-small text-text-muted">Giáo viên {item.teacherName}</span>
+        <span className="text-small wrap-anywhere text-text-muted">
+          Giáo viên {item.teacherName}
+        </span>
       </span>
       <Button
         variant="ghost"

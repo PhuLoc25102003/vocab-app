@@ -183,6 +183,15 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 | Biến CSS           | `--dur-*`, `--font-be-vietnam` | `--duration-*`, `--font-be-vietnam-pro`                                          | Khớp code hiện tại                             |
 | Theme Tailwind     | Giữ bảng mặc định              | Xoá màu, cỡ chữ, bo góc, đổ bóng mặc định                                        | Lỗi dùng sai lộ ra ngay                        |
 
+## Chữ dài
+
+Tên bộ, mô tả, tên người dùng, tên lớp, thư mục và thuật ngữ do người dùng nhập, có thể là chuỗi rất dài không có dấu cách (đường dẫn, từ ghép). Không để chữ tràn khỏi thẻ, hàng hay menu và không để trang cuộn ngang ở 360 px.
+
+- `body` có `overflow-wrap: break-word` làm lưới an toàn cho khối thường.
+- Trong hàng `flex` hoặc `grid`, phần tử chứa chữ có `min-w-0`. Chữ được xuống dòng thì dùng `wrap-anywhere` (vì `break-words` không giảm độ rộng tối thiểu của phần tử flex, chữ vẫn đẩy hàng rộng ra).
+- Cần gọn thì cắt dòng: tên trên thẻ bộ từ `line-clamp-2`, mô tả `line-clamp-1` hoặc `line-clamp-2`, tên trong menu, cột thư mục, đường dẫn thư mục và mục kéo thả dùng `truncate`.
+- Kiểm tra bằng chuỗi 120 ký tự không dấu cách ở 360 px: `document.documentElement.scrollWidth` phải bằng 360.
+
 ## Ô chọn
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
