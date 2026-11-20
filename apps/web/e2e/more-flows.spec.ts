@@ -363,10 +363,18 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('link', { name: 'Đóng thư mục' }).click();
     await page.waitForURL(/\/sets$/);
 
-    // Chuyển bộ vào thư mục ngay trên thẻ, không cần mở bộ từ.
-    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
-    await page.getByRole('menuitemradio', { name: folderName }).click();
-    await expect(page.getByText('Đã chuyển vào thư mục')).toBeVisible();
+    // Kéo tay nắm của thẻ bộ từ thả vào thư mục trên cột thư mục.
+    const card = page
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('link', { name: title }) });
+    const handle = await card.locator('[data-drag-handle]').boundingBox();
+    const target = await folders.getByRole('link', { name: new RegExp(folderName) }).boundingBox();
+    if (!handle || !target) throw new Error('Không thấy tay nắm hoặc thư mục');
+    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(target.x + 20, target.y + target.height / 2, { steps: 12 });
+    await page.mouse.up();
+    await expect(page.getByText(`Đã chuyển "${title}" vào thư mục`)).toBeVisible();
 
     await folders.getByRole('link', { name: new RegExp(folderName) }).click();
     await page.waitForURL('**/sets?folder=*');
