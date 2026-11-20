@@ -38,7 +38,7 @@ function NavLinks({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Điều hướng chính"
-      className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:pb-0"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:pb-0"
     >
       <ul className="grid grid-cols-5 md:flex md:gap-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {

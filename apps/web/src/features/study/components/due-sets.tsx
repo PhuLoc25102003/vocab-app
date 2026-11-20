@@ -12,7 +12,7 @@ import { ErrorState } from '@/components/common/error-state';
 import { SelectField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { Pagination } from '@/components/common/pagination';
-import { SetCardList, SetCardShell } from '@/components/common/set-card-shell';
+import { SetCardList, SetCardShell, SetCardsSkeleton } from '@/components/common/set-card-shell';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { listDueSets } from '../api';
@@ -25,10 +25,7 @@ export function DueSetsLoading() {
     <LoadingState label="Đang tải thẻ cần ôn">
       <div className="flex flex-col gap-4">
         <Skeleton className="h-48 w-full" />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Skeleton className="h-40 w-full" />
-          <Skeleton className="h-40 w-full" />
-        </div>
+        <SetCardsSkeleton count={2} label="Đang tải bộ từ có thẻ đến hạn" />
       </div>
     </LoadingState>
   );

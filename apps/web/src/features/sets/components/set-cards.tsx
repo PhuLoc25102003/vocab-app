@@ -77,8 +77,8 @@ export function SetCardGrid<T extends SetCardData>({
               variant === 'community' && owner ? (
                 <OwnerLine name={owner.displayName} />
               ) : (
-                <span>
-                  Cập nhật{' '}
+                <span title="Cập nhật">
+                  <span className="sr-only">Cập nhật </span>
                   <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
                 </span>
               )

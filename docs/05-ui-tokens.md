@@ -221,7 +221,12 @@ Thẻ nằm trong một khung cuộn riêng (`role="region"`, nhãn "Danh sách 
 
 ## Thẻ bộ từ
 
-Bộ từ ở Bộ từ, Khám phá, "Bộ từ gần đây" của Tổng quan và Ôn hôm nay dùng khung `SetCardShell` trong `components/common/set-card-shell.tsx`; danh sách bộ từ của feature sets bọc nó trong `SetCardGrid`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
+Bộ từ ở Bộ từ, Khám phá, "Bộ từ gần đây" của Tổng quan và Ôn hôm nay dùng khung `SetCardShell` trong `components/common/set-card-shell.tsx`; danh sách bộ từ của feature sets bọc nó trong `SetCardGrid`.
+
+- Lưới `SetCardList` đổi cột theo bề rộng vùng chứa (`@container`), không theo màn hình, để thẻ rộng gần bằng nhau ở mọi trang (trang Bộ từ có cột thư mục nên hẹp hơn): 1 cột, 2 cột từ 448 px, 3 cột từ 768 px, 4 cột từ 1024 px; khoảng cách 12 px.
+- Thẻ gọn: viền `border-strong`, nền `surface`, bo `md`, padding 12 px, cao tối thiểu 112 px. Hàng đầu là tên bộ chữ thường đậm tối đa 2 dòng, thao tác (nút 44 px) ở góc phải cùng hàng; mô tả `text-small` `text-muted` 1 dòng; hàng cuối `text-small` `text-muted` gồm nhãn (phạm vi hoặc "Đến hạn"), số thẻ, ngày cập nhật dạng `20/11/2026` (`library`, chữ "Cập nhật" cho trình đọc màn hình và trong `title`) hoặc tác giả (`community`). Thiếu chỗ thì ngày hoặc tác giả xuống dòng.
+- Cả thẻ bấm được nhờ link phủ toàn thẻ (vùng bấm luôn trên 44 px), thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
+- Skeleton dùng cùng lưới, mỗi ô cao 112 px.
 
 ## Trang Ôn hôm nay
 
