@@ -66,6 +66,21 @@ describe('phiên đăng nhập', () => {
     expect(authApi.refresh).toHaveBeenCalledTimes(2);
   });
 
+  it('vẫn đang refresh sau mọi lần thử thì về trang đăng nhập, không báo lỗi mạng', async () => {
+    vi.useFakeTimers();
+    startSession(session);
+    vi.mocked(authApi.refresh).mockRejectedValue(inProgress);
+
+    const result = refreshSession();
+    await vi.runAllTimersAsync();
+
+    await expect(result).resolves.toBeNull();
+    expect(authApi.refresh).toHaveBeenCalledTimes(5);
+    expect(useAuthStore.getState()).toMatchObject({ status: 'anonymous', accessToken: null });
+    expect(document.cookie).not.toContain('vocab_session=1');
+    vi.useRealTimers();
+  });
+
   it('xoá phiên khi refresh token không còn hiệu lực', async () => {
     startSession(session);
     vi.mocked(authApi.refresh).mockRejectedValue(invalid);

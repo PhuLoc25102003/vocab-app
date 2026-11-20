@@ -27,7 +27,7 @@ Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refre
 1. Access token hết hạn → API trả 401 `TOKEN_EXPIRED`.
 2. `lib/http.ts` gọi `/auth/refresh` **một lần duy nhất** (các request khác chờ chung một Promise), rồi gửi lại request cũ.
 3. Server tìm `RefreshSession` theo hash: còn hạn và chưa thu hồi → thu hồi bản cũ, tạo bản mới cùng `familyId`, trả cặp token mới.
-4. Token đã thu hồi được gửi lại trong 10 giây → thường là tab khác đang refresh: trả 409 `REFRESH_IN_PROGRESS`, client gửi lại một lần.
+4. Token đã thu hồi được gửi lại trong 10 giây → thường là tab khác đang refresh: trả 409 `REFRESH_IN_PROGRESS`. Client thử lại tối đa 5 lần cách nhau 300 ms (khoảng 1,5 giây). Vẫn 409 nghĩa là refresh trước bị huỷ giữa chừng (chuyển trang, tải lại đúng lúc) nên trình duyệt giữ token đã thu hồi: client xoá phiên và đưa về trang đăng nhập, không báo lỗi mạng. Server không cấp lại token cho token đã thu hồi để kẻ cầm token cũ không lấy được phiên (quyết định ở issue #239).
 5. Token đã thu hồi được dùng lại sau 10 giây → có người đã lấy cắp: xoá cả family, bắt đăng nhập lại.
 6. Refresh thất bại → xoá state, chuyển về `/login?next=<trang cũ>`.
 
