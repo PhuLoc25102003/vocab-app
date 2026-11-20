@@ -208,7 +208,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.28** Header trang bộ từ gọn: chỉ còn "Sửa bộ từ" và menu "Thao tác khác", thư mục thành chip trên dòng thông tin (#245).
 - [x] **2.29** Thẻ bộ từ dùng chung cho Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan, hiển thị dạng lưới (#249).
 - [x] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng có ô lọc, mở và đóng thư mục kèm đường dẫn, tạo, đổi tên, xoá ngay trên cột; mỗi thẻ bộ từ có menu chuyển vào hoặc gỡ khỏi thư mục (#251).
-- [x] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
+- [x] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới (#263).
 - [x] **2.34** Kéo thả thẻ bộ từ vào thư mục trên cột thư mục, thả vào "Chưa xếp thư mục" để gỡ; dùng được bằng chuột và cảm ứng, menu của thẻ vẫn là cách cho bàn phím (#261).
 - [x] **2.35** Thiết kế lại trang Ôn hôm nay: khối tóm tắt nổi bật (số thẻ đến hạn, chế độ ôn, nút ôn tất cả), bộ đến hạn dùng thẻ bộ từ chung, "Khi nào thẻ đến hạn ôn?" là nút rõ ràng có icon và mũi tên (#253).
 - [x] **2.36** Rời trang khi đang tạo, sửa bộ từ hoặc nhập từ file mà có dữ liệu chưa lưu: chuyển trang trong app hỏi bằng hộp thoại của app (không dùng `window.confirm`); đóng tab hoặc tải lại vẫn dùng hộp thoại của trình duyệt vì trình duyệt không cho tuỳ biến. Chưa nhập gì thì không hỏi (#257).
