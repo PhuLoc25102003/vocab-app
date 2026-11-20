@@ -159,3 +159,57 @@ export const myAssignmentListSchema = z.object({
   meta: paginationMetaSchema,
 });
 export type MyAssignmentList = z.infer<typeof myAssignmentListSchema>;
+
+/** Điểm của lần học tốt nhất sau khi giao, `null` khi chưa làm. */
+const resultScoreShape = {
+  status: assignmentStatusSchema,
+  completedAt: z.string().nullable(),
+  correct: z.number().int().nullable(),
+  total: z.number().int().nullable(),
+};
+
+export const assignmentResultListQuerySchema = paginationSchema;
+
+export const assignmentResultSchema = z.object({
+  userId: z.string(),
+  displayName: z.string(),
+  ...resultScoreShape,
+});
+export type AssignmentResult = z.infer<typeof assignmentResultSchema>;
+
+export const assignmentResultListSchema = z.object({
+  data: z.array(assignmentResultSchema),
+  meta: paginationMetaSchema,
+});
+export type AssignmentResultList = z.infer<typeof assignmentResultListSchema>;
+
+export const hardCardSchema = z.object({
+  cardId: z.string(),
+  term: z.string(),
+  definition: z.string(),
+  wrongCount: z.number().int(),
+  attemptCount: z.number().int(),
+});
+export type HardCard = z.infer<typeof hardCardSchema>;
+
+export const assignmentSummarySchema = z.object({
+  memberCount: z.number().int(),
+  doneCount: z.number().int(),
+  overdueCount: z.number().int(),
+  /** Điểm trung bình theo phần trăm của học sinh đã làm, `null` khi chưa ai làm. */
+  averageScore: z.number().nullable(),
+  /** Tối đa 5 thẻ cả lớp sai nhiều nhất, thẻ chưa ai sai không có ở đây. */
+  hardCards: z.array(hardCardSchema),
+});
+export type AssignmentSummary = z.infer<typeof assignmentSummarySchema>;
+
+export const memberResultListQuerySchema = paginationSchema;
+
+export const memberResultSchema = assignmentSchema.extend(resultScoreShape);
+export type MemberResult = z.infer<typeof memberResultSchema>;
+
+export const memberResultListSchema = z.object({
+  data: z.array(memberResultSchema),
+  meta: paginationMetaSchema,
+});
+export type MemberResultList = z.infer<typeof memberResultListSchema>;

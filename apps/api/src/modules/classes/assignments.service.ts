@@ -68,7 +68,7 @@ export class AssignmentsService {
   }
 }
 
-function assignmentStatus(
+export function assignmentStatus(
   completedAt: string | null,
   dueAt: string | null,
   now: Date,
