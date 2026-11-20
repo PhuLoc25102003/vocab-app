@@ -91,6 +91,6 @@ describe('TeacherClasses', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
 
     await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/classes/c9'));
-    expect(vi.mocked(createClass).mock.calls[0]?.[0]).toEqual({ name: '11B2', description: null });
+    expect(vi.mocked(createClass).mock.calls[0]?.[0]).toEqual({ name: '11B2' });
   });
 });
