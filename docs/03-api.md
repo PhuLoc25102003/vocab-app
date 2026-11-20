@@ -109,7 +109,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 - `GET /sets` và `GET /sets/public` sắp xếp theo `updatedAt`, `createdAt`, `title`, thêm `-` để giảm dần. Cả hai nhận thêm `q` để tìm theo tên.
 - `POST /sets` nhận `{ title, description?, termLang?, defLang?, visibility?, cards? }`, trả 201. Mỗi thẻ gồm `term`, `definition`, `phonetic?`, `example?`. Body tối đa 5 MB.
-- `GET /sets/:id` trả bộ từ kèm `owner.displayName` và `cards`. Khách và người dùng khác xem được bộ `PUBLIC`. Bộ không được xem trả 404 như bộ không tồn tại. Bộ `CLASS` hiện chỉ chủ và ADMIN xem được, cho đến việc 3.4.
+- `GET /sets/:id` trả bộ từ kèm `owner.displayName` và `cards`. Khách và người dùng khác xem được bộ `PUBLIC`. Bộ không được xem trả 404 như bộ không tồn tại. Bộ `CLASS` xem và học được bởi chủ, ADMIN, giáo viên và thành viên của lớp chưa lưu trữ đã được giao bộ đó; người khác nhận 404. Bộ `CLASS` không có trong Khám phá.
 - `PATCH` và `DELETE /sets/:id` dành cho chủ hoặc ADMIN. `DELETE` là xoá mềm, trả 204. Sau 30 ngày bộ từ bị xoá hẳn và không khôi phục được.
 - `PUT /sets/:id/cards` dành cho chủ hoặc ADMIN, nhận `{ cards }` là toàn bộ danh sách theo thứ tự mới, tối đa 2.000 thẻ, body tối đa 5 MB. Thẻ có `id` được giữ và cập nhật, thẻ không có `id` được tạo mới, thẻ đang có mà không gửi lên bị xoá cùng tiến độ học của thẻ đó. `phonetic`, `example` không gửi lên sẽ bị xoá. Trả 200 kèm bộ từ và `cards`. `id` không thuộc bộ từ trả 422 `CARD_NOT_IN_SET` và không đổi gì.
 - `POST /sets/:id/duplicate` sao chép bộ từ người gọi xem được về tài khoản của họ, trả 201 kèm thông tin bộ mới. Bản sao có tên thêm ` (bản sao)`, luôn `PRIVATE`, gồm toàn bộ thẻ với `id` mới, không kèm thư mục và tiến độ học. Bộ không xem được trả 404.

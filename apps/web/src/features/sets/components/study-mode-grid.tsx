@@ -6,6 +6,7 @@ import {
   ListChecks,
   Mic,
   PenLine,
+  Route as Route2,
   Shuffle,
   TextCursorInput,
   type LucideIcon,
@@ -29,26 +30,33 @@ const ICONS: Record<StudySlug, LucideIcon> = {
   speak: Mic,
 };
 
-/** Một nút chính để bắt đầu nhanh, các chế độ còn lại xếp thành lưới có mô tả. */
+/**
+ * "Bắt đầu học" chạy lộ trình nhiều kỹ năng liên tiếp. Từng chế độ, kể cả Flashcard,
+ * xếp thành lưới để học lẻ.
+ */
 export function StudyModeGrid({ setId }: { setId: string }) {
-  const [primary, ...others] = STUDY_ENTRIES;
   const href = (slug: string) => `/sets/${setId}/study/${slug}` as Route;
 
   return (
     <section aria-labelledby="study-modes-title" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="study-modes-title" className="text-h2">
-          Chọn cách học
-        </h2>
+        <div className="flex flex-col gap-1">
+          <h2 id="study-modes-title" className="text-h2">
+            Chọn cách học
+          </h2>
+          <p id="study-path-hint" className="text-small text-text-muted">
+            Bắt đầu học: xem thẻ → trắc nghiệm → ghép cặp → luyện viết, nối tiếp nhau.
+          </p>
+        </div>
         <Button asChild>
-          <Link href={href(primary.slug)}>
-            <Layers aria-hidden className="size-4" />
-            {primary.label}
+          <Link href={`/sets/${setId}/study/path` as Route} aria-describedby="study-path-hint">
+            <Route2 aria-hidden className="size-4" />
+            Bắt đầu học
           </Link>
         </Button>
       </div>
       <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {others.map(({ slug, label, hint }) => {
+        {STUDY_ENTRIES.map(({ slug, label, hint }) => {
           const Icon = ICONS[slug];
           return (
             <li key={slug}>

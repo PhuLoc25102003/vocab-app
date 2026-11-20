@@ -37,17 +37,28 @@ interface StudyShellProps {
   resultNote?: ReactNode;
   /** Chỉ học các thẻ đã đến hạn ôn. */
   dueOnly?: boolean;
+  /** Nội dung thêm dưới thanh tiến độ, ví dụ các bước của lộ trình. */
+  header?: ReactNode;
+  /** Chế độ không dùng được với bộ này (quá ít thẻ, thiếu ví dụ). Có hàm này thì gọi thay vì báo lỗi. */
+  onUnavailable?: () => void;
 }
+
+const UNAVAILABLE_CODES = new Set<string>([
+  ERROR_CODES.STUDY_MODE_UNAVAILABLE,
+  ERROR_CODES.NO_QUESTIONS_FOR_MODE,
+]);
 
 function StudyFrame({
   exitHref,
   position,
   total,
+  header,
   children,
 }: {
   exitHref: Route;
   position: number;
   total: number;
+  header?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -75,6 +86,7 @@ function StudyFrame({
           {position}/{total}
         </span>
       </header>
+      {header ? <div className="mx-auto w-full max-w-[720px] px-4">{header}</div> : null}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-6 px-4 py-6">
         {children}
       </div>
@@ -151,6 +163,8 @@ export function StudyShell({
   exitHref,
   resultNote,
   dueOnly = false,
+  header,
+  onUnavailable,
 }: StudyShellProps) {
   const queryClient = useQueryClient();
   const snapshotKey = backend.resumable ? studySnapshotKey(setId, mode, dueOnly) : undefined;
@@ -237,9 +251,24 @@ export function StudyShell({
     return () => window.removeEventListener('pagehide', flush);
   }, [syncAnswers]);
 
+  const startCode =
+    started.isError && started.error instanceof HttpError ? started.error.code : null;
+  const isUnavailable =
+    Boolean(onUnavailable) && startCode !== null && UNAVAILABLE_CODES.has(startCode);
+  useEffect(() => {
+    if (isUnavailable) {
+      onUnavailable?.();
+    }
+  }, [isUnavailable, onUnavailable]);
+
   const total = ready ? questions.length : 0;
   const frame = (children: ReactNode) => (
-    <StudyFrame exitHref={exitHref} position={Math.min(position, total)} total={total}>
+    <StudyFrame
+      exitHref={exitHref}
+      position={Math.min(position, total)}
+      total={total}
+      header={header}
+    >
       {children}
     </StudyFrame>
   );
