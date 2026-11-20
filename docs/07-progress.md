@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: sửa lỗi 5.1, 5.2; nền giao diện 5.3 đến 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+1. Giai đoạn 5 theo thứ tự: sửa lỗi 5.2; nền giao diện 5.3 đến 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       0 |      23 | Chưa làm   |
-| **Toàn dự án**          |                                            | **125** | **152** | **82%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       1 |      23 | Đang làm   |
+| **Toàn dự án**          |                                            | **126** | **152** | **83%**    |
 
 ## Cách cập nhật
 
@@ -263,7 +263,7 @@ Không tính vào tổng số việc.
 
 ### 5A. Sửa lỗi
 
-- [ ] **5.1** Mục "Đăng xuất" kẹt ở "Đang đăng xuất" sau khi đăng nhập lại: đặt lại state khi người dùng đổi, test đăng xuất rồi đăng nhập lại (GAP-14).
+- [x] **5.1** Mục "Đăng xuất" kẹt ở "Đang đăng xuất" sau khi đăng nhập lại: đặt lại state khi người dùng đổi, test đăng xuất rồi đăng nhập lại (GAP-14, #317).
 - [ ] **5.2** Luyện nói: nút micro tròn, trạng thái "Đang nghe… hãy đọc to từ" có hiệu ứng toả nhẹ (tắt khi giảm chuyển động), nút Dừng, `aria-live` (GAP-15).
 
 ### 5B. Nền giao diện

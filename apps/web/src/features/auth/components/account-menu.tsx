@@ -14,7 +14,10 @@ const ITEM_CLASS =
 /** Ảnh đại diện kèm tên hiển thị, mở menu tài khoản. Tên ẩn trên màn hình hẹp. */
 export function AccountMenu() {
   const user = useAuthStore((state) => state.user);
-  const [leaving, setLeaving] = useState(false);
+  // Nhớ phiên lúc bấm Đăng xuất. Header không bị huỷ khi chuyển trang, nên đăng nhập lại
+  // (store có đối tượng user mới) phải tự hết trạng thái "Đang đăng xuất".
+  const [leavingUser, setLeavingUser] = useState<typeof user>(null);
+  const leaving = user !== null && leavingUser === user;
   const name = user?.displayName ?? 'Tài khoản';
   const initial = name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
 
@@ -65,7 +68,7 @@ export function AccountMenu() {
             className={ITEM_CLASS}
             disabled={leaving}
             onSelect={() => {
-              setLeaving(true);
+              setLeavingUser(user);
               void signOut();
             }}
           >
