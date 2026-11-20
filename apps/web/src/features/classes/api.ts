@@ -5,6 +5,8 @@ import {
   assignmentSummaryResponseSchema,
   classListSchema,
   classMemberListSchema,
+  classMemberResponseSchema,
+  memberResultListSchema,
   classResponseSchema,
   joinedClassListSchema,
   joinedClassResponseSchema,
@@ -16,7 +18,9 @@ import {
   type AssignmentSummary,
   type Class,
   type ClassList,
+  type ClassMember,
   type ClassMemberList,
+  type MemberResultList,
   type CreateAssignmentInput,
   type CreateClassInput,
   type JoinClassInput,
@@ -39,6 +43,8 @@ export const classKeys = {
   assignments: (id: string) => ['classes', 'assignments', id] as const,
   mySets: ['classes', 'my-sets'] as const,
   joined: ['classes', 'joined'] as const,
+  member: (id: string, userId: string) => ['classes', 'member', id, userId] as const,
+  memberResults: (id: string, userId: string) => ['classes', 'member-results', id, userId] as const,
   myAssignments: ['classes', 'my-assignments'] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
   results: (id: string, assignmentId: string, page: number) =>
@@ -159,4 +165,16 @@ export async function listMyAssignments(): Promise<MyAssignmentList> {
 
 export async function leaveClass(id: string): Promise<void> {
   await http(`${classPath(id)}/members/me`, { method: 'DELETE' });
+}
+
+export async function getMember(id: string, userId: string): Promise<ClassMember> {
+  const body = await http(`${classPath(id)}/members/${encodeURIComponent(userId)}`);
+  return classMemberResponseSchema.parse(body).data;
+}
+
+/** Kết quả của một học sinh qua các bài giao của lớp, một trang 100 bài. */
+export async function listMemberResults(id: string, userId: string): Promise<MemberResultList> {
+  return memberResultListSchema.parse(
+    await http(`${classPath(id)}/members/${encodeURIComponent(userId)}/results?${ONE_PAGE}`),
+  );
 }

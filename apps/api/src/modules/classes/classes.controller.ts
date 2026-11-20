@@ -104,6 +104,13 @@ export class ClassesController {
     return this.members.listMembers(id, query);
   }
 
+  @Get(':id/members/:userId')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Một học sinh trong lớp: tên và ngày vào lớp' })
+  getMember(@Param('id') id: string, @Param('userId') userId: string) {
+    return this.members.getMember(id, userId);
+  }
+
   @Delete(':id/members/:userId')
   @CheckOwnership('class')
   @HttpCode(HttpStatus.NO_CONTENT)

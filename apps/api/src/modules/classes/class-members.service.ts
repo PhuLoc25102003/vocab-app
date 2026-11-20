@@ -40,6 +40,14 @@ export class ClassMembersService {
     return paginated(items, total, query);
   }
 
+  async getMember(classId: string, userId: string) {
+    const member = await this.members.findMember(classId, userId);
+    if (!member) {
+      throw memberNotFound();
+    }
+    return ok(member);
+  }
+
   async listMembers(classId: string, query: Pagination) {
     const { items, total } = await this.members.findMembers(classId, query);
     return paginated(items, total, query);

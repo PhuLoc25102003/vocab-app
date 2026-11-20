@@ -59,6 +59,21 @@ export class ClassMembersRepository extends BaseRepository {
     return { items: rows.map(toJoinedClass), total };
   }
 
+  /** Một học sinh trong lớp, tài khoản đã xoá coi như không còn trong lớp. */
+  async findMember(classId: string, userId: string) {
+    const row = await this.prisma.classMember.findFirst({
+      where: { classId, userId, user: { deletedAt: null } },
+      select: { userId: true, joinedAt: true, user: { select: { displayName: true } } },
+    });
+    return row
+      ? {
+          userId: row.userId,
+          displayName: row.user.displayName,
+          joinedAt: row.joinedAt.toISOString(),
+        }
+      : null;
+  }
+
   async findMembers(classId: string, query: Pagination) {
     const where = { classId, user: { deletedAt: null } };
     const [rows, total] = await Promise.all([
