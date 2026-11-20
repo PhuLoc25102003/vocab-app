@@ -11,6 +11,7 @@ import {
   type JoinClassInput,
   type JoinedClass,
   type MyAssignment,
+  paginationSchema,
 } from '@vocab/shared';
 import {
   CalendarClock,
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -32,12 +34,20 @@ import { ErrorState } from '@/components/common/error-state';
 import { FormField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
+import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { cn } from '@/lib/utils';
-import { classKeys, joinClass, leaveClass, listJoinedClasses, listMyAssignments } from '../api';
+import {
+  classKeys,
+  JOINED_PAGE_SIZE,
+  joinClass,
+  leaveClass,
+  listJoinedClasses,
+  listMyAssignments,
+} from '../api';
 import { formatDateTime } from '../format';
 
 const STATUS: Record<AssignmentStatus, { label: string; icon: LucideIcon; className: string }> = {
@@ -226,7 +236,12 @@ function JoinedRow({ item }: { item: JoinedClass }) {
 }
 
 function JoinedClasses() {
-  const joined = useQuery({ queryKey: classKeys.joined, queryFn: listJoinedClasses });
+  const searchParams = useSearchParams();
+  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('cpage') ?? undefined);
+  const joined = useQuery({
+    queryKey: classKeys.joinedPage(page),
+    queryFn: () => listJoinedClasses(page),
+  });
 
   let body;
   if (joined.isPending) {
@@ -251,12 +266,20 @@ function JoinedClasses() {
       />
     );
   } else {
+    const { meta } = joined.data;
     body = (
-      <ul aria-label="Lớp đã tham gia" className="flex flex-col">
-        {joined.data.data.map((item) => (
-          <JoinedRow key={item.id} item={item} />
-        ))}
-      </ul>
+      <>
+        <ul aria-label="Lớp đã tham gia" className="flex flex-col">
+          {joined.data.data.map((item) => (
+            <JoinedRow key={item.id} item={item} />
+          ))}
+        </ul>
+        <Pagination
+          page={meta.page}
+          pageCount={Math.ceil(meta.total / JOINED_PAGE_SIZE)}
+          hrefFor={(next) => `/classes?cpage=${next}` as Route}
+        />
+      </>
     );
   }
 

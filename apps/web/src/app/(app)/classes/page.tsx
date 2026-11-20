@@ -9,7 +9,14 @@ export const metadata: Metadata = { title: 'Lớp học' };
 /** Giáo viên và ADMIN quản lý lớp, học sinh tham gia lớp và làm bài được giao. */
 export default function ClassesPage() {
   return (
-    <Can action="manage-classes" fallback={<StudentClasses />}>
+    <Can
+      action="manage-classes"
+      fallback={
+        <Suspense fallback={<ClassesLoading />}>
+          <StudentClasses />
+        </Suspense>
+      }
+    >
       <Suspense fallback={<ClassesLoading />}>
         <TeacherClasses />
       </Suspense>

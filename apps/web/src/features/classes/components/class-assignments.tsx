@@ -20,10 +20,12 @@ import { ErrorState } from '@/components/common/error-state';
 import { SelectField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
+import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import {
+  ASSIGNMENTS_PAGE_SIZE,
   classKeys,
   createAssignment,
   listAssignments,
@@ -219,12 +221,25 @@ function AssignmentRow({ classId, item, now }: { classId: string; item: Assignme
   );
 }
 
-export function ClassAssignments({ classId, archived }: { classId: string; archived: boolean }) {
+interface ClassAssignmentsProps {
+  classId: string;
+  archived: boolean;
+  page?: number;
+  /** Đường dẫn của trang `page`, giữ các tham số khác của trang lớp. */
+  hrefFor?: (page: number) => Route;
+}
+
+export function ClassAssignments({
+  classId,
+  archived,
+  page = 1,
+  hrefFor = (next) => `/classes/${classId}?apage=${next}` as Route,
+}: ClassAssignmentsProps) {
   const [assigning, setAssigning] = useState(false);
   const [now] = useState(() => Date.now());
   const assignments = useQuery({
-    queryKey: classKeys.assignments(classId),
-    queryFn: () => listAssignments(classId),
+    queryKey: classKeys.assignmentsPage(classId, page),
+    queryFn: () => listAssignments(classId, page),
   });
 
   let body;
@@ -247,12 +262,20 @@ export function ClassAssignments({ classId, archived }: { classId: string; archi
       <p className="text-text-muted">Chưa giao bài nào. Giao một bộ từ để học sinh bắt đầu học.</p>
     );
   } else {
+    const { meta } = assignments.data;
     body = (
-      <ul aria-label="Bài đã giao" className="flex flex-col">
-        {assignments.data.data.map((item) => (
-          <AssignmentRow key={item.id} classId={classId} item={item} now={now} />
-        ))}
-      </ul>
+      <>
+        <ul aria-label="Bài đã giao" className="flex flex-col">
+          {assignments.data.data.map((item) => (
+            <AssignmentRow key={item.id} classId={classId} item={item} now={now} />
+          ))}
+        </ul>
+        <Pagination
+          page={meta.page}
+          pageCount={Math.ceil(meta.total / ASSIGNMENTS_PAGE_SIZE)}
+          hrefFor={hrefFor}
+        />
+      </>
     );
   }
 
