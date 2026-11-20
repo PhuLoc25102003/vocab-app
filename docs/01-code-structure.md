@@ -88,7 +88,8 @@ src/
 │   ├── prisma/       prisma.service.ts
 │   ├── storage/      storage.interface.ts, r2.storage.ts
 │   ├── tts/          tts.interface.ts, web-tts.provider.ts
-│   └── mail/
+│   ├── mail/         mailer.ts (Brevo, bộ gửi trong bộ nhớ), mail.module.ts
+│   └── redis/        redis-client.ts (Upstash REST), shared-throttler.storage.ts
 ├── generated/prisma/               # Prisma Client sinh ra (gitignore)
 └── modules/
     ├── auth/         controller, service, strategies/, dto/
@@ -129,6 +130,7 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 | shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
 | `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
 | `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |
+| `infrastructure/mail`, `infrastructure/redis`                                                     | Có. Thiếu khoá dịch vụ thì dùng bản trong bộ nhớ                     |
 | Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study`, `progress` có code       |
 
 ## Đã điều chỉnh so với spec gốc

@@ -40,7 +40,7 @@ apps/api
   prisma/              schema.prisma, migrations
   src/config/          Kiểm tra env bằng Zod
   src/common/          guards, decorators, pipes, filters, interceptors, base
-  src/infrastructure/  prisma, storage
+  src/infrastructure/  prisma, storage, mail, redis
   src/modules/         auth, users, sets, cards, import, study, progress, health
   src/generated/       Prisma Client sinh tự động, không sửa, không commit
 packages/shared/src    Zod schema, type, mã lỗi, logic học dùng chung

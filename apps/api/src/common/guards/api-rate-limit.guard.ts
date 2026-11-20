@@ -15,7 +15,7 @@ export const USER_REQUEST_LIMIT = 100;
 /** Mặc định của `RATE_LIMIT_GUEST_PER_MINUTE`. Cao hơn vì nhiều khách có thể dùng chung IP, kể cả server render trang công khai. */
 export const GUEST_REQUEST_LIMIT = 300;
 
-/** Chạy sau `AuthGuard` để tính theo người dùng. Bộ đếm nằm trong bộ nhớ của instance. */
+/** Chạy sau `AuthGuard` để tính theo người dùng. Bộ đếm dùng chung qua Redis nếu có (`SharedThrottlerStorage`). */
 @Injectable()
 export class ApiRateLimitGuard implements CanActivate {
   constructor(
