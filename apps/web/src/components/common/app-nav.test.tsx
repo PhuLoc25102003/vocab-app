@@ -31,13 +31,10 @@ describe('AppNav', () => {
     expect(screen.getByRole('link', { name: 'Bộ từ' })).not.toHaveAttribute('aria-current');
   });
 
-  it('chỉ hiện mục Lớp học khi được phép quản lý lớp', () => {
+  it('mọi người đều có mục Lớp học', () => {
     vi.mocked(usePathname).mockReturnValue('/classes/c1');
-    const { unmount } = render(<AppNav />);
-    expect(screen.queryByRole('link', { name: 'Lớp học' })).not.toBeInTheDocument();
-    unmount();
+    render(<AppNav />);
 
-    render(<AppNav showClasses />);
     expect(screen.getByRole('link', { name: 'Lớp học' })).toHaveAttribute('aria-current', 'page');
   });
 });
