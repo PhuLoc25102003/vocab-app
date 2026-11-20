@@ -1,8 +1,10 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Be_Vietnam_Pro, Literata, Noto_Serif } from 'next/font/google';
 import { BRAND_NAME } from '@/components/common/logo';
 import { Providers } from '@/components/common/providers';
+import { ServiceWorkerRegistration } from '@/components/common/service-worker';
+import { BRAND_COLORS } from '@/lib/brand';
 import { themeInitScript } from '@/lib/theme';
 import './globals.css';
 
@@ -25,6 +27,8 @@ const notoSerif = Noto_Serif({
   preload: false,
 });
 
+export const viewport: Viewport = { themeColor: BRAND_COLORS.primary };
+
 export const metadata: Metadata = {
   title: BRAND_NAME,
   description: 'Ôn từ vựng bằng flashcard cho học sinh',
@@ -43,6 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <Providers>{children}</Providers>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
