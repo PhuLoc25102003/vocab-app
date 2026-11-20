@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type AdminUser, type AdminUserQuery } from '@vocab/shared';
+import { ERROR_CODES, type AdminUser, type AdminUserQuery, type Role } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -93,6 +93,16 @@ export class AdminUsersRepository extends BaseRepository {
     const { count } = await this.prisma.user.updateMany({
       where: { id, deletedAt: null },
       data: { lockedAt: null, lockReason: null, lockedById: null },
+    });
+    return count === 0
+      ? null
+      : this.prisma.user.findUnique({ where: { id }, select: ADMIN_USER_SELECT });
+  }
+
+  async setRole(id: string, role: Role): Promise<AdminUser | null> {
+    const { count } = await this.prisma.user.updateMany({
+      where: { id, deletedAt: null },
+      data: { role },
     });
     return count === 0
       ? null
