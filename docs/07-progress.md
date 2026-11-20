@@ -219,7 +219,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **4.1** Nền chế độ luyện nói: enum `SPEAK`, strategy và API (#190).
 - [x] **4.4** Giao diện luyện nói: xin quyền micro, nhận dạng giọng nói, thử lại, bỏ qua (#192).
-- [x] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện.
+- [x] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện (#226).
 - [ ] **4.3** Học offline và đồng bộ tiến độ khi có mạng.
 
 ## Quyết định cần chốt
