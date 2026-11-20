@@ -55,10 +55,10 @@ export function SetCardShell({
       className="relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
     >
       <div className="flex items-start gap-2">
-        {/* Link phủ cả thẻ nên vùng bấm luôn lớn hơn 44 px dù tên chỉ một dòng. */}
+        {/* Link phủ cả thẻ; tự nó cũng cao tối thiểu 44 px để đạt vùng bấm. */}
         <Link
           href={href}
-          className="line-clamp-2 min-w-0 flex-1 py-0.5 font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-md"
+          className="line-clamp-2 min-h-11 min-w-0 flex-1 py-0.5 font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-md"
         >
           {title}
         </Link>
