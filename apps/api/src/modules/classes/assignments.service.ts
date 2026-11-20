@@ -1,5 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type CreateAssignmentInput, type Pagination } from '@vocab/shared';
+import {
+  ERROR_CODES,
+  type AssignmentStatus,
+  type CreateAssignmentInput,
+  type Pagination,
+} from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { AppError } from '../../common/errors/app-error';
@@ -51,4 +56,24 @@ export class AssignmentsService {
       );
     }
   }
+
+  /** Đã học xong là `done` kể cả khi nộp trễ; quá hạn mà chưa học là `overdue`. */
+  async listForMember(userId: string, query: Pagination, now = new Date()) {
+    const { items, total } = await this.assignments.findForMember(userId, query);
+    const withStatus = items.map((item) => ({
+      ...item,
+      status: assignmentStatus(item.completedAt, item.dueAt, now),
+    }));
+    return paginated(withStatus, total, query);
+  }
+}
+
+function assignmentStatus(
+  completedAt: string | null,
+  dueAt: string | null,
+  now: Date,
+): AssignmentStatus {
+  if (completedAt) return 'done';
+  if (dueAt && new Date(dueAt) < now) return 'overdue';
+  return 'pending';
 }

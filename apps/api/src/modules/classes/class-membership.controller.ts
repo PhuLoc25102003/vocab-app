@@ -13,6 +13,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   joinClassSchema,
   joinedClassListQuerySchema,
+  myAssignmentListQuerySchema,
   type JoinClassInput,
   type Pagination,
 } from '@vocab/shared';
@@ -20,6 +21,7 @@ import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { AssignmentsService } from './assignments.service';
 import { ClassMembersService } from './class-members.service';
 
 /** Việc của người học trong lớp, mọi vai trò đã đăng nhập đều gọi được. */
@@ -27,7 +29,10 @@ import { ClassMembersService } from './class-members.service';
 @ApiBearerAuth()
 @Controller('classes')
 export class ClassMembershipController {
-  constructor(private readonly members: ClassMembersService) {}
+  constructor(
+    private readonly members: ClassMembersService,
+    private readonly assignments: AssignmentsService,
+  ) {}
 
   @Post('join')
   @HttpCode(HttpStatus.OK)
@@ -47,6 +52,17 @@ export class ClassMembershipController {
     @Query(new ZodValidationPipe(joinedClassListQuerySchema)) query: Pagination,
   ) {
     return this.members.listJoined(user.id, query);
+  }
+
+  @Get('assignments')
+  @ApiOperation({
+    summary: 'Bài cần làm ở các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn',
+  })
+  listMyAssignments(
+    @CurrentUser() user: CurrentUserData,
+    @Query(new ZodValidationPipe(myAssignmentListQuerySchema)) query: Pagination,
+  ) {
+    return this.assignments.listForMember(user.id, query);
   }
 
   @Delete(':id/members/me')
