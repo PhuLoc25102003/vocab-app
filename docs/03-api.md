@@ -36,6 +36,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /classes/:id/join-code                 | Giáo viên của lớp, ADMIN  | Đổi mã tham gia                                            |
 | POST   | /classes/join                          | Đã đăng nhập              | Tham gia lớp bằng mã                                       |
 | GET    | /classes/joined                        | Đã đăng nhập              | Lớp tôi đã tham gia                                        |
+| GET    | /classes/assignments                   | Đã đăng nhập              | Bài cần làm ở các lớp đã tham gia, kèm trạng thái          |
 | DELETE | /classes/:id/members/me                | Thành viên                | Rời lớp                                                    |
 | GET    | /classes/:id/members                   | Giáo viên của lớp, ADMIN  | Thành viên của lớp                                         |
 | DELETE | /classes/:id/members/:userId           | Giáo viên của lớp, ADMIN  | Xoá học sinh khỏi lớp                                      |
@@ -129,6 +130,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /classes/join` nhận `{ joinCode }`, bỏ khoảng trắng và không phân biệt hoa thường, trả 200 `{ data: { id, name, description, teacherName, joinedAt } }`. Tham gia lại trả cùng kết quả, không tạo bản ghi trùng. Mã sai định dạng trả 400; mã không có, đã đổi hoặc lớp đã lưu trữ trả 404 `CLASS_NOT_FOUND`; giáo viên của lớp trả 422 `CLASS_TEACHER_CANNOT_JOIN`.
 - `GET /classes/joined` nhận `page`, `limit`, trả lớp đã tham gia chưa lưu trữ, mới tham gia trước.
 - `POST /classes/:id/assignments` nhận `{ setId, mode, dueAt? }`, `dueAt` là ISO 8601 có múi giờ (lưu UTC), bỏ trống hoặc `null` là không có hạn; trả 201 `{ data: { id, classId, setId, setTitle, mode, dueAt, createdAt } }`. Giáo viên chỉ giao bộ của mình (bộ của người khác hoặc đã xoá trả 404 `SET_NOT_FOUND`), ADMIN giao được mọi bộ. Bộ `PRIVATE` trả 422 `SET_NOT_SHAREABLE`. `GET /classes/:id/assignments` nhận `page`, `limit`, xếp hạn gần nhất trước, bài không có hạn xếp cuối. `DELETE /classes/:id/assignments/:assignmentId` trả 204, bài không thuộc lớp trả 404 `ASSIGNMENT_NOT_FOUND`.
+- `GET /classes/assignments` nhận `page`, `limit`, trả bài giao của các lớp đã tham gia (lớp chưa lưu trữ, bộ chưa xoá) dạng `{ id, classId, className, setId, setTitle, mode, dueAt, createdAt, status, completedAt }`, xếp hạn gần nhất trước, không hạn xếp cuối. `completedAt` là lần học xong đầu tiên đúng bộ và chế độ tính từ lúc giao. `status` là `done` khi đã có `completedAt` (kể cả nộp trễ), `overdue` khi quá `dueAt` mà chưa làm, còn lại `pending`. Người chưa vào lớp nào nhận danh sách trống.
 - `GET /classes/:id/members` nhận `page`, `limit`, trả `{ data: [{ userId, displayName, joinedAt }], meta }` theo thứ tự tham gia, không trả email. `DELETE /classes/:id/members/me` (rời lớp) và `DELETE /classes/:id/members/:userId` trả 204, người không ở trong lớp trả 404 `CLASS_MEMBER_NOT_FOUND`.
 - Chỉ chủ thư mục được sửa và xoá, kể cả ADMIN cũng không. Thư mục không tồn tại trả 404 `FOLDER_NOT_FOUND`.
 

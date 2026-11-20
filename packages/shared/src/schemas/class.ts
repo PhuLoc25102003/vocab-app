@@ -139,3 +139,23 @@ export const assignmentListSchema = z.object({
   meta: paginationMetaSchema,
 });
 export type AssignmentList = z.infer<typeof assignmentListSchema>;
+
+export const ASSIGNMENT_STATUSES = ['pending', 'done', 'overdue'] as const;
+export const assignmentStatusSchema = z.enum(ASSIGNMENT_STATUSES);
+export type AssignmentStatus = z.infer<typeof assignmentStatusSchema>;
+
+export const myAssignmentListQuerySchema = paginationSchema;
+
+export const myAssignmentSchema = assignmentSchema.extend({
+  className: z.string(),
+  status: assignmentStatusSchema,
+  /** Lần học xong đầu tiên sau khi được giao, `null` khi chưa làm. */
+  completedAt: z.string().nullable(),
+});
+export type MyAssignment = z.infer<typeof myAssignmentSchema>;
+
+export const myAssignmentListSchema = z.object({
+  data: z.array(myAssignmentSchema),
+  meta: paginationMetaSchema,
+});
+export type MyAssignmentList = z.infer<typeof myAssignmentListSchema>;

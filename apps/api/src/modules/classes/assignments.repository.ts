@@ -72,4 +72,53 @@ export class AssignmentsRepository extends BaseRepository {
     const { count } = await this.prisma.assignment.deleteMany({ where: { id, classId } });
     return count > 0;
   }
+
+  /**
+   * Bài giao của các lớp người học đã tham gia, lớp chưa lưu trữ và bộ chưa xoá.
+   * Kèm lần học xong đầu tiên đúng bộ và chế độ, tính từ lúc giao.
+   */
+  async findForMember(userId: string, query: Pagination) {
+    const where = {
+      class: { archivedAt: null, members: { some: { userId } } },
+      set: { deletedAt: null },
+    };
+    const [rows, total] = await Promise.all([
+      this.prisma.assignment.findMany({
+        where,
+        select: { ...ASSIGNMENT_SELECT, class: { select: { name: true } } },
+        orderBy: [{ dueAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }],
+        ...toSkipTake(query),
+      }),
+      this.prisma.assignment.count({ where }),
+    ]);
+    const sessions = rows.length
+      ? await this.prisma.studySession.findMany({
+          where: {
+            userId,
+            OR: rows.map(({ setId, mode, createdAt }) => ({
+              setId,
+              mode,
+              finishedAt: { gte: createdAt },
+            })),
+          },
+          select: { setId: true, mode: true, finishedAt: true },
+          orderBy: { finishedAt: 'asc' },
+        })
+      : [];
+    const items = rows.map(({ class: klass, ...row }) => {
+      const finished = sessions.find(
+        (session) =>
+          session.setId === row.setId &&
+          session.mode === row.mode &&
+          session.finishedAt !== null &&
+          session.finishedAt >= row.createdAt,
+      );
+      return {
+        ...toAssignment(row),
+        className: klass.name,
+        completedAt: finished?.finishedAt?.toISOString() ?? null,
+      };
+    });
+    return { items, total };
+  }
 }
