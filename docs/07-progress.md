@@ -1,26 +1,29 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-19
+Cập nhật lần cuối: 2026-11-20
 
-**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (Giai đoạn 3), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (3.2), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+
+Giai đoạn 3 đã có schema lớp học (3.1).
 
 **Việc tiếp theo:**
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-2. Đo lại Lighthouse trên production (việc 1.34).
+1. API tạo lớp, quản lý thành viên, tham gia lớp (việc 3.3), không cần chờ quyết định 3.2.
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+3. Đo lại Lighthouse trên production (việc 1.34).
 
 ## Tổng quan
 
 Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng của từng việc.
 
-| Giai đoạn               | Mục tiêu                                   |   Xong |    Tổng | Trạng thái   |
-| ----------------------- | ------------------------------------------ | -----: | ------: | ------------ |
-| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong         |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm     |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong         |
-| **Toàn dự án**          |                                            | **91** | **108** | **84%**      |
+| Giai đoạn               | Mục tiêu                                   |   Xong |    Tổng | Trạng thái |
+| ----------------------- | ------------------------------------------ | -----: | ------: | ---------- |
+| 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong       |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      1 |       8 | Đang làm   |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong       |
+| **Toàn dự án**          |                                            | **92** | **108** | **85%**    |
 
 ## Cách cập nhật
 
@@ -204,7 +207,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** giáo viên tạo lớp, giao bộ từ và xem được kết quả của học sinh.
 
-- [ ] **3.1** Schema `Class`, `ClassMember`, `Assignment`.
+- [x] **3.1** Schema `Class`, `ClassMember`, `Assignment` (#238).
 - [ ] **3.2** Quy trình cấp vai trò giáo viên.
 - [ ] **3.3** API tạo lớp, quản lý thành viên, tham gia lớp.
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
