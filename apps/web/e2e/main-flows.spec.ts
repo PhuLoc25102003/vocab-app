@@ -80,7 +80,9 @@ test.describe.serial('luồng chính', () => {
     await expect(titleField).toHaveValue(setTitle);
     expect(new URL(page.url()).pathname).toBe('/sets/new');
 
-    await page.getByRole('radio', { name: 'Công khai' }).check();
+    // Radio gốc ẩn đi, người dùng bấm vào cả thẻ lựa chọn.
+    await page.getByText('Công khai', { exact: true }).click();
+    await expect(page.getByRole('radio', { name: 'Công khai' })).toBeChecked();
     for (const [index, { term, definition }] of cards.entries()) {
       await page.getByLabel('Từ', { exact: true }).nth(index).fill(term);
       await page.getByLabel('Nghĩa', { exact: true }).nth(index).fill(definition);
