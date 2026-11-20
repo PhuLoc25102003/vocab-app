@@ -9,8 +9,7 @@ import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { usePublicSets } from '../hooks/use-public-sets';
 import { toPage } from './my-sets';
-import { SetCards } from './set-cards';
-import { SetRowsLoading } from './set-rows';
+import { SetCardGrid, SetCardsLoading } from './set-cards';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
 
 export const EXPLORE_PAGE_SIZE = 20;
@@ -62,7 +61,7 @@ function ExploreResults({
   const sets = usePublicSets({ page, limit: EXPLORE_PAGE_SIZE, q });
 
   if (sets.isPending) {
-    return <SetRowsLoading count={5} />;
+    return <SetCardsLoading count={6} />;
   }
   if (sets.isError) {
     return (
@@ -109,7 +108,7 @@ function ExploreResults({
 
   return (
     <>
-      <SetCards sets={data} hrefFor={paths.set} />
+      <SetCardGrid sets={data} variant="community" hrefFor={paths.set} />
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}

@@ -5,15 +5,16 @@ import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { Button } from '@/components/ui/button';
 import { useMySets } from '../hooks/use-my-sets';
-import { SetRows, SetRowsLoading } from './set-rows';
+import { SetCardGrid, SetCardsLoading } from './set-cards';
 
-const RECENT_SETS_LIMIT = 5;
+/** Hai hàng thẻ ở màn hình rộng. */
+const RECENT_SETS_LIMIT = 6;
 
 export function RecentSets() {
   const sets = useMySets({ page: 1, limit: RECENT_SETS_LIMIT });
 
   if (sets.isPending) {
-    return <SetRowsLoading count={3} />;
+    return <SetCardsLoading count={3} />;
   }
   if (sets.isError) {
     return (
@@ -55,7 +56,7 @@ export function RecentSets() {
           </Link>
         ) : null}
       </div>
-      <SetRows sets={data} />
+      <SetCardGrid sets={data} />
     </section>
   );
 }

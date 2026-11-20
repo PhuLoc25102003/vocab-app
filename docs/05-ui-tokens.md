@@ -8,7 +8,7 @@ Lấy từ đồ dùng học tập của học sinh Việt Nam: giấy kẻ ô l
 
 - **Điểm nhấn duy nhất:** flashcard. Mặt trước là giấy ô li thật (4 dòng li trong mỗi ô lớn), mặt sau là bảng xanh. Từ vựng đặt bằng chữ có chân như mục từ trong từ điển.
 - **Chấm như thầy cô:** chế độ Viết gạch đỏ chỗ sai, ghi đáp án đúng màu xanh bên cạnh.
-- **Mọi thứ khác yên tĩnh:** nền phẳng, không gradient, không lưới thẻ bo góc. Danh sách là các dòng kẻ như trang vở.
+- **Mọi thứ khác yên tĩnh:** nền phẳng, không gradient. Bộ từ hiện bằng một thẻ dùng chung (`SetCardGrid`) ở mọi nơi để người dùng nhận ra ngay; danh sách khác (thẻ trong bộ, thành viên, người dùng) là các dòng kẻ như trang vở.
 - **Một màn hình, một việc chính:** tối đa một nút primary trong mỗi vùng nhìn.
 - **Chuyển động chỉ để phản hồi thao tác:** lật thẻ, báo đúng sai, hoàn thành phiên.
 
@@ -179,13 +179,17 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 | Thang chữ          | h1 30, h2 22, card 40          | h1 28–36, h2 24, card 36–48                                                      | Thang rõ hơn, co giãn theo màn hình            |
 | Bo góc             | 6, 10, 16                      | 4, 8, 16                                                                         | Bội của 4, chỉ flashcard và dialog bo lớn      |
 | `.paper-grid`      | Ô vuông 24 px                  | Ô 32 px, 4 dòng li 8 px                                                          | Đúng cấu trúc vở ô li                          |
-| Danh sách          | Không quy định                 | Dòng kẻ thay cho lưới thẻ                                                        | Giữ flashcard là điểm nhấn duy nhất            |
+| Danh sách          | Không quy định                 | Bộ từ dùng lưới thẻ chung, danh sách khác dùng dòng kẻ                           | Bộ từ trông giống nhau ở mọi trang (2.29)      |
 | Biến CSS           | `--dur-*`, `--font-be-vietnam` | `--duration-*`, `--font-be-vietnam-pro`                                          | Khớp code hiện tại                             |
 | Theme Tailwind     | Giữ bảng mặc định              | Xoá màu, cỡ chữ, bo góc, đổ bóng mặc định                                        | Lỗi dùng sai lộ ra ngay                        |
 
 ## Ô chọn
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
+
+## Thẻ bộ từ
+
+Bộ từ ở Bộ từ, Khám phá và "Bộ từ gần đây" của Tổng quan dùng `SetCardGrid` trong `features/sets/components/set-cards.tsx`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
 
 ## Menu thao tác
 

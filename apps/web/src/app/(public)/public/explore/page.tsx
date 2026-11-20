@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
 import { ExploreSets } from '@/features/sets/components/explore-sets';
-import { SetRowsLoading } from '@/features/sets/components/set-rows';
+import { SetCardsLoading } from '@/features/sets/components/set-cards';
 
 export const metadata: Metadata = {
   title: 'Khám phá bộ từ',
@@ -16,7 +16,7 @@ export default function PublicExplorePage() {
         title="Khám phá"
         description="Bộ từ công khai do cộng đồng tạo. Mở một bộ để học thử ngay."
       />
-      <Suspense fallback={<SetRowsLoading count={5} />}>
+      <Suspense fallback={<SetCardsLoading count={6} />}>
         <ExploreSets audience="guest" />
       </Suspense>
     </>
