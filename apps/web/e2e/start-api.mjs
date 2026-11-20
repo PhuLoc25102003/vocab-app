@@ -15,6 +15,10 @@ Object.assign(process.env, {
   // Giới hạn request có test riêng trong rate-limit.integration.test.ts.
   RATE_LIMIT_USER_PER_MINUTE: '1000',
   RATE_LIMIT_GUEST_PER_MINUTE: '3000',
+  // Cả bộ test đăng ký nhiều tài khoản trong vài giây.
+  RATE_LIMIT_REGISTER_PER_MINUTE: '100',
+  // Mỗi lần mở trang gọi /auth/refresh một lần.
+  RATE_LIMIT_REFRESH_PER_MINUTE: '1000',
   LOG_LEVEL: 'warn',
 });
 

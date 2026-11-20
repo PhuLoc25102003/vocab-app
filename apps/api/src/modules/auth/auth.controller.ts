@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 import { googleLoginSchema, loginSchema, registerSchema } from '@vocab/shared';
 import type { GoogleLoginInput, LoginInput, RegisterInput } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
@@ -10,12 +10,7 @@ import type { CurrentUserData } from '../../common/decorators/current-user.decor
 import { Public } from '../../common/decorators/public.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { InvalidRefreshTokenError } from './auth-session.service';
-import {
-  AuthThrottlerGuard,
-  ONE_MINUTE_MS,
-  REFRESH_LIMIT_PER_IP,
-  REGISTER_LIMIT_PER_IP,
-} from './auth-throttler.guard';
+import { AuthThrottlerGuard, RefreshThrottle, RegisterThrottle } from './auth-throttler.guard';
 import { SkipApiRateLimit } from '../../common/decorators/skip-api-rate-limit.decorator';
 import { AuthService } from './auth.service';
 import { RefreshCookie, sessionClientOf } from './refresh-cookie';
@@ -33,8 +28,7 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.ACCEPTED)
-  @SkipThrottle({ account: true })
-  @Throttle({ ip: { limit: REGISTER_LIMIT_PER_IP, ttl: ONE_MINUTE_MS } })
+  @RegisterThrottle()
   @ApiOperation({ summary: 'Đăng ký bằng email và mật khẩu' })
   @ApiZodBody(registerSchema)
   register(@Body(new ZodValidationPipe(registerSchema)) dto: RegisterInput) {
@@ -77,8 +71,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @SkipThrottle({ account: true })
-  @Throttle({ ip: { limit: REFRESH_LIMIT_PER_IP, ttl: ONE_MINUTE_MS } })
+  @RefreshThrottle()
   @ApiOperation({ summary: 'Cấp access token mới bằng cookie refresh' })
   async refresh(@Req() request: FastifyRequest, @Res({ passthrough: true }) reply: FastifyReply) {
     this.refreshCookie.assertTrustedOrigin(request);

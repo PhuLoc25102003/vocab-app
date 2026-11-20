@@ -24,6 +24,10 @@ const envSchema = z.object({
   /** Số request mỗi phút cho một người dùng và cho một IP chưa đăng nhập. */
   RATE_LIMIT_USER_PER_MINUTE: z.coerce.number().int().min(1).default(100),
   RATE_LIMIT_GUEST_PER_MINUTE: z.coerce.number().int().min(1).default(300),
+  /** Số lần đăng ký mỗi phút cho một IP. */
+  RATE_LIMIT_REGISTER_PER_MINUTE: z.coerce.number().int().min(1).default(3),
+  /** Số lần gọi `/auth/refresh` mỗi phút cho một IP. */
+  RATE_LIMIT_REFRESH_PER_MINUTE: z.coerce.number().int().min(1).default(60),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

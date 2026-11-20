@@ -1,17 +1,36 @@
-import { ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import {
+  applyDecorators,
+  ExecutionContext,
+  HttpStatus,
+  Injectable,
+  SetMetadata,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import {
+  InjectThrottlerOptions,
+  InjectThrottlerStorage,
+  SkipThrottle,
+  Throttle,
   ThrottlerGuard,
   type ThrottlerLimitDetail,
   type ThrottlerModuleOptions,
+  type ThrottlerRequest,
+  type ThrottlerStorage,
 } from '@nestjs/throttler';
 import { emailSchema, ERROR_CODES } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import '../../common/decorators/current-user.decorator';
 import { AppError } from '../../common/errors/app-error';
+import type { Env } from '../../config/env';
 
 export const ONE_MINUTE_MS = 60_000;
+/** Mặc định của `RATE_LIMIT_REGISTER_PER_MINUTE`. */
 export const REGISTER_LIMIT_PER_IP = 3;
+/** Mặc định của `RATE_LIMIT_REFRESH_PER_MINUTE`. */
 export const REFRESH_LIMIT_PER_IP = 60;
+const IP_LIMIT_ENV_KEY = 'ipLimitEnv';
+type IpLimitEnv = 'RATE_LIMIT_REGISTER_PER_MINUTE' | 'RATE_LIMIT_REFRESH_PER_MINUTE';
 const ACCOUNT_CHANGE_LIMIT_PER_USER = 5;
 const LOGIN_LIMIT_PER_IP = 20;
 const LOGIN_LIMIT_PER_ACCOUNT = 5;
@@ -49,8 +68,43 @@ export const AUTH_THROTTLE_OPTIONS: ThrottlerModuleOptions = {
   ],
 };
 
+/** Giới hạn theo IP mỗi phút, đọc từ biến env `env` khi chạy. `fallback` chỉ là giá trị khai báo. */
+const IpThrottleFromEnv = (env: IpLimitEnv, fallback: number) =>
+  applyDecorators(
+    SetMetadata(IP_LIMIT_ENV_KEY, env),
+    SkipThrottle({ account: true }),
+    Throttle({ ip: { limit: fallback, ttl: ONE_MINUTE_MS } }),
+  );
+
+export const RegisterThrottle = () =>
+  IpThrottleFromEnv('RATE_LIMIT_REGISTER_PER_MINUTE', REGISTER_LIMIT_PER_IP);
+
+/** Mỗi lần mở trang gọi refresh một lần. */
+export const RefreshThrottle = () =>
+  IpThrottleFromEnv('RATE_LIMIT_REFRESH_PER_MINUTE', REFRESH_LIMIT_PER_IP);
+
 @Injectable()
 export class AuthThrottlerGuard extends ThrottlerGuard {
+  constructor(
+    @InjectThrottlerOptions() options: ThrottlerModuleOptions,
+    @InjectThrottlerStorage() storage: ThrottlerStorage,
+    reflector: Reflector,
+    private readonly config: ConfigService<Env, true>,
+  ) {
+    super(options, storage, reflector);
+  }
+
+  protected override handleRequest(request: ThrottlerRequest): Promise<boolean> {
+    const env = this.reflector.get<IpLimitEnv | undefined>(
+      IP_LIMIT_ENV_KEY,
+      request.context.getHandler(),
+    );
+    if (env && request.throttler.name === 'ip') {
+      return super.handleRequest({ ...request, limit: this.config.get(env, { infer: true }) });
+    }
+    return super.handleRequest(request);
+  }
+
   protected override throwThrottlingException(
     context: ExecutionContext,
     { timeToBlockExpire }: ThrottlerLimitDetail,
