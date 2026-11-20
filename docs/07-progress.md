@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-19
 
-**Đang ở:** Giai đoạn 1 đã xong phần nhập từ, còn các việc chờ tài khoản dịch vụ (1D, Sentry), dịch vụ email (1.49) và Performance (1.34). Giai đoạn 2 đã có Learn, Kiểm tra, Điền từ, Ghép cặp và thư mục bộ từ.
+**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (Giai đoạn 3), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -19,8 +19,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm     |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm     |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      0 |       8 | Chưa bắt đầu |
-| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      5 |       6 | Đang làm     |
-| **Toàn dự án**          |                                            | **90** | **108** | **83%**      |
+| 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong         |
+| **Toàn dự án**          |                                            | **91** | **108** | **84%**      |
 
 ## Cách cập nhật
 
@@ -222,7 +222,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **4.2** PWA: manifest, cài lên thiết bị, cache giao diện (#226).
 - [x] **4.3** Tải bộ từ về máy (IndexedDB), xem thẻ ở trang offline, xoá dữ liệu offline khi đăng xuất (#228).
 - [x] **4.5** Học Flashcard khi mất mạng với bộ đã tải, phiên đã xong vào hàng đợi trên máy; service worker lưu sẵn mã của trang offline (#231).
-- [ ] **4.6** Gửi hàng đợi phiên học offline lên máy chủ khi có mạng và đã đăng nhập.
+- [x] **4.6** Gửi hàng đợi phiên học offline lên máy chủ khi có mạng và đã đăng nhập.
 
 ## Quyết định cần chốt
 

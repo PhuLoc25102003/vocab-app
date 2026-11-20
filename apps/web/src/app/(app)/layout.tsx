@@ -3,6 +3,7 @@ import { AppNav, AppNavFallback } from '@/components/common/app-nav';
 import { Logo } from '@/components/common/logo';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
+import { OfflineSync } from '@/features/study/components/offline-sync';
 import { AccountMenu } from '@/features/auth/components/account-menu';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -32,7 +33,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 py-8 md:px-6 lg:px-8"
       >
         <Suspense fallback={<AuthGateLoading />}>
-          <AuthGate>{children}</AuthGate>
+          <AuthGate>
+            <OfflineSync />
+            {children}
+          </AuthGate>
         </Suspense>
       </main>
     </div>
