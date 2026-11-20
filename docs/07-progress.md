@@ -207,7 +207,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 **Xong khi:** giáo viên tạo lớp, giao bộ từ và xem được kết quả của học sinh.
 
-- [x] **3.1** Schema `Class`, `ClassMember`, `Assignment`.
+- [x] **3.1** Schema `Class`, `ClassMember`, `Assignment` (#238).
 - [ ] **3.2** Quy trình cấp vai trò giáo viên.
 - [ ] **3.3** API tạo lớp, quản lý thành viên, tham gia lớp.
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
