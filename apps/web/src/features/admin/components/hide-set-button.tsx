@@ -6,8 +6,8 @@ import { hideSetSchema, type HideSetDto } from '@vocab/shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { FormDialog } from '@/components/common/form-dialog';
 import { TextareaField } from '@/components/common/form-field';
-import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { hideSet, unhideSet } from '../api';
@@ -46,44 +46,48 @@ export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
       </Button>
     );
   }
-  if (!open) {
-    return (
-      <Button variant="secondary" onClick={() => setOpen(true)}>
-        Ẩn bộ từ
-      </Button>
-    );
-  }
+  const close = (next: boolean) => {
+    if (!next) {
+      form.reset();
+      hide.reset();
+    }
+    setOpen(next);
+  };
 
   const submit = form.handleSubmit(async (dto) => {
     try {
       await hide.mutateAsync(dto);
       await refresh();
       toast.success('Đã ẩn bộ từ khỏi người khác');
-      setOpen(false);
-      form.reset();
+      close(false);
     } catch {
       // Lỗi hiện qua `hide.error`.
     }
   });
 
   return (
-    <form onSubmit={submit} noValidate className="flex w-full max-w-[480px] flex-col gap-3">
-      {hide.error ? <FormError>{formErrorMessage(hide.error)}</FormError> : null}
-      <TextareaField
-        label="Lý do ẩn"
-        rows={2}
-        autoFocus
-        error={form.formState.errors.reason?.message}
-        {...form.register('reason')}
-      />
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" loading={hide.isPending}>
-          Ẩn khỏi người khác
-        </Button>
-        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-          Huỷ
-        </Button>
-      </div>
-    </form>
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Ẩn bộ từ
+      </Button>
+      <FormDialog
+        open={open}
+        onOpenChange={close}
+        title="Ẩn bộ từ vi phạm?"
+        description="Người khác không xem, học hay sao chép được bộ này. Chủ bộ thấy lý do bạn ghi."
+        submitLabel="Ẩn khỏi người khác"
+        pending={hide.isPending}
+        error={hide.error ? formErrorMessage(hide.error) : null}
+        dirty={form.formState.isDirty}
+        onSubmit={(event) => void submit(event)}
+      >
+        <TextareaField
+          label="Lý do ẩn"
+          rows={2}
+          error={form.formState.errors.reason?.message}
+          {...form.register('reason')}
+        />
+      </FormDialog>
+    </>
   );
 }

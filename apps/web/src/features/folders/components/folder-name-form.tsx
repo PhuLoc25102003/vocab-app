@@ -2,46 +2,53 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { folderInputSchema, type FolderInput } from '@vocab/shared';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormDialog } from '@/components/common/form-dialog';
 import { FormField } from '@/components/common/form-field';
-import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 
 const FIELDS = ['name'] as const;
 
-interface FolderNameFormProps {
+interface FolderNameDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
   label: string;
   submitLabel: string;
   defaultName?: string;
   onSave: (name: string) => Promise<unknown>;
-  onCancel: () => void;
 }
 
-/** Ô đặt tên thư mục ngay tại chỗ: Enter để lưu, Esc hoặc nút Huỷ để thôi. */
-export function FolderNameForm({
+/** Hộp thoại đặt tên thư mục khi tạo hoặc đổi tên. */
+export function FolderNameDialog({
+  open,
+  onOpenChange,
+  title,
   label,
   submitLabel,
   defaultName = '',
   onSave,
-  onCancel,
-}: FolderNameFormProps) {
+}: FolderNameDialogProps) {
   const {
     register,
     handleSubmit,
     setError,
-    setFocus,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<FolderInput>({
     resolver: zodResolver(folderInputSchema),
-    defaultValues: { name: defaultName },
+    values: { name: defaultName },
   });
 
-  useEffect(() => setFocus('name', { shouldSelect: true }), [setFocus]);
+  const close = (next: boolean) => {
+    if (!next) reset({ name: defaultName });
+    onOpenChange(next);
+  };
 
   const submit = handleSubmit(async ({ name }) => {
     try {
       await onSave(name);
+      reset({ name: defaultName });
     } catch (error) {
       const message = applyFormError(error, FIELDS, setError);
       if (message) {
@@ -51,26 +58,16 @@ export function FolderNameForm({
   });
 
   return (
-    <form
-      onSubmit={submit}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          event.stopPropagation();
-          onCancel();
-        }
-      }}
-      noValidate
-      className="flex flex-col gap-2"
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title={title}
+      submitLabel={submitLabel}
+      pending={isSubmitting}
+      dirty={isDirty}
+      onSubmit={(event) => void submit(event)}
     >
       <FormField label={label} error={errors.name?.message} {...register('name')} />
-      <div className="flex gap-2">
-        <Button type="submit" loading={isSubmitting}>
-          {submitLabel}
-        </Button>
-        <Button type="button" variant="ghost" disabled={isSubmitting} onClick={onCancel}>
-          Huỷ
-        </Button>
-      </div>
-    </form>
+    </FormDialog>
   );
 }

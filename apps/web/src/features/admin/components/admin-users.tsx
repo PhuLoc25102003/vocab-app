@@ -17,8 +17,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
+import { FormDialog } from '@/components/common/form-dialog';
 import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
-import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
@@ -48,43 +48,58 @@ function usersHref(q: string, page = 1): Route {
   return (query ? `/admin/users?${query}` : '/admin/users') as Route;
 }
 
-function LockForm({ user, onDone }: { user: AdminUser; onDone: () => void }) {
+function LockDialog({
+  user,
+  open,
+  onOpenChange,
+}: {
+  user: AdminUser;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const queryClient = useQueryClient();
   const lock = useMutation({ mutationFn: (dto: LockUserDto) => lockUser(user.id, dto.reason) });
   const form = useForm<LockUserDto>({
     resolver: zodResolver(lockUserSchema),
     defaultValues: { reason: '' },
   });
+  const close = (next: boolean) => {
+    if (!next) {
+      form.reset();
+      lock.reset();
+    }
+    onOpenChange(next);
+  };
   const submit = form.handleSubmit(async (dto) => {
     try {
       await lock.mutateAsync(dto);
       await queryClient.invalidateQueries({ queryKey: adminKeys.users });
       toast.success(`Đã khoá tài khoản ${user.email}`);
-      onDone();
+      close(false);
     } catch {
       // Lỗi hiện qua `lock.error`.
     }
   });
 
   return (
-    <form onSubmit={submit} noValidate className="flex w-full flex-col gap-3">
-      {lock.error ? <FormError>{formErrorMessage(lock.error)}</FormError> : null}
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title={`Khoá tài khoản ${user.email}?`}
+      description="Người này không đăng nhập được cho tới khi mở khoá. Lý do hiện trong danh sách người dùng."
+      submitLabel="Khoá tài khoản"
+      pending={lock.isPending}
+      error={lock.error ? formErrorMessage(lock.error) : null}
+      dirty={form.formState.isDirty}
+      onSubmit={(event) => void submit(event)}
+    >
       <TextareaField
         label="Lý do khoá"
         rows={2}
-        autoFocus
         error={form.formState.errors.reason?.message}
         {...form.register('reason')}
       />
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" loading={lock.isPending}>
-          Khoá tài khoản
-        </Button>
-        <Button type="button" variant="secondary" onClick={onDone}>
-          Huỷ
-        </Button>
-      </div>
-    </form>
+    </FormDialog>
   );
 }
 
@@ -150,7 +165,7 @@ function UserRow({ user }: { user: AdminUser }) {
         >
           Mở khoá
         </Button>
-      ) : locking ? null : (
+      ) : (
         <Button
           variant="secondary"
           aria-label={`Khoá ${user.email}`}
@@ -159,7 +174,7 @@ function UserRow({ user }: { user: AdminUser }) {
           Khoá
         </Button>
       )}
-      {locking && !user.lockedAt ? <LockForm user={user} onDone={() => setLocking(false)} /> : null}
+      <LockDialog user={user} open={locking && !user.lockedAt} onOpenChange={setLocking} />
     </li>
   );
 }
