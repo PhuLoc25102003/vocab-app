@@ -4,6 +4,11 @@ import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
+/** Lỗi trùng khoá chính của Prisma: hai yêu cầu nộp bài đến cùng lúc. */
+function isUniqueViolation(error: unknown): boolean {
+  return error instanceof Object && 'code' in error && error.code === 'P2002';
+}
+
 const ASSIGNMENT_SELECT = {
   id: true,
   classId: true,
@@ -138,5 +143,60 @@ export class AssignmentsRepository extends BaseRepository {
       };
     });
     return { items, total };
+  }
+
+  /** Bài giao của lớp người này đang ở (lớp chưa lưu trữ, bộ chưa xoá). */
+  findOneForMember(id: string, userId: string) {
+    return this.prisma.assignment.findFirst({
+      where: {
+        id,
+        class: { archivedAt: null, members: { some: { userId } } },
+        set: { deletedAt: null },
+      },
+      select: {
+        id: true,
+        classId: true,
+        setId: true,
+        mode: true,
+        modes: true,
+        dueAt: true,
+        createdAt: true,
+        set: { select: { title: true } },
+        class: { select: { name: true } },
+      },
+    });
+  }
+
+  findFinishedSessions(assignmentId: string, userId: string) {
+    return this.prisma.studySession.findMany({
+      where: { assignmentId, userId, finishedAt: { not: null } },
+      select: { mode: true, correct: true, total: true },
+    });
+  }
+
+  findSubmission(assignmentId: string, userId: string) {
+    return this.prisma.assignmentSubmission.findUnique({
+      where: { assignmentId_userId: { assignmentId, userId } },
+      select: { submittedAt: true, score: true, late: true },
+    });
+  }
+
+  /** `null` khi đã có bài nộp (khoá chính trùng), để nộp hai lần cùng lúc không tạo hai bản. */
+  async createSubmission(data: {
+    assignmentId: string;
+    userId: string;
+    score: number | null;
+    late: boolean;
+    submittedAt: Date;
+  }) {
+    try {
+      return await this.prisma.assignmentSubmission.create({
+        data,
+        select: { submittedAt: true, score: true, late: true },
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) return null;
+      throw error;
+    }
   }
 }

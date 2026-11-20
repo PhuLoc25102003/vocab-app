@@ -65,6 +65,22 @@ export class ClassMembershipController {
     return this.assignments.listForMember(user.id, query);
   }
 
+  @Get('assignments/:assignmentId')
+  @ApiOperation({ summary: 'Một bài cần làm: tiến độ từng chế độ, bài nộp, nộp được chưa' })
+  getMyAssignment(
+    @Param('assignmentId') assignmentId: string,
+    @CurrentUser() user: CurrentUserData,
+  ) {
+    return this.assignments.getForMember(assignmentId, user.id);
+  }
+
+  @Post('assignments/:assignmentId/submit')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Nộp bài khi đã xong mọi chế độ, một lần, nộp sau hạn là trễ' })
+  submit(@Param('assignmentId') assignmentId: string, @CurrentUser() user: CurrentUserData) {
+    return this.assignments.submit(assignmentId, user.id);
+  }
+
   @Delete(':id/members/me')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Rời lớp' })

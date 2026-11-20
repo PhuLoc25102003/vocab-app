@@ -283,7 +283,7 @@ Không tính vào tổng số việc.
 
 - [x] **5.10** Schema: `Assignment.modes`, `StudySession.assignmentId`, bảng `AssignmentSubmission`, backfill bài cũ và bài nộp từ phiên đã xong; cập nhật `docs/02-database.md` (GAP-17, #337).
 - [x] **5.11** API giao bài nhiều chế độ (1 đến 5, kiểm tra chế độ dùng được với bộ); giao bộ riêng tư cần `shareToClass` và đổi bộ sang `CLASS` trong cùng transaction. Cần 5.10 (GAP-17, GAP-18, #339).
-- [ ] **5.12** API làm và nộp bài: phiên học nhận `assignmentId`, `GET /classes/assignments/:id`, `POST /classes/assignments/:id/submit`, tính đúng hạn, trễ, bỏ lỡ và điểm; danh sách bài cần làm trả trạng thái mới, sắp xếp theo trạng thái ở API và phân trang trên web. Cần 5.10.
+- [ ] **5.12** API làm và nộp bài: phiên học nhận `assignmentId`, `GET /classes/assignments/:id`, `POST /classes/assignments/:id/submit`, tính đúng hạn, trễ, bỏ lỡ và điểm; danh sách bài cần làm trả trạng thái mới, sắp xếp theo trạng thái ở API và phân trang trên web. Cần 5.10. Đã có phần xem bài, nộp bài và phiên gắn bài (#341); còn trạng thái mới trong danh sách bài cần làm.
 - [ ] **5.13** Web modal giao bài: chọn bộ có tìm kiếm, chọn và sắp thứ tự chế độ (mặc định lộ trình đề xuất), cảnh báo bộ riêng tư, `DateTimeField`. Cần 5.3, 5.4, 5.11.
 - [ ] **5.14** Web học sinh làm bài: trang bài tập có danh sách chế độ và nút "Tiếp tục", phiên học mang `?assignment=`, màn kết quả về bài tập hoặc chế độ tiếp, nút Nộp bài có xác nhận, trạng thái Đã nộp hoặc Nộp trễ. Cần 5.12.
 
