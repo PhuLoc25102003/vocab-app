@@ -15,7 +15,7 @@
 
 ## UC-A2. Đăng nhập
 
-- **Việc:** 1.1, 1.5. **Người dùng:** khách. **Trạng thái:** Thiếu (GAP-13).
+- **Việc:** 1.1, 1.5, 1.49b. **Người dùng:** khách. **Trạng thái:** Xong.
 - **Phải có:** form email và mật khẩu, thông báo lỗi chung, đi tiếp tới `next` an toàn, liên kết đăng ký, liên kết quên mật khẩu.
 - **Luồng chính:** nhập đúng, API trả access token và đặt cookie refresh, web về `next` hoặc `/dashboard`.
 - **Ngoại lệ:**
@@ -23,8 +23,7 @@
   - Quá 5 lần mỗi phút theo IP và email, hoặc 20 lần theo IP: trả 429.
   - `next` trỏ ra ngoài site: bỏ qua, về `/dashboard`.
   - Mất kết nối API: báo lỗi, giữ nguyên dữ liệu đã nhập.
-- **Test đã có:** `auth.integration`, `login-form.test`, `next-path.test`, E2E đăng nhập lại đúng trang.
-- **Còn thiếu:** lối vào quên mật khẩu, xem UC-A9.
+- **Test đã có:** `auth.integration`, `login-form.test`, `next-path.test`, E2E đăng nhập lại đúng trang, E2E quên mật khẩu.
 
 ## UC-A3. Đăng nhập Google
 
@@ -102,11 +101,11 @@
 
 ## UC-A9. Quên mật khẩu
 
-- **Việc:** 1.49a (API, xong), 1.49b (giao diện). **Người dùng:** khách. **Trạng thái:** Đã có API, chưa có trang. Đã chọn Brevo (300 thư mỗi ngày, không cần tên miền riêng). Code làm trước qua adapter `Mailer`: bản Brevo dùng khi có `BREVO_API_KEY`, bản giả lưu thư trong bộ nhớ cho test và E2E, thiếu khoá thì ghi log "chưa cấu hình gửi thư" và vẫn trả cùng thông báo cho người dùng. Cách tạo tài khoản ở `docs/08-deploy.md`.
+- **Việc:** 1.49a (API), 1.49b (giao diện). **Người dùng:** khách. **Trạng thái:** Xong. Gửi thư thật cần `BREVO_API_KEY` và `EMAIL_FROM` trên Render. Đã chọn Brevo (300 thư mỗi ngày, không cần tên miền riêng). Code làm trước qua adapter `Mailer`: bản Brevo dùng khi có `BREVO_API_KEY`, bản giả lưu thư trong bộ nhớ cho test và E2E, thiếu khoá thì ghi log "chưa cấu hình gửi thư" và vẫn trả cùng thông báo cho người dùng. Cách tạo tài khoản ở `docs/08-deploy.md`.
 - **Phải có:**
   - `/forgot-password` nhập email, `/reset-password?token=...` đặt mật khẩu mới.
   - Token ngẫu nhiên, chỉ lưu hash, dùng một lần, hết hạn sau 30 phút.
   - Thông báo giống nhau dù email có tồn tại hay không.
 - **Luồng chính:** nhập email, nhận thư, mở liên kết, đặt mật khẩu mới, mọi phiên cũ kết thúc, về đăng nhập.
 - **Ngoại lệ:** token sai, hết hạn hoặc đã dùng; tài khoản chỉ dùng Google vẫn nhận thư và đặt được mật khẩu, vì mở được thư là chủ email; tài khoản bị khoá không nhận thư; gửi thư thất bại thì ghi log, người dùng vẫn thấy cùng thông báo; vượt rate limit.
-- **Cách test:** integration cho vòng đời token và chống dò email, dùng bộ gửi thư giả; component cho hai form; E2E đọc liên kết từ bộ gửi thư giả.
+- **Test đã có:** `password-reset.integration` (vòng đời token, chống dò email, tài khoản khoá), `forgot-password-form.test`, `reset-password-form.test`, `login-form.test`, E2E `password-reset.spec` ghi sẵn hash của một token biết trước vì bộ gửi thư giả nằm trong tiến trình API.

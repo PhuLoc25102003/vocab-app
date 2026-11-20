@@ -104,4 +104,15 @@ describe('LoginForm', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Không kết nối được máy chủ');
   });
+
+  it('có lối vào quên mật khẩu và báo khi vừa đặt mật khẩu mới', () => {
+    navigation.params = new URLSearchParams('reset=1');
+    render(<LoginForm />);
+
+    expect(screen.getByRole('link', { name: 'Quên mật khẩu?' })).toHaveAttribute(
+      'href',
+      '/forgot-password',
+    );
+    expect(screen.getByRole('status')).toHaveTextContent('Đã đặt mật khẩu mới');
+  });
 });
