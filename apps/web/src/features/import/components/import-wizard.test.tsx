@@ -82,6 +82,7 @@ describe('ImportWizard', () => {
     vi.mocked(importAsNewSet).mockResolvedValue('s9');
     renderWizard();
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple	quả táo');
+    await userEvent.click(screen.getByRole('button', { name: 'Đổi cách đọc' }));
     await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
     await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
     await userEvent.click(screen.getByRole('button', { name: 'Xem trước' }));

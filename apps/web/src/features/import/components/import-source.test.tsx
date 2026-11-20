@@ -28,6 +28,8 @@ function renderSource() {
 }
 
 const previewButton = () => screen.getByRole('button', { name: 'Xem trước' });
+const openOptions = () => userEvent.click(screen.getByRole('button', { name: 'Đổi cách đọc' }));
+const DELIMITER = 'Từ và nghĩa cách nhau bằng';
 
 describe('ImportSource', () => {
   beforeEach(() => vi.clearAllMocks());
@@ -37,7 +39,8 @@ describe('ImportSource', () => {
     const onPreview = renderSource();
 
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'Từ,Nghĩa{enter}apple,quả táo');
-    await userEvent.selectOptions(screen.getByLabelText('Ký tự phân cách'), 'comma');
+    await openOptions();
+    await userEvent.selectOptions(screen.getByLabelText(DELIMITER), 'comma');
     await userEvent.click(screen.getByLabelText('Dòng đầu là tiêu đề, bỏ qua khi nhập'));
     await userEvent.click(previewButton());
 
@@ -55,6 +58,7 @@ describe('ImportSource', () => {
     const onPreview = renderSource();
 
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b	c	d');
+    await openOptions();
     await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
     await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
     await userEvent.click(previewButton());
@@ -72,6 +76,7 @@ describe('ImportSource', () => {
     renderSource();
 
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b');
+    await openOptions();
     await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '2');
     await userEvent.click(previewButton());
 
@@ -84,6 +89,7 @@ describe('ImportSource', () => {
   it('báo lỗi khi chưa có nội dung hoặc chọn hai cột giống nhau', async () => {
     renderSource();
 
+    await openOptions();
     await userEvent.selectOptions(screen.getByLabelText('Cột nghĩa'), '1');
     await userEvent.click(previewButton());
 
@@ -114,7 +120,8 @@ describe('ImportSource', () => {
     await waitFor(() =>
       expect(screen.getByLabelText('Dán danh sách từ')).toHaveValue('apple	quả táo'),
     );
-    expect(screen.getByLabelText('Ký tự phân cách')).toHaveValue('tab');
+    await openOptions();
+    expect(screen.getByLabelText(DELIMITER)).toHaveValue('tab');
     expect(screen.getByText('Đã đọc tu.xlsx')).toBeInTheDocument();
   });
 
@@ -131,8 +138,14 @@ describe('ImportSource', () => {
     await userEvent.upload(input!, new File([workbook as BlobPart], 'mau.xlsx', { type: '' }));
 
     expect(
-      await screen.findByText('Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn bên dưới.'),
+      await screen.findByText('Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn.'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Cách nhau bằng phím Tab. Lấy từ ở cột 2, nghĩa ở cột 3, phiên âm ở cột 4, ví dụ ở cột 1, bỏ dòng tiêu đề.',
+      ),
+    ).toBeInTheDocument();
+    await openOptions();
     expect(screen.getByLabelText('Dòng đầu là tiêu đề, bỏ qua khi nhập')).toBeChecked();
     expect(screen.getByLabelText('Cột từ')).toHaveValue('2');
     expect(screen.getByLabelText('Cột nghĩa')).toHaveValue('3');
@@ -152,7 +165,8 @@ describe('ImportSource', () => {
     await userEvent.paste(pasted);
 
     expect(textarea).toHaveValue(pasted);
-    expect(screen.getByLabelText('Ký tự phân cách')).toHaveValue('comma');
+    await openOptions();
+    expect(screen.getByLabelText(DELIMITER)).toHaveValue('comma');
     expect(screen.getByLabelText('Cột ví dụ (không bắt buộc)')).toHaveValue('3');
     expect(screen.getByLabelText('Cột phiên âm (không bắt buộc)')).toHaveValue('');
   });
@@ -172,5 +186,40 @@ describe('ImportSource', () => {
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a\tb');
     await userEvent.click(previewButton());
     expect(await screen.findByText('Mỗi lần nhập tối đa 2000 dòng')).toBeInTheDocument();
+  });
+
+  it('chưa có nội dung thì tóm tắt cách đọc mặc định, mở ra thấy các lựa chọn có ví dụ', async () => {
+    renderSource();
+
+    expect(
+      screen.getByText(
+        'Trang tự nhận cách ngăn cách sau khi bạn dán hoặc chọn file. Lấy từ ở cột 1, nghĩa ở cột 2.',
+      ),
+    ).toBeInTheDocument();
+    await openOptions();
+    expect(screen.getByRole('option', { name: 'Dấu phẩy: apple, quả táo' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Cột từ')).toHaveDisplayValue('Cột 1');
+  });
+
+  it('nhãn cột hiện giá trị dòng đầu và báo ký tự đã tự nhận', async () => {
+    renderSource();
+
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple - quả táo');
+    await openOptions();
+
+    expect(screen.getByText('Đã nhận: gạch ngang.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cột từ')).toHaveDisplayValue('Cột 1: apple');
+    expect(screen.getByLabelText('Cột nghĩa')).toHaveDisplayValue('Cột 2: quả táo');
+    expect(screen.getAllByRole('option', { name: 'Cột 3' }).length).toBeGreaterThan(0);
+  });
+
+  it('chỉ tách được một cột thì báo và mở sẵn cách đọc', async () => {
+    renderSource();
+
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple quả táo');
+
+    expect(screen.getByText(/Chưa tách được từ và nghĩa/)).toBeInTheDocument();
+    expect(screen.getByLabelText(DELIMITER)).toHaveValue('auto');
+    expect(screen.queryByRole('button', { name: 'Đổi cách đọc' })).not.toBeInTheDocument();
   });
 });
