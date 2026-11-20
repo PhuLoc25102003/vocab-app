@@ -11,6 +11,7 @@ import {
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
+import { PublicSetCache } from './public-set-cache';
 import { SetsRepository, type SetViewer } from './sets.repository';
 
 function folderNotFound(): AppError {
@@ -23,7 +24,10 @@ function setNotFound(): AppError {
 
 @Injectable()
 export class SetsService {
-  constructor(private readonly sets: SetsRepository) {}
+  constructor(
+    private readonly sets: SetsRepository,
+    private readonly cache: PublicSetCache,
+  ) {}
 
   async listMine(ownerId: string, query: MySetQuery) {
     const [items, total] = await this.sets.findByOwner(ownerId, query);
@@ -36,12 +40,23 @@ export class SetsService {
   }
 
   async getById(id: string, viewer: SetViewer | null) {
+    // Chủ bộ từ và ADMIN luôn đọc database để thấy thư mục và trạng thái mới nhất.
+    if (viewer?.role !== 'ADMIN') {
+      const cached = await this.cache.get(id);
+      if (cached && cached.ownerId !== viewer?.id) {
+        return ok(cached);
+      }
+    }
     const set = await this.sets.findVisibleById(id, viewer);
     if (!set) {
       throw setNotFound();
     }
     // Thư mục là thông tin riêng của chủ bộ từ.
     const { folderId: _folderId, ...rest } = set;
+    // Chỉ cache bộ ai cũng xem được, bộ của lớp còn tuỳ người xem.
+    if (set.visibility === 'PUBLIC' && set.hiddenAt === null) {
+      await this.cache.put(id, rest);
+    }
     return ok(viewer?.id === set.ownerId ? set : rest);
   }
 
@@ -75,6 +90,7 @@ export class SetsService {
     if (!set) {
       throw setNotFound();
     }
+    await this.cache.invalidate(id);
     return ok(set);
   }
 
@@ -83,6 +99,7 @@ export class SetsService {
     if (!set) {
       throw setNotFound();
     }
+    await this.cache.invalidate(id);
     return ok(set);
   }
 
@@ -100,6 +117,7 @@ export class SetsService {
         { max: MAX_CARDS_PER_SET, current: result.current, adding: cards.length },
       );
     }
+    await this.cache.invalidate(id);
     return ok({ ...result.set, imported: cards.length });
   }
 
@@ -107,5 +125,6 @@ export class SetsService {
     if (!(await this.sets.softDelete(id))) {
       throw setNotFound();
     }
+    await this.cache.invalidate(id);
   }
 }
