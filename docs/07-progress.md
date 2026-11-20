@@ -201,7 +201,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện dạng danh sách để quản lý, Khám phá là lưới bộ của cộng đồng có tác giả, mô tả và số thẻ; mô tả trang nói rõ vai trò (#212).
 - [x] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị (#216).
 - [x] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ (#218).
-- [x] **2.28** Header trang bộ từ gọn: chỉ còn "Sửa bộ từ" và menu "Thao tác khác", thư mục thành chip trên dòng thông tin.
+- [x] **2.28** Header trang bộ từ gọn: chỉ còn "Sửa bộ từ" và menu "Thao tác khác", thư mục thành chip trên dòng thông tin (#245).
 - [ ] **2.29** Thẻ bộ từ dùng chung cho Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan, hiển thị dạng lưới.
 - [ ] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng, mở và đóng thư mục, kéo thả bộ từ vào thư mục, gỡ khỏi thư mục, thao tác bằng bàn phím thay cho kéo thả.
 - [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
