@@ -1,6 +1,7 @@
 import { ERROR_CODES, type AuthSession } from '@vocab/shared';
 import { configureHttpAuth, HttpError } from '@/lib/http';
 import { getQueryClient } from '@/lib/query-client';
+import { clearOfflineData } from '@/lib/offline-store';
 import { clearSessionMarker, setSessionMarker } from '@/lib/session-marker';
 import * as authApi from './api';
 import { useAuthStore } from './store';
@@ -69,6 +70,8 @@ export function refreshSession(): Promise<string | null> {
 /** Xoá mọi dữ liệu của phiên trên trình duyệt. */
 export function leaveSession(): void {
   clearSessionMarker();
+  // Máy dùng chung không được giữ bộ từ đã tải của người vừa đăng xuất.
+  void clearOfflineData();
   getQueryClient().clear();
   useAuthStore.getState().clearSession('signed-out');
 }

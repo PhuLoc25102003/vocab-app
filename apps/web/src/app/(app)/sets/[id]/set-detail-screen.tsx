@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { HideSetButton } from '@/features/admin/components/hide-set-button';
 import { Can } from '@/features/auth/components/can';
 import { SetFolderPicker } from '@/features/folders/components/set-folder-picker';
+import { OfflineToggle } from '@/features/sets/components/offline-toggle';
 import { DuplicateSetButton, SetOwnerActions } from '@/features/sets/components/set-actions';
 import { SetDetail } from '@/features/sets/components/set-detail';
 import { CardMasteryBadge } from '@/features/stats/components/card-mastery';
@@ -44,6 +45,7 @@ export function SetDetailScreen({ id }: { id: string }) {
               <SetFolderPicker setId={set.id} folderId={set.folderId} />
             ) : null}
           </Can>
+          <OfflineToggle set={set} />
           <Can action="moderate-content">
             <HideSetButton setId={set.id} hidden={Boolean(set.hiddenAt)} />
           </Can>
