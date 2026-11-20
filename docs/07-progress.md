@@ -11,11 +11,10 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
 1. Làm rõ trang nhập và file mẫu, gọn form bộ từ, thiết kế lại trang công khai (việc 2.37 đến 2.40, góp ý ngày 2026-11-20).
-2. Quyền xem bộ từ `CLASS` cho thành viên lớp (việc 3.4).
-3. API giao bộ từ và hạn nộp (việc 3.5), API kết quả lớp (việc 3.6).
-4. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
-5. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-6. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+2. API giao bộ từ và hạn nộp (việc 3.5), API kết quả lớp (việc 3.6).
+3. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
+4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+5. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -26,9 +25,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      31 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       3 |       9 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       4 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **103** | **122** | **84%**    |
+| **Toàn dự án**          |                                            | **104** | **122** | **85%**    |
 
 ## Cách cập nhật
 
@@ -229,7 +228,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **3.2** Quy trình cấp vai trò giáo viên.
 - [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia (#241).
 - [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia (#243).
-- [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
+- [x] **3.4** Quyền xem bộ từ có `visibility = CLASS` (#265).
 - [ ] **3.5** API giao bộ từ và theo dõi hạn nộp.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.
 - [ ] **3.7** Web cho giáo viên.
