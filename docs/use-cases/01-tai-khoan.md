@@ -102,11 +102,11 @@
 
 ## UC-A9. Quên mật khẩu
 
-- **Việc:** 1.49. **Người dùng:** khách. **Trạng thái:** Chưa làm. Đã chọn Brevo (300 thư mỗi ngày, không cần tên miền riêng). Code làm trước qua adapter `Mailer`: bản Brevo dùng khi có `BREVO_API_KEY`, bản giả lưu thư trong bộ nhớ cho test và E2E, thiếu khoá thì ghi log "chưa cấu hình gửi thư" và vẫn trả cùng thông báo cho người dùng. Cách tạo tài khoản ở `docs/08-deploy.md`.
+- **Việc:** 1.49a (API, xong), 1.49b (giao diện). **Người dùng:** khách. **Trạng thái:** Đã có API, chưa có trang. Đã chọn Brevo (300 thư mỗi ngày, không cần tên miền riêng). Code làm trước qua adapter `Mailer`: bản Brevo dùng khi có `BREVO_API_KEY`, bản giả lưu thư trong bộ nhớ cho test và E2E, thiếu khoá thì ghi log "chưa cấu hình gửi thư" và vẫn trả cùng thông báo cho người dùng. Cách tạo tài khoản ở `docs/08-deploy.md`.
 - **Phải có:**
   - `/forgot-password` nhập email, `/reset-password?token=...` đặt mật khẩu mới.
   - Token ngẫu nhiên, chỉ lưu hash, dùng một lần, hết hạn sau 30 phút.
   - Thông báo giống nhau dù email có tồn tại hay không.
 - **Luồng chính:** nhập email, nhận thư, mở liên kết, đặt mật khẩu mới, mọi phiên cũ kết thúc, về đăng nhập.
-- **Ngoại lệ:** token sai, hết hạn hoặc đã dùng; tài khoản chỉ dùng Google; gửi thư thất bại; vượt rate limit.
+- **Ngoại lệ:** token sai, hết hạn hoặc đã dùng; tài khoản chỉ dùng Google vẫn nhận thư và đặt được mật khẩu, vì mở được thư là chủ email; tài khoản bị khoá không nhận thư; gửi thư thất bại thì ghi log, người dùng vẫn thấy cùng thông báo; vượt rate limit.
 - **Cách test:** integration cho vòng đời token và chống dò email, dùng bộ gửi thư giả; component cho hai form; E2E đọc liên kết từ bộ gửi thư giả.

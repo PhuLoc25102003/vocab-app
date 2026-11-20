@@ -48,13 +48,14 @@ model User {
   lockReason   String?
   lockedById   String?
 
-  refreshSessions RefreshSession[]
-  folders         Folder[]
-  studySets       StudySet[]
-  cardProgress    CardProgress[]
-  studySessions   StudySession[]
-  teachingClasses Class[]
-  classMembers    ClassMember[]
+  refreshSessions     RefreshSession[]
+  passwordResetTokens PasswordResetToken[]
+  folders             Folder[]
+  studySets           StudySet[]
+  cardProgress        CardProgress[]
+  studySessions       StudySession[]
+  teachingClasses     Class[]
+  classMembers        ClassMember[]
 }
 
 model RefreshSession {
@@ -66,6 +67,20 @@ model RefreshSession {
   ip        String?
   expiresAt DateTime
   revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, dùng một lần, hết hạn sau 30 phút.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
