@@ -185,17 +185,21 @@ test.describe.serial('luồng chính', () => {
     await page.getByRole('button', { name: /^Tài khoản:/ }).click();
     await page.getByRole('menuitem', { name: 'Tài khoản' }).click();
     await page.waitForURL('**/account');
-    await expect(page.getByText(account.email)).toBeVisible();
+    await expect(page.getByText(account.email).first()).toBeVisible();
 
-    await page.getByLabel('Tên hiển thị').fill('Tên mới E2E');
-    await page.getByRole('button', { name: 'Lưu tên' }).click();
+    await page.getByRole('button', { name: 'Sửa tên' }).click();
+    const nameDialog = page.getByRole('dialog', { name: 'Đổi tên hiển thị' });
+    await nameDialog.getByLabel('Tên hiển thị').fill('Tên mới E2E');
+    await nameDialog.getByRole('button', { name: 'Lưu tên' }).click();
     await expect(page.getByText('Đã lưu tên hiển thị')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Tài khoản: Tên mới E2E' })).toBeVisible();
 
-    await page.getByLabel('Mật khẩu hiện tại', { exact: true }).fill(account.password);
-    account.password = 'mat-khau-moi-e2e-456';
-    await page.getByLabel('Mật khẩu mới', { exact: true }).fill(account.password);
     await page.getByRole('button', { name: 'Đổi mật khẩu' }).click();
+    const passwordDialog = page.getByRole('dialog', { name: 'Đổi mật khẩu' });
+    await passwordDialog.getByLabel('Mật khẩu hiện tại', { exact: true }).fill(account.password);
+    account.password = 'mat-khau-moi-e2e-456';
+    await passwordDialog.getByLabel('Mật khẩu mới', { exact: true }).fill(account.password);
+    await passwordDialog.getByRole('button', { name: 'Đổi mật khẩu' }).click();
     await expect(page.getByText(/^Đã đổi mật khẩu/)).toBeVisible();
   });
 

@@ -47,9 +47,9 @@ export function SpeechSettings() {
   return (
     <section
       aria-labelledby="speech-title"
-      className="flex w-full flex-col gap-4 border-t border-border pt-6"
+      className="flex w-full flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5"
     >
-      <h2 id="speech-title" className="text-h2">
+      <h2 id="speech-title" className="text-h3">
         Giọng đọc
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">

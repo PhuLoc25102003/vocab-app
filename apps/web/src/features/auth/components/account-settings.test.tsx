@@ -28,7 +28,7 @@ async function renderSettings(value: Account = account) {
       <AccountSettings />
     </QueryClientProvider>,
   );
-  await screen.findByText('an@example.com');
+  await screen.findAllByText('an@example.com');
 }
 
 describe('AccountSettings', () => {
@@ -41,44 +41,53 @@ describe('AccountSettings', () => {
     vi.mocked(changeDisplayName).mockResolvedValue({ user: { ...user, displayName: 'Bình' } });
     await renderSettings();
 
-    const name = screen.getByLabelText('Tên hiển thị');
+    await userEvent.click(screen.getByRole('button', { name: 'Sửa tên' }));
+    const dialog = screen.getByRole('dialog', { name: 'Đổi tên hiển thị' });
+    const name = within(dialog).getByLabelText('Tên hiển thị');
+    expect(name).toHaveFocus();
     await userEvent.clear(name);
     await userEvent.type(name, 'Bình');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu tên' }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Lưu tên' }));
 
     await waitFor(() => expect(useAuthStore.getState().user?.displayName).toBe('Bình'));
     expect(useAuthStore.getState().accessToken).toBe('token');
+    expect(screen.queryByRole('dialog', { name: 'Đổi tên hiển thị' })).not.toBeInTheDocument();
   });
+
+  const openPassword = async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Đổi mật khẩu' }));
+    const dialog = screen.getByRole('dialog', { name: 'Đổi mật khẩu' });
+    await userEvent.type(within(dialog).getByLabelText('Mật khẩu hiện tại'), 'mat-khau-cu');
+    await userEvent.type(within(dialog).getByLabelText('Mật khẩu mới'), 'mat-khau-moi-123');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Đổi mật khẩu' }));
+  };
 
   it('báo sai mật khẩu hiện tại ở đúng ô', async () => {
     vi.mocked(changePassword).mockRejectedValue(wrongPassword);
     await renderSettings();
 
-    await userEvent.type(screen.getByLabelText('Mật khẩu hiện tại'), 'mat-khau-cu');
-    await userEvent.type(screen.getByLabelText('Mật khẩu mới'), 'mat-khau-moi-123');
-    await userEvent.click(screen.getByRole('button', { name: 'Đổi mật khẩu' }));
+    await openPassword();
 
     expect(await screen.findByText('Mật khẩu hiện tại không đúng')).toBeInTheDocument();
     expect(screen.getByLabelText('Mật khẩu hiện tại')).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('nhận phiên mới sau khi đổi mật khẩu', async () => {
+  it('nhận phiên mới sau khi đổi mật khẩu, đóng hộp thoại', async () => {
     vi.mocked(changePassword).mockResolvedValue({ user, accessToken: 'token-moi' });
     await renderSettings();
 
-    await userEvent.type(screen.getByLabelText('Mật khẩu hiện tại'), 'mat-khau-cu');
-    await userEvent.type(screen.getByLabelText('Mật khẩu mới'), 'mat-khau-moi-123');
-    await userEvent.click(screen.getByRole('button', { name: 'Đổi mật khẩu' }));
+    await openPassword();
 
     await waitFor(() => expect(useAuthStore.getState().accessToken).toBe('token-moi'));
-    expect(screen.getByLabelText('Mật khẩu mới')).toHaveValue('');
+    expect(screen.queryByLabelText('Mật khẩu mới')).not.toBeInTheDocument();
   });
 
   it('ẩn đổi mật khẩu và không hỏi mật khẩu với tài khoản Google', async () => {
     vi.mocked(deleteAccount).mockResolvedValue(undefined);
     await renderSettings({ ...account, hasPassword: false });
 
-    expect(screen.queryByLabelText('Mật khẩu hiện tại')).not.toBeInTheDocument();
+    expect(screen.getByText('Đăng nhập bằng Google')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Đổi mật khẩu' })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Xoá tài khoản' }));
     await userEvent.click(screen.getByRole('button', { name: 'Xoá vĩnh viễn' }));
 
@@ -137,6 +146,6 @@ describe('AccountSettings', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Thử lại' }));
 
-    expect(await screen.findByText('an@example.com')).toBeInTheDocument();
+    expect(await screen.findAllByText('an@example.com')).not.toHaveLength(0);
   });
 });

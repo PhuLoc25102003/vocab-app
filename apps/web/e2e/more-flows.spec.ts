@@ -594,9 +594,8 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   });
   expect(promoted.status, promoted.stderr).toBe(0);
 
-  await admin.goto('/account');
-  await admin.getByRole('link', { name: 'Quản lý người dùng' }).click();
-  await admin.waitForURL('**/admin/users');
+  // Vai trò đổi bằng SQL sau khi đăng nhập nên vào thẳng trang quản lý (trang đọc vai trò từ API).
+  await admin.goto('/admin/users');
   await admin.getByLabel('Tìm theo email hoặc tên').fill(target);
   await admin.getByRole('button', { name: 'Tìm', exact: true }).click();
   await admin.getByRole('button', { name: `Khoá ${target}` }).click();

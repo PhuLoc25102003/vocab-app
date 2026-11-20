@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: 5.9 (trang Tài khoản); rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+1. Giai đoạn 5 theo thứ tự: 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       8 |      23 | Đang làm   |
-| **Toàn dự án**          |                                            | **133** | **152** | **88%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       9 |      23 | Đang làm   |
+| **Toàn dự án**          |                                            | **134** | **152** | **88%**    |
 
 ## Cách cập nhật
 
@@ -277,7 +277,7 @@ Không tính vào tổng số việc.
 
 ### 5C. Tài khoản
 
-- [ ] **5.9** Thiết kế lại trang Tài khoản: thẻ hồ sơ bên trái, nhóm Hồ sơ, Bảo mật, Giọng đọc, Vùng nguy hiểm dạng hàng; đổi tên và mật khẩu qua modal; tài khoản Google ghi "Đăng nhập bằng Google". Cần 5.3 (GAP-23).
+- [x] **5.9** Thiết kế lại trang Tài khoản: thẻ hồ sơ bên trái, nhóm Hồ sơ, Bảo mật, Giọng đọc, Vùng nguy hiểm dạng hàng; đổi tên và mật khẩu qua modal; tài khoản Google ghi "Đăng nhập bằng Google". Cần 5.3 (GAP-23, #335).
 
 ### 5D. Giao bài và nộp bài
 
