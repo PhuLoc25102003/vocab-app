@@ -176,7 +176,7 @@ Không tính vào tổng số việc.
 ### 2B. Nội dung
 
 - [x] **2.4** Thư mục bộ từ trên API và web (#151).
-- [x] **2.5a** API ảnh cho thẻ: `GET /uploads/config`, `POST /uploads/presign` qua adapter `ObjectStorage` (R2, ký SigV4), thẻ nhận `imageUrl` trong kho của app; thiếu khoá R2 thì trả 503.
+- [x] **2.5a** API ảnh cho thẻ: `GET /uploads/config`, `POST /uploads/presign` qua adapter `ObjectStorage` (R2, ký SigV4), thẻ nhận `imageUrl` trong kho của app; thiếu khoá R2 thì trả 503 (#308).
 - [ ] **2.5b** Giao diện ảnh cho thẻ: nút thêm ảnh trong trình sửa thẻ (ẩn khi chưa bật), xem trước, gỡ ảnh, hiện ảnh khi học; CSP cho phép domain ảnh.
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2. Cần chọn dịch vụ TTS; chưa có thì giữ giọng đọc của trình duyệt.
 
