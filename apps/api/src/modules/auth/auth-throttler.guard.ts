@@ -25,10 +25,12 @@ import { AppError } from '../../common/errors/app-error';
 import type { Env } from '../../config/env';
 
 export const ONE_MINUTE_MS = 60_000;
+/** Mặc định của `RATE_LIMIT_REGISTER_PER_MINUTE`. */
 export const REGISTER_LIMIT_PER_IP = 3;
 /** Mặc định của `RATE_LIMIT_REFRESH_PER_MINUTE`. */
 export const REFRESH_LIMIT_PER_IP = 60;
-const REFRESH_THROTTLE_KEY = 'refreshThrottle';
+const IP_LIMIT_ENV_KEY = 'ipLimitEnv';
+type IpLimitEnv = 'RATE_LIMIT_REGISTER_PER_MINUTE' | 'RATE_LIMIT_REFRESH_PER_MINUTE';
 const ACCOUNT_CHANGE_LIMIT_PER_USER = 5;
 const LOGIN_LIMIT_PER_IP = 20;
 const LOGIN_LIMIT_PER_ACCOUNT = 5;
@@ -66,13 +68,20 @@ export const AUTH_THROTTLE_OPTIONS: ThrottlerModuleOptions = {
   ],
 };
 
-/** Mỗi lần mở trang gọi refresh một lần, nên giới hạn theo IP và chỉnh được bằng env. */
-export const RefreshThrottle = () =>
+/** Giới hạn theo IP mỗi phút, đọc từ biến env `env` khi chạy. `fallback` chỉ là giá trị khai báo. */
+const IpThrottleFromEnv = (env: IpLimitEnv, fallback: number) =>
   applyDecorators(
-    SetMetadata(REFRESH_THROTTLE_KEY, true),
+    SetMetadata(IP_LIMIT_ENV_KEY, env),
     SkipThrottle({ account: true }),
-    Throttle({ ip: { limit: REFRESH_LIMIT_PER_IP, ttl: ONE_MINUTE_MS } }),
+    Throttle({ ip: { limit: fallback, ttl: ONE_MINUTE_MS } }),
   );
+
+export const RegisterThrottle = () =>
+  IpThrottleFromEnv('RATE_LIMIT_REGISTER_PER_MINUTE', REGISTER_LIMIT_PER_IP);
+
+/** Mỗi lần mở trang gọi refresh một lần. */
+export const RefreshThrottle = () =>
+  IpThrottleFromEnv('RATE_LIMIT_REFRESH_PER_MINUTE', REFRESH_LIMIT_PER_IP);
 
 @Injectable()
 export class AuthThrottlerGuard extends ThrottlerGuard {
@@ -86,13 +95,12 @@ export class AuthThrottlerGuard extends ThrottlerGuard {
   }
 
   protected override handleRequest(request: ThrottlerRequest): Promise<boolean> {
-    const isRefresh = this.reflector.get<boolean | undefined>(
-      REFRESH_THROTTLE_KEY,
+    const env = this.reflector.get<IpLimitEnv | undefined>(
+      IP_LIMIT_ENV_KEY,
       request.context.getHandler(),
     );
-    if (isRefresh && request.throttler.name === 'ip') {
-      const limit = this.config.get('RATE_LIMIT_REFRESH_PER_MINUTE', { infer: true });
-      return super.handleRequest({ ...request, limit });
+    if (env && request.throttler.name === 'ip') {
+      return super.handleRequest({ ...request, limit: this.config.get(env, { infer: true }) });
     }
     return super.handleRequest(request);
   }
