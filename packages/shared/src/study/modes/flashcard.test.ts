@@ -22,6 +22,14 @@ describe('FlashcardMode', () => {
     ]);
   });
 
+  it('carries the card image with the meaning', () => {
+    const [withImage] = mode.buildQuestions([{ ...cards[0]!, imageUrl: 'https://img/a.png' }], {});
+    expect(withImage).toMatchObject({ prompt: 'apple', imageUrl: 'https://img/a.png' });
+    expect(mode.buildQuestions([{ ...cards[0]!, imageUrl: null }], {})[0]).not.toHaveProperty(
+      'imageUrl',
+    );
+  });
+
   it('respects the limit and an empty list', () => {
     expect(mode.buildQuestions(cards, { limit: 1 })).toHaveLength(1);
     expect(mode.buildQuestions([], {})).toEqual([]);

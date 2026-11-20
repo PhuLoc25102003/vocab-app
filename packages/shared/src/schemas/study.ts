@@ -59,6 +59,7 @@ export const questionSchema = z.object({
   expected: z.string(),
   choices: z.array(z.string()).optional(),
   hint: z.string().optional(),
+  imageUrl: z.string().optional(),
 });
 
 /** Mã BCP-47 của từ và nghĩa, dùng để phát âm. */

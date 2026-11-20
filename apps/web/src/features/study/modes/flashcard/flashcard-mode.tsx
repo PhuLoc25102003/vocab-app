@@ -3,6 +3,7 @@
 import { FLASHCARD_ANSWERS } from '@vocab/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
+import { CardImage } from '@/components/common/card-image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
@@ -80,8 +81,15 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
           </div>
           <div
             aria-hidden={!flipped}
-            className={cn(FACE, 'rotate-y-180 bg-board text-board-fg shadow-raised')}
+            className={cn(FACE, 'rotate-y-180 flex-col gap-4 bg-board text-board-fg shadow-raised')}
           >
+            {question.imageUrl ? (
+              <CardImage
+                src={question.imageUrl}
+                alt={`Ảnh minh hoạ cho ${question.prompt}`}
+                className="max-h-36 w-auto max-w-full"
+              />
+            ) : null}
             <p className={cn('max-w-full font-card break-words', textSize(question.expected))}>
               {question.expected}
             </p>

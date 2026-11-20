@@ -12,11 +12,11 @@ const question: Question = {
   expected: 'quả táo',
 };
 
-function setup() {
+function setup(current: Question = question) {
   const onAnswer = vi.fn();
   render(
     <FlashcardMode
-      question={question}
+      question={current}
       languages={{ term: 'en', definition: 'vi' }}
       onAnswer={onAnswer}
     />,
@@ -25,6 +25,17 @@ function setup() {
 }
 
 describe('FlashcardMode', () => {
+  it('ảnh của thẻ nằm ở mặt nghĩa', async () => {
+    setup({ ...question, imageUrl: 'https://pub.r2.dev/cards/u1/tao.png' });
+
+    expect(screen.queryByRole('img', { name: 'Ảnh minh hoạ cho apple' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Lật thẻ' }));
+    expect(screen.getByRole('img', { name: 'Ảnh minh hoạ cho apple' })).toHaveAttribute(
+      'src',
+      'https://pub.r2.dev/cards/u1/tao.png',
+    );
+  });
+
   it('chỉ cho đánh giá sau khi lật thẻ', async () => {
     const onAnswer = setup();
 
