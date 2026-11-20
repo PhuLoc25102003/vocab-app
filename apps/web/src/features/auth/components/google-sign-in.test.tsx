@@ -8,11 +8,12 @@ import { GoogleSignIn } from './google-sign-in';
 
 const navigation = vi.hoisted(() => ({
   replace: vi.fn(),
+  refresh: vi.fn(),
   params: new URLSearchParams(),
 }));
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ replace: navigation.replace }),
+  useRouter: () => ({ replace: navigation.replace, refresh: navigation.refresh }),
   useSearchParams: () => navigation.params,
 }));
 vi.mock('../api');
@@ -97,6 +98,10 @@ describe('GoogleSignIn', () => {
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets'));
     expect(loginWithGoogle).toHaveBeenCalledWith({ credential: 'google-token' });
     expect(useAuthStore.getState().accessToken).toBe('token');
+    // Bỏ prefetch lúc chưa đăng nhập trước khi chuyển trang.
+    expect(navigation.refresh.mock.invocationCallOrder[0]).toBeLessThan(
+      navigation.replace.mock.invocationCallOrder[0] ?? 0,
+    );
   });
 
   it('không chuyển tới địa chỉ ngoài trang web', async () => {

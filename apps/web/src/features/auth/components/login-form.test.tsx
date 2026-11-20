@@ -9,11 +9,12 @@ import { LoginForm } from './login-form';
 
 const navigation = vi.hoisted(() => ({
   replace: vi.fn(),
+  refresh: vi.fn(),
   params: new URLSearchParams(),
 }));
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ replace: navigation.replace }),
+  useRouter: () => ({ replace: navigation.replace, refresh: navigation.refresh }),
   useSearchParams: () => navigation.params,
 }));
 vi.mock('../api');
@@ -48,6 +49,19 @@ describe('LoginForm', () => {
     expect(login).toHaveBeenCalledWith({ email: 'an@example.com', password: 'mat-khau-dai' });
     expect(useAuthStore.getState().accessToken).toBe('token');
     expect(screen.getByLabelText('Mật khẩu')).toHaveValue('');
+  });
+
+  it('xoá cache router trước khi chuyển trang, không dùng lại prefetch lúc chưa đăng nhập', async () => {
+    vi.mocked(login).mockResolvedValue(session);
+    render(<LoginForm />);
+
+    await fillLogin();
+
+    await waitFor(() => expect(navigation.replace).toHaveBeenCalled());
+    expect(navigation.refresh).toHaveBeenCalledTimes(1);
+    expect(navigation.refresh.mock.invocationCallOrder[0]).toBeLessThan(
+      navigation.replace.mock.invocationCallOrder[0] ?? 0,
+    );
   });
 
   it('không chuyển sang trang ngoài', async () => {

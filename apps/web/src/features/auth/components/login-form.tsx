@@ -40,6 +40,8 @@ export function LoginForm() {
       startSession(await login(values));
       // Next giữ trang cũ ẩn trong DOM, không để mật khẩu nằm lại trong form.
       reset();
+      // Prefetch lúc chưa đăng nhập đã bị chuyển về /login, phải bỏ trước khi đi tiếp.
+      router.refresh();
       router.replace(safeNextPath(next) as Route);
     } catch (error) {
       setFormError(applyFormError(error, FIELDS, setError));

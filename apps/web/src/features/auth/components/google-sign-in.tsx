@@ -57,6 +57,8 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       void loginWithGoogle({ credential })
         .then((session) => {
           startSession(session);
+          // Prefetch lúc chưa đăng nhập đã bị chuyển về /login, phải bỏ trước khi đi tiếp.
+          router.refresh();
           router.replace(safeNextPath(next) as Route);
         })
         .catch((reason: unknown) => setError(formErrorMessage(reason)))
