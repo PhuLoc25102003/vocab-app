@@ -30,12 +30,33 @@ const ICONS: Record<StudySlug, LucideIcon> = {
   speak: Mic,
 };
 
+interface StudyModeGridProps {
+  setId: string;
+  /** Khách học thử ở trang công khai, không có lộ trình và không lưu tiến độ. */
+  guest?: boolean;
+}
+
 /**
  * "Bắt đầu học" chạy lộ trình nhiều kỹ năng liên tiếp. Từng chế độ, kể cả Flashcard,
- * xếp thành lưới để học lẻ.
+ * xếp thành lưới để học lẻ. Khách thấy nút "Học thử" bằng Flashcard thay cho lộ trình.
  */
-export function StudyModeGrid({ setId }: { setId: string }) {
-  const href = (slug: string) => `/sets/${setId}/study/${slug}` as Route;
+export function StudyModeGrid({ setId, guest = false }: StudyModeGridProps) {
+  const base = guest ? `/public/sets/${setId}/study` : `/sets/${setId}/study`;
+  const href = (slug: string) => `${base}/${slug}` as Route;
+  const main = guest
+    ? {
+        href: href('flashcard'),
+        icon: Layers,
+        label: 'Học thử',
+        hint: 'Học thử không cần tài khoản. Đăng nhập để lưu tiến độ và học theo lộ trình.',
+      }
+    : {
+        href: href('path'),
+        icon: Route2,
+        label: 'Bắt đầu học',
+        hint: 'Bắt đầu học: xem thẻ → trắc nghiệm → ghép cặp → luyện viết, nối tiếp nhau.',
+      };
+  const MainIcon = main.icon;
 
   return (
     <section aria-labelledby="study-modes-title" className="flex flex-col gap-4">
@@ -45,13 +66,13 @@ export function StudyModeGrid({ setId }: { setId: string }) {
             Chọn cách học
           </h2>
           <p id="study-path-hint" className="text-small text-text-muted">
-            Bắt đầu học: xem thẻ → trắc nghiệm → ghép cặp → luyện viết, nối tiếp nhau.
+            {main.hint}
           </p>
         </div>
         <Button asChild>
-          <Link href={`/sets/${setId}/study/path` as Route} aria-describedby="study-path-hint">
-            <Route2 aria-hidden className="size-4" />
-            Bắt đầu học
+          <Link href={main.href} aria-describedby="study-path-hint">
+            <MainIcon aria-hidden className="size-4" />
+            {main.label}
           </Link>
         </Button>
       </div>

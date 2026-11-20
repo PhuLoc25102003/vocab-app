@@ -83,6 +83,33 @@ describe('PublicSet', () => {
     );
   });
 
+  it('cho khách học thử bằng lưới chế độ chung và mời tạo tài khoản', async () => {
+    vi.mocked(getSet).mockResolvedValue(set);
+    render(await PublicSet({ id: 's1' }));
+
+    expect(screen.getByRole('link', { name: 'Học thử' })).toHaveAttribute(
+      'href',
+      '/public/sets/s1/study/flashcard',
+    );
+    expect(screen.getByRole('link', { name: /^Ghép cặp/ })).toHaveAttribute(
+      'href',
+      '/public/sets/s1/study/match',
+    );
+    expect(screen.queryByRole('link', { name: 'Bắt đầu học' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Tạo tài khoản' })).toHaveAttribute(
+      'href',
+      '/register?next=%2Fsets%2Fs1',
+    );
+  });
+
+  it('báo trống khi bộ từ chưa có thẻ', async () => {
+    vi.mocked(getSet).mockResolvedValue({ ...set, cardCount: 0, cards: [] });
+    render(await PublicSet({ id: 's1' }));
+
+    expect(screen.getByText('Bộ từ này chưa có thẻ')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Học thử' })).not.toBeInTheDocument();
+  });
+
   it('chuyển sang trang không tìm thấy khi không xem được', async () => {
     vi.mocked(getSet).mockRejectedValue(notFoundError);
 
