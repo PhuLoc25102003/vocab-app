@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-20
 
-**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (3.2), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2, 3, 4 đã xong phần làm được trong repo. Các việc dùng dịch vụ ngoài (email 1.49, Upstash 2.1 và 2.2, R2 2.5) được làm code trước bằng adapter có bản giả, tài khoản chỉ cần khi bật thật (hướng dẫn ở `docs/08-deploy.md`, mục "Dịch vụ cần tài khoản"). Sentry (1.31) đã hoãn. Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý lớp (3.3), API thành viên lớp (3.9), quyền xem bộ `CLASS` (3.4) API giao bộ từ (3.5) API học sinh xem bài cần làm (3.10) và API kết quả lớp (3.6).
 
@@ -10,9 +10,11 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Chốt cách một tài khoản thành giáo viên (việc 3.2). Trong lúc chờ, cấp quyền bằng `npm run user:set-role` (việc 3.11).
-2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Quên mật khẩu với bộ gửi thư giả và adapter Brevo (việc 1.49).
+2. Rate limit và cache dùng chung qua adapter Upstash, thiếu khoá thì dùng bộ nhớ (việc 2.1, 2.2).
+3. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
+4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+5. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -21,11 +23,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |    Xong |    Tổng | Trạng thái |
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      53 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      13 |      14 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **117** | **127** | **92%**    |
+| **Toàn dự án**          |                                            | **117** | **126** | **93%**    |
 
 ## Cách cập nhật
 
@@ -132,12 +134,17 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **1.29** Trang giới thiệu sản phẩm (#93).
 - [x] **1.30** Cron xoá hẳn bộ từ đã xoá mềm sau 30 ngày (#172).
-- [ ] **1.31** Sentry cho web và API, theo dõi uptime. Cần tài khoản Sentry.
 - [x] **1.50** Log JSON bằng Pino, có `requestId`, ẩn mật khẩu, token, cookie (#133).
 - [x] **1.32** Header bảo mật và CSP cho web, rà toàn bộ checklist trong `docs/04-security.md` (#96).
 - [x] **1.33** Test E2E Playwright cho 3 đến 5 luồng chính (#98).
 - [ ] **1.34** Rà accessibility, dark mode, màn hình 360 px, Lighthouse đạt mục tiêu. Accessibility đã đạt, Performance còn 85 đến 88.
 - [ ] **1.35** PR phát hành từ `develop` vào `main`, kiểm tra production.
+
+### Hoãn khỏi MVP
+
+Không tính vào tổng số việc.
+
+- **1.31** Sentry cho web và API. Hoãn theo quyết định ngày 2026-11-20: xem lỗi bằng log của Render và Vercel, theo dõi uptime bằng UptimeRobot miễn phí (`docs/08-deploy.md`).
 
 ### 1H. Bổ sung sau khi rà use case
 
@@ -155,7 +162,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **1.46** Nút quay lại ở trang công khai và nút sao chép đường dẫn chia sẻ (GAP-10, #123).
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
 - [x] **1.48** Rate limit chung cho API (GAP-12, #95, #127).
-- [ ] **1.49** Quên mật khẩu qua email (GAP-13). Chờ chọn dịch vụ gửi email.
+- [ ] **1.49** Quên mật khẩu qua email (GAP-13). Gửi bằng Brevo qua adapter `Mailer`, ở máy và trong test dùng bộ gửi giả; thiếu `BREVO_API_KEY` thì không gửi thật và ghi log.
 
 ## Giai đoạn 2: Mở rộng
 
@@ -163,15 +170,15 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ### 2A. Hạ tầng
 
-- [ ] **2.1** Rate limit dùng Upstash Redis.
-- [ ] **2.2** Cache bộ từ công khai.
-- [ ] **2.3** Môi trường staging cho `develop`.
+- [ ] **2.1** Rate limit dùng Upstash Redis qua adapter, thiếu `UPSTASH_REDIS_REST_URL` thì giữ bộ đếm trong bộ nhớ.
+- [ ] **2.2** Cache bộ từ công khai phía API trên cùng Redis, xoá cache khi sửa, xoá hoặc đổi phạm vi; thiếu Redis thì không cache.
+- [ ] **2.3** Môi trường staging cho `develop`: Neon branch, Render service thứ hai, tên miền Vercel cho nhánh `develop`. Làm sau 1.35, cần thao tác trên dashboard.
 
 ### 2B. Nội dung
 
 - [x] **2.4** Thư mục bộ từ trên API và web (#151).
-- [ ] **2.5** Ảnh cho thẻ từ: R2 và `POST /uploads/presign`.
-- [ ] **2.6** Tạo và lưu âm thanh TTS lên R2.
+- [ ] **2.5** Ảnh cho thẻ từ: `POST /uploads/presign` qua adapter lưu trữ R2, test dùng bộ lưu trữ giả; thiếu khoá R2 thì ẩn nút thêm ảnh.
+- [ ] **2.6** Tạo và lưu âm thanh TTS lên R2. Cần chọn dịch vụ TTS; chưa có thì giữ giọng đọc của trình duyệt.
 
 ### 2C. Chế độ học
 
@@ -250,8 +257,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ## Quyết định cần chốt
 
-| Quyết định                         | Cần trước việc | Đề xuất                                     |
-| ---------------------------------- | -------------- | ------------------------------------------- |
-| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`      |
-| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt         |
-| Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản |
+| Quyết định                         | Cần trước việc | Đề xuất                                |
+| ---------------------------------- | -------------- | -------------------------------------- |
+| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.` |
+| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt    |
+| Dịch vụ đọc văn bản (TTS)          | 2.6            | Google Cloud Text-to-Speech, cần thẻ   |

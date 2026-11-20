@@ -102,7 +102,7 @@
 
 ## UC-A9. Quên mật khẩu
 
-- **Việc:** 1.49. **Người dùng:** khách. **Trạng thái:** Chờ quyết định (GAP-13), cần dịch vụ gửi email.
+- **Việc:** 1.49. **Người dùng:** khách. **Trạng thái:** Chưa làm. Đã chọn Brevo (300 thư mỗi ngày, không cần tên miền riêng). Code làm trước qua adapter `Mailer`: bản Brevo dùng khi có `BREVO_API_KEY`, bản giả lưu thư trong bộ nhớ cho test và E2E, thiếu khoá thì ghi log "chưa cấu hình gửi thư" và vẫn trả cùng thông báo cho người dùng. Cách tạo tài khoản ở `docs/08-deploy.md`.
 - **Phải có:**
   - `/forgot-password` nhập email, `/reset-password?token=...` đặt mật khẩu mới.
   - Token ngẫu nhiên, chỉ lưu hash, dùng một lần, hết hạn sau 30 phút.
