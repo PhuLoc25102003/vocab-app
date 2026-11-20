@@ -202,7 +202,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị (#216).
 - [x] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ (#218).
 - [x] **2.28** Header trang bộ từ gọn: chỉ còn "Sửa bộ từ" và menu "Thao tác khác", thư mục thành chip trên dòng thông tin (#245).
-- [x] **2.29** Thẻ bộ từ dùng chung cho Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan, hiển thị dạng lưới.
+- [x] **2.29** Thẻ bộ từ dùng chung cho Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan, hiển thị dạng lưới (#249).
 - [ ] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng có ô lọc, mở và đóng thư mục kèm đường dẫn, tạo, đổi tên, xoá ngay trên cột; mỗi thẻ bộ từ có menu chuyển vào hoặc gỡ khỏi thư mục.
 - [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
 - [ ] **2.34** Kéo thả thẻ bộ từ vào thư mục trên cột thư mục, thả vào "Chưa xếp thư mục" để gỡ; dùng được bằng chuột và cảm ứng, menu của thẻ vẫn là cách cho bàn phím.
