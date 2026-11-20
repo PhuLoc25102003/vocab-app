@@ -94,27 +94,24 @@ describe('MySets', () => {
     expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, q: 'xyz' });
   });
 
-  it('lọc theo thư mục trên địa chỉ, giữ bộ lọc khi đổi sắp xếp', async () => {
+  it('lọc theo thư mục trên địa chỉ, giữ thư mục khi đổi sắp xếp', async () => {
     navigation.params = new URLSearchParams('folder=f1');
     vi.mocked(listMySets).mockResolvedValue(list([], 0));
-    renderWithQuery(
-      <MySets
-        renderFolderFilter={({ value, onChange }) => (
-          <button onClick={() => onChange('none')}>Thư mục {value}</button>
-        )}
-      />,
-    );
+    renderWithQuery(<MySets />);
 
     expect(await screen.findByText('Thư mục này chưa có bộ từ')).toBeInTheDocument();
     expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: SETS_PAGE_SIZE, folderId: 'f1' });
-    await userEvent.click(screen.getByRole('button', { name: 'Thư mục f1' }));
     await userEvent.selectOptions(screen.getByLabelText('Sắp xếp'), 'title');
 
-    expect(navigation.push.mock.calls).toEqual([
-      ['/sets?folder=none'],
-      ['/sets?sort=title&folder=f1'],
-    ]);
-    expect(screen.getByRole('link', { name: 'Xem tất cả' })).toHaveAttribute('href', '/sets');
+    expect(navigation.push.mock.calls).toEqual([['/sets?sort=title&folder=f1']]);
+    expect(screen.getByRole('link', { name: 'Xem tất cả bộ từ' })).toHaveAttribute('href', '/sets');
+  });
+
+  it('hiện thao tác của từng thẻ do trang ghép vào', async () => {
+    vi.mocked(listMySets).mockResolvedValue(list([set], 1));
+    renderWithQuery(<MySets renderCardActions={({ title }) => <button>Thư mục {title}</button>} />);
+
+    expect(await screen.findByRole('button', { name: `Thư mục ${set.title}` })).toBeInTheDocument();
   });
 
   it('hiện trạng thái trống', async () => {
