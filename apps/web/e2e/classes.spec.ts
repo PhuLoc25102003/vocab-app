@@ -70,8 +70,9 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   // Giáo viên tạo lớp.
   await teacher.goto('/classes');
   await teacher.getByRole('button', { name: 'Tạo lớp' }).click();
-  await teacher.getByLabel('Tên lớp').fill(className);
-  await teacher.getByRole('button', { name: 'Tạo lớp' }).click();
+  const createDialog = teacher.getByRole('dialog', { name: 'Tạo lớp' });
+  await createDialog.getByLabel('Tên lớp').fill(className);
+  await createDialog.getByRole('button', { name: 'Tạo lớp' }).click();
   await teacher.waitForURL('**/classes/*');
   await expect(teacher.getByRole('heading', { name: className })).toBeVisible();
   const joinCode = (
@@ -93,8 +94,10 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   const student = await (await browser.newContext({ baseURL })).newPage();
   await signUp(student, 'An', studentEmail);
   await student.goto('/classes');
-  await student.getByLabel('Mã lớp').fill(joinCode.toLowerCase());
   await student.getByRole('button', { name: 'Tham gia lớp' }).click();
+  const joinDialog = student.getByRole('dialog', { name: 'Tham gia lớp' });
+  await joinDialog.getByLabel('Mã lớp').fill(joinCode.toLowerCase());
+  await joinDialog.getByRole('button', { name: 'Tham gia' }).click();
   await expect(
     student.getByRole('list', { name: 'Lớp đã tham gia' }).getByText(className),
   ).toBeVisible();
@@ -113,7 +116,7 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   await teacher.goto(classPath);
   await assigned.getByRole('link', { name: new RegExp(setTitle) }).click();
   await teacher.waitForURL('**/assignments/*');
-  await expect(teacher.getByText('1/1')).toBeVisible();
+  await expect(teacher.getByText('1/1', { exact: true })).toBeVisible();
   const results = teacher.getByRole('list', { name: 'Kết quả từng học sinh' });
   await expect(results).toContainText('Đã làm');
   await expect(results).toContainText('3/3 (100%)');
