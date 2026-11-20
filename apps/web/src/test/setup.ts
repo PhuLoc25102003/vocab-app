@@ -20,6 +20,36 @@ if (!HTMLDialogElement.prototype.showModal) {
   };
 }
 
+// Popover API của jsdom chưa đủ (sự kiện `toggle` không chắc có). Luôn dùng bản giả bật tắt
+// thuộc tính và phát `toggle` ngay, như trình duyệt báo `newState`.
+{
+  const setPopover = (element: HTMLElement, open: boolean) => {
+    if (element.hasAttribute('data-popover-open') === open) return;
+    element.toggleAttribute('data-popover-open', open);
+    const event = new Event('toggle');
+    Object.assign(event, {
+      newState: open ? 'open' : 'closed',
+      oldState: open ? 'closed' : 'open',
+    });
+    element.dispatchEvent(event);
+  };
+  // jsdom ẩn `[popover]` theo trạng thái riêng của nó; bản giả mở thì phải hiện lại.
+  const style = document.createElement('style');
+  style.textContent = '[popover][data-popover-open] { display: block !important; }';
+  document.head.append(style);
+  Object.assign(HTMLElement.prototype, {
+    showPopover(this: HTMLElement) {
+      setPopover(this, true);
+    },
+    hidePopover(this: HTMLElement) {
+      setPopover(this, false);
+    },
+    togglePopover(this: HTMLElement) {
+      setPopover(this, !this.hasAttribute('data-popover-open'));
+    },
+  });
+}
+
 afterEach(() => {
   cleanup();
 });

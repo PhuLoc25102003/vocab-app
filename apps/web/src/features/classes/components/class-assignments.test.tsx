@@ -96,10 +96,8 @@ describe('ClassAssignments', () => {
 
     await userEvent.selectOptions(within(form).getByLabelText('Bộ từ'), 's1');
     await userEvent.selectOptions(within(form).getByLabelText('Chế độ học'), 'WRITE');
-    await userEvent.type(
-      within(form).getByLabelText('Hạn nộp (không bắt buộc)'),
-      '2026-12-01T23:59',
-    );
+    const due = within(form).getByRole('group', { name: 'Hạn nộp (không bắt buộc)' });
+    await userEvent.type(within(due).getByLabelText('Ngày'), '01/12/2026');
     await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
 
     await waitFor(() =>
