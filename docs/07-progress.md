@@ -223,7 +223,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia (#241).
 - [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia (#243).
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
-- [x] **3.5** API giáo viên giao bộ từ cho lớp kèm chế độ và hạn nộp, xem và huỷ bài giao.
+- [x] **3.5** API giáo viên giao bộ từ cho lớp kèm chế độ và hạn nộp, xem và huỷ bài giao (#267).
 - [ ] **3.10** API học sinh xem bài cần làm của các lớp đã tham gia, kèm trạng thái đã làm, chưa làm, quá hạn.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.
 - [ ] **3.7** Web cho giáo viên.
