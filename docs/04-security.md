@@ -77,7 +77,7 @@ Frontend cũng ẩn nút theo quyền (`<Can action="update" resource={set}>`), 
 ## Checklist bảo mật
 
 - [x] Mật khẩu hash bằng **argon2id** (hoặc bcrypt cost 12); tối thiểu 8 ký tự.
-- [x] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, API chung 100 lần/phút/người dùng và 300 lần/phút/IP cho khách (chỉnh bằng `RATE_LIMIT_USER_PER_MINUTE`, `RATE_LIMIT_GUEST_PER_MINUTE`). `/auth/*` và `/health` không tính vào giới hạn chung. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance, việc 2.1 chuyển sang Redis. Sau proxy phải đặt `TRUSTED_PROXIES`.
+- [x] Rate limit: `/auth/login` 5 lần/phút/IP+email và 20 lần/phút/IP, `/auth/register` 3 lần/phút/IP, `/auth/refresh` 60 lần/phút/IP (chỉnh bằng `RATE_LIMIT_REFRESH_PER_MINUTE`), API chung 100 lần/phút/người dùng và 300 lần/phút/IP cho khách (chỉnh bằng `RATE_LIMIT_USER_PER_MINUTE`, `RATE_LIMIT_GUEST_PER_MINUTE`). `/auth/*` và `/health` không tính vào giới hạn chung. Bộ đếm nằm trong bộ nhớ nên chỉ đúng khi chạy một instance, việc 2.1 chuyển sang Redis. Sau proxy phải đặt `TRUSTED_PROXIES`.
 - [x] Thông báo đăng nhập sai chung chung ("Email hoặc mật khẩu không đúng"), không tiết lộ email đã tồn tại. Đăng ký bằng email đã có trả cùng kết quả với email mới.
 - [x] Validate mọi input bằng Zod; giới hạn độ dài (term ≤ 200, definition ≤ 1.000 ký tự, ≤ 2.000 thẻ/bộ).
 - [x] Chống IDOR: không truy vấn chỉ bằng `id`; luôn kèm `ownerId` hoặc qua `OwnershipGuard`.

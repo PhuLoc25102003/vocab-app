@@ -1,17 +1,34 @@
-import { ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import {
+  applyDecorators,
+  ExecutionContext,
+  HttpStatus,
+  Injectable,
+  SetMetadata,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import {
+  InjectThrottlerOptions,
+  InjectThrottlerStorage,
+  SkipThrottle,
+  Throttle,
   ThrottlerGuard,
   type ThrottlerLimitDetail,
   type ThrottlerModuleOptions,
+  type ThrottlerRequest,
+  type ThrottlerStorage,
 } from '@nestjs/throttler';
 import { emailSchema, ERROR_CODES } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import '../../common/decorators/current-user.decorator';
 import { AppError } from '../../common/errors/app-error';
+import type { Env } from '../../config/env';
 
 export const ONE_MINUTE_MS = 60_000;
 export const REGISTER_LIMIT_PER_IP = 3;
+/** Mặc định của `RATE_LIMIT_REFRESH_PER_MINUTE`. */
 export const REFRESH_LIMIT_PER_IP = 60;
+const REFRESH_THROTTLE_KEY = 'refreshThrottle';
 const ACCOUNT_CHANGE_LIMIT_PER_USER = 5;
 const LOGIN_LIMIT_PER_IP = 20;
 const LOGIN_LIMIT_PER_ACCOUNT = 5;
@@ -49,8 +66,37 @@ export const AUTH_THROTTLE_OPTIONS: ThrottlerModuleOptions = {
   ],
 };
 
+/** Mỗi lần mở trang gọi refresh một lần, nên giới hạn theo IP và chỉnh được bằng env. */
+export const RefreshThrottle = () =>
+  applyDecorators(
+    SetMetadata(REFRESH_THROTTLE_KEY, true),
+    SkipThrottle({ account: true }),
+    Throttle({ ip: { limit: REFRESH_LIMIT_PER_IP, ttl: ONE_MINUTE_MS } }),
+  );
+
 @Injectable()
 export class AuthThrottlerGuard extends ThrottlerGuard {
+  constructor(
+    @InjectThrottlerOptions() options: ThrottlerModuleOptions,
+    @InjectThrottlerStorage() storage: ThrottlerStorage,
+    reflector: Reflector,
+    private readonly config: ConfigService<Env, true>,
+  ) {
+    super(options, storage, reflector);
+  }
+
+  protected override handleRequest(request: ThrottlerRequest): Promise<boolean> {
+    const isRefresh = this.reflector.get<boolean | undefined>(
+      REFRESH_THROTTLE_KEY,
+      request.context.getHandler(),
+    );
+    if (isRefresh && request.throttler.name === 'ip') {
+      const limit = this.config.get('RATE_LIMIT_REFRESH_PER_MINUTE', { infer: true });
+      return super.handleRequest({ ...request, limit });
+    }
+    return super.handleRequest(request);
+  }
+
   protected override throwThrottlingException(
     context: ExecutionContext,
     { timeToBlockExpire }: ThrottlerLimitDetail,

@@ -4,6 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AccessTokenService } from '../src/common/auth/access-token.service';
 import { GUEST_REQUEST_LIMIT, USER_REQUEST_LIMIT } from '../src/common/guards/api-rate-limit.guard';
 import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
+import { REFRESH_LIMIT_PER_IP } from '../src/modules/auth/auth-throttler.guard';
 import { createTestApp } from './support/app';
 import { resetDatabase } from './support/database';
 
@@ -64,5 +65,28 @@ describe('rate limit chung của API', () => {
     await expectAllowed(GUEST_REQUEST_LIMIT + 1, () =>
       get('/api/v1/health', { 'x-forwarded-for': '203.0.113.12' }),
     );
+  });
+
+  it('giới hạn làm mới phiên theo IP với mức mặc định', async () => {
+    const refresh = (ip: string) =>
+      app
+        .getHttpAdapter()
+        .getInstance()
+        .inject({
+          method: 'POST',
+          url: '/api/v1/auth/refresh',
+          headers: { 'x-forwarded-for': ip },
+        });
+    const responses = await Promise.all(
+      Array.from({ length: REFRESH_LIMIT_PER_IP }, () => refresh('203.0.113.20')),
+    );
+    expect(responses.every(({ statusCode }) => statusCode === 401)).toBe(true);
+
+    const blocked = await refresh('203.0.113.20');
+
+    expect(blocked.statusCode).toBe(429);
+    expect(blocked.json().error.code).toBe(ERROR_CODES.TOO_MANY_REQUESTS);
+    expect(blocked.headers['retry-after']).toBeDefined();
+    expect((await refresh('203.0.113.21')).statusCode).toBe(401);
   });
 });

@@ -13,7 +13,7 @@ import { InvalidRefreshTokenError } from './auth-session.service';
 import {
   AuthThrottlerGuard,
   ONE_MINUTE_MS,
-  REFRESH_LIMIT_PER_IP,
+  RefreshThrottle,
   REGISTER_LIMIT_PER_IP,
 } from './auth-throttler.guard';
 import { SkipApiRateLimit } from '../../common/decorators/skip-api-rate-limit.decorator';
@@ -77,8 +77,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @SkipThrottle({ account: true })
-  @Throttle({ ip: { limit: REFRESH_LIMIT_PER_IP, ttl: ONE_MINUTE_MS } })
+  @RefreshThrottle()
   @ApiOperation({ summary: 'Cấp access token mới bằng cookie refresh' })
   async refresh(@Req() request: FastifyRequest, @Res({ passthrough: true }) reply: FastifyReply) {
     this.refreshCookie.assertTrustedOrigin(request);
