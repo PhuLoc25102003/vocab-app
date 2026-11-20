@@ -41,6 +41,17 @@ const envSchema = z.object({
     .pipe(z.union([z.literal(''), z.url()]))
     .default(''),
   UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(''),
+  /** Cloudflare R2 cho ảnh của thẻ. Thiếu một biến thì tắt tải ảnh (docs/08-deploy.md). */
+  R2_ACCOUNT_ID: z.string().trim().default(''),
+  R2_ACCESS_KEY_ID: z.string().trim().default(''),
+  R2_SECRET_ACCESS_KEY: z.string().trim().default(''),
+  R2_BUCKET: z.string().trim().default(''),
+  /** Địa chỉ công khai của bucket, ví dụ https://pub-xxx.r2.dev. */
+  R2_PUBLIC_URL: z
+    .string()
+    .trim()
+    .pipe(z.union([z.literal(''), z.url()]))
+    .default(''),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

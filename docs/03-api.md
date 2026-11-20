@@ -58,7 +58,8 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | PATCH  | /admin/sets/:id/unhide                         | ADMIN                     | Bỏ ẩn bộ từ                                                |
 | POST   | /import/preview                                | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
 | POST   | /sets/:id/import                               | Chủ                       | Lưu kết quả đã xem trước                                   |
-| POST   | /uploads/presign                               | Đã đăng nhập              | URL ký sẵn để tải ảnh lên R2                               |
+| GET    | /uploads/config                                | Đã đăng nhập              | Tải ảnh đã bật chưa, giới hạn ảnh                          |
+| POST   | /uploads/presign                               | Đã đăng nhập              | URL ký sẵn 5 phút để tải ảnh lên R2                        |
 | POST   | /study/sessions                                | Đã đăng nhập              | Bắt đầu phiên, trả câu hỏi theo mode                       |
 | POST   | /study/sessions/:id/answers                    | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
 | PATCH  | /study/sessions/:id/finish                     | Chủ phiên                 | Kết thúc, trả kết quả                                      |
@@ -170,6 +171,9 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `PATCH /admin/users/:id/lock` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, tăng `tokenVersion` và xoá mọi phiên refresh nên tài khoản bị đăng xuất ngay, trả 200 `{ data: user }`. Tự khoá mình trả 422 `CANNOT_LOCK_SELF`. `PATCH /admin/users/:id/unlock` xoá ba trường khoá. Không tìm thấy trả 404 `USER_NOT_FOUND`.
 - Tài khoản bị khoá đăng nhập bằng mật khẩu hoặc Google trả 403 `ACCOUNT_LOCKED`, chỉ sau khi mật khẩu đúng. Refresh trả 401 và access token cũ bị `AuthGuard` từ chối.
 
+- `GET /uploads/config` trả `{ data: { images, maxBytes, contentTypes } }`; `images` là `false` khi thiếu một trong các biến `R2_*`, web ẩn nút thêm ảnh.
+- `POST /uploads/presign` nhận `{ contentType, size }` (`image/png`, `image/jpeg`, `image/webp`, tối đa 1 MB), trả 200 `{ data: { uploadUrl, headers, publicUrl, expiresAt } }`. Trình duyệt `PUT` tệp lên `uploadUrl` kèm `headers` trong 5 phút; chữ ký gồm cả `content-type` và `content-length` nên tệp khác loại hoặc khác dung lượng bị R2 từ chối. Khoá tệp là `cards/<userId>/<uuid>.<đuôi>`. Thiếu khoá R2 trả 503 `UPLOADS_DISABLED`.
+- Thẻ nhận `imageUrl` khi tạo bộ (`POST /sets`) và khi lưu thẻ (`PUT /sets/:id/cards`). Địa chỉ phải bắt đầu bằng `${R2_PUBLIC_URL}/cards/`, nếu không trả 400 `CARD_IMAGE_INVALID` kèm `details[].path`. Trong `PUT /sets/:id/cards`, thiếu `imageUrl` thì giữ ảnh cũ, `null` thì gỡ ảnh. Nhập thẻ từ file không nhận ảnh.
 - `PATCH /admin/sets/:id/hide` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, trả 200 `{ data: { id, title, hiddenAt, hiddenReason, hiddenById } }`. `PATCH /admin/sets/:id/unhide` xoá ba trường này. Bộ không tồn tại hoặc đã xoá trả 404 `SET_NOT_FOUND`. `GET /sets/:id` trả thêm `hiddenAt`, `hiddenReason` để chủ bộ và ADMIN thấy trạng thái ẩn. Bộ bị ẩn không còn trong `GET /sets/public`, và với người không phải chủ hay ADMIN thì `GET /sets/:id`, học, sao chép đều trả 404.
 
 ## Thống kê

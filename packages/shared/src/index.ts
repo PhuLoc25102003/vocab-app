@@ -12,3 +12,4 @@ export * from './import/template';
 export * from './schemas/admin';
 export * from './schemas/folder';
 export * from './schemas/class';
+export * from './schemas/upload';

@@ -41,6 +41,8 @@ export const cardInputSchema = z.object({
   definition: textSchema('định nghĩa', CARD_DEFINITION_MAX_LENGTH).min(1, 'Hãy nhập định nghĩa'),
   phonetic: lineSchema('phiên âm', CARD_TERM_MAX_LENGTH).optional(),
   example: textSchema('ví dụ', CARD_DEFINITION_MAX_LENGTH).optional(),
+  /** Ảnh đã tải lên qua `POST /uploads/presign`. API chỉ nhận địa chỉ thuộc kho ảnh của app. */
+  imageUrl: z.url('Địa chỉ ảnh không hợp lệ').max(500, 'Địa chỉ ảnh quá dài').nullable().optional(),
 });
 export type CardInput = z.infer<typeof cardInputSchema>;
 

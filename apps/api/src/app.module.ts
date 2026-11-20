@@ -10,6 +10,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 import { validateEnv } from './config/env';
 import { MailModule } from './infrastructure/mail/mail.module';
+import { StorageModule } from './infrastructure/storage/storage.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -22,6 +23,7 @@ import { ImportModule } from './modules/import/import.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { SetsModule } from './modules/sets/sets.module';
 import { StudyModule } from './modules/study/study.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -30,6 +32,7 @@ import { UsersModule } from './modules/users/users.module';
     PrismaModule,
     MailModule,
     RedisModule,
+    StorageModule,
     AuthCoreModule,
     AuthModule,
     UsersModule,
@@ -42,6 +45,7 @@ import { UsersModule } from './modules/users/users.module';
     StudyModule,
     ProgressModule,
     HealthModule,
+    UploadsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
