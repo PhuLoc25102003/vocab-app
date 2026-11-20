@@ -170,7 +170,7 @@ Không tính vào tổng số việc.
 
 ### 2A. Hạ tầng
 
-- [x] **2.1** Rate limit dùng Upstash Redis qua adapter, thiếu `UPSTASH_REDIS_REST_URL` thì giữ bộ đếm trong bộ nhớ.
+- [x] **2.1** Rate limit dùng Upstash Redis qua adapter, thiếu `UPSTASH_REDIS_REST_URL` thì giữ bộ đếm trong bộ nhớ (#304).
 - [ ] **2.2** Cache bộ từ công khai phía API trên cùng Redis, xoá cache khi sửa, xoá hoặc đổi phạm vi; thiếu Redis thì không cache.
 - [ ] **2.3** Môi trường staging cho `develop`: Neon branch, Render service thứ hai, tên miền Vercel cho nhánh `develop`. Làm sau 1.35, cần thao tác trên dashboard.
 
