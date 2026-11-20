@@ -81,50 +81,66 @@ describe('ClassAssignments', () => {
     expect(rows[1]).toHaveTextContent('Không có hạn');
   });
 
-  it('giao bài: bắt chọn bộ, bộ riêng tư không chọn được, gửi hạn theo ISO', async () => {
+  it('giao bài: bắt chọn bộ, chọn và sắp thứ tự chế độ, gửi hạn theo ISO', async () => {
     vi.mocked(listAssignments).mockResolvedValue(list([]));
     vi.mocked(createAssignment).mockResolvedValue(assignment({ mode: 'WRITE' }));
     renderSection();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
-    const form = await screen.findByRole('form', { name: 'Giao bài mới' });
-    expect(within(form).getByRole('option', { name: /Nháp/ })).toBeDisabled();
+    const dialog = await screen.findByRole('dialog', { name: 'Giao bài' });
+    await within(dialog).findByRole('option', { name: /Nháp/ });
 
-    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
-    expect(await within(form).findByText('Hãy chọn bộ từ')).toBeInTheDocument();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
+    expect(await within(dialog).findByText('Hãy chọn bộ từ')).toBeInTheDocument();
     expect(createAssignment).not.toHaveBeenCalled();
 
-    await userEvent.selectOptions(within(form).getByLabelText('Bộ từ'), 's1');
-    await userEvent.selectOptions(within(form).getByLabelText('Chế độ học'), 'WRITE');
-    const due = within(form).getByRole('group', { name: 'Hạn nộp (không bắt buộc)' });
+    await userEvent.selectOptions(within(dialog).getByLabelText('Bộ từ'), 's1');
+    // Mặc định là lộ trình đề xuất; bỏ Flashcard và Ghép cặp, đưa Luyện viết lên đầu.
+    await userEvent.click(within(dialog).getByRole('checkbox', { name: /Flashcard/ }));
+    await userEvent.click(within(dialog).getByRole('checkbox', { name: /Ghép cặp/ }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Đưa Luyện viết lên' }));
+    const due = within(dialog).getByRole('group', { name: 'Hạn nộp (không bắt buộc)' });
     await userEvent.type(within(due).getByLabelText('Ngày'), '01/12/2026');
-    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
 
     await waitFor(() =>
       expect(createAssignment).toHaveBeenCalledWith('c1', {
         setId: 's1',
-        modes: ['WRITE'],
+        modes: ['WRITE', 'MCQ'],
         dueAt: new Date('2026-12-01T23:59').toISOString(),
       }),
     );
     await waitFor(() =>
-      expect(screen.queryByRole('form', { name: 'Giao bài mới' })).not.toBeInTheDocument(),
+      expect(screen.queryByRole('dialog', { name: 'Giao bài' })).not.toBeInTheDocument(),
     );
   });
 
-  it('báo lỗi từ máy chủ ngay trong form', async () => {
+  it('bộ riêng tư phải đồng ý cho lớp xem, lỗi máy chủ hiện trong hộp thoại', async () => {
     vi.mocked(listAssignments).mockResolvedValue(list([]));
-    vi.mocked(createAssignment).mockRejectedValue(
-      new HttpError('Bộ từ đang riêng tư', 422, 'SET_NOT_SHAREABLE'),
-    );
+    vi.mocked(createAssignment).mockRejectedValue(new HttpError('Lớp đã lưu trữ', 422, 'X'));
     renderSection();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
-    const form = await screen.findByRole('form', { name: 'Giao bài mới' });
-    await userEvent.selectOptions(within(form).getByLabelText('Bộ từ'), 's1');
-    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Giao bài' });
+    await userEvent.selectOptions(await within(dialog).findByLabelText('Bộ từ'), 's2');
+    expect(within(dialog).getByText(/người ngoài lớp vẫn không thấy/)).toBeInTheDocument();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
+    expect(
+      await within(dialog).findByText('Hãy đồng ý cho học sinh trong lớp xem bộ này'),
+    ).toBeInTheDocument();
+    expect(createAssignment).not.toHaveBeenCalled();
 
-    expect(await within(form).findByText('Bộ từ đang riêng tư')).toBeInTheDocument();
+    await userEvent.click(
+      within(dialog).getByRole('checkbox', { name: 'Cho học sinh trong lớp xem bộ này' }),
+    );
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
+    await waitFor(() =>
+      expect(createAssignment).toHaveBeenCalledWith(
+        'c1',
+        expect.objectContaining({ shareToClass: true }),
+      ),
+    );
+    expect(await within(dialog).findByText('Lớp đã lưu trữ')).toBeInTheDocument();
   });
 
   it('huỷ bài giao sau khi xác nhận', async () => {
