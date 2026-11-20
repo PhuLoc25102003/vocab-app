@@ -70,7 +70,7 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 
 ### UC-X8. Nhập, tạo bộ từ và trang công khai dễ hiểu hơn (góp ý ngày 2026-11-20)
 
-- **Việc:** 2.37 đến 2.40. **Người dùng:** học sinh, chủ bộ từ, khách. **Trạng thái:** Chưa làm.
+- **Việc:** 2.37 đến 2.40. **Người dùng:** học sinh, chủ bộ từ, khách. **Trạng thái:** Đang làm. Đã có 2.37 (`import-source.test`: tóm tắt cách đọc, nhãn cột có giá trị, báo ký tự đã nhận, chỉ một cột thì mở sẵn).
 - **Vấn đề đã thấy:**
   - Trang nhập: người dùng không hiểu "Ký tự phân cách" là gì; năm ô chọn cột hiện ra cùng lúc dù trang đã tự nhận cột; không biết "Cột 1" là cột nào trong dữ liệu của mình.
   - File mẫu `.csv`: Excel cài tiếng Việt dùng dấu `;` làm dấu phân cách danh sách nên mở file mẫu ra thấy cả dòng `Từ,Nghĩa,Phiên âm,Ví dụ` dồn vào cột A.
@@ -84,8 +84,8 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
   - Trang chia ba bước có số: **1. Lấy file mẫu** (không bắt buộc), **2. Đưa danh sách vào** (dán hoặc chọn file), **3. Kiểm tra cách đọc**, cuối trang là nút "Xem trước".
   - Ô "Ký tự phân cách" đổi tên thành **"Từ và nghĩa cách nhau bằng"**, các lựa chọn có ví dụ: "Tự nhận (nên dùng)", "Phím Tab: dán từ Excel, Google Sheets", "Dấu phẩy: `apple, quả táo`", "Dấu chấm phẩy: `apple; quả táo`", "Gạch ngang: `apple - quả táo`". Dưới ô có dòng "Đã nhận: Tab" khi đang ở Tự nhận và đã có dữ liệu.
   - Ô chọn cột ghi kèm giá trị dòng đầu của cột đó: "Cột 1: apple", "Cột 2: quả táo". Chưa có dữ liệu thì chỉ ghi "Cột 1".
-  - Khi đã nhận ra tiêu đề file mẫu hoặc tự nhận được ký tự, bước 3 thu gọn thành một dòng tóm tắt ("Từ ở cột 1, nghĩa ở cột 2, bỏ dòng tiêu đề") và nút "Đổi cách đọc" để mở đầy đủ. Lỗi ở bước 3 thì tự mở ra.
-  - Ô "Dòng đầu là tiêu đề" có giải thích ngắn: "Bật nếu dòng đầu là tên cột như Từ, Nghĩa".
+  - Bước 3 mặc định thu gọn thành một dòng tóm tắt ("Cách nhau bằng phím Tab. Lấy từ ở cột 1, nghĩa ở cột 2, bỏ dòng tiêu đề.") và nút "Đổi cách đọc" để mở đầy đủ. Chưa có dữ liệu thì tóm tắt báo trang sẽ tự nhận sau khi dán hoặc chọn file. Lỗi ở bước 3 hoặc chỉ tách được một cột thì tự mở ra.
+  - Ô "Dòng đầu là tiêu đề" có giải thích ngắn: "Bật nếu dòng đầu là tên cột như Từ, Nghĩa". Ô tích cỡ 20 px, vùng bấm là cả dòng cao 44 px.
 - **Ngoại lệ:** dữ liệu chỉ có một cột thì báo "Chưa tách được từ và nghĩa, hãy chọn cách ngăn cách khác"; dòng đầu rỗng thì ô cột không ghi giá trị; giá trị dài cắt bớt với dấu ba chấm.
 - **Không đổi:** API `POST /import/preview`, schema `ImportOptions`, giới hạn 2 MB và 2.000 thẻ.
 

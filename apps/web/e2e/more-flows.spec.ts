@@ -320,6 +320,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       buffer: Buffer.from('\uFEFFTừ,Nghĩa\nbird,"con chim, chim"\nlion,\n', 'utf8'),
     });
     await expect(page.getByText('Đã đọc tu-vung.csv')).toBeVisible();
+    await page.getByRole('button', { name: 'Đổi cách đọc' }).click();
     await page.getByLabel('Dòng đầu là tiêu đề, bỏ qua khi nhập').check();
     await page.getByRole('button', { name: 'Xem trước' }).click();
 
@@ -344,7 +345,9 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       buffer: Buffer.from(buildXlsx([[['tiger', 'con hổ', '/ˈtaɪ.ɡər/']]])),
     });
     await expect(page.getByText('Đã đọc tu-them.xlsx')).toBeVisible();
-    await expect(page.getByLabel('Ký tự phân cách')).toHaveValue('tab');
+    await expect(page.getByText('Cách nhau bằng phím Tab.', { exact: false })).toBeVisible();
+    await page.getByRole('button', { name: 'Đổi cách đọc' }).click();
+    await expect(page.getByLabel('Từ và nghĩa cách nhau bằng')).toHaveValue('tab');
     await page.getByLabel('Cột phiên âm (không bắt buộc)').selectOption('3');
     await page.getByRole('button', { name: 'Xem trước' }).click();
     await expect(page.getByLabel('Phiên âm')).toHaveValue('/ˈtaɪ.ɡər/');
