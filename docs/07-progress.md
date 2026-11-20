@@ -269,7 +269,7 @@ Không tính vào tổng số việc.
 ### 5B. Nền giao diện
 
 - [x] **5.3** `FormDialog` dùng chung với `ConfirmDialog` (focus, Esc hỏi lại khi đã nhập, lỗi trong modal, toàn màn hình ở 360 px); ghi quy tắc "form ngắn trong modal" vào `docs/05-ui-tokens.md` (GAP-21, #321).
-- [x] **5.4** `DateTimeField` tiếng Việt: `dd/mm/yyyy`, giờ 24 tiếng, màu theo token, nút nhanh Hết hôm nay, Ngày mai, 1 tuần; thay `datetime-local` (GAP-22).
+- [x] **5.4** `DateTimeField` tiếng Việt: `dd/mm/yyyy`, giờ 24 tiếng, màu theo token, nút nhanh Hết hôm nay, Ngày mai, 1 tuần; thay `datetime-local` (GAP-22, #323, #325).
 - [ ] **5.5** Chống tràn chữ toàn site: `min-w-0`, `break-words`, cắt dòng cho tên và mô tả ở thẻ, hàng, header; test chuỗi 120 ký tự không dấu cách ở 360 px (GAP-25).
 - [ ] **5.6** Thẻ bộ từ gọn hơn: cao khoảng 112 px, mô tả 1 dòng, lưới 4 cột từ 1280 px; cập nhật mục "Thẻ bộ từ" trong `docs/05-ui-tokens.md` (GAP-24).
 - [ ] **5.7** Phân trang cho các danh sách còn tải hết: bài đã giao, bài cần làm, lớp đã tham gia, kết quả của một học sinh, thẻ trên trang bộ từ (50 thẻ); số trang trong URL (GAP-26).
