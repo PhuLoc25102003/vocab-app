@@ -6,7 +6,8 @@ import { clearSessionMarker, setSessionMarker } from '@/lib/session-marker';
 import * as authApi from './api';
 import { useAuthStore } from './store';
 
-const MAX_REFRESH_ATTEMPTS = 3;
+/** Khoảng 1,5 giây, đủ để tab khác làm mới xong và trình duyệt nhận cookie mới. */
+const MAX_REFRESH_ATTEMPTS = 5;
 const REFRESH_RETRY_DELAY_MS = 300;
 
 let refreshing: Promise<string | null> | null = null;
@@ -42,7 +43,11 @@ async function runRefresh(): Promise<string | null> {
           await wait(REFRESH_RETRY_DELAY_MS);
           continue;
         }
-        if (error.status === 401 || error.status === 403) {
+        // Vẫn 409 sau mọi lần thử: refresh trước đó bị huỷ giữa chừng nên trình duyệt giữ token
+        // đã thu hồi. Server không cấp lại (docs/04-security.md), nên coi như hết phiên và
+        // đưa về trang đăng nhập thay vì báo lỗi mạng.
+        const lost = error.status === 401 || error.status === 403;
+        if (lost || error.code === ERROR_CODES.REFRESH_IN_PROGRESS) {
           // Người dùng vừa đăng nhập trong lúc chờ: giữ phiên mới, bỏ kết quả cũ.
           if (sessionGeneration !== startedAt) {
             return useAuthStore.getState().accessToken;
