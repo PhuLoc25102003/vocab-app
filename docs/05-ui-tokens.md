@@ -224,6 +224,17 @@ Mọi thao tác xoá hoặc không hoàn tác được (xoá bộ từ, thư m�
 - Dòng thẻ trống mới thêm được xoá ngay, không hỏi.
 - Rời trang tạo, sửa bộ từ hoặc nhập từ file khi còn dữ liệu chưa lưu dùng `useUnsavedGuard` (`components/common/use-unsaved-guard.tsx`): link và nút quay lại trong app hiện hộp thoại "Rời trang khi chưa lưu?" với "Ở lại" và "Rời trang"; đóng tab hoặc tải lại dùng hộp thoại mặc định của trình duyệt qua `beforeunload`. Không dùng `window.confirm`.
 
+## Hộp thoại form
+
+Form ngắn (khoảng dưới 6 trường: tạo, sửa lớp, tham gia lớp, thư mục, đổi tên, đổi mật khẩu, khoá tài khoản, ẩn bộ từ, giao bài) mở trong `FormDialog` (`components/common/form-dialog.tsx`). Không chèn form vào giữa trang vì đẩy nội dung xuống và làm vỡ bố cục, không mở trang riêng cho form ngắn. Ngoại lệ: trình soạn dài như tạo, sửa bộ từ và nhập từ file giữ trang riêng.
+
+- `FormDialog` và `ConfirmDialog` dùng chung khung `Dialog` trong `components/ui/dialog.tsx`: thẻ `dialog` gốc với `showModal()`, render qua portal ra `body`, Esc và bấm nền `overlay` xin đóng, đóng xong focus về nút đã mở.
+- Bố cục: đầu có tiêu đề `text-h3`, mô tả `text-small` `text-muted` và nút đóng biểu tượng 44 px (`aria-label="Đóng"`), ngăn với thân bằng viền `border`; thân cuộn riêng (`overscroll-contain`); chân có lỗi máy chủ (`FormError`) rồi hai nút Huỷ (`secondary`) và nút gửi (`primary`, vòng quay khi đang gửi).
+- Từ 640 px: rộng tối đa 512 px, cao tối đa `min(40rem, 100dvh - 4rem)`, bo `lg`. Dưới 640 px: chiếm toàn màn hình, không bo góc, chân luôn ở đáy; hai nút xếp dọc, nút gửi ở trên.
+- Mở thì focus ô nhập đầu tiên (hoặc phần tử có `data-autofocus`). Đang gửi thì không đóng được.
+- Đã nhập (`dirty`) mà đóng bằng Esc, nền, nút đóng hoặc Huỷ thì hỏi "Bỏ nội dung đang nhập?" với "Nhập tiếp" và "Bỏ nội dung". Chưa nhập thì đóng ngay.
+- Gửi form trong hộp thoại dừng lan sự kiện để không gửi form của trang bên dưới.
+
 ## Lộ trình "Bắt đầu học"
 
 Nút chính "Bắt đầu học" trên trang bộ từ mở `/sets/:id/study/path`, chạy lần lượt Xem thẻ → Trắc nghiệm → Ghép cặp → Luyện viết (`PATH_STEPS` trong `features/study/path-steps.ts`). Dòng mô tả dưới tiêu đề "Chọn cách học" nói rõ thứ tự này. Trong phiên, dưới thanh tiến độ có hàng chip các bước: bước đã xong viền và nền `primary-soft` kèm dấu tích, bước đang học nền `primary` chữ `primary-fg` (`aria-current="step"`), bước sau viền `border` chữ `text-muted`. Màn kết quả mỗi bước có nút chính "Bước tiếp: <tên bước>"; bước cuối có hộp viền `primary` chúc mừng đã đi hết lộ trình. Bước không dùng được với bộ từ thì tự bỏ qua. Flashcard là một ô trong lưới chế độ như các chế độ khác.
