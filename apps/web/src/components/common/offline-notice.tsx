@@ -1,14 +1,19 @@
 'use client';
 
 import { WifiOff } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { listOfflineSets, type OfflineSet } from '@/lib/offline-store';
 
 const dateFormat = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' });
 
 /** Trang service worker trả về khi mất mạng, kèm các bộ từ đã tải về máy. */
-export function OfflineNotice() {
+export function OfflineNotice({
+  renderSetAction,
+}: {
+  /** Hành động cho từng bộ đã tải, ví dụ học offline. */
+  renderSetAction?: (setId: string) => ReactNode;
+} = {}) {
   const [sets, setSets] = useState<OfflineSet[] | null>(null);
 
   useEffect(() => {
@@ -42,6 +47,7 @@ export function OfflineNotice() {
                       {set.cards.length} thẻ, tải ngày {dateFormat.format(new Date(savedAt))}
                     </span>
                   </summary>
+                  {renderSetAction ? <div className="py-2">{renderSetAction(set.id)}</div> : null}
                   <ol className="border-t border-border">
                     {set.cards.map((card) => (
                       <li

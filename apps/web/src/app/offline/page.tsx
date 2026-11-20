@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { OfflineNotice } from '@/components/common/offline-notice';
+import { OfflineScreen } from './offline-screen';
 
 export const metadata: Metadata = { title: 'Mất kết nối', robots: { index: false } };
 
 export default function OfflinePage() {
-  return <OfflineNotice />;
+  return <OfflineScreen />;
 }

@@ -1,12 +1,23 @@
-import type { SetDetail } from '@vocab/shared';
+import type { SetDetail, StudyMode, UserAnswer } from '@vocab/shared';
 
 const DB_NAME = 'vocab-offline';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const SETS = 'sets';
+/** Phiên học offline chờ gửi lên máy chủ. */
+const PENDING = 'pending';
 
 export interface OfflineSet {
   set: SetDetail;
   savedAt: string;
+}
+
+export interface PendingSession {
+  id?: number;
+  setId: string;
+  mode: StudyMode;
+  /** Đáp án lần đầu của từng câu, `questionId` là id thẻ ở chế độ Flashcard. */
+  answers: UserAnswer[];
+  finishedAt: string;
 }
 
 export class OfflineStorageError extends Error {
@@ -24,7 +35,13 @@ function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = () => {
-      request.result.createObjectStore(SETS, { keyPath: 'set.id' });
+      const db = request.result;
+      if (!db.objectStoreNames.contains(SETS)) {
+        db.createObjectStore(SETS, { keyPath: 'set.id' });
+      }
+      if (!db.objectStoreNames.contains(PENDING)) {
+        db.createObjectStore(PENDING, { keyPath: 'id', autoIncrement: true });
+      }
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(new OfflineStorageError('failed'));
@@ -35,12 +52,13 @@ function openDb(): Promise<IDBDatabase> {
 async function run<T>(
   mode: IDBTransactionMode,
   action: (store: IDBObjectStore) => IDBRequest<T>,
+  storeName: string = SETS,
 ): Promise<T> {
   const db = await openDb();
   try {
     return await new Promise<T>((resolve, reject) => {
-      const transaction = db.transaction(SETS, mode);
-      const request = action(transaction.objectStore(SETS));
+      const transaction = db.transaction(storeName, mode);
+      const request = action(transaction.objectStore(storeName));
       transaction.oncomplete = () => resolve(request.result);
       transaction.onerror = () =>
         reject(
@@ -71,6 +89,18 @@ export async function listOfflineSets(): Promise<OfflineSet[]> {
 
 export async function removeOfflineSet(id: string): Promise<void> {
   await run('readwrite', (store) => store.delete(id));
+}
+
+export function addPendingSession(entry: PendingSession): Promise<IDBValidKey> {
+  return run('readwrite', (store) => store.add(entry), PENDING);
+}
+
+export async function listPendingSessions(): Promise<PendingSession[]> {
+  return (await run('readonly', (store) => store.getAll(), PENDING)) as PendingSession[];
+}
+
+export async function removePendingSession(id: number): Promise<void> {
+  await run('readwrite', (store) => store.delete(id), PENDING);
 }
 
 /** Xoá mọi dữ liệu offline, gọi khi đăng xuất để máy dùng chung không giữ bộ từ của người khác. */

@@ -1,6 +1,6 @@
 /* Service worker của Nhớ Từ: lưu tạm tài nguyên tĩnh, mất mạng thì hiện trang /offline.
    Không bao giờ lưu dữ liệu API hay trang có dữ liệu người dùng. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const STATIC_CACHE = `static-${VERSION}`;
 const OFFLINE_URL = '/offline';
 
@@ -8,7 +8,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
-      .then((cache) => cache.add(OFFLINE_URL))
+      .then(async (cache) => {
+        // Lưu cả trang offline lẫn mã của nó, để trang chạy được khi mất mạng thật.
+        const response = await fetch(OFFLINE_URL, { cache: 'reload' });
+        const html = await response.clone().text();
+        await cache.put(OFFLINE_URL, response);
+        const assets = [...new Set(html.match(/\/_next\/static\/[^"'\s)]+/g) ?? [])];
+        await cache.addAll(assets);
+      })
       .then(() => self.skipWaiting()),
   );
 });

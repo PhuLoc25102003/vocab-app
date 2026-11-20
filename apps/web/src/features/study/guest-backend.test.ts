@@ -80,3 +80,41 @@ describe('createGuestBackend', () => {
     expect(second.session.id).not.toBe(first.session.id);
   });
 });
+
+describe('createGuestBackend với nguồn riêng', () => {
+  it('lấy bộ từ từ nguồn được truyền vào và trả đáp án lần đầu khi xong phiên', async () => {
+    const onFinish = vi.fn();
+    const backend = createGuestBackend({
+      loadSet: async () => ({
+        termLang: 'en',
+        defLang: 'vi',
+        cards: [
+          {
+            id: 'c1',
+            position: 0,
+            term: 'cat',
+            definition: 'con mèo',
+            phonetic: null,
+            example: null,
+            imageUrl: null,
+            audioUrl: null,
+          },
+        ],
+      }),
+      onFinish,
+    });
+
+    const { session } = await backend.start('s1', 'FLASHCARD');
+    await backend.submit(session.id, [
+      { questionId: 'c1', value: 'known', timeMs: 500 },
+      { questionId: 'c1', value: 'unknown', timeMs: 400 },
+    ]);
+    const result = await backend.finish(session.id);
+
+    expect(result.session).toMatchObject({ total: 1, correct: 1 });
+    expect(onFinish).toHaveBeenCalledWith({
+      session: expect.objectContaining({ setId: 's1', mode: 'FLASHCARD' }),
+      answers: [{ questionId: 'c1', value: 'known', timeMs: 500 }],
+    });
+  });
+});
