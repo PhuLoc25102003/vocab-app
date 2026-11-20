@@ -17,8 +17,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { ErrorState } from '@/components/common/error-state';
+import { FormDialog } from '@/components/common/form-dialog';
 import { FormField } from '@/components/common/form-field';
-import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
+import { cn } from '@/lib/utils';
 import { changeDisplayName, changePassword, deleteAccount, getAccount, logoutAll } from '../api';
 import { leaveSession, startSession } from '../session';
 import { useAuthStore } from '../store';
@@ -44,20 +45,25 @@ function Section({
   id,
   title,
   description,
+  tone = 'default',
   children,
 }: {
   id: string;
   title: string;
   description?: string;
+  tone?: 'default' | 'danger';
   children: ReactNode;
 }) {
   return (
     <section
       aria-labelledby={id}
-      className="flex w-full flex-col gap-3 border-t border-border pt-6"
+      className={cn(
+        'flex w-full flex-col gap-3 rounded-lg border bg-surface p-4 sm:p-5',
+        tone === 'danger' ? 'border-danger-mark' : 'border-border',
+      )}
     >
       <div className="flex flex-col gap-1">
-        <h2 id={id} className="text-h3">
+        <h2 id={id} className={cn('text-h3', tone === 'danger' && 'text-danger')}>
           {title}
         </h2>
         {description ? <p className="text-small text-text-muted">{description}</p> : null}
@@ -67,18 +73,55 @@ function Section({
   );
 }
 
-function ProfileForm({ account }: { account: Account }) {
+/** Một dòng cài đặt: nhãn, giá trị hiện tại và nút thao tác bên phải. */
+function SettingRow({
+  label,
+  value,
+  action,
+}: {
+  label: string;
+  value: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-3 first:border-t-0 first:pt-0">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col">
+        <span className="text-small text-text-muted">{label}</span>
+        <span className="wrap-anywhere">{value}</span>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function NameDialog({
+  account,
+  open,
+  onOpenChange,
+}: {
+  account: Account;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<ChangeDisplayNameInput>({
     resolver: zodResolver(changeDisplayNameSchema),
-    defaultValues: { displayName: account.displayName },
+    values: { displayName: account.displayName },
   });
+
+  const close = (next: boolean) => {
+    if (!next) {
+      reset({ displayName: account.displayName });
+      setFormError(null);
+    }
+    onOpenChange(next);
+  };
 
   const submit = handleSubmit(async ({ displayName }) => {
     setFormError(null);
@@ -91,36 +134,48 @@ function ProfileForm({ account }: { account: Account }) {
       queryClient.setQueryData<Account>(ACCOUNT_KEY, { ...account, ...user });
       reset({ displayName: user.displayName });
       toast.success('Đã lưu tên hiển thị');
+      onOpenChange(false);
     } catch (error) {
       setFormError(formErrorMessage(error));
     }
   });
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col items-start gap-3">
-      {formError ? <FormError>{formError}</FormError> : null}
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title="Đổi tên hiển thị"
+      description="Tên này hiện cho giáo viên, bạn cùng lớp và trên bộ từ công khai của bạn."
+      submitLabel="Lưu tên"
+      pending={isSubmitting}
+      error={formError}
+      dirty={isDirty}
+      onSubmit={(event) => void submit(event)}
+    >
       <FormField
         label="Tên hiển thị"
         autoComplete="name"
-        className="w-full"
         error={errors.displayName?.message}
         {...register('displayName')}
       />
-      <Button type="submit" variant="secondary" loading={isSubmitting}>
-        Lưu tên
-      </Button>
-    </form>
+    </FormDialog>
   );
 }
 
-function PasswordForm() {
+function PasswordDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<ChangePasswordInput>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: '', newPassword: '' },
@@ -129,12 +184,20 @@ function PasswordForm() {
   // Next giữ trang cũ ẩn trong DOM, không để mật khẩu nằm lại trong form.
   useEffect(() => () => reset(), [reset]);
 
+  const close = (next: boolean) => {
+    if (!next) {
+      reset();
+      setFormError(null);
+    }
+    onOpenChange(next);
+  };
+
   const submit = handleSubmit(async (values) => {
     setFormError(null);
     try {
       startSession(await changePassword(values));
-      reset();
       toast.success('Đã đổi mật khẩu. Các thiết bị khác đã được đăng xuất.');
+      close(false);
     } catch (error) {
       if (isWrongPassword(error)) {
         setError('currentPassword', { message: 'Mật khẩu hiện tại không đúng' });
@@ -145,8 +208,17 @@ function PasswordForm() {
   });
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col items-start gap-3">
-      {formError ? <FormError>{formError}</FormError> : null}
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title="Đổi mật khẩu"
+      description="Sau khi đổi, các thiết bị khác sẽ bị đăng xuất."
+      submitLabel="Đổi mật khẩu"
+      pending={isSubmitting}
+      error={formError}
+      dirty={isDirty}
+      onSubmit={(event) => void submit(event)}
+    >
       <PasswordField
         label="Mật khẩu hiện tại"
         autoComplete="current-password"
@@ -159,10 +231,7 @@ function PasswordForm() {
         error={errors.newPassword?.message}
         {...register('newPassword')}
       />
-      <Button type="submit" variant="secondary" loading={isSubmitting}>
-        Đổi mật khẩu
-      </Button>
-    </form>
+    </FormDialog>
   );
 }
 
@@ -276,8 +345,10 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
   );
 }
 
-export function AccountSettings() {
+/** `children`: phần cài đặt thêm do trang ghép vào cột phải, ví dụ giọng đọc. */
+export function AccountSettings({ children }: { children?: ReactNode }) {
   const account = useQuery({ queryKey: ACCOUNT_KEY, queryFn: getAccount });
+  const [editing, setEditing] = useState<'name' | 'password' | null>(null);
 
   if (account.isPending) {
     return (
@@ -299,46 +370,79 @@ export function AccountSettings() {
     );
   }
 
-  const { email, role, hasPassword } = account.data;
+  const { email, role, hasPassword, displayName } = account.data;
+  const initial = displayName.trim().charAt(0).toLocaleUpperCase('vi') || '?';
 
   return (
-    <div className="flex flex-col gap-6">
-      <dl className="flex flex-wrap gap-x-10 gap-y-3">
-        <div className="flex min-w-0 flex-col">
-          <dt className="text-small text-text-muted">Email</dt>
-          <dd className="break-words">{email}</dd>
-        </div>
-        <div className="flex flex-col">
-          <dt className="text-small text-text-muted">Vai trò</dt>
-          <dd>{ROLE_LABELS[role]}</dd>
-        </div>
-      </dl>
-      <Section id="profile-heading" title="Thông tin cá nhân">
-        <ProfileForm account={account.data} />
-      </Section>
-      {hasPassword ? (
-        <Section
-          id="password-heading"
-          title="Mật khẩu"
-          description="Sau khi đổi, các thiết bị khác sẽ bị đăng xuất."
+    <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+      <aside
+        aria-label="Hồ sơ"
+        className="flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-5 text-center lg:sticky lg:top-6"
+      >
+        <span
+          aria-hidden
+          className="flex size-16 items-center justify-center rounded-full bg-primary text-h2 font-semibold text-primary-fg"
         >
-          <PasswordForm />
+          {initial}
+        </span>
+        <p className="text-h3 wrap-anywhere">{displayName}</p>
+        <p className="text-small wrap-anywhere text-text-muted">{email}</p>
+        <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
+          {ROLE_LABELS[role]}
+        </span>
+      </aside>
+      <div className="flex min-w-0 flex-col gap-6">
+        <Section id="profile-heading" title="Hồ sơ">
+          <SettingRow
+            label="Tên hiển thị"
+            value={displayName}
+            action={
+              <Button variant="secondary" onClick={() => setEditing('name')}>
+                Sửa tên
+              </Button>
+            }
+          />
+          <SettingRow label="Email" value={email} />
         </Section>
+        <Section id="security-heading" title="Bảo mật">
+          <SettingRow
+            label="Mật khẩu"
+            value={hasPassword ? '••••••••' : 'Đăng nhập bằng Google'}
+            action={
+              hasPassword ? (
+                <Button variant="secondary" onClick={() => setEditing('password')}>
+                  Đổi mật khẩu
+                </Button>
+              ) : undefined
+            }
+          />
+          <SettingRow
+            label="Phiên đăng nhập"
+            value="Đăng xuất khỏi mọi thiết bị, dùng khi bạn quên đăng xuất ở máy khác."
+            action={<LogoutAll />}
+          />
+        </Section>
+        {children}
+        <Section
+          id="delete-heading"
+          title="Xoá tài khoản"
+          tone="danger"
+          description="Tài khoản, bộ từ và tiến độ học của bạn sẽ bị xoá hẳn. Tiến độ của người khác trên các bộ từ này cũng mất."
+        >
+          <DeleteAccount hasPassword={hasPassword} />
+        </Section>
+      </div>
+      <NameDialog
+        account={account.data}
+        open={editing === 'name'}
+        onOpenChange={(open) => setEditing(open ? 'name' : null)}
+      />
+      {hasPassword ? (
+        <PasswordDialog
+          open={editing === 'password'}
+          onOpenChange={(open) => setEditing(open ? 'password' : null)}
+        />
       ) : null}
-      <Section
-        id="sessions-heading"
-        title="Phiên đăng nhập"
-        description="Dùng khi bạn quên đăng xuất trên một thiết bị khác."
-      >
-        <LogoutAll />
-      </Section>
-      <Section
-        id="delete-heading"
-        title="Xoá tài khoản"
-        description="Tài khoản, bộ từ và tiến độ học của bạn sẽ bị xoá hẳn. Tiến độ của người khác trên các bộ từ này cũng mất."
-      >
-        <DeleteAccount hasPassword={hasPassword} />
-      </Section>
     </div>
   );
 }

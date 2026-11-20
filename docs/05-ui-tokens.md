@@ -268,6 +268,10 @@ Form ngắn (khoảng dưới 6 trường: tạo, sửa lớp, tham gia lớp, t
 - Đã nhập (`dirty`) mà đóng bằng Esc, nền, nút đóng hoặc Huỷ thì hỏi "Bỏ nội dung đang nhập?" với "Nhập tiếp" và "Bỏ nội dung". Chưa nhập thì đóng ngay.
 - Gửi form trong hộp thoại dừng lan sự kiện để không gửi form của trang bên dưới.
 
+## Trang Tài khoản
+
+Hai cột từ 1024 px: cột trái 280 px là thẻ hồ sơ dính khi cuộn (chữ cái đầu trong vòng tròn 64 px nền `primary`, tên `text-h3`, email `text-muted`, nhãn vai trò); cột phải là các nhóm dạng thẻ (viền `border`, nền `surface`, bo `lg`): Hồ sơ, Bảo mật, Giọng đọc và Xoá tài khoản (viền `danger-mark`, tiêu đề `danger`). Mỗi nhóm gồm các dòng "nhãn, giá trị, nút" ngăn bằng viền. Sửa tên và đổi mật khẩu mở `FormDialog`; tài khoản Google ghi "Đăng nhập bằng Google" thay cho mật khẩu. Dưới 1024 px xếp một cột. Quản lý người dùng chỉ nằm trong menu tài khoản.
+
 ## Lộ trình "Bắt đầu học"
 
 Nút chính "Bắt đầu học" trên trang bộ từ mở `/sets/:id/study/path`, chạy lần lượt Xem thẻ → Trắc nghiệm → Ghép cặp → Luyện viết (`PATH_STEPS` trong `features/study/path-steps.ts`). Dòng mô tả dưới tiêu đề "Chọn cách học" nói rõ thứ tự này. Trong phiên, dưới thanh tiến độ có hàng chip các bước: bước đã xong viền và nền `primary-soft` kèm dấu tích, bước đang học nền `primary` chữ `primary-fg` (`aria-current="step"`), bước sau viền `border` chữ `text-muted`. Màn kết quả mỗi bước có nút chính "Bước tiếp: <tên bước>"; bước cuối có hộp viền `primary` chúc mừng đã đi hết lộ trình. Bước không dùng được với bộ từ thì tự bỏ qua. Flashcard là một ô trong lưới chế độ như các chế độ khác.
