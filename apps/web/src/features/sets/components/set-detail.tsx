@@ -20,6 +20,8 @@ interface SetDetailProps {
   renderActions: (set: SetDetailData) => ReactNode;
   /** Chủ bộ từ và người xem từ Khám phá quay về hai nơi khác nhau. */
   renderBack?: (set: SetDetailData) => ReactNode;
+  /** Thông tin thêm trên dòng thông tin, ví dụ thư mục của chủ bộ. */
+  renderMeta?: (set: SetDetailData) => ReactNode;
   /** Tiến độ của người xem, hiện khi bộ từ có thẻ. */
   renderProgress?: (set: SetDetailData) => ReactNode;
   /** Thông tin thêm cho từng thẻ, ví dụ mức nhớ. */
@@ -32,6 +34,7 @@ export function SetDetail({
   id,
   renderActions,
   renderBack,
+  renderMeta,
   renderProgress,
   renderCardExtra,
   renderEmptyAction,
@@ -62,6 +65,7 @@ export function SetDetail({
         </p>
       ) : null}
       <SetMeta set={set.data}>
+        {renderMeta?.(set.data)}
         {visibility === 'PUBLIC' ? (
           <>
             <Link

@@ -8,7 +8,7 @@ Giai đoạn 3 đã có schema lớp học (3.1) API giáo viên quản lý lớ
 
 **Việc tiếp theo:**
 
-1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.28 đến 2.32).
+1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.29 đến 2.33).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34).
 
@@ -20,10 +20,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | -----: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     23 |      33 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      3 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **94** | **109** | **86%**    |
+| **Toàn dự án**          |                                            | **95** | **115** | **83%**    |
 
 ## Cách cập nhật
 
@@ -201,6 +201,12 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.22** Phân biệt Bộ từ và Khám phá: Bộ từ là thư viện dạng danh sách để quản lý, Khám phá là lưới bộ của cộng đồng có tác giả, mô tả và số thẻ; mô tả trang nói rõ vai trò (#212).
 - [x] **2.23** Giọng đọc: chọn Anh Mỹ hoặc Anh Anh, tốc độ bình thường hoặc chậm, nút nghe chậm khi học, lưu lựa chọn trên thiết bị (#216).
 - [x] **2.24** Giao diện khi học đẹp hơn: thẻ và đáp án rõ ràng, phản hồi đúng sai có chuyển động nhẹ, màn kết quả có tóm tắt và khích lệ (#218).
+- [x] **2.28** Header trang bộ từ gọn: chỉ còn "Sửa bộ từ" và menu "Thao tác khác", thư mục thành chip trên dòng thông tin.
+- [ ] **2.29** Thẻ bộ từ dùng chung cho Bộ từ, Khám phá và "Bộ từ gần đây" ở Tổng quan, hiển thị dạng lưới.
+- [ ] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng, mở và đóng thư mục, kéo thả bộ từ vào thư mục, gỡ khỏi thư mục, thao tác bằng bàn phím thay cho kéo thả.
+- [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
+- [ ] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được.
+- [ ] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, thành viên, phiên đăng nhập) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục.
 - [x] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước (#220).
 
 ## Giai đoạn 3: Lớp học
