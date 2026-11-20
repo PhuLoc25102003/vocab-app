@@ -178,7 +178,7 @@ Không tính vào tổng số việc.
 - [x] **2.4** Thư mục bộ từ trên API và web (#151).
 - [x] **2.5a** API ảnh cho thẻ: `GET /uploads/config`, `POST /uploads/presign` qua adapter `ObjectStorage` (R2, ký SigV4), thẻ nhận `imageUrl` trong kho của app; thiếu khoá R2 thì trả 503 (#308).
 - [x] **2.5b** Giao diện ảnh cho thẻ: nút thêm ảnh trong trình sửa thẻ (ẩn khi chưa bật), xem trước, gỡ ảnh, hiện ảnh ở trang bộ từ; CSP cho phép `*.r2.dev` và tải lên `*.r2.cloudflarestorage.com` (#310).
-- [x] **2.5c** Hiện ảnh của thẻ khi học: câu hỏi Flashcard (mặt nghĩa) và Luyện viết (cạnh nghĩa) có `imageUrl`; chế độ chọn hoặc ghép đáp án không có ảnh để không lộ đáp án.
+- [x] **2.5c** Hiện ảnh của thẻ khi học: câu hỏi Flashcard (mặt nghĩa) và Luyện viết (cạnh nghĩa) có `imageUrl`; chế độ chọn hoặc ghép đáp án không có ảnh để không lộ đáp án (#313).
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2. Cần chọn dịch vụ TTS; chưa có thì giữ giọng đọc của trình duyệt.
 
 ### 2C. Chế độ học
