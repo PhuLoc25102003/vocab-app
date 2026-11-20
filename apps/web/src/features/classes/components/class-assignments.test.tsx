@@ -103,7 +103,7 @@ describe('ClassAssignments', () => {
     await waitFor(() =>
       expect(createAssignment).toHaveBeenCalledWith('c1', {
         setId: 's1',
-        mode: 'WRITE',
+        modes: ['WRITE'],
         dueAt: new Date('2026-12-01T23:59').toISOString(),
       }),
     );

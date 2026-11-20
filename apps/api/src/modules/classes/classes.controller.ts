@@ -16,7 +16,7 @@ import {
   assignmentResultListQuerySchema,
   memberResultListQuerySchema,
   createAssignmentSchema,
-  type CreateAssignmentInput,
+  type CreateAssignmentDto,
   classListQuerySchema,
   classMemberListQuerySchema,
   createClassSchema,
@@ -136,7 +136,7 @@ export class ClassesController {
   createAssignment(
     @Param('id') id: string,
     @CurrentUser() user: CurrentUserData,
-    @Body(new ZodValidationPipe(createAssignmentSchema)) dto: CreateAssignmentInput,
+    @Body(new ZodValidationPipe(createAssignmentSchema)) dto: CreateAssignmentDto,
   ) {
     return this.assignments.create(id, user, dto);
   }

@@ -74,7 +74,7 @@ describe('giao bài cho lớp', () => {
   it('không có hạn thì dueAt là null, danh sách xếp hạn gần nhất lên trước', async () => {
     await assign({ setId: classSetId, mode: 'FLASHCARD' }).expect(201);
     await assign({ setId: classSetId, mode: 'MCQ', dueAt: '2026-12-05T00:00:00Z' }).expect(201);
-    await assign({ setId: classSetId, mode: 'MATCH', dueAt: '2026-12-01T00:00:00Z' }).expect(201);
+    await assign({ setId: classSetId, mode: 'WRITE', dueAt: '2026-12-01T00:00:00Z' }).expect(201);
 
     const response = await call('get', `/classes/${classId}/assignments`, teacher.token).expect(
       200,
@@ -88,19 +88,46 @@ describe('giao bài cho lớp', () => {
     });
     expect(stored.every(({ mode, modes }) => modes.length === 1 && modes[0] === mode)).toBe(true);
     expect(response.body.data.map(({ mode }: { mode: string }) => mode)).toEqual([
-      'MATCH',
+      'WRITE',
       'MCQ',
       'FLASHCARD',
     ]);
     expect(response.body.data[2].dueAt).toBeNull();
   });
 
-  it('bộ riêng tư phải đổi phạm vi trước khi giao', async () => {
+  it('bộ riêng tư cần đồng ý chia sẻ cho lớp, đồng ý thì bộ chuyển sang CLASS', async () => {
     const privateSet = await createSet(teacher.id, 'PRIVATE');
 
-    const response = await assign({ setId: privateSet, mode: 'FLASHCARD' }).expect(422);
+    const refused = await assign({ setId: privateSet, modes: ['FLASHCARD'] }).expect(422);
+    expect(refused.body.error.code).toBe(ERROR_CODES.SET_NOT_SHAREABLE);
+    expect(
+      (await prisma.studySet.findUniqueOrThrow({ where: { id: privateSet } })).visibility,
+    ).toBe('PRIVATE');
 
-    expect(response.body.error.code).toBe(ERROR_CODES.SET_NOT_SHAREABLE);
+    await assign({ setId: privateSet, modes: ['FLASHCARD'], shareToClass: true }).expect(201);
+    expect(
+      (await prisma.studySet.findUniqueOrThrow({ where: { id: privateSet } })).visibility,
+    ).toBe('CLASS');
+  });
+
+  it('giao nhiều chế độ theo thứ tự, từ chối trùng hoặc quá 5, Ghép cặp cần 2 thẻ', async () => {
+    const response = await assign({
+      setId: classSetId,
+      modes: ['FLASHCARD', 'MCQ', 'WRITE'],
+    }).expect(201);
+    expect(response.body.data).toMatchObject({
+      mode: 'FLASHCARD',
+      modes: ['FLASHCARD', 'MCQ', 'WRITE'],
+    });
+
+    await assign({ setId: classSetId, modes: ['MCQ', 'MCQ'] }).expect(400);
+    await assign({
+      setId: classSetId,
+      modes: ['FLASHCARD', 'MCQ', 'WRITE', 'CLOZE', 'DICTATION', 'LEARN'],
+    }).expect(400);
+    await assign({ setId: classSetId, modes: [] }).expect(400);
+    const match = await assign({ setId: classSetId, modes: ['MATCH'] }).expect(422);
+    expect(match.body.error.details[0].path).toBe('modes');
   });
 
   it('giáo viên không giao được bộ của người khác, ADMIN thì được', async () => {

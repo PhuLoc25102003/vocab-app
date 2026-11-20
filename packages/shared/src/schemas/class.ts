@@ -115,13 +115,35 @@ export type JoinedClassList = z.infer<typeof joinedClassListSchema>;
 
 export const joinedClassResponseSchema = z.object({ data: joinedClassSchema });
 
-export const createAssignmentSchema = z.object({
-  setId: z.string('Hãy chọn bộ từ').min(1, 'Hãy chọn bộ từ').max(64),
-  mode: studyModeSchema,
-  /** Thời điểm hết hạn theo ISO 8601, bỏ trống là không có hạn. */
-  dueAt: z.iso.datetime({ offset: true, message: 'Hạn nộp không hợp lệ' }).nullable().optional(),
-});
-export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>;
+export const MAX_ASSIGNMENT_MODES = 5;
+
+export const createAssignmentSchema = z
+  .object({
+    setId: z.string('Hãy chọn bộ từ').min(1, 'Hãy chọn bộ từ').max(64),
+    /** Các chế độ phải làm theo thứ tự (việc 5.11). */
+    modes: z
+      .array(studyModeSchema)
+      .min(1, 'Chọn ít nhất một chế độ')
+      .max(MAX_ASSIGNMENT_MODES, `Chọn tối đa ${MAX_ASSIGNMENT_MODES} chế độ`)
+      .refine((modes) => new Set(modes).size === modes.length, 'Mỗi chế độ chỉ chọn một lần')
+      .optional(),
+    /** Cách gửi cũ một chế độ, vẫn nhận để web cũ chạy được. */
+    mode: studyModeSchema.optional(),
+    /** Thời điểm hết hạn theo ISO 8601, bỏ trống là không có hạn. */
+    dueAt: z.iso.datetime({ offset: true, message: 'Hạn nộp không hợp lệ' }).nullable().optional(),
+    /** Bộ đang riêng tư: đồng ý cho học sinh trong lớp xem, bộ chuyển sang `CLASS`. */
+    shareToClass: z.boolean().optional(),
+  })
+  .refine((dto) => dto.modes ?? dto.mode, {
+    path: ['modes'],
+    message: 'Chọn ít nhất một chế độ',
+  })
+  .transform(({ mode, modes, ...rest }) => ({
+    ...rest,
+    modes: modes ?? (mode ? [mode] : []),
+  }));
+export type CreateAssignmentInput = z.input<typeof createAssignmentSchema>;
+export type CreateAssignmentDto = z.output<typeof createAssignmentSchema>;
 
 export const assignmentListQuerySchema = paginationSchema;
 
@@ -131,6 +153,8 @@ export const assignmentSchema = z.object({
   setId: z.string(),
   setTitle: z.string(),
   mode: studyModeSchema,
+  /** Có ở `POST`, `GET /classes/:id/assignments`; các danh sách khác thêm ở việc 5.12. */
+  modes: z.array(studyModeSchema).optional(),
   dueAt: z.string().nullable(),
   createdAt: z.string(),
 });
