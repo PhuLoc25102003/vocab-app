@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: nền giao diện 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+1. Giai đoạn 5 theo thứ tự: 5.9 (trang Tài khoản); rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       7 |      23 | Đang làm   |
-| **Toàn dự án**          |                                            | **132** | **152** | **87%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       8 |      23 | Đang làm   |
+| **Toàn dự án**          |                                            | **133** | **152** | **88%**    |
 
 ## Cách cập nhật
 
@@ -273,7 +273,7 @@ Không tính vào tổng số việc.
 - [x] **5.5** Chống tràn chữ toàn site: `min-w-0`, `break-words`, cắt dòng cho tên và mô tả ở thẻ, hàng, header; test chuỗi 120 ký tự không dấu cách ở 360 px (GAP-25, #326).
 - [x] **5.6** Thẻ bộ từ gọn hơn: cao khoảng 112 px, mô tả 1 dòng, lưới 4 cột từ 1280 px; cập nhật mục "Thẻ bộ từ" trong `docs/05-ui-tokens.md` (GAP-24, #328).
 - [x] **5.7** Phân trang cho các danh sách còn tải hết: bài đã giao (`?apage=`), lớp đã tham gia (`?cpage=`), thẻ trên trang bộ từ và trang công khai (50 thẻ, nút bấm); "Bài cần làm" và kết quả một học sinh chuyển sang 5.12, 5.15 vì đang sắp xếp và tính tổng ở trình duyệt (GAP-26, #330).
-- [ ] **5.8** Chuyển form còn chèn trong trang sang modal: tạo và sửa lớp, tham gia lớp, tạo và đổi tên thư mục, khoá tài khoản, ẩn bộ từ. Cần 5.3 (GAP-21).
+- [x] **5.8** Chuyển form còn chèn trong trang sang modal: tạo lớp, tham gia lớp (#332), tạo và đổi tên thư mục, khoá tài khoản, ẩn bộ từ (#333). Sửa tên, mô tả lớp làm ở 5.16 (GAP-21).
 
 ### 5C. Tài khoản
 

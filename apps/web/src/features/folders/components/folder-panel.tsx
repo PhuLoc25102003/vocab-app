@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useCreateFolder, useFolders } from '../hooks';
 import { useFolderDrop } from './folder-dnd';
-import { FolderNameForm } from './folder-name-form';
+import { FolderNameDialog } from './folder-name-form';
 import { folderHref, FOLDER_PARAM } from './folder-links';
 
 /** Nhiều thư mục hơn số này thì hiện ô lọc. */
@@ -92,25 +92,24 @@ export function FolderPanel() {
           variant="ghost"
           size="icon"
           aria-label="Tạo thư mục mới"
-          aria-expanded={creating}
-          onClick={() => setCreating((open) => !open)}
+          onClick={() => setCreating(true)}
         >
           <FolderPlus aria-hidden className="size-5" />
         </Button>
       </div>
-      {creating ? (
-        <FolderNameForm
-          label="Tên thư mục mới"
-          submitLabel="Tạo"
-          onCancel={() => setCreating(false)}
-          onSave={async (name) => {
-            const folder = await create.mutateAsync(name);
-            setCreating(false);
-            toast.success('Đã tạo thư mục');
-            router.push(folderHref(folder.id, sort));
-          }}
-        />
-      ) : null}
+      <FolderNameDialog
+        open={creating}
+        onOpenChange={setCreating}
+        title="Tạo thư mục"
+        label="Tên thư mục mới"
+        submitLabel="Tạo"
+        onSave={async (name) => {
+          const folder = await create.mutateAsync(name);
+          setCreating(false);
+          toast.success('Đã tạo thư mục');
+          router.push(folderHref(folder.id, sort));
+        }}
+      />
       {list.length > FILTER_THRESHOLD ? (
         <Input
           type="search"

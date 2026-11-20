@@ -12,7 +12,7 @@ import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/compo
 import { formErrorMessage } from '@/lib/form-errors';
 import { useDeleteFolder, useFolders, useRenameFolder } from '../hooks';
 import { folderHref, FOLDER_PARAM } from './folder-links';
-import { FolderNameForm } from './folder-name-form';
+import { FolderNameDialog } from './folder-name-form';
 
 /** Đường dẫn "Bộ từ / tên thư mục" khi đang mở một thư mục, kèm đổi tên, xoá và đóng thư mục. */
 export function FolderHeader() {
@@ -39,47 +39,31 @@ export function FolderHeader() {
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface px-4 py-2">
-      {renaming && folder ? (
-        <div className="min-w-0 flex-1 basis-64 py-2">
-          <FolderNameForm
-            label="Tên thư mục"
-            submitLabel="Lưu"
-            defaultName={folder.name}
-            onCancel={() => setRenaming(false)}
-            onSave={async (next) => {
-              await rename.mutateAsync({ id: folder.id, name: next });
-              setRenaming(false);
-              toast.success('Đã đổi tên thư mục');
-            }}
-          />
-        </div>
-      ) : (
-        <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
-          <ol className="flex min-w-0 items-center gap-1 text-body">
-            <li>
-              <Link
-                href={closeHref}
-                className="inline-flex min-h-11 items-center text-text-muted underline-offset-4 hover:underline"
-              >
-                Bộ từ
-              </Link>
-            </li>
-            <li aria-hidden>
-              <ChevronRight className="size-4 text-text-muted" />
-            </li>
-            <li aria-current="page" className="min-w-0 truncate font-semibold">
-              {name}
-              {folder ? (
-                <span className="ml-2 font-normal text-small text-text-muted tabular-nums">
-                  {folder.setCount} bộ
-                </span>
-              ) : null}
-            </li>
-          </ol>
-        </nav>
-      )}
+      <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
+        <ol className="flex min-w-0 items-center gap-1 text-body">
+          <li>
+            <Link
+              href={closeHref}
+              className="inline-flex min-h-11 items-center text-text-muted underline-offset-4 hover:underline"
+            >
+              Bộ từ
+            </Link>
+          </li>
+          <li aria-hidden>
+            <ChevronRight className="size-4 text-text-muted" />
+          </li>
+          <li aria-current="page" className="min-w-0 truncate font-semibold">
+            {name}
+            {folder ? (
+              <span className="ml-2 font-normal text-small text-text-muted tabular-nums">
+                {folder.setCount} bộ
+              </span>
+            ) : null}
+          </li>
+        </ol>
+      </nav>
       <div className="flex items-center gap-1">
-        {folder && !renaming ? (
+        {folder ? (
           <Menu>
             <MenuTrigger asChild>
               <Button
@@ -136,6 +120,21 @@ export function FolderHeader() {
               onError: (reason) => setError(formErrorMessage(reason)),
             })
           }
+        />
+      ) : null}
+      {folder ? (
+        <FolderNameDialog
+          open={renaming}
+          onOpenChange={setRenaming}
+          title="Đổi tên thư mục"
+          label="Tên thư mục"
+          submitLabel="Lưu"
+          defaultName={folder.name}
+          onSave={async (next) => {
+            await rename.mutateAsync({ id: folder.id, name: next });
+            setRenaming(false);
+            toast.success('Đã đổi tên thư mục');
+          }}
         />
       ) : null}
     </div>

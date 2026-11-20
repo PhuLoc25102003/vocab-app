@@ -381,8 +381,9 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     const folders = page.getByRole('navigation', { name: 'Thư mục' });
     await page.goto('/sets');
     await folders.getByRole('button', { name: 'Tạo thư mục mới' }).click();
-    await folders.getByLabel('Tên thư mục mới').fill(folderName);
-    await folders.getByRole('button', { name: 'Tạo', exact: true }).click();
+    const createFolder = page.getByRole('dialog', { name: 'Tạo thư mục' });
+    await createFolder.getByLabel('Tên thư mục mới').fill(folderName);
+    await createFolder.getByRole('button', { name: 'Tạo', exact: true }).click();
     // Thư mục mới được mở ngay, đang trống.
     await page.waitForURL('**/sets?folder=*');
     await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
