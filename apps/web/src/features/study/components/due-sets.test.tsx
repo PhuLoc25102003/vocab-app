@@ -35,6 +35,14 @@ describe('DueSets', () => {
       '/sets/s1/study/flashcard?due=1',
     );
     expect(screen.getByText('3 thẻ đến hạn')).toBeInTheDocument();
+    const summary = screen.getByRole('region', { name: 'Cần ôn hôm nay' });
+    expect(summary).toHaveTextContent('3thẻ');
+    expect(screen.getByRole('link', { name: 'Ôn bộ đầu tiên' })).toHaveAttribute(
+      'href',
+      '/sets/s1/study/flashcard?due=1',
+    );
+    // "Khi nào thẻ đến hạn ôn?" là phần tử bấm được, mở ra giải thích.
+    expect(screen.getByText('Khi nào thẻ đến hạn ôn?').closest('summary')).toBeInTheDocument();
   });
 
   it('mở phiên ôn bằng chế độ đã chọn', async () => {
@@ -65,7 +73,7 @@ describe('DueSets', () => {
 
     expect(await screen.findByText(/^Thẻ tiếp theo đến hạn lúc/)).toBeInTheDocument();
     expect(screen.getByText('Khi nào thẻ đến hạn ôn?')).toBeInTheDocument();
-    expect(screen.getByText(/giãn ra 6 ngày/)).toBeInTheDocument();
+    expect(screen.getByText(/giãn ra 6 ngày/i)).toBeInTheDocument();
   });
 
   it('cho thử lại khi lỗi', async () => {

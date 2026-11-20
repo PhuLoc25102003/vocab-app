@@ -1,10 +1,8 @@
 import type { PublicSetSummary, SetSummary } from '@vocab/shared';
 import { Layers } from 'lucide-react';
 import type { Route } from 'next';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { LoadingState } from '@/components/common/loading-state';
-import { Skeleton } from '@/components/ui/skeleton';
+import { SetCardList, SetCardShell, SetCardsSkeleton } from '@/components/common/set-card-shell';
 import { VISIBILITY_LABELS } from '../labels';
 
 const dateFormat = new Intl.DateTimeFormat('vi-VN', {
@@ -43,7 +41,7 @@ function OwnerLine({ name }: { name: string }) {
   );
 }
 
-/** Lưới thẻ bộ từ dùng chung cho Bộ từ, Khám phá và Tổng quan. */
+/** Lưới thẻ bộ từ cho Bộ từ, Khám phá và Tổng quan, dùng khung chung `SetCardShell`. */
 export function SetCardGrid<T extends SetCardData>({
   sets,
   variant = 'library',
@@ -52,63 +50,47 @@ export function SetCardGrid<T extends SetCardData>({
   itemProps,
 }: SetCardGridProps<T>) {
   return (
-    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <SetCardList>
       {sets.map((set) => {
         const { id, title, description, cardCount, visibility, updatedAt, owner } = set;
         return (
-          <li
+          <SetCardShell
             key={id}
-            {...itemProps?.(set)}
-            className="relative flex min-h-40 flex-col gap-2 rounded-md border border-border-strong bg-surface p-4 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
-          >
-            <div className="flex min-h-7 items-center justify-between gap-2 text-small">
-              {variant === 'library' ? (
+            href={hrefFor(id)}
+            title={title}
+            description={description}
+            itemProps={itemProps?.(set)}
+            badge={
+              variant === 'library' ? (
                 <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
                   {VISIBILITY_LABELS[visibility]}
                 </span>
-              ) : (
-                <span />
-              )}
-              <span className="flex shrink-0 items-center gap-1 tabular-nums text-text-muted">
+              ) : undefined
+            }
+            count={
+              <>
                 <Layers aria-hidden className="size-4" />
                 {cardCount} thẻ
-              </span>
-            </div>
-            <Link
-              href={hrefFor(id)}
-              className="line-clamp-2 min-h-11 text-h3 wrap-anywhere after:absolute after:inset-0 after:rounded-md"
-            >
-              {title}
-            </Link>
-            {description ? (
-              <p className="line-clamp-2 text-small wrap-anywhere text-text-muted">{description}</p>
-            ) : null}
-            <div className="mt-auto flex min-h-11 items-center justify-between gap-3 text-small text-text-muted">
-              {variant === 'community' && owner ? (
+              </>
+            }
+            footer={
+              variant === 'community' && owner ? (
                 <OwnerLine name={owner.displayName} />
               ) : (
                 <span>
                   Cập nhật{' '}
                   <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
                 </span>
-              )}
-              {renderActions ? <div className="relative z-10">{renderActions(set)}</div> : null}
-            </div>
-          </li>
+              )
+            }
+            actions={renderActions?.(set)}
+          />
         );
       })}
-    </ul>
+    </SetCardList>
   );
 }
 
 export function SetCardsLoading({ count }: { count: number }) {
-  return (
-    <LoadingState label="Đang tải bộ từ">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: count }, (_, index) => (
-          <Skeleton key={index} className="h-40 w-full" />
-        ))}
-      </div>
-    </LoadingState>
-  );
+  return <SetCardsSkeleton count={count} label="Đang tải bộ từ" />;
 }
