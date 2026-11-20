@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ERROR_CODES, type HiddenSet } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
+import { PublicSetCache } from '../sets/public-set-cache';
 import { AdminSetsRepository } from './admin-sets.repository';
 
 function found(set: HiddenSet | null) {
@@ -13,19 +14,24 @@ function found(set: HiddenSet | null) {
 
 @Injectable()
 export class AdminSetsService {
-  constructor(private readonly sets: AdminSetsRepository) {}
+  constructor(
+    private readonly sets: AdminSetsRepository,
+    private readonly cache: PublicSetCache,
+  ) {}
 
   async hide(id: string, adminId: string, reason: string) {
-    return found(
-      await this.sets.setHidden(id, {
-        hiddenAt: new Date(),
-        hiddenReason: reason,
-        hiddenById: adminId,
-      }),
-    );
+    const set = await this.sets.setHidden(id, {
+      hiddenAt: new Date(),
+      hiddenReason: reason,
+      hiddenById: adminId,
+    });
+    await this.cache.invalidate(id);
+    return found(set);
   }
 
   async unhide(id: string) {
-    return found(await this.sets.setHidden(id, null));
+    const set = await this.sets.setHidden(id, null);
+    await this.cache.invalidate(id);
+    return found(set);
   }
 }

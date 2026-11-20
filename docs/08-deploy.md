@@ -97,7 +97,8 @@ Khi có tên miền riêng, xác minh tên miền trong Brevo để thư ít và
 1. Đăng ký tại upstash.com, **Create Database**, loại Redis, region **ap-southeast-1 (Singapore)** cho gần Render, gói Free.
 2. Mở database, mục **REST API**, chép `UPSTASH_REDIS_REST_URL` và `UPSTASH_REDIS_REST_TOKEN`.
 3. Dán hai biến vào Environment của Render (và của staging nếu có).
-4. Thiếu hai biến này thì API dùng bộ đếm trong bộ nhớ như hiện nay, vẫn đúng khi chỉ có một instance.
+4. Thiếu hai biến này thì API dùng bộ đếm trong bộ nhớ và không cache bộ từ công khai, vẫn đúng khi chỉ có một instance.
+5. Kiểm tra: sau khi deploy, log của Render không có dòng "Không gọi được Redis", và trong Upstash **Data Browser** thấy khoá `rl:*` khi có người đăng nhập, `set:public:*` khi có người xem bộ công khai.
 
 ### Môi trường staging (việc 2.3): Neon branch, Render, Vercel
 

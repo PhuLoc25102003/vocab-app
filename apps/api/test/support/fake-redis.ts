@@ -1,7 +1,7 @@
 import { RedisClient, type RedisCommand } from '../../src/infrastructure/redis/redis-client';
 
 interface Entry {
-  value: string;
+  value: string | Set<string>;
   expiresAt: number | null;
 }
 
@@ -29,7 +29,7 @@ export class FakeRedis extends RedisClient {
     const entry = this.live(key);
     switch (name) {
       case 'GET':
-        return entry?.value ?? null;
+        return typeof entry?.value === 'string' ? entry.value : null;
       case 'INCR': {
         const value = String(Number(entry?.value ?? 0) + 1);
         this.data.set(key, { value, expiresAt: entry?.expiresAt ?? null });
@@ -39,9 +39,21 @@ export class FakeRedis extends RedisClient {
         if (!entry) return -2;
         return entry.expiresAt === null ? -1 : entry.expiresAt - this.now();
       case 'PEXPIRE':
+      case 'EXPIRE': {
         if (!entry || (args[1] === 'NX' && entry.expiresAt !== null)) return 0;
-        entry.expiresAt = this.now() + Number(args[0]);
+        const unit = name === 'EXPIRE' ? 1000 : 1;
+        entry.expiresAt = this.now() + Number(args[0]) * unit;
         return 1;
+      }
+      case 'SADD': {
+        const members = entry?.value instanceof Set ? entry.value : new Set<string>();
+        const before = members.size;
+        args.forEach((member) => members.add(member));
+        this.data.set(key, { value: members, expiresAt: entry?.expiresAt ?? null });
+        return members.size - before;
+      }
+      case 'SMEMBERS':
+        return entry?.value instanceof Set ? [...entry.value] : [];
       case 'SET': {
         if (args.includes('NX') && entry) return null;
         const px = args.indexOf('PX');

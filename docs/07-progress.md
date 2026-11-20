@@ -10,10 +10,9 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Cache bộ từ công khai trên cùng Redis, thiếu Redis thì không cache (việc 2.2).
-2. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
-3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -23,10 +22,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      52 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      36 |      40 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      37 |      40 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **121** | **127** | **95%**    |
+| **Toàn dự án**          |                                            | **122** | **127** | **96%**    |
 
 ## Cách cập nhật
 
@@ -171,7 +170,7 @@ Không tính vào tổng số việc.
 ### 2A. Hạ tầng
 
 - [x] **2.1** Rate limit dùng Upstash Redis qua adapter, thiếu `UPSTASH_REDIS_REST_URL` thì giữ bộ đếm trong bộ nhớ (#304).
-- [ ] **2.2** Cache bộ từ công khai phía API trên cùng Redis, xoá cache khi sửa, xoá hoặc đổi phạm vi; thiếu Redis thì không cache.
+- [x] **2.2** Cache bộ từ công khai phía API trên cùng Redis, xoá cache khi sửa, xoá hoặc đổi phạm vi; thiếu Redis thì không cache.
 - [ ] **2.3** Môi trường staging cho `develop`: Neon branch, Render service thứ hai, tên miền Vercel cho nhánh `develop`. Làm sau 1.35, cần thao tác trên dashboard.
 
 ### 2B. Nội dung

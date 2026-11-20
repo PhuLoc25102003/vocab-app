@@ -1,3 +1,4 @@
+import { PublicSetCache } from '../sets/public-set-cache';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
@@ -22,6 +23,7 @@ export class UsersService {
     private readonly users: UsersRepository,
     private readonly passwords: PasswordService,
     private readonly sessions: AuthSessionService,
+    private readonly setCache: PublicSetCache,
   ) {}
 
   async getMe(userId: string) {
@@ -37,6 +39,8 @@ export class UsersService {
     if (!newPassword) {
       // Schema bảo đảm có `displayName` khi không đổi mật khẩu.
       const account = await this.users.updateDisplayName(userId, displayName as string);
+      // Bộ từ công khai trong cache còn giữ tên cũ.
+      await this.setCache.invalidateOwner(userId);
       return { body: ok({ user: toAuthUser(account) }), session: null };
     }
 
@@ -44,6 +48,7 @@ export class UsersService {
     await this.assertPassword(current, currentPassword);
     const passwordHash = await this.passwords.hash(newPassword);
     const account = await this.users.changePassword(userId, passwordHash, displayName);
+    if (displayName) await this.setCache.invalidateOwner(userId);
     // Mọi phiên cũ đã kết thúc, thiết bị đang dùng nhận phiên mới để không bị đăng xuất.
     const session = await this.sessions.start(account, client);
     return {
@@ -59,6 +64,7 @@ export class UsersService {
       await this.assertPassword(account, password);
     }
     await this.users.delete(userId);
+    await this.setCache.invalidateOwner(userId);
   }
 
   private async requireAccount(userId: string): Promise<UserCredentials> {
