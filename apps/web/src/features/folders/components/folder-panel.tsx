@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useCreateFolder, useFolders } from '../hooks';
+import { useFolderDrop } from './folder-dnd';
 import { FolderNameForm } from './folder-name-form';
 import { folderHref, FOLDER_PARAM } from './folder-links';
 
@@ -36,8 +37,9 @@ interface FolderLinkProps {
 }
 
 function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLinkProps) {
+  const { setNodeRef, isOver, isDragging } = useFolderDrop(dropTarget);
   return (
-    <li className="shrink-0 lg:shrink" data-folder-drop={dropTarget}>
+    <li ref={setNodeRef} className="shrink-0 lg:shrink" data-folder-drop={dropTarget}>
       <Link
         href={href}
         aria-current={active ? 'page' : undefined}
@@ -45,6 +47,8 @@ function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLink
           'flex min-h-11 items-center gap-2 rounded-md border px-3 text-small transition-colors duration-fast ease-standard',
           'border-border bg-surface hover:bg-primary-soft lg:border-transparent lg:bg-transparent',
           active && 'border-primary bg-primary-soft font-semibold text-primary lg:border-primary',
+          isDragging && dropTarget && 'border-dashed border-primary lg:border-primary',
+          isOver && 'bg-primary text-primary-fg hover:bg-primary',
         )}
       >
         <Icon aria-hidden className="size-4 shrink-0" />

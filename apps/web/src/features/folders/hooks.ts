@@ -26,5 +26,10 @@ export const useCreateFolder = () => useFolderMutation((name: string) => createF
 export const useRenameFolder = () =>
   useFolderMutation(({ id, name }: { id: string; name: string }) => renameFolder(id, name));
 export const useDeleteFolder = () => useFolderMutation((id: string) => deleteFolder(id));
+/** Chuyển bộ bất kỳ, dùng khi kéo thả trên danh sách. */
+export const useMoveAnySet = () =>
+  useFolderMutation(({ setId, folderId }: { setId: string; folderId: string | null }) =>
+    moveSetToFolder(setId, folderId),
+  );
 export const useMoveSet = (setId: string) =>
   useFolderMutation((folderId: string | null) => moveSetToFolder(setId, folderId));

@@ -205,6 +205,8 @@ Trang Bộ từ chia hai cột từ 1024 px: cột thư mục rộng 240 px dín
 
 Khi mở một thư mục, phía trên danh sách có thanh `FolderHeader`: đường dẫn "Bộ từ › tên thư mục" kèm số bộ, menu ba chấm (đổi tên tại chỗ, xoá qua hộp thoại) và nút đóng về Tất cả. Thư mục đang mở nằm trong URL (`?folder=`). Mỗi thẻ bộ từ có nút biểu tượng thư mục mở menu chọn thư mục và mục "Gỡ khỏi thư mục".
 
+Kéo thả (`FolderDndArea`, thư viện `@dnd-kit/core`): mỗi thẻ có tay nắm chấm dọc 44 px cạnh nút thư mục. Chuột kéo sau 8 px, cảm ứng giữ 250 ms. Khi đang kéo, mọi thư mục nhận thả có viền gạch `primary`; thư mục dưới con trỏ đổi nền `primary`, chữ `primary-fg`. Lớp nổi đi theo con trỏ là chip tên bộ từ có đổ bóng `shadow-raised`. Thả vào "Chưa xếp thư mục" là gỡ khỏi thư mục. Tay nắm ẩn khỏi trình đọc màn hình và không nhận focus vì nút thư mục trên thẻ đã làm cùng việc bằng bàn phím.
+
 ## Menu thao tác
 
 Dùng `Menu`, `MenuContent`, `MenuItem`, `MenuRadioItem` trong `components/ui/menu.tsx` (Radix Dropdown Menu), không tự viết danh sách nổi. Mục cao tối thiểu 44 px, nền `primary-soft` khi được chọn bằng chuột hoặc bàn phím, mục xoá dùng `danger` và đặt cuối sau một đường kẻ. Menu tự cuộn khi dài hơn khoảng trống trên màn hình.
