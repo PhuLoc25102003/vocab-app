@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -12,10 +13,12 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   classListQuerySchema,
+  classMemberListQuerySchema,
   createClassSchema,
   updateClassSchema,
   type ClassListQuery,
   type CreateClassInput,
+  type Pagination,
   type UpdateClassInput,
 } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
@@ -24,6 +27,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { ClassMembersService } from './class-members.service';
 import { ClassesService } from './classes.service';
 
 @ApiTags('classes')
@@ -31,7 +35,10 @@ import { ClassesService } from './classes.service';
 @Controller('classes')
 @Roles('TEACHER', 'ADMIN')
 export class ClassesController {
-  constructor(private readonly classes: ClassesService) {}
+  constructor(
+    private readonly classes: ClassesService,
+    private readonly members: ClassMembersService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Lớp tôi dạy, mới tạo trước' })
@@ -76,5 +83,23 @@ export class ClassesController {
   @ApiOperation({ summary: 'Đổi mã tham gia, mã cũ hết hiệu lực' })
   regenerateJoinCode(@Param('id') id: string) {
     return this.classes.regenerateJoinCode(id);
+  }
+
+  @Get(':id/members')
+  @CheckOwnership('class')
+  @ApiOperation({ summary: 'Thành viên của lớp, ai vào trước đứng trước' })
+  listMembers(
+    @Param('id') id: string,
+    @Query(new ZodValidationPipe(classMemberListQuerySchema)) query: Pagination,
+  ) {
+    return this.members.listMembers(id, query);
+  }
+
+  @Delete(':id/members/:userId')
+  @CheckOwnership('class')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Xoá học sinh khỏi lớp' })
+  removeMember(@Param('id') id: string, @Param('userId') userId: string): Promise<void> {
+    return this.members.remove(id, userId);
   }
 }

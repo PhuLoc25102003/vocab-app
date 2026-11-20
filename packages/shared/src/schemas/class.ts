@@ -66,3 +66,48 @@ export const classListSchema = z.object({
 export type ClassList = z.infer<typeof classListSchema>;
 
 export const classResponseSchema = z.object({ data: classSchema });
+
+export const joinClassSchema = z.object({
+  joinCode: z
+    .string('Hãy nhập mã lớp')
+    .trim()
+    .toUpperCase()
+    .length(JOIN_CODE_LENGTH, `Mã lớp gồm ${JOIN_CODE_LENGTH} ký tự`)
+    .regex(new RegExp(`^[${JOIN_CODE_ALPHABET}]+$`), 'Mã lớp không hợp lệ'),
+});
+export type JoinClassInput = z.infer<typeof joinClassSchema>;
+
+export const classMemberListQuerySchema = paginationSchema;
+
+/** Giáo viên chỉ cần tên hiển thị để nhận ra học sinh, không lộ email. */
+export const classMemberSchema = z.object({
+  userId: z.string(),
+  displayName: z.string(),
+  joinedAt: z.string(),
+});
+export type ClassMember = z.infer<typeof classMemberSchema>;
+
+export const classMemberListSchema = z.object({
+  data: z.array(classMemberSchema),
+  meta: paginationMetaSchema,
+});
+export type ClassMemberList = z.infer<typeof classMemberListSchema>;
+
+export const joinedClassListQuerySchema = paginationSchema;
+
+export const joinedClassSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  teacherName: z.string(),
+  joinedAt: z.string(),
+});
+export type JoinedClass = z.infer<typeof joinedClassSchema>;
+
+export const joinedClassListSchema = z.object({
+  data: z.array(joinedClassSchema),
+  meta: paginationMetaSchema,
+});
+export type JoinedClassList = z.infer<typeof joinedClassListSchema>;
+
+export const joinedClassResponseSchema = z.object({ data: joinedClassSchema });
