@@ -27,6 +27,7 @@ import {
   removeMember,
   updateClass,
 } from '../api';
+import { ClassAssignments } from './class-assignments';
 
 const dateFormat = new Intl.DateTimeFormat('vi-VN', {
   day: '2-digit',
@@ -301,6 +302,7 @@ export function ClassDetail({ id }: { id: string }) {
         </p>
       ) : null}
       <JoinCodePanel klass={klass.data} />
+      <ClassAssignments classId={klass.data.id} archived={klass.data.archivedAt !== null} />
       <Members klass={klass.data} page={page} />
     </>
   );

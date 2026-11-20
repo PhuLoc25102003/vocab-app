@@ -134,6 +134,8 @@ export const assignmentSchema = z.object({
 });
 export type Assignment = z.infer<typeof assignmentSchema>;
 
+export const assignmentResponseSchema = z.object({ data: assignmentSchema });
+
 export const assignmentListSchema = z.object({
   data: z.array(assignmentSchema),
   meta: paginationMetaSchema,

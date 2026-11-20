@@ -14,6 +14,19 @@ export const studyModeSchema = z.enum([
 ]);
 export type StudyMode = z.infer<typeof studyModeSchema>;
 
+/** Tên chế độ hiện cho người dùng, ví dụ khi giáo viên giao bài. */
+export const STUDY_MODE_LABELS: Record<StudyMode, string> = {
+  FLASHCARD: 'Flashcard',
+  LEARN: 'Học kỹ',
+  WRITE: 'Luyện viết',
+  DICTATION: 'Nghe viết',
+  CLOZE: 'Điền từ',
+  MCQ: 'Trắc nghiệm',
+  MATCH: 'Ghép cặp',
+  TEST: 'Kiểm tra',
+  SPEAK: 'Luyện nói',
+};
+
 export interface StudyCard {
   id: string;
   term: string;

@@ -1,0 +1,151 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { Assignment, SetSummary } from '@vocab/shared';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpError } from '@/lib/http';
+import {
+  createAssignment,
+  listAssignments,
+  listMySetsForAssigning,
+  removeAssignment,
+} from '../api';
+import { ClassAssignments } from './class-assignments';
+
+vi.mock('../api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../api')>()),
+  createAssignment: vi.fn(),
+  listAssignments: vi.fn(),
+  listMySetsForAssigning: vi.fn(),
+  removeAssignment: vi.fn(),
+}));
+
+const assignment = (overrides: Partial<Assignment> = {}): Assignment => ({
+  id: 'a1',
+  classId: 'c1',
+  setId: 's1',
+  setTitle: 'Unit 1',
+  mode: 'MCQ',
+  dueAt: null,
+  createdAt: '2026-11-01T00:00:00.000Z',
+  ...overrides,
+});
+const set = (overrides: Partial<SetSummary>): SetSummary => ({
+  id: 's1',
+  ownerId: 'u1',
+  title: 'Unit 1',
+  description: null,
+  termLang: 'en',
+  defLang: 'vi',
+  visibility: 'PUBLIC',
+  cardCount: 12,
+  createdAt: '2026-11-01T00:00:00.000Z',
+  updatedAt: '2026-11-01T00:00:00.000Z',
+  ...overrides,
+});
+const list = (data: Assignment[]) => ({ data, meta: { page: 1, limit: 100, total: data.length } });
+
+function renderSection(archived = false) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  render(
+    <QueryClientProvider client={client}>
+      <ClassAssignments classId="c1" archived={archived} />
+    </QueryClientProvider>,
+  );
+}
+
+describe('ClassAssignments', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(listMySetsForAssigning).mockResolvedValue([
+      set({}),
+      set({ id: 's2', title: 'Nháp', visibility: 'PRIVATE' }),
+    ]);
+  });
+
+  it('liệt kê bài đã giao với chế độ, hạn nộp và báo quá hạn', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(
+      list([
+        assignment({ dueAt: '2020-01-01T16:59:00.000Z' }),
+        assignment({ id: 'a2', setTitle: 'Unit 2', mode: 'WRITE' }),
+      ]),
+    );
+    renderSection();
+
+    const rows = within(await screen.findByRole('list', { name: 'Bài đã giao' })).getAllByRole(
+      'listitem',
+    );
+    expect(rows[0]).toHaveTextContent('Trắc nghiệm');
+    expect(rows[0]).toHaveTextContent('Đã quá hạn');
+    expect(rows[1]).toHaveTextContent('Luyện viết');
+    expect(rows[1]).toHaveTextContent('Không có hạn');
+  });
+
+  it('giao bài: bắt chọn bộ, bộ riêng tư không chọn được, gửi hạn theo ISO', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([]));
+    vi.mocked(createAssignment).mockResolvedValue(assignment({ mode: 'WRITE' }));
+    renderSection();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
+    const form = await screen.findByRole('form', { name: 'Giao bài mới' });
+    expect(within(form).getByRole('option', { name: /Nháp/ })).toBeDisabled();
+
+    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
+    expect(await within(form).findByText('Hãy chọn bộ từ')).toBeInTheDocument();
+    expect(createAssignment).not.toHaveBeenCalled();
+
+    await userEvent.selectOptions(within(form).getByLabelText('Bộ từ'), 's1');
+    await userEvent.selectOptions(within(form).getByLabelText('Chế độ học'), 'WRITE');
+    await userEvent.type(
+      within(form).getByLabelText('Hạn nộp (không bắt buộc)'),
+      '2026-12-01T23:59',
+    );
+    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
+
+    await waitFor(() =>
+      expect(createAssignment).toHaveBeenCalledWith('c1', {
+        setId: 's1',
+        mode: 'WRITE',
+        dueAt: new Date('2026-12-01T23:59').toISOString(),
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.queryByRole('form', { name: 'Giao bài mới' })).not.toBeInTheDocument(),
+    );
+  });
+
+  it('báo lỗi từ máy chủ ngay trong form', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([]));
+    vi.mocked(createAssignment).mockRejectedValue(
+      new HttpError('Bộ từ đang riêng tư', 422, 'SET_NOT_SHAREABLE'),
+    );
+    renderSection();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
+    const form = await screen.findByRole('form', { name: 'Giao bài mới' });
+    await userEvent.selectOptions(within(form).getByLabelText('Bộ từ'), 's1');
+    await userEvent.click(within(form).getByRole('button', { name: 'Giao bài' }));
+
+    expect(await within(form).findByText('Bộ từ đang riêng tư')).toBeInTheDocument();
+  });
+
+  it('huỷ bài giao sau khi xác nhận', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([assignment()]));
+    vi.mocked(removeAssignment).mockResolvedValue();
+    renderSection();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Huỷ bài giao Unit 1' }));
+    const dialog = screen.getByRole('dialog', { name: 'Huỷ bài giao Unit 1?' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Huỷ bài giao' }));
+
+    await waitFor(() => expect(removeAssignment).toHaveBeenCalledWith('c1', 'a1'));
+  });
+
+  it('lớp đã lưu trữ thì không giao thêm bài', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([]));
+    renderSection(true);
+
+    expect(await screen.findByText(/Chưa giao bài nào/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Giao bài' })).not.toBeInTheDocument();
+  });
+});
