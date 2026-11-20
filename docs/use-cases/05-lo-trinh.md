@@ -81,7 +81,7 @@ Cần chốt trước: cách một tài khoản trở thành giáo viên (việc
 
 ### UC-C2. Giao bài và bộ từ của lớp
 
-- **Việc:** 3.4, 3.5, 3.7, 3.8. **Người dùng:** giáo viên, học sinh.
+- **Việc:** 3.4, 3.5, 3.7, 3.8. **Người dùng:** giáo viên, học sinh. **Trạng thái:** Đang làm. Đã có 3.4 (bộ `CLASS` xem được bởi giáo viên và thành viên lớp chưa lưu trữ đã được giao bộ, test `class-visibility.integration`).
 - **Phải có:** bộ `CLASS` chỉ thành viên xem được; giao bộ từ, chế độ, hạn nộp; học sinh thấy bài cần làm.
 - **Ngoại lệ:** học sinh vào lớp sau khi đã giao; quá hạn; bộ bị xoá sau khi giao; học sinh rời lớp mất quyền xem.
 - **Cách test:** integration quyền `CLASS`; test mốc hạn nộp theo giờ Việt Nam; E2E giao bài, học, trạng thái hoàn thành.

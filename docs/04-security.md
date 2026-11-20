@@ -38,18 +38,19 @@ Hai lớp kiểm tra, đều là guard dùng chung, không viết lại trong se
 - **Vai trò (RBAC):** `@Roles('TEACHER', 'ADMIN')` + `RolesGuard` — ai được gọi loại endpoint này.
 - **Sở hữu (resource-based):** `@CheckOwnership('set')` + `OwnershipGuard` — bộ từ này có phải của bạn không. ADMIN được bỏ qua với bộ từ, không được bỏ qua với phiên học (`@CheckOwnership('session')`). Tham số đường dẫn mặc định là `id`, đổi bằng đối số thứ hai. Không phải chủ trả 403, không tồn tại hoặc đã xoá mềm trả 404.
 
-| Hành động           | Khách | STUDENT      | TEACHER      | ADMIN |
-| ------------------- | ----- | ------------ | ------------ | ----- |
-| Xem bộ từ PUBLIC    | Có    | Có           | Có           | Có    |
-| Xem bộ từ PRIVATE   | Không | Chỉ của mình | Chỉ của mình | Có    |
-| Tạo / import bộ từ  | Không | Có           | Có           | Có    |
-| Sửa / xoá bộ từ     | Không | Chỉ của mình | Chỉ của mình | Có    |
-| Lưu tiến độ học     | Không | Có           | Có           | Có    |
-| Tạo lớp, giao bài   | Không | Không        | Có           | Có    |
-| Xem kết quả của lớp | Không | Không        | Lớp của mình | Có    |
-| Quản lý người dùng  | Không | Không        | Không        | Có    |
+| Hành động           | Khách | STUDENT       | TEACHER                 | ADMIN |
+| ------------------- | ----- | ------------- | ----------------------- | ----- |
+| Xem bộ từ PUBLIC    | Có    | Có            | Có                      | Có    |
+| Xem bộ từ PRIVATE   | Không | Chỉ của mình  | Chỉ của mình            | Có    |
+| Xem bộ từ CLASS     | Không | Lớp được giao | Của mình, lớp được giao | Có    |
+| Tạo / import bộ từ  | Không | Có            | Có                      | Có    |
+| Sửa / xoá bộ từ     | Không | Chỉ của mình  | Chỉ của mình            | Có    |
+| Lưu tiến độ học     | Không | Có            | Có                      | Có    |
+| Tạo lớp, giao bài   | Không | Không         | Có                      | Có    |
+| Xem kết quả của lớp | Không | Không         | Lớp của mình            | Có    |
+| Quản lý người dùng  | Không | Không         | Không                   | Có    |
 
-ADMIN khoá tài khoản qua `/admin/users/:id/lock`: tăng `tokenVersion`, xoá mọi phiên refresh, đăng nhập trả 403 `ACCOUNT_LOCKED` chỉ khi mật khẩu đúng để không lộ trạng thái khoá cho người đoán mật khẩu. ADMIN không tự khoá được mình. ADMIN ẩn bộ vi phạm qua `/admin/sets/:id/hide`: `visibleTo()` loại bộ có `hiddenAt` khỏi phần công khai, chủ bộ và ADMIN vẫn xem được.
+ADMIN khoá tài khoản qua `/admin/users/:id/lock`: tăng `tokenVersion`, xoá mọi phiên refresh, đăng nhập trả 403 `ACCOUNT_LOCKED` chỉ khi mật khẩu đúng để không lộ trạng thái khoá cho người đoán mật khẩu. ADMIN không tự khoá được mình. ADMIN ẩn bộ vi phạm qua `/admin/sets/:id/hide`: `visibleTo()` loại bộ có `hiddenAt` khỏi phần công khai, chủ bộ và ADMIN vẫn xem được. Bộ `CLASS` mở cho giáo viên và thành viên của lớp chưa lưu trữ đã được giao bộ đó (việc 3.4); rời lớp hoặc lớp bị lưu trữ thì mất quyền ngay vì điều kiện nằm trong truy vấn.
 
 Mặc định **mọi route đều cần đăng nhập**: `AuthGuard` đặt global, route công khai phải ghi rõ `@Public()`. Quên gắn decorator thì route bị khoá, không bị lộ.
 
