@@ -67,6 +67,18 @@ const savedCards = () => vi.mocked(replaceCards).mock.calls[0]?.[1].cards;
 describe('CardFields', () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it('thẻ nằm trong khung cuộn riêng, thêm thẻ thì focus ô Từ của thẻ mới', async () => {
+    await renderEditor();
+    const region = screen.getByRole('region', { name: 'Danh sách thẻ' });
+    expect(region).toHaveClass('overflow-y-auto');
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(within(region).getAllByRole('listitem')).toHaveLength(2);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Thêm thẻ' }));
+
+    await waitFor(() => expect(cardGroup(3).getByLabelText('Từ')).toHaveFocus());
+  });
+
   it('tạo bộ từ kèm thẻ và bỏ qua dòng trống', async () => {
     vi.mocked(createSet).mockResolvedValue(summary);
     renderWithQuery(<CreateSet />);

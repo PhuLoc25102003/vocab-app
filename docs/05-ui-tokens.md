@@ -187,6 +187,10 @@ Token nằm trong `apps/web/src/app/globals.css`, font nạp trong `apps/web/src
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
 
+## Danh sách thẻ khi tạo và sửa bộ từ
+
+Thẻ nằm trong một khung cuộn riêng (`role="region"`, nhãn "Danh sách thẻ", `tabIndex=0` để cuộn bằng bàn phím): viền `border`, nền `surface`, bo `md`, cao tối đa 60% chiều cao màn hình (`60dvh`), tối thiểu 192 px, `overscroll-contain` để cuộn trong khung không kéo cả trang. Nút "Thêm thẻ" và "Lưu bộ từ" nằm ngay dưới khung nên luôn gần tay. Thêm thẻ thì ô "Từ" của thẻ mới nhận focus và khung tự cuộn tới.
+
 ## Thẻ bộ từ
 
 Bộ từ ở Bộ từ, Khám phá, "Bộ từ gần đây" của Tổng quan và Ôn hôm nay dùng khung `SetCardShell` trong `components/common/set-card-shell.tsx`; danh sách bộ từ của feature sets bọc nó trong `SetCardGrid`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.

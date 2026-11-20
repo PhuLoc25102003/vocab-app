@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.34, 2.31, 2.32).
+1. Cải tiến giao diện theo góp ý ngày 2026-11-20 (việc 2.34, 2.31).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -22,10 +22,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      28 |      36 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      29 |      36 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       3 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **100** | **118** | **85%**    |
+| **Toàn dự án**          |                                            | **101** | **118** | **86%**    |
 
 ## Cách cập nhật
 
@@ -210,7 +210,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **2.34** Kéo thả thẻ bộ từ vào thư mục trên cột thư mục, thả vào "Chưa xếp thư mục" để gỡ; dùng được bằng chuột và cảm ứng, menu của thẻ vẫn là cách cho bàn phím.
 - [x] **2.35** Thiết kế lại trang Ôn hôm nay: khối tóm tắt nổi bật (số thẻ đến hạn, chế độ ôn, nút ôn tất cả), bộ đến hạn dùng thẻ bộ từ chung, "Khi nào thẻ đến hạn ôn?" là nút rõ ràng có icon và mũi tên (#253).
 - [x] **2.36** Rời trang khi đang tạo, sửa bộ từ hoặc nhập từ file mà có dữ liệu chưa lưu: chuyển trang trong app hỏi bằng hộp thoại của app (không dùng `window.confirm`); đóng tab hoặc tải lại vẫn dùng hộp thoại của trình duyệt vì trình duyệt không cho tuỳ biến. Chưa nhập gì thì không hỏi (#257).
-- [ ] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được.
+- [x] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được (#259).
 - [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục (#247).
 - [x] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước (#220).
 
