@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-20
 
-**Đang ở:** Giai đoạn 2, 3, 4 đã xong phần làm được trong repo. Các việc dùng dịch vụ ngoài (email 1.49, Upstash 2.1 và 2.2, R2 2.5) được làm code trước bằng adapter có bản giả, tài khoản chỉ cần khi bật thật (hướng dẫn ở `docs/08-deploy.md`, mục "Dịch vụ cần tài khoản"). Sentry (1.31) đã hoãn. Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2, 3, 4 đã xong phần làm được trong repo. Các việc dùng dịch vụ ngoài (email gửi thật cho 1.49, Upstash 2.1 và 2.2, R2 2.5) được làm code trước bằng adapter có bản giả, tài khoản chỉ cần khi bật thật (hướng dẫn ở `docs/08-deploy.md`, mục "Dịch vụ cần tài khoản"). Sentry (1.31) đã hoãn. Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý lớp (3.3), API thành viên lớp (3.9), quyền xem bộ `CLASS` (3.4) API giao bộ từ (3.5) API học sinh xem bài cần làm (3.10) và API kết quả lớp (3.6).
 
@@ -10,11 +10,10 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Trang quên mật khẩu và đặt lại mật khẩu trên web (việc 1.49b).
-2. Rate limit và cache dùng chung qua adapter Upstash, thiếu khoá thì dùng bộ nhớ (việc 2.1, 2.2).
-3. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
-4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-5. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Rate limit và cache dùng chung qua adapter Upstash, thiếu khoá thì dùng bộ nhớ (việc 2.1, 2.2).
+2. Ảnh cho thẻ qua adapter R2 với bộ lưu trữ giả (việc 2.5).
+3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -23,11 +22,11 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | Giai đoạn               | Mục tiêu                                   |    Xong |    Tổng | Trạng thái |
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
-| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      51 |      54 | Đang làm   |
+| 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      52 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **119** | **127** | **94%**    |
+| **Toàn dự án**          |                                            | **120** | **127** | **94%**    |
 
 ## Cách cập nhật
 
@@ -163,7 +162,7 @@ Không tính vào tổng số việc.
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
 - [x] **1.48** Rate limit chung cho API (GAP-12, #95, #127).
 - [x] **1.49a** API quên mật khẩu (GAP-13, #300): `POST /auth/forgot-password`, `POST /auth/reset-password`, bảng `PasswordResetToken`, adapter `Mailer` gửi qua Brevo, thiếu `BREVO_API_KEY` thì dùng bộ gửi thư trong bộ nhớ và ghi log.
-- [ ] **1.49b** Trang `/forgot-password`, `/reset-password` và liên kết "Quên mật khẩu?" ở trang đăng nhập.
+- [x] **1.49b** Trang `/forgot-password`, `/reset-password` và liên kết "Quên mật khẩu?" ở trang đăng nhập. Token được xoá khỏi thanh địa chỉ ngay khi mở trang, trang không gửi `Referer`.
 
 ## Giai đoạn 2: Mở rộng
 

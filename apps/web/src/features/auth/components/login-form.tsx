@@ -55,6 +55,9 @@ export function LoginForm() {
       {searchParams.get('registered') ? (
         <FormNotice>Nếu email này chưa được dùng, tài khoản đã sẵn sàng. Hãy đăng nhập.</FormNotice>
       ) : null}
+      {searchParams.get('reset') ? (
+        <FormNotice>Đã đặt mật khẩu mới. Hãy đăng nhập bằng mật khẩu mới.</FormNotice>
+      ) : null}
       {formError ? <FormError>{formError}</FormError> : null}
       <FormField
         label="Email"
@@ -70,6 +73,12 @@ export function LoginForm() {
         error={errors.password?.message}
         {...register('password')}
       />
+      <Link
+        href="/forgot-password"
+        className="-mt-2 inline-flex min-h-11 items-center self-end text-small font-medium text-primary underline underline-offset-4"
+      >
+        Quên mật khẩu?
+      </Link>
       <Button type="submit" loading={isSubmitting}>
         Đăng nhập
       </Button>

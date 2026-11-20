@@ -41,7 +41,7 @@ Mỗi use case gồm: việc liên quan, người dùng, trạng thái, phải c
 
 ## Lỗ hổng đã phát hiện
 
-Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file tiến độ. GAP-01 đến GAP-12 đã xử lý xong, GAP-13 đã có API (1.49a), còn trang web (1.49b).
+Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file tiến độ. GAP-01 đến GAP-12 đã xử lý xong, GAP-13 đã xử lý ở 1.49a và 1.49b, gửi thư thật cần khoá Brevo.
 
 | Mã     | Vấn đề                                                                                       | Bằng chứng  | Mức | Việc |
 | ------ | -------------------------------------------------------------------------------------------- | ----------- | --- | ---- |

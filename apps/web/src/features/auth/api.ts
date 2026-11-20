@@ -6,9 +6,11 @@ import {
   type AuthSession,
   type AuthUser,
   type ChangePasswordInput,
+  type ForgotPasswordInput,
   type GoogleLoginInput,
   type LoginInput,
   type RegisterInput,
+  type ResetPasswordInput,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -70,4 +72,22 @@ export async function changePassword(input: ChangePasswordInput): Promise<AuthSe
 
 export function deleteAccount(password?: string): Promise<void> {
   return http('/users/me', { method: 'DELETE', body: JSON.stringify({ password }) });
+}
+
+/** Trả thông báo của server, giống nhau dù email có tài khoản hay không. */
+export async function requestPasswordReset(input: ForgotPasswordInput): Promise<string> {
+  const { data } = await http<{ data: { message: string } }>('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify(input),
+    skipAuth: true,
+  });
+  return data.message;
+}
+
+export async function resetPassword(input: ResetPasswordInput): Promise<void> {
+  await http('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(input),
+    skipAuth: true,
+  });
 }
