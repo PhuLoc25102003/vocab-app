@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Trang kết quả của một học sinh (việc 3.7d), web cho học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
+1. Trang kết quả của một học sinh (việc 3.7d). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -23,9 +23,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      11 |      14 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      12 |      14 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **115** | **127** | **91%**    |
+| **Toàn dự án**          |                                            | **116** | **127** | **91%**    |
 
 ## Cách cập nhật
 
@@ -235,7 +235,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.7b** Web giáo viên giao bài: trong trang lớp chọn bộ từ, chế độ, hạn nộp; xem và huỷ bài đã giao.
 - [x] **3.7c** Web giáo viên xem kết quả: bấm bài đã giao mở trang kết quả có số liệu cả lớp (đã làm, quá hạn, điểm trung bình), 5 từ cả lớp hay sai, bảng kết quả từng học sinh.
 - [ ] **3.7d** Trang kết quả của một học sinh qua các bài giao, mở từ tên học sinh ở trang lớp và trang kết quả. Cần API trả kèm tên học sinh.
-- [ ] **3.8** Web cho học sinh trong lớp.
+- [x] **3.8** Web cho học sinh trong lớp: mục "Lớp học" cho mọi người, tham gia bằng mã, "Bài cần làm" kèm trạng thái mở thẳng chế độ học, "Lớp đã tham gia" và rời lớp.
 
 ## Giai đoạn 4: Luyện nói và offline
 

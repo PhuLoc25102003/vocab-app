@@ -6,6 +6,9 @@ import {
   classListSchema,
   classMemberListSchema,
   classResponseSchema,
+  joinedClassListSchema,
+  joinedClassResponseSchema,
+  myAssignmentListSchema,
   setListSchema,
   type Assignment,
   type AssignmentList,
@@ -16,6 +19,10 @@ import {
   type ClassMemberList,
   type CreateAssignmentInput,
   type CreateClassInput,
+  type JoinClassInput,
+  type JoinedClass,
+  type JoinedClassList,
+  type MyAssignmentList,
   type SetSummary,
   type UpdateClassInput,
 } from '@vocab/shared';
@@ -31,6 +38,8 @@ export const classKeys = {
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
   assignments: (id: string) => ['classes', 'assignments', id] as const,
   mySets: ['classes', 'my-sets'] as const,
+  joined: ['classes', 'joined'] as const,
+  myAssignments: ['classes', 'my-assignments'] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
   results: (id: string, assignmentId: string, page: number) =>
     ['classes', 'results', id, assignmentId, page] as const,
@@ -130,4 +139,24 @@ export async function listAssignmentResults(
   return assignmentResultListSchema.parse(
     await http(`${assignmentPath(id, assignmentId)}/results?${params.toString()}`),
   );
+}
+
+/** Học sinh hiếm khi ở quá 100 lớp hoặc có quá 100 bài, nên lấy một trang. */
+const ONE_PAGE = new URLSearchParams({ page: '1', limit: '100' }).toString();
+
+export async function joinClass(dto: JoinClassInput): Promise<JoinedClass> {
+  const body = await http('/classes/join', { method: 'POST', body: JSON.stringify(dto) });
+  return joinedClassResponseSchema.parse(body).data;
+}
+
+export async function listJoinedClasses(): Promise<JoinedClassList> {
+  return joinedClassListSchema.parse(await http(`/classes/joined?${ONE_PAGE}`));
+}
+
+export async function listMyAssignments(): Promise<MyAssignmentList> {
+  return myAssignmentListSchema.parse(await http(`/classes/assignments?${ONE_PAGE}`));
+}
+
+export async function leaveClass(id: string): Promise<void> {
+  await http(`${classPath(id)}/members/me`, { method: 'DELETE' });
 }
