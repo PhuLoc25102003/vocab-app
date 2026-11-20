@@ -4,22 +4,32 @@ import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LoadingState } from './loading-state';
 
-/** Lưới 1, 2, 3 cột cho thẻ bộ từ ở mọi trang. */
+/**
+ * Số cột theo bề rộng vùng chứa, không theo màn hình, để thẻ rộng gần bằng nhau ở mọi trang
+ * (trang Bộ từ có cột thư mục nên hẹp hơn): 2 cột từ 448 px, 3 từ 768 px, 4 từ 1024 px.
+ */
+const GRID = 'grid gap-3 @md:grid-cols-2 @3xl:grid-cols-3 @5xl:grid-cols-4';
+
+/** Lưới thẻ bộ từ ở mọi trang. */
 export function SetCardList({ children }: { children: ReactNode }) {
-  return <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</ul>;
+  return (
+    <div className="@container">
+      <ul className={GRID}>{children}</ul>
+    </div>
+  );
 }
 
 interface SetCardShellProps {
   href: Route;
   title: string;
-  /** Góc trên bên trái, ví dụ nhãn phạm vi hoặc "Đến hạn". */
+  /** Đầu hàng thông tin cuối thẻ, ví dụ nhãn phạm vi hoặc "Đến hạn". */
   badge?: ReactNode;
-  /** Góc trên bên phải, ví dụ số thẻ. */
+  /** Sau nhãn, ví dụ số thẻ. */
   count: ReactNode;
   description?: string | null;
-  /** Hàng cuối bên trái: ngày cập nhật, tác giả... */
+  /** Cuối hàng thông tin: ngày cập nhật, tác giả... Thiếu chỗ thì xuống dòng. */
   footer?: ReactNode;
-  /** Hàng cuối bên phải, nằm trên lớp link nên bấm được riêng. */
+  /** Góc trên bên phải cạnh tên, nằm trên lớp link nên bấm được riêng. */
   actions?: ReactNode;
   /** Thuộc tính thêm cho thẻ, ví dụ để kéo thả. */
   itemProps?: Record<string, unknown>;
@@ -42,26 +52,29 @@ export function SetCardShell({
   return (
     <li
       {...itemProps}
-      className="relative flex min-h-40 flex-col gap-2 rounded-md border border-border-strong bg-surface p-4 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
+      className="relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
     >
-      <div className="flex min-h-7 items-center justify-between gap-2 text-small">
-        {badge ?? <span />}
-        <span className="flex shrink-0 items-center gap-1 tabular-nums text-text-muted">
-          {count}
-        </span>
+      <div className="flex items-start gap-2">
+        {/* Link phủ cả thẻ; tự nó cũng cao tối thiểu 44 px để đạt vùng bấm. */}
+        <Link
+          href={href}
+          className="line-clamp-2 min-h-11 min-w-0 flex-1 py-0.5 font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-md"
+        >
+          {title}
+        </Link>
+        {actions ? (
+          <div className="relative z-10 -mt-1.5 -mr-1.5 flex shrink-0 items-center gap-1">
+            {actions}
+          </div>
+        ) : null}
       </div>
-      <Link
-        href={href}
-        className="line-clamp-2 min-h-11 text-h3 wrap-anywhere after:absolute after:inset-0 after:rounded-md"
-      >
-        {title}
-      </Link>
       {description ? (
-        <p className="line-clamp-2 text-small wrap-anywhere text-text-muted">{description}</p>
+        <p className="line-clamp-1 text-small wrap-anywhere text-text-muted">{description}</p>
       ) : null}
-      <div className="mt-auto flex min-h-11 items-center justify-between gap-3 text-small text-text-muted">
-        {footer ?? <span />}
-        {actions ? <div className="relative z-10 flex items-center gap-2">{actions}</div> : null}
+      <div className="mt-auto flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-small text-text-muted">
+        {badge}
+        <span className="flex shrink-0 items-center gap-1 tabular-nums">{count}</span>
+        {footer ? <span className="flex max-w-full min-w-0 items-center">{footer}</span> : null}
       </div>
     </li>
   );
@@ -70,10 +83,12 @@ export function SetCardShell({
 export function SetCardsSkeleton({ count, label }: { count: number; label: string }) {
   return (
     <LoadingState label={label}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: count }, (_, index) => (
-          <Skeleton key={index} className="h-40 w-full" />
-        ))}
+      <div className="@container">
+        <div className={GRID}>
+          {Array.from({ length: count }, (_, index) => (
+            <Skeleton key={index} className="h-28 w-full" />
+          ))}
+        </div>
       </div>
     </LoadingState>
   );
