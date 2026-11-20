@@ -3,8 +3,10 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   adminUserQuerySchema,
   lockUserSchema,
+  setUserRoleSchema,
   type AdminUserQuery,
   type LockUserDto,
+  type SetUserRoleDto,
 } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -41,5 +43,16 @@ export class AdminUsersController {
   @ApiOperation({ summary: 'Mở khoá tài khoản' })
   unlock(@Param('id') id: string) {
     return this.users.unlock(id);
+  }
+
+  @Patch(':id/role')
+  @ApiOperation({ summary: 'Đổi vai trò, ví dụ cấp quyền giáo viên' })
+  @ApiZodBody(setUserRoleSchema)
+  setRole(
+    @Param('id') id: string,
+    @CurrentUser() admin: CurrentUserData,
+    @Body(new ZodValidationPipe(setUserRoleSchema)) { role }: SetUserRoleDto,
+  ) {
+    return this.users.setRole(id, admin.id, role);
   }
 }

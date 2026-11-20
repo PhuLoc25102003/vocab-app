@@ -7,6 +7,7 @@ import {
   type AdminUser,
   type AdminUserList,
   type HiddenSet,
+  type Role,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -29,6 +30,14 @@ export async function lockUser(id: string, reason: string): Promise<AdminUser> {
   const body = await http(`/admin/users/${encodeURIComponent(id)}/lock`, {
     method: 'PATCH',
     body: JSON.stringify({ reason }),
+  });
+  return adminUserResponseSchema.parse(body).data;
+}
+
+export async function setUserRole(id: string, role: Role): Promise<AdminUser> {
+  const body = await http(`/admin/users/${encodeURIComponent(id)}/role`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role }),
   });
   return adminUserResponseSchema.parse(body).data;
 }

@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
-import { listAdminUsers, lockUser, unlockUser } from '../api';
+import { listAdminUsers, lockUser, setUserRole, unlockUser } from '../api';
 import { AdminUsers } from './admin-users';
 
 const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
@@ -17,6 +17,7 @@ vi.mock('../api', async (importOriginal) => ({
   listAdminUsers: vi.fn(),
   lockUser: vi.fn(),
   unlockUser: vi.fn(),
+  setUserRole: vi.fn(),
 }));
 
 const user = (overrides: Partial<AdminUser>): AdminUser => ({
@@ -97,5 +98,32 @@ describe('AdminUsers', () => {
     vi.mocked(listAdminUsers).mockRejectedValueOnce(new HttpError('x', 403, 'FORBIDDEN'));
     renderPage();
     expect(await screen.findByText('Bạn không có quyền xem trang này')).toBeInTheDocument();
+  });
+
+  it('ADMIN đổi vai trò thành giáo viên ngay trên dòng người dùng', async () => {
+    vi.mocked(listAdminUsers).mockResolvedValue(page([user({})]));
+    vi.mocked(setUserRole).mockResolvedValue(user({ role: 'TEACHER' }));
+    renderPage();
+
+    const select = await screen.findByRole('combobox', { name: 'Vai trò của hoc@example.com' });
+    expect(select).toHaveValue('STUDENT');
+    await userEvent.selectOptions(select, 'TEACHER');
+
+    await waitFor(() => expect(setUserRole).toHaveBeenCalledWith('u1', 'TEACHER'));
+  });
+
+  it('báo lỗi khi máy chủ từ chối đổi vai trò', async () => {
+    vi.mocked(listAdminUsers).mockResolvedValue(page([user({ role: 'ADMIN' })]));
+    vi.mocked(setUserRole).mockRejectedValue(
+      new HttpError('Bạn không thể tự đổi vai trò của mình', 422, 'CANNOT_CHANGE_OWN_ROLE'),
+    );
+    renderPage();
+
+    await userEvent.selectOptions(
+      await screen.findByRole('combobox', { name: 'Vai trò của hoc@example.com' }),
+      'STUDENT',
+    );
+
+    await waitFor(() => expect(setUserRole).toHaveBeenCalledWith('u1', 'STUDENT'));
   });
 });

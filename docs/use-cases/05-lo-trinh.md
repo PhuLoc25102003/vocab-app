@@ -123,7 +123,7 @@ Mỗi chế độ dùng `StudyModeStrategy`, chạy được cho tài khoản v�
 
 ## Giai đoạn 3: Lớp học
 
-Cần chốt trước: cách một tài khoản trở thành giáo viên (việc 3.2).
+Đã chốt (việc 3.2): ADMIN đổi vai trò trực tiếp ở trang Quản lý người dùng, người dùng không cần gửi yêu cầu. ADMIN không tự đổi vai trò của mình. ADMIN đầu tiên tạo bằng lệnh `npm run user:set-role` (3.11).
 
 ### UC-C1. Lớp và thành viên
 

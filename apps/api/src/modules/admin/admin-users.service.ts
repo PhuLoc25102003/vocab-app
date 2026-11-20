@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type AdminUser, type AdminUserQuery } from '@vocab/shared';
+import { ERROR_CODES, type AdminUser, type AdminUserQuery, type Role } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { AdminUsersRepository } from './admin-users.repository';
@@ -37,5 +37,17 @@ export class AdminUsersService {
 
   async unlock(id: string) {
     return found(await this.users.unlock(id));
+  }
+
+  /** Không cho tự đổi để hệ thống luôn còn ít nhất một ADMIN đang dùng. */
+  async setRole(id: string, adminId: string, role: Role) {
+    if (id === adminId) {
+      throw new AppError(
+        ERROR_CODES.CANNOT_CHANGE_OWN_ROLE,
+        'Bạn không thể tự đổi vai trò của mình',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    return found(await this.users.setRole(id, role));
   }
 }

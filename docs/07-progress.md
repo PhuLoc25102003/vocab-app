@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-20
 
-**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (3.2), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý lớp (3.3), API thành viên lớp (3.9), quyền xem bộ `CLASS` (3.4) API giao bộ từ (3.5) API học sinh xem bài cần làm (3.10) và API kết quả lớp (3.6).
 
@@ -10,9 +10,8 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Chốt cách một tài khoản thành giáo viên (việc 3.2). Trong lúc chờ, cấp quyền bằng `npm run user:set-role` (việc 3.11).
-2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+2. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -23,9 +22,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      35 |      40 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      13 |      14 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **117** | **127** | **92%**    |
+| **Toàn dự án**          |                                            | **118** | **127** | **93%**    |
 
 ## Cách cập nhật
 
@@ -223,7 +222,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 **Xong khi:** giáo viên tạo lớp, giao bộ từ và xem được kết quả của học sinh.
 
 - [x] **3.1** Schema `Class`, `ClassMember`, `Assignment` (#238).
-- [ ] **3.2** Quy trình cấp vai trò giáo viên.
+- [x] **3.2** Quy trình cấp vai trò giáo viên: ADMIN đổi vai trò trực tiếp ở trang Quản lý người dùng (`PATCH /admin/users/:id/role`), không cần người dùng gửi yêu cầu. Lệnh `user:set-role` (3.11) dùng để tạo ADMIN đầu tiên.
 - [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia (#241).
 - [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia (#243).
 - [x] **3.4** Quyền xem bộ từ có `visibility = CLASS` (#265).
@@ -250,8 +249,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 ## Quyết định cần chốt
 
-| Quyết định                         | Cần trước việc | Đề xuất                                     |
-| ---------------------------------- | -------------- | ------------------------------------------- |
-| Tên miền production                | 1.20           | Dùng domain riêng cho `app.` và `api.`      |
-| Cách một tài khoản thành giáo viên | 3.2            | Người dùng gửi yêu cầu, ADMIN duyệt         |
-| Dịch vụ gửi email                  | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản |
+| Quyết định          | Cần trước việc | Đề xuất                                     |
+| ------------------- | -------------- | ------------------------------------------- |
+| Tên miền production | 1.20           | Dùng domain riêng cho `app.` và `api.`      |
+| Dịch vụ gửi email   | 1.49           | Chọn dịch vụ có gói miễn phí, cần tài khoản |
