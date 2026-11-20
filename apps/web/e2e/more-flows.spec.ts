@@ -232,6 +232,31 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expectScore(page, cards.length);
   });
 
+  test('tải bộ về máy, học khi mất mạng, có mạng lại thì gửi lên máy chủ', async () => {
+    await page.goto(setPath);
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+    await page.reload();
+    await expect
+      .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+      .toBe(true);
+    await page.getByRole('button', { name: 'Tải về máy' }).click();
+    await expect(page.getByRole('button', { name: 'Xoá bản offline' })).toBeVisible();
+
+    await page.context().setOffline(true);
+    await page.goto('/offline').catch(() => undefined);
+    await page.getByText(title).click();
+    await page.getByRole('button', { name: 'Học offline' }).click();
+    for (let done = 0; done < cards.length; done += 1) {
+      await page.getByRole('button', { name: /^Xem nghĩa/ }).click();
+      await page.getByRole('button', { name: /^Đã nhớ/ }).click();
+    }
+    await expect(page.getByText('Kết quả đã lưu trên máy')).toBeVisible();
+
+    await page.context().setOffline(false);
+    await page.goto('/dashboard');
+    await expect(page.getByText('Đã gửi 1 phiên học offline lên máy chủ')).toBeVisible();
+  });
+
   test('ghép cặp từ với nghĩa', async () => {
     await page.goto(`${setPath}/study/match`);
     const terms = page.getByRole('list', { name: 'Từ' });
