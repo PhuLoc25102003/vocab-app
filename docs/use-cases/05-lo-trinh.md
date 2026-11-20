@@ -6,9 +6,9 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 
 ### UC-X1. Hạ tầng dùng chung
 
-- **Việc 2.1, Rate limit Redis:** bộ đếm dùng chung nhiều instance. Redis lỗi thì API vẫn chạy và ghi log. Test hai instance cùng tính một giới hạn.
-- **Việc 2.2, Cache bộ công khai:** sửa, xoá, đổi phạm vi phải xoá cache. Test bộ chuyển sang riêng tư không còn đọc được từ cache.
-- **Việc 2.3, Staging:** `develop` tự deploy với database và secret riêng. Test smoke trên staging trước khi phát hành.
+- **Việc 2.1, Rate limit Redis:** bộ đếm dùng chung nhiều instance qua Upstash REST, đặt sau một interface để thay bằng bộ đếm trong bộ nhớ khi thiếu `UPSTASH_REDIS_REST_URL`. Redis lỗi thì API vẫn chạy và ghi log. Test hai instance cùng tính một giới hạn bằng bản giả dùng chung.
+- **Việc 2.2, Cache bộ công khai:** cache `GET /sets/:id` của bộ công khai trên cùng Redis, sửa, xoá, đổi phạm vi, thêm hoặc sửa thẻ phải xoá cache. Thiếu Redis thì không cache. Trang công khai của web vẫn cache 5 phút như hiện nay. Test bộ chuyển sang riêng tư không còn đọc được từ cache.
+- **Việc 2.3, Staging:** làm sau 1.35. `develop` tự deploy lên Render service thứ hai và tên miền Vercel riêng, database là Neon branch `staging`, secret riêng. Toàn bộ là thao tác trên dashboard theo `docs/08-deploy.md`. Test smoke trên staging trước khi phát hành.
 
 ### UC-X2. Thư mục bộ từ
 
@@ -20,7 +20,7 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 
 ### UC-X3. Ảnh và âm thanh cho thẻ
 
-- **Việc:** 2.5, 2.6. **Người dùng:** chủ bộ từ.
+- **Việc:** 2.5, 2.6. **Người dùng:** chủ bộ từ. **Cách làm:** lưu trữ qua interface `ObjectStorage`, bản R2 dùng SDK tương thích S3 khi có `R2_*`, bản giả trong test. Thiếu khoá R2 thì API trả 503 cho `POST /uploads/presign` và web ẩn nút thêm ảnh. TTS (2.6) cần chọn dịch vụ đọc văn bản, chưa có thì giữ giọng đọc của trình duyệt.
 - **Phải có:** URL ký sẵn 5 phút, ảnh PNG, JPEG, WebP tối đa 1 MB, xem trước, xoá ảnh; âm thanh TTS được lưu lại và dùng chung cho cùng từ, cùng ngôn ngữ.
 - **Ngoại lệ:** sai loại hoặc quá dung lượng; tải lên dở; dịch vụ lưu trữ lỗi thì quay về Web Speech; CSP phải cho phép domain ảnh.
 - **Cách test:** integration ký URL và quyền; bộ lưu trữ giả; E2E thêm ảnh rồi thấy trong lúc học.

@@ -50,7 +50,7 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P5. Log và giám sát
 
-- **Việc:** 1.50 (log), 1.31 (Sentry, uptime). **Người dùng:** người vận hành. **Trạng thái:** Log đã xong, phần Sentry và uptime cần tài khoản.
+- **Việc:** 1.50 (log), 1.31 (Sentry, uptime). **Người dùng:** người vận hành. **Trạng thái:** Log đã xong. Sentry hoãn khỏi MVP (quyết định ngày 2026-11-20): xem lỗi bằng log của Render và Vercel, uptime bằng UptimeRobot miễn phí gọi `/api/v1/health` mỗi 5 phút.
 - **Phải có:** log JSON bằng Pino có `requestId`, ẩn mật khẩu, token, cookie; Sentry cho web và API; theo dõi `/health`.
 - **Ngoại lệ:** thiếu DSN thì app vẫn chạy; lỗi 4xx nghiệp vụ không gửi Sentry.
 - **Test đã có:** `logging.integration.test` kiểm tra log là JSON có `reqId`, không chứa mật khẩu, token, cookie, query string.
@@ -81,7 +81,7 @@ Giai đoạn 0 không có chức năng cho người dùng cuối. Mỗi việc �
 
 ## UC-P9. Phát hành MVP
 
-- **Việc:** 1.35. **Người dùng:** người phụ trách. **Trạng thái:** Chưa làm, cần xác nhận rõ PR vào `main`.
+- **Việc:** 1.35. **Người dùng:** người phụ trách. **Trạng thái:** Chưa làm, cần xác nhận rõ PR vào `main`. Hiện Vercel và Render đều deploy từ `develop`; khi phát hành thì đổi nhánh production của cả hai sang `main`, các bước ở `docs/08-deploy.md` mục "Phát hành".
 - **Điều kiện:** các việc còn lại của Giai đoạn 1 xong, checklist bảo mật đạt, CI xanh, có cách rollback.
 - **Luồng chính:** mở PR từ `develop` vào `main`, người phụ trách xác nhận, merge, chạy smoke test production.
 - **Ngoại lệ:** smoke test lỗi thì rollback bản deploy, không sửa trực tiếp trên `main`.
