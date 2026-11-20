@@ -10,11 +10,12 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Quyền xem bộ từ `CLASS` cho thành viên lớp (việc 3.4).
-2. API giao bộ từ và hạn nộp (việc 3.5), API kết quả lớp (việc 3.6).
-3. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
-4. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
-5. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Làm rõ trang nhập và file mẫu, gọn form bộ từ, thiết kế lại trang công khai (việc 2.37 đến 2.40, góp ý ngày 2026-11-20).
+2. Quyền xem bộ từ `CLASS` cho thành viên lớp (việc 3.4).
+3. API giao bộ từ và hạn nộp (việc 3.5), API kết quả lớp (việc 3.6).
+4. Web cho giáo viên (việc 3.7) và học sinh trong lớp (việc 3.8). Quyền giáo viên tạm do ADMIN cấp cho tới khi chốt việc 3.2.
+5. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
+6. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -24,10 +25,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      50 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      31 |      36 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      31 |      40 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |       3 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **103** | **118** | **87%**    |
+| **Toàn dự án**          |                                            | **103** | **122** | **84%**    |
 
 ## Cách cập nhật
 
@@ -215,6 +216,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được (#259).
 - [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục (#247).
 - [x] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước (#220).
+- [ ] **2.37** Trang nhập dễ hiểu: chia ba bước (lấy file mẫu, đưa danh sách vào, kiểm tra cách đọc); "Ký tự phân cách" đổi thành "Từ và nghĩa cách nhau bằng" kèm ví dụ cho từng lựa chọn và báo ký tự đã tự nhận; ô chọn cột hiện giá trị của dòng đầu ("Cột 1: apple"); phần cách đọc thu gọn khi đã tự nhận đúng.
+- [ ] **2.38** File mẫu rõ ràng: `.xlsx` có tiêu đề in đậm có nền, cố định hàng tiêu đề, độ rộng cột vừa nội dung, 6 đến 8 dòng ví dụ, sheet thứ hai "Hướng dẫn"; bỏ nút tải mẫu `.csv` vì Excel tiếng Việt mở ra dồn hết vào cột A (vẫn nhận file `.csv` khi tải lên).
+- [ ] **2.39** Form tạo và sửa bộ từ gọn: mô tả 2 dòng tự giãn, ngôn ngữ của từ và nghĩa chung một hàng có nút đảo chiều, "Ai xem được" thành hai lựa chọn có mô tả ai xem được, ai sao chép được.
+- [ ] **2.40** Trang công khai theo thiết kế mới: header như trang bộ từ, nút chính "Học thử" và lưới chế độ học dùng chung, danh sách thẻ như trang bộ từ; người đã đăng nhập mở đường dẫn công khai thì vào thẳng trang bộ từ trong app; bỏ link "Xem trang công khai" của chủ bộ, giữ "Sao chép đường dẫn".
 
 ## Giai đoạn 3: Lớp học
 
