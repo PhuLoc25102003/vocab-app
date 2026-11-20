@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import type { SetDetail } from '@vocab/shared';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { clearOfflineData, getOfflineSet } from '@/lib/offline-store';
@@ -30,5 +30,18 @@ describe('OfflineToggle', () => {
 
     rerender(<OfflineToggle set={set('2026-11-02T00:00:00.000Z')} />);
     expect(await screen.findByRole('button', { name: 'Cập nhật bản offline' })).toBeInTheDocument();
+  });
+
+  it('hỏi bằng hộp thoại trước khi xoá bản offline', async () => {
+    render(<OfflineToggle set={set('2026-11-01T00:00:00.000Z')} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Tải về máy' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Xoá bản offline' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Xoá bản offline?' });
+    expect(await getOfflineSet('s1')).not.toBeNull();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá bản offline' }));
+
+    expect(await screen.findByRole('button', { name: 'Tải về máy' })).toBeInTheDocument();
+    expect(await getOfflineSet('s1')).toBeNull();
   });
 });

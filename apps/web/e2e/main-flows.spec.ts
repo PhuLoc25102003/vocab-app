@@ -212,8 +212,9 @@ test.describe.serial('luồng chính', () => {
   test('xoá tài khoản rồi không đăng nhập lại được', async () => {
     await page.goto('/account');
     await page.getByRole('button', { name: 'Xoá tài khoản' }).click();
-    await page.getByLabel('Nhập mật khẩu để xác nhận', { exact: true }).fill(account.password);
-    await page.getByRole('button', { name: 'Xoá vĩnh viễn' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Xoá tài khoản?' });
+    await dialog.getByLabel('Nhập mật khẩu để xác nhận', { exact: true }).fill(account.password);
+    await dialog.getByRole('button', { name: 'Xoá vĩnh viễn' }).click();
     await page.waitForURL('**/login');
 
     await logIn(page);

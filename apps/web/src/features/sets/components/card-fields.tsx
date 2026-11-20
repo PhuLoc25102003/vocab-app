@@ -7,7 +7,7 @@ import {
   type SetFormValues,
 } from '@vocab/shared';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
   useFieldArray,
   type Control,
@@ -17,6 +17,7 @@ import {
 } from 'react-hook-form';
 import { FormField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 
 export const EMPTY_CARD: CardDraft = { term: '', definition: '', phonetic: '', example: '' };
 
@@ -55,6 +56,21 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
         setFocus(`cards.${target}.term`);
       }
     });
+  };
+
+  const [pendingRemove, setPendingRemove] = useState<number | null>(null);
+
+  /** Thẻ đã lưu hoặc đã gõ nội dung thì hỏi lại, dòng trống thì xoá ngay. */
+  const requestRemove = (index: number) => {
+    const row = listRef.current?.querySelector(`[data-card="${index}"]`);
+    const typed = [...(row?.querySelectorAll<HTMLInputElement>('input, textarea') ?? [])].some(
+      ({ value }) => value.trim() !== '',
+    );
+    if (fields[index]?.id || typed) {
+      setPendingRemove(index);
+    } else {
+      removeCard(index);
+    }
   };
 
   const removeCard = (index: number) => {
@@ -125,7 +141,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                     variant="ghost"
                     size="icon"
                     aria-label={`Xoá thẻ ${number}`}
-                    onClick={() => removeCard(index)}
+                    onClick={() => requestRemove(index)}
                   >
                     <Trash2 aria-hidden className="size-5" />
                   </Button>
@@ -178,6 +194,19 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
           </p>
         ) : null}
       </div>
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        onOpenChange={(open) => !open && setPendingRemove(null)}
+        title={`Xoá thẻ ${(pendingRemove ?? 0) + 1}?`}
+        description="Thẻ sẽ bị bỏ khỏi bộ từ khi bạn lưu, kèm tiến độ học của thẻ đó."
+        confirmLabel="Xoá thẻ"
+        onConfirm={() => {
+          if (pendingRemove !== null) {
+            removeCard(pendingRemove);
+          }
+          setPendingRemove(null);
+        }}
+      />
     </section>
   );
 }

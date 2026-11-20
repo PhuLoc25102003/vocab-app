@@ -108,13 +108,25 @@ describe('CardFields', () => {
     ]);
   });
 
-  it('không gửi thẻ đã xoá', async () => {
+  it('hỏi lại khi xoá thẻ đã lưu và không gửi thẻ đã xoá', async () => {
     await renderEditor();
     await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ 1' }));
+    const dialog = screen.getByRole('dialog', { name: 'Xoá thẻ 1?' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá thẻ' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await save();
 
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/s1'));
     expect(savedCards()).toEqual([{ id: 'c2', term: 'pear', definition: 'quả lê' }]);
+  });
+
+  it('xoá ngay dòng trống mới thêm, không hỏi lại', async () => {
+    await renderEditor();
+    await userEvent.click(screen.getByRole('button', { name: 'Thêm thẻ' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ 3' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('listitem', { name: 'Thẻ 3' })).not.toBeInTheDocument();
   });
 
   it('khoá nút đưa lên ở thẻ đầu và đưa xuống ở thẻ cuối', async () => {

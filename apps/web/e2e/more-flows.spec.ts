@@ -374,7 +374,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
     await page.getByText('Quản lý thư mục').click();
     await page.getByRole('button', { name: `Xoá ${folderName}` }).click();
-    await page.getByRole('button', { name: 'Xoá thư mục' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Xoá thư mục' }).click();
     await expect(page.getByText('Đã xoá thư mục, bộ từ vẫn được giữ')).toBeVisible();
     await page.goto('/sets');
     await expect(page.getByRole('link', { name: title })).toBeVisible();
@@ -509,10 +509,14 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.goto(setPath);
     await page.getByRole('button', { name: 'Thao tác khác' }).click();
     await page.getByRole('menuitem', { name: 'Xoá bộ từ' }).click();
-    await page
-      .getByRole('group', { name: 'Xác nhận xoá' })
-      .getByRole('button', { name: 'Xoá bộ từ' })
-      .click();
+    // Hộp thoại xác nhận không đẩy bố cục, huỷ được bằng Esc.
+    const confirmDelete = page.getByRole('dialog', { name: `Xoá bộ từ "${title}"?` });
+    await expect(confirmDelete.getByRole('button', { name: 'Huỷ' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(confirmDelete).toBeHidden();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Xoá bộ từ' }).click();
+    await confirmDelete.getByRole('button', { name: 'Xoá bộ từ' }).click();
     await page.waitForURL('**/sets');
     await page.goto(setPath);
     await expect(page.getByText('Không tìm thấy bộ từ')).toBeVisible();

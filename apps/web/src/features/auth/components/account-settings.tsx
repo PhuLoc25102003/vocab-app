@@ -13,7 +13,7 @@ import {
   type ConfirmPasswordInput,
   type Role,
 } from '@vocab/shared';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { ErrorState } from '@/components/common/error-state';
@@ -22,6 +22,7 @@ import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
@@ -166,60 +167,56 @@ function PasswordForm() {
 }
 
 function LogoutAll() {
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const openRef = useRef<HTMLButtonElement>(null);
-  const keepRef = useRef<HTMLButtonElement>(null);
-
-  const toggle = (next: boolean) => {
-    setIsConfirming(next);
-    requestAnimationFrame(() => (next ? keepRef : openRef).current?.focus());
-  };
+  const [error, setError] = useState<string | null>(null);
 
   const confirm = async () => {
     setIsLeaving(true);
+    setError(null);
     try {
       await logoutAll();
       leaveSession();
-    } catch (error) {
+    } catch (reason) {
       setIsLeaving(false);
-      toast.error(formErrorMessage(error));
+      setError(formErrorMessage(reason));
     }
   };
 
-  if (!isConfirming) {
-    return (
-      <div>
-        <Button ref={openRef} variant="secondary" onClick={() => toggle(true)}>
-          Đăng xuất mọi thiết bị
-        </Button>
-      </div>
-    );
-  }
   return (
-    <div role="group" aria-label="Xác nhận đăng xuất" className="flex flex-wrap items-center gap-2">
-      <p className="text-small">Bạn sẽ phải đăng nhập lại trên mọi thiết bị, kể cả thiết bị này.</p>
-      <Button variant="secondary" loading={isLeaving} onClick={() => void confirm()}>
-        Đăng xuất tất cả
+    <div>
+      <Button
+        variant="secondary"
+        onClick={() => {
+          setError(null);
+          setConfirming(true);
+        }}
+      >
+        Đăng xuất mọi thiết bị
       </Button>
-      <Button ref={keepRef} variant="ghost" disabled={isLeaving} onClick={() => toggle(false)}>
-        Giữ lại
-      </Button>
+      <ConfirmDialog
+        open={confirming}
+        onOpenChange={setConfirming}
+        title="Đăng xuất mọi thiết bị?"
+        description="Bạn sẽ phải đăng nhập lại trên mọi thiết bị, kể cả thiết bị này."
+        confirmLabel="Đăng xuất tất cả"
+        cancelLabel="Giữ đăng nhập"
+        pending={isLeaving}
+        error={error}
+        onConfirm={() => void confirm()}
+      />
     </div>
   );
 }
 
 function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const openRef = useRef<HTMLButtonElement>(null);
-  const keepRef = useRef<HTMLButtonElement>(null);
   const {
     register,
     handleSubmit,
     reset,
     setError,
-    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<ConfirmPasswordInput>({
     resolver: hasPassword ? zodResolver(confirmPasswordSchema) : undefined,
@@ -228,19 +225,11 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
 
   useEffect(() => () => reset(), [reset]);
 
+  // Đóng hay mở đều xoá mật khẩu đã nhập, không để nó nằm lại trong DOM.
   const toggle = (next: boolean) => {
-    setIsConfirming(next);
+    setConfirming(next);
     setFormError(null);
     reset();
-    requestAnimationFrame(() => {
-      if (!next) {
-        openRef.current?.focus();
-      } else if (hasPassword) {
-        setFocus('password');
-      } else {
-        keepRef.current?.focus();
-      }
-    });
   };
 
   const submit = handleSubmit(async ({ password }) => {
@@ -258,47 +247,32 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
     }
   });
 
-  if (!isConfirming) {
-    return (
-      <div>
-        <Button
-          ref={openRef}
-          variant="secondary"
-          className="text-danger"
-          onClick={() => toggle(true)}
-        >
-          Xoá tài khoản
-        </Button>
-      </div>
-    );
-  }
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col items-start gap-3">
-      {formError ? <FormError>{formError}</FormError> : null}
-      <p className="text-small">Việc này không thể hoàn tác.</p>
-      {hasPassword ? (
-        <PasswordField
-          label="Nhập mật khẩu để xác nhận"
-          autoComplete="current-password"
-          error={errors.password?.message}
-          {...register('password')}
-        />
-      ) : null}
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" variant="secondary" className="text-danger" loading={isSubmitting}>
-          Xoá vĩnh viễn
-        </Button>
-        <Button
-          ref={keepRef}
-          type="button"
-          variant="ghost"
-          disabled={isSubmitting}
-          onClick={() => toggle(false)}
-        >
-          Giữ tài khoản
-        </Button>
-      </div>
-    </form>
+    <div>
+      <Button variant="secondary" className="text-danger" onClick={() => toggle(true)}>
+        Xoá tài khoản
+      </Button>
+      <ConfirmDialog
+        open={confirming}
+        onOpenChange={toggle}
+        title="Xoá tài khoản?"
+        description="Mọi bộ từ, tiến độ học và phiên đăng nhập của bạn sẽ bị xoá. Việc này không thể hoàn tác."
+        confirmLabel="Xoá vĩnh viễn"
+        cancelLabel="Giữ tài khoản"
+        pending={isSubmitting}
+        error={formError}
+        onConfirm={() => void submit()}
+      >
+        {hasPassword ? (
+          <PasswordField
+            label="Nhập mật khẩu để xác nhận"
+            autoComplete="current-password"
+            error={errors.password?.message}
+            {...register('password')}
+          />
+        ) : null}
+      </ConfirmDialog>
+    </div>
   );
 }
 

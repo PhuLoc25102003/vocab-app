@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ERROR_CODES, type Account } from '@vocab/shared';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
@@ -91,7 +91,11 @@ describe('AccountSettings', () => {
     await renderSettings();
 
     await userEvent.click(screen.getByRole('button', { name: 'Xoá tài khoản' }));
-    await userEvent.type(screen.getByLabelText('Nhập mật khẩu để xác nhận'), 'sai-mat-khau');
+    const dialog = screen.getByRole('dialog', { name: 'Xoá tài khoản?' });
+    await userEvent.type(
+      within(dialog).getByLabelText('Nhập mật khẩu để xác nhận'),
+      'sai-mat-khau',
+    );
     await userEvent.click(screen.getByRole('button', { name: 'Xoá vĩnh viễn' }));
 
     expect(await screen.findByText('Mật khẩu không đúng')).toBeInTheDocument();
@@ -104,6 +108,7 @@ describe('AccountSettings', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Xoá tài khoản' }));
     await userEvent.click(screen.getByRole('button', { name: 'Giữ tài khoản' }));
 
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(deleteAccount).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Xoá tài khoản' })).toBeInTheDocument();
   });
@@ -114,7 +119,8 @@ describe('AccountSettings', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất mọi thiết bị' }));
     expect(logoutAll).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất tất cả' }));
+    const dialog = screen.getByRole('dialog', { name: 'Đăng xuất mọi thiết bị?' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Đăng xuất tất cả' }));
 
     await waitFor(() => expect(useAuthStore.getState().status).toBe('signed-out'));
   });
