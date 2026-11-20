@@ -147,6 +147,27 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expectScore(page, cards.length);
   });
 
+  test('Bắt đầu học chạy lộ trình: xem thẻ rồi sang trắc nghiệm', async () => {
+    await page.goto(setPath);
+    await page.getByRole('link', { name: 'Bắt đầu học' }).click();
+    await page.waitForURL('**/study/path');
+    const steps = page.getByRole('list', { name: 'Các bước của lộ trình' });
+    await expect(steps.locator('[aria-current="step"]')).toHaveText(/Xem thẻ/);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      await page.keyboard.press('Space');
+      await page.keyboard.press('2');
+    }
+    await expectScore(page, cards.length);
+
+    await page.getByRole('link', { name: 'Bước tiếp: Trắc nghiệm' }).click();
+    await page.waitForURL('**/study/path?step=2');
+    await expect(steps.locator('[aria-current="step"]')).toHaveText(/Trắc nghiệm/);
+    await answerChoices(page);
+    await expectScore(page, cards.length);
+    await expect(page.getByRole('link', { name: 'Bước tiếp: Ghép cặp' })).toBeVisible();
+  });
+
   test('học Nghe viết theo từ được đọc', async () => {
     await page.goto(`${setPath}/study/dictation`);
     for (let done = 0; done < cards.length; done += 1) {
@@ -415,6 +436,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       '/review',
       '/account',
       `${setPath}/study/flashcard`,
+      `${setPath}/study/path`,
       `${setPath}/study/learn`,
       `${setPath}/study/write`,
       `${setPath}/study/test`,
