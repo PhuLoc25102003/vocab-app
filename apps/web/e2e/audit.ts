@@ -19,15 +19,21 @@ export async function applyAuditView(page: Page, view: AuditView) {
 /** Trả về danh sách lỗi của màn hình đang mở, rỗng là đạt. */
 export async function auditPage(page: Page, label: string): Promise<string[]> {
   await page.waitForLoadState('networkidle');
-  // Đo giữa lúc chữ đang hiện dần thì axe báo thiếu tương phản. Bỏ qua hiệu ứng lặp vô hạn.
-  await page.evaluate(() =>
-    Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    ),
-  );
+  // Đo giữa lúc chữ đang hiện dần thì axe báo thiếu tương phản. Chỉ chờ hiệu ứng đang chạy theo
+  // thời gian và có điểm kết thúc; hiệu ứng theo cuộn hay lặp vô hạn không bao giờ xong.
+  await page.evaluate(() => {
+    const running = document
+      .getAnimations()
+      .filter(
+        (animation) =>
+          animation.playState === 'running' &&
+          animation.timeline instanceof DocumentTimeline &&
+          animation.effect?.getComputedTiming().endTime !== Infinity,
+      )
+      .map((animation) => animation.finished.catch(() => undefined));
+    const limit = new Promise((resolve) => setTimeout(resolve, 1_000));
+    return Promise.race([Promise.all(running), limit]);
+  });
   const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
   const issues = violations.flatMap(({ id, nodes }) =>
     nodes.slice(0, 4).map(({ target }) => `${label}: axe ${id} ${target.join(' ')}`),
