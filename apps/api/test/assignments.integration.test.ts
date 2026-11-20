@@ -81,6 +81,12 @@ describe('giao bài cho lớp', () => {
     );
 
     expect(response.body.meta.total).toBe(3);
+    // Bài mới ghi cả danh sách chế độ (5.10) để API nhiều chế độ đọc được.
+    const stored = await prisma.assignment.findMany({
+      where: { classId },
+      select: { mode: true, modes: true },
+    });
+    expect(stored.every(({ mode, modes }) => modes.length === 1 && modes[0] === mode)).toBe(true);
     expect(response.body.data.map(({ mode }: { mode: string }) => mode)).toEqual([
       'MATCH',
       'MCQ',

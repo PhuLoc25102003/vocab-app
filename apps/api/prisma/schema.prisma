@@ -56,6 +56,7 @@ model User {
   studySessions       StudySession[]
   teachingClasses     Class[]
   classMembers        ClassMember[]
+  submissions         AssignmentSubmission[]
 }
 
 model RefreshSession {
@@ -174,12 +175,16 @@ model StudySession {
   finishedAt DateTime?
   correct    Int       @default(0)
   total      Int       @default(0)
+  /// Phiên học làm cho một bài giao; xoá bài giao thì phiên vẫn còn, chỉ bỏ liên kết.
+  assignmentId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  set      StudySet  @relation(fields: [setId], references: [id], onDelete: Cascade)
-  attempts Attempt[]
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  set        StudySet    @relation(fields: [setId], references: [id], onDelete: Cascade)
+  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  attempts   Attempt[]
 
   @@index([userId, startedAt])
+  @@index([assignmentId, userId])
 }
 
 model Attempt {
@@ -233,13 +238,33 @@ model Assignment {
   classId   String
   setId     String
   mode      StudyMode
+  /// Các chế độ phải làm, theo thứ tự. Thay cho `mode` (giữ lại đến lần deploy sau rồi mới xoá).
+  modes     StudyMode[] @default([])
   dueAt     DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  class Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
-  set   StudySet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  class       Class                  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  set         StudySet               @relation(fields: [setId], references: [id], onDelete: Cascade)
+  sessions    StudySession[]
+  submissions AssignmentSubmission[]
 
   @@index([classId, dueAt])
   @@index([setId])
+}
+
+/// Bài nộp của một học sinh cho một bài giao. Nộp một lần; điểm (phần trăm) chốt lúc nộp, null khi
+/// bài chỉ có chế độ không chấm điểm. `late`: nộp sau `dueAt`.
+model AssignmentSubmission {
+  assignmentId String
+  userId       String
+  submittedAt  DateTime @default(now())
+  score        Int?
+  late         Boolean  @default(false)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([assignmentId, userId])
+  @@index([userId])
 }
