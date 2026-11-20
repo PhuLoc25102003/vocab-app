@@ -100,10 +100,24 @@ export class StudyRepository extends BaseRepository {
     return next?.dueAt ?? null;
   }
 
-  createSession(userId: string, setId: string, mode: StudyMode, total: number) {
+  createSession(
+    userId: string,
+    setId: string,
+    mode: StudyMode,
+    total: number,
+    assignmentId?: string,
+  ) {
     return this.prisma.studySession.create({
-      data: { userId, setId, mode, total },
+      data: { userId, setId, mode, total, assignmentId: assignmentId ?? null },
       select: SESSION_SELECT,
+    });
+  }
+
+  /** Bài giao mà người này đang là thành viên lớp (lớp chưa lưu trữ). */
+  findAssignmentForMember(id: string, userId: string) {
+    return this.prisma.assignment.findFirst({
+      where: { id, class: { archivedAt: null, members: { some: { userId } } } },
+      select: { setId: true, mode: true, modes: true },
     });
   }
 

@@ -53,13 +53,35 @@ function summarize(attempts: { cardId: string; isCorrect: boolean }[]) {
 export class StudyService {
   constructor(private readonly study: StudyRepository) {}
 
-  async start(viewer: SetViewer, { setId, mode, limit, dueOnly, cardIds }: StartSessionDto) {
+  async start(
+    viewer: SetViewer,
+    { setId, mode, limit, dueOnly, cardIds, assignmentId }: StartSessionDto,
+  ) {
     if (!isModeAvailable(mode)) {
       throw new AppError(
         ERROR_CODES.STUDY_MODE_UNAVAILABLE,
         'Chế độ học này chưa có',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
+    }
+    if (assignmentId) {
+      const assignment = await this.study.findAssignmentForMember(assignmentId, viewer.id);
+      if (!assignment) {
+        throw new AppError(
+          ERROR_CODES.ASSIGNMENT_NOT_FOUND,
+          'Không tìm thấy bài giao',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const modes = assignment.modes.length ? assignment.modes : [assignment.mode];
+      if (assignment.setId !== setId || !modes.includes(mode)) {
+        throw new AppError(
+          ERROR_CODES.VALIDATION_ERROR,
+          'Chế độ hoặc bộ từ không thuộc bài giao này',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+          [{ path: 'mode', code: 'not_in_assignment', message: 'Chế độ không thuộc bài giao' }],
+        );
+      }
     }
     const set = await this.study.findSet(setId, viewer, dueOnly ? new Date() : undefined);
     if (!set) {
@@ -99,7 +121,13 @@ export class StudyService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const session = await this.study.createSession(viewer.id, setId, mode, questions.length);
+    const session = await this.study.createSession(
+      viewer.id,
+      setId,
+      mode,
+      questions.length,
+      assignmentId,
+    );
     const languages = { term: set.termLang, definition: set.defLang };
     return ok({ session, questions, languages });
   }

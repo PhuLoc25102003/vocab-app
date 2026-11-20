@@ -243,3 +243,36 @@ export const memberResultListSchema = z.object({
   meta: paginationMetaSchema,
 });
 export type MemberResultList = z.infer<typeof memberResultListSchema>;
+
+/** Tiến độ một chế độ của bài giao: đã xong một phiên chưa, điểm phiên tốt nhất (Flashcard không chấm). */
+export const assignmentModeProgressSchema = z.object({
+  mode: studyModeSchema,
+  done: z.boolean(),
+  score: z.number().int().nullable(),
+});
+export type AssignmentModeProgress = z.infer<typeof assignmentModeProgressSchema>;
+
+export const submissionSchema = z.object({
+  submittedAt: z.string(),
+  /** Phần trăm chốt lúc nộp, `null` khi bài không có chế độ chấm điểm. */
+  score: z.number().int().nullable(),
+  late: z.boolean(),
+});
+export type Submission = z.infer<typeof submissionSchema>;
+
+export const myAssignmentDetailSchema = z.object({
+  id: z.string(),
+  classId: z.string(),
+  className: z.string(),
+  setId: z.string(),
+  setTitle: z.string(),
+  modes: z.array(studyModeSchema),
+  dueAt: z.string().nullable(),
+  createdAt: z.string(),
+  progress: z.array(assignmentModeProgressSchema),
+  submission: submissionSchema.nullable(),
+  canSubmit: z.boolean(),
+});
+export type MyAssignmentDetail = z.infer<typeof myAssignmentDetailSchema>;
+export const myAssignmentDetailResponseSchema = z.object({ data: myAssignmentDetailSchema });
+export const submissionResponseSchema = z.object({ data: submissionSchema });

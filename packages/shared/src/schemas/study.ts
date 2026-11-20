@@ -18,6 +18,8 @@ export const startSessionSchema = z.object({
   dueOnly: z.boolean().optional(),
   /** Chỉ học các thẻ này, dùng khi học lại thẻ sai. */
   cardIds: z.array(idSchema).min(1).max(STUDY_QUESTION_LIMIT_MAX).optional(),
+  /** Phiên học làm cho bài giao này (việc 5.12). */
+  assignmentId: idSchema.optional(),
 });
 export type StartSessionDto = z.infer<typeof startSessionSchema>;
 
