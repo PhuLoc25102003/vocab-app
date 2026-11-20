@@ -177,7 +177,7 @@ describe('RecentSets', () => {
     renderWithQuery(<RecentSets />);
 
     expect(await screen.findByRole('heading', { name: 'Bộ từ gần đây' })).toBeInTheDocument();
-    expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: 5 });
+    expect(listMySets).toHaveBeenCalledWith({ page: 1, limit: 6 });
     expect(screen.getByRole('link', { name: 'Xem tất cả 8 bộ từ' })).toHaveAttribute(
       'href',
       '/sets',

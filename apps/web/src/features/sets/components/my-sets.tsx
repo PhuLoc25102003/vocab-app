@@ -11,7 +11,7 @@ import { ErrorState } from '@/components/common/error-state';
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { useMySets } from '../hooks/use-my-sets';
-import { SetRows, SetRowsLoading } from './set-rows';
+import { SetCardGrid, SetCardsLoading } from './set-cards';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
 
 export const SETS_PAGE_SIZE = 20;
@@ -116,7 +116,7 @@ export function MySets({ renderFolderFilter }: MySetsProps = {}) {
 function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; state: ListState }) {
   const { q, folder } = state;
   if (sets.isPending) {
-    return <SetRowsLoading count={5} />;
+    return <SetCardsLoading count={6} />;
   }
   if (sets.isError) {
     return (
@@ -174,7 +174,7 @@ function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; st
 
   return (
     <>
-      <SetRows sets={data} />
+      <SetCardGrid sets={data} />
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}
