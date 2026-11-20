@@ -19,6 +19,7 @@ import {
   CircleAlert,
   CircleCheck,
   CircleDashed,
+  LogIn,
   LogOut,
   type LucideIcon,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
+import { FormDialog } from '@/components/common/form-dialog';
 import { FormField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
@@ -60,7 +62,13 @@ const STATUS: Record<AssignmentStatus, { label: string; icon: LucideIcon; classN
 const studyHref = ({ setId, mode }: MyAssignment) =>
   `/sets/${setId}/study/${mode.toLowerCase()}` as Route;
 
-function JoinForm() {
+function JoinDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const queryClient = useQueryClient();
   const join = useMutation({ mutationFn: (dto: JoinClassInput) => joinClass(dto) });
   const form = useForm<{ joinCode: string }, unknown, JoinClassInput>({
@@ -68,12 +76,20 @@ function JoinForm() {
     defaultValues: { joinCode: '' },
   });
 
+  const close = (next: boolean) => {
+    if (!next) {
+      form.reset();
+      join.reset();
+    }
+    onOpenChange(next);
+  };
+
   const submit = form.handleSubmit((dto) =>
     join.mutate(dto, {
       onSuccess: async (joined) => {
         await queryClient.invalidateQueries({ queryKey: classKeys.all });
-        form.reset();
         toast.success(`Đã vào lớp ${joined.name}`);
+        close(false);
       },
       onError: (error) => {
         const message =
@@ -86,29 +102,27 @@ function JoinForm() {
   );
 
   return (
-    <form
-      onSubmit={submit}
-      noValidate
-      aria-label="Tham gia lớp"
-      className="flex flex-wrap items-start gap-3 rounded-md border border-primary bg-primary-soft p-4"
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title="Tham gia lớp"
+      description={`Nhập mã ${JOIN_CODE_LENGTH} ký tự giáo viên gửi cho bạn.`}
+      submitLabel="Tham gia"
+      pending={join.isPending}
+      dirty={form.formState.isDirty}
+      onSubmit={(event) => void submit(event)}
     >
-      <div className="min-w-0 flex-1 basis-48">
-        <FormField
-          label="Mã lớp"
-          hint={`Mã ${JOIN_CODE_LENGTH} ký tự giáo viên gửi cho bạn.`}
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          maxLength={JOIN_CODE_LENGTH + 4}
-          className="font-mono tracking-[0.2em] uppercase"
-          error={form.formState.errors.joinCode?.message}
-          {...form.register('joinCode')}
-        />
-      </div>
-      <Button type="submit" loading={join.isPending} className="sm:mt-6">
-        Tham gia lớp
-      </Button>
-    </form>
+      <FormField
+        label="Mã lớp"
+        autoComplete="off"
+        autoCapitalize="characters"
+        spellCheck={false}
+        maxLength={JOIN_CODE_LENGTH + 4}
+        className="font-mono tracking-[0.2em] uppercase"
+        error={form.formState.errors.joinCode?.message}
+        {...form.register('joinCode')}
+      />
+    </FormDialog>
   );
 }
 
@@ -262,7 +276,7 @@ function JoinedClasses() {
     body = (
       <EmptyState
         title="Bạn chưa vào lớp nào"
-        description="Nhập mã lớp giáo viên gửi ở ô phía trên để tham gia."
+        description="Bấm Tham gia lớp ở đầu trang rồi nhập mã giáo viên gửi."
       />
     );
   } else {
@@ -294,10 +308,20 @@ function JoinedClasses() {
 }
 
 export function StudentClasses() {
+  const [joining, setJoining] = useState(false);
   return (
     <>
-      <PageHeader title="Lớp học" description="Tham gia lớp bằng mã và làm bài giáo viên giao." />
-      <JoinForm />
+      <PageHeader
+        title="Lớp học"
+        description="Tham gia lớp bằng mã và làm bài giáo viên giao."
+        actions={
+          <Button onClick={() => setJoining(true)}>
+            <LogIn aria-hidden className="size-4" />
+            Tham gia lớp
+          </Button>
+        }
+      />
+      <JoinDialog open={joining} onOpenChange={setJoining} />
       <MyAssignments />
       <JoinedClasses />
     </>

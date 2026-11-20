@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { Class } from '@vocab/shared';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
@@ -83,14 +83,17 @@ describe('TeacherClasses', () => {
     renderPage();
 
     await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
-    expect(await screen.findByText('Hãy nhập tên lớp')).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog', { name: 'Tạo lớp' });
+    expect(within(dialog).getByLabelText('Tên lớp')).toHaveFocus();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Tạo lớp' }));
+    expect(await within(dialog).findByText('Hãy nhập tên lớp')).toBeInTheDocument();
     expect(createClass).not.toHaveBeenCalled();
 
-    await userEvent.type(screen.getByLabelText('Tên lớp'), '  11B2 ');
-    await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
+    await userEvent.type(within(dialog).getByLabelText('Tên lớp'), '  11B2 ');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Tạo lớp' }));
 
     await waitFor(() => expect(navigation.push).toHaveBeenCalledWith('/classes/c9'));
+    expect(screen.queryByRole('dialog', { name: 'Tạo lớp' })).not.toBeInTheDocument();
     expect(vi.mocked(createClass).mock.calls[0]?.[0]).toEqual({ name: '11B2' });
   });
 });

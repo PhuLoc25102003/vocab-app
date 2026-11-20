@@ -81,11 +81,13 @@ describe('StudentClasses', () => {
     vi.mocked(joinClass).mockResolvedValue({ ...joined, id: 'c2', name: '11B2' });
     renderPage();
 
-    await userEvent.type(screen.getByLabelText('Mã lớp'), ' abc234 ');
     await userEvent.click(screen.getByRole('button', { name: 'Tham gia lớp' }));
+    const dialog = screen.getByRole('dialog', { name: 'Tham gia lớp' });
+    await userEvent.type(within(dialog).getByLabelText('Mã lớp'), ' abc234 ');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Tham gia' }));
 
     await waitFor(() => expect(joinClass).toHaveBeenCalledWith({ joinCode: 'ABC234' }));
-    await waitFor(() => expect(screen.getByLabelText('Mã lớp')).toHaveValue(''));
+    await waitFor(() => expect(screen.queryByLabelText('Mã lớp')).not.toBeInTheDocument());
   });
 
   it('báo lỗi mã sai định dạng và mã không có lớp', async () => {
@@ -94,14 +96,16 @@ describe('StudentClasses', () => {
     );
     renderPage();
 
-    await userEvent.type(screen.getByLabelText('Mã lớp'), 'AB');
     await userEvent.click(screen.getByRole('button', { name: 'Tham gia lớp' }));
+    const dialog = screen.getByRole('dialog', { name: 'Tham gia lớp' });
+    await userEvent.type(within(dialog).getByLabelText('Mã lớp'), 'AB');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Tham gia' }));
     expect(await screen.findByText('Mã lớp gồm 6 ký tự')).toBeInTheDocument();
     expect(joinClass).not.toHaveBeenCalled();
 
-    await userEvent.clear(screen.getByLabelText('Mã lớp'));
-    await userEvent.type(screen.getByLabelText('Mã lớp'), 'XYZ567');
-    await userEvent.click(screen.getByRole('button', { name: 'Tham gia lớp' }));
+    await userEvent.clear(within(dialog).getByLabelText('Mã lớp'));
+    await userEvent.type(within(dialog).getByLabelText('Mã lớp'), 'XYZ567');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Tham gia' }));
     expect(
       await screen.findByText('Không có lớp nào dùng mã này. Hỏi lại giáo viên mã mới nhất.'),
     ).toBeInTheDocument();

@@ -17,8 +17,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
+import { FormDialog } from '@/components/common/form-dialog';
 import { FormField, TextareaField } from '@/components/common/form-field';
-import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
 import { Pagination } from '@/components/common/pagination';
@@ -37,7 +37,13 @@ function classesHref(archived: boolean, page = 1): Route {
   return (query ? `/classes?${query}` : '/classes') as Route;
 }
 
-function CreateClassForm({ onCancel }: { onCancel: () => void }) {
+function CreateClassDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const create = useMutation({ mutationFn: createClass });
@@ -45,7 +51,15 @@ function CreateClassForm({ onCancel }: { onCancel: () => void }) {
     resolver: zodResolver(createClassSchema),
     defaultValues: { name: '', description: '' },
   });
-  const { errors } = form.formState;
+  const { errors, isDirty } = form.formState;
+
+  const close = (next: boolean) => {
+    if (!next) {
+      form.reset();
+      create.reset();
+    }
+    onOpenChange(next);
+  };
 
   const submit = form.handleSubmit(async (dto) => {
     try {
@@ -53,6 +67,7 @@ function CreateClassForm({ onCancel }: { onCancel: () => void }) {
       const created = await create.mutateAsync(dto.description ? dto : { name: dto.name });
       await queryClient.invalidateQueries({ queryKey: classKeys.all });
       toast.success(`Đã tạo lớp ${created.name}`);
+      close(false);
       router.push(`/classes/${created.id}` as Route);
     } catch {
       // Lỗi hiện qua `create.error`.
@@ -60,16 +75,17 @@ function CreateClassForm({ onCancel }: { onCancel: () => void }) {
   });
 
   return (
-    <form
-      onSubmit={submit}
-      noValidate
-      aria-labelledby="create-class-title"
-      className="flex flex-col gap-4 rounded-md border border-border-strong bg-surface p-4"
+    <FormDialog
+      open={open}
+      onOpenChange={close}
+      title="Tạo lớp"
+      description="Tạo xong bạn sẽ có mã lớp để gửi cho học sinh."
+      submitLabel="Tạo lớp"
+      pending={create.isPending}
+      error={create.error ? formErrorMessage(create.error) : null}
+      dirty={isDirty}
+      onSubmit={(event) => void submit(event)}
     >
-      <h2 id="create-class-title" className="text-h3">
-        Lớp mới
-      </h2>
-      {create.error ? <FormError>{formErrorMessage(create.error)}</FormError> : null}
       <FormField
         label="Tên lớp"
         placeholder="Ví dụ: 10A1 - Tiếng Anh"
@@ -82,15 +98,7 @@ function CreateClassForm({ onCancel }: { onCancel: () => void }) {
         error={errors.description?.message}
         {...form.register('description')}
       />
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" loading={create.isPending}>
-          Tạo lớp
-        </Button>
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          Huỷ
-        </Button>
-      </div>
-    </form>
+    </FormDialog>
   );
 }
 
@@ -207,15 +215,13 @@ export function TeacherClasses() {
         title="Lớp học"
         description="Lớp bạn đang dạy. Học sinh tham gia bằng mã lớp."
         actions={
-          creating ? null : (
-            <Button onClick={() => setCreating(true)}>
-              <Plus aria-hidden className="size-4" />
-              Tạo lớp
-            </Button>
-          )
+          <Button onClick={() => setCreating(true)}>
+            <Plus aria-hidden className="size-4" />
+            Tạo lớp
+          </Button>
         }
       />
-      {creating ? <CreateClassForm onCancel={() => setCreating(false)} /> : null}
+      <CreateClassDialog open={creating} onOpenChange={setCreating} />
       <nav aria-label="Lọc lớp" className="flex gap-1">
         <FilterLink href={classesHref(false)} current={!archived}>
           Đang dạy
