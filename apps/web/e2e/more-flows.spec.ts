@@ -111,7 +111,9 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
     expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
     await visibleField(page, 'Tên bộ từ').fill(firstTitle);
-    await page.getByLabel('Ai xem được').selectOption({ label: 'Công khai' });
+    // Radio gốc ẩn đi, người dùng bấm vào cả thẻ lựa chọn.
+    await page.getByText('Công khai', { exact: true }).click();
+    await expect(page.getByRole('radio', { name: 'Công khai' })).toBeChecked();
     await page.getByRole('button', { name: 'Thêm thẻ' }).click();
     for (const [index, { term, definition }] of cards.entries()) {
       await visibleField(page, 'Từ').nth(index).fill(term);

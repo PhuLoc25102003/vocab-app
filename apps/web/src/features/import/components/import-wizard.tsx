@@ -11,9 +11,10 @@ import { toast } from 'sonner';
 import type { z } from 'zod';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { FormField, SelectField } from '@/components/common/form-field';
+import { FormField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
+import { VisibilityField } from '@/components/common/visibility-field';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
@@ -29,6 +30,7 @@ type NewSetValues = z.output<typeof newSetSchema>;
 
 // Danh sách bộ từ dùng khoá bắt đầu bằng 'sets', làm mới để thấy số thẻ mới.
 const SETS_QUERY_KEY = ['sets'] as const;
+const NEW_SET_VISIBILITY = ['PRIVATE', 'PUBLIC'] as const;
 
 interface ImportWizardProps {
   /** Có thì thêm thẻ vào bộ này, không có thì tạo bộ mới. */
@@ -161,16 +163,13 @@ export function ImportWizard({ setId }: ImportWizardProps) {
         <h2 className="text-h2">Lưu</h2>
         {save.error ? <FormError>{formErrorMessage(save.error)}</FormError> : null}
         {targetNote ?? (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-4">
             <FormField
               label="Tên bộ từ mới"
               error={form.formState.errors.title?.message}
               {...form.register('title')}
             />
-            <SelectField label="Ai xem được" {...form.register('visibility')}>
-              <option value="PRIVATE">Riêng tư</option>
-              <option value="PUBLIC">Công khai</option>
-            </SelectField>
+            <VisibilityField options={NEW_SET_VISIBILITY} {...form.register('visibility')} />
           </div>
         )}
         <div className="flex flex-wrap gap-2">

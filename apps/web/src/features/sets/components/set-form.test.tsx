@@ -51,7 +51,7 @@ describe('CreateSet', () => {
     vi.mocked(createSet).mockResolvedValue(summary);
     renderWithQuery(<CreateSet />);
     await userEvent.type(screen.getByLabelText('Tên bộ từ'), '  Trái cây ');
-    await userEvent.selectOptions(screen.getByLabelText('Ai xem được'), 'PUBLIC');
+    await userEvent.click(screen.getByRole('radio', { name: 'Công khai' }));
     await save();
 
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/s1'));
@@ -63,6 +63,37 @@ describe('CreateSet', () => {
       visibility: 'PUBLIC',
       cards: [],
     });
+  });
+
+  it('đảo ngôn ngữ của từ và nghĩa rồi gửi theo chiều mới', async () => {
+    vi.mocked(createSet).mockResolvedValue(summary);
+    renderWithQuery(<CreateSet />);
+    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Từ tiếng Việt');
+    await userEvent.click(screen.getByRole('button', { name: 'Đảo ngôn ngữ của từ và nghĩa' }));
+
+    expect(screen.getByLabelText('Ngôn ngữ của từ')).toHaveValue('vi');
+    expect(screen.getByLabelText('Ngôn ngữ của nghĩa')).toHaveValue('en');
+    await save();
+    await waitFor(() =>
+      expect(vi.mocked(createSet).mock.calls[0]?.[0]).toMatchObject({
+        termLang: 'vi',
+        defLang: 'en',
+      }),
+    );
+  });
+
+  it('giải thích từng lựa chọn ai xem được, mặc định riêng tư', () => {
+    renderWithQuery(<CreateSet />);
+
+    expect(screen.getByRole('group', { name: 'Ai xem được' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Riêng tư' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Riêng tư' })).toHaveAccessibleDescription(
+      'Chỉ mình bạn xem và học. Không hiện ở Khám phá.',
+    );
+    expect(screen.getByRole('radio', { name: 'Công khai' })).toHaveAccessibleDescription(
+      /kể cả người chưa đăng nhập/,
+    );
+    expect(screen.queryByRole('radio', { name: 'Lớp học' })).not.toBeInTheDocument();
   });
 
   it('trở về form trống khi quay lại trang đã ẩn', async () => {
@@ -172,7 +203,7 @@ describe('EditSet', () => {
     renderWithQuery(<EditSet id="s1" />);
 
     const description = await screen.findByLabelText('Mô tả (không bắt buộc)');
-    expect(screen.getByLabelText('Ai xem được')).toHaveValue('CLASS');
+    expect(screen.getByRole('radio', { name: 'Lớp học' })).toBeChecked();
     await userEvent.clear(description);
     await save();
 
