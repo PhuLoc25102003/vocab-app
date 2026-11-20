@@ -2,7 +2,7 @@
 
 Nguồn chuẩn là `apps/api/prisma/schema.prisma`. Khối schema dưới đây được chép nguyên từ file đó. Nếu tài liệu và code lệch nhau, code đúng.
 
-8 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration: `20261118030153_init`, `20261118040948_cascade_deletes`.
+11 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration nằm trong `apps/api/prisma/migrations`, mới nhất là `20261120021045_add_classes`.
 
 Prisma 7: URL kết nối đặt trong `apps/api/prisma.config.ts`; generator `prisma-client`, output `../src/generated/prisma`, `moduleFormat = "cjs"`; `PrismaService` kế thừa `PrismaClient` và dùng adapter `PrismaPg`.
 
@@ -54,6 +54,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
+  /// ADMIN khoá tài khoản: không đăng nhập, không gọi API được cho tới khi mở khoá.
   lockedAt     DateTime?
   lockReason   String?
   lockedById   String?
@@ -63,6 +64,8 @@ model User {
   studySets       StudySet[]
   cardProgress    CardProgress[]
   studySessions   StudySession[]
+  teachingClasses Class[]
+  classMembers    ClassMember[]
 }
 
 model RefreshSession {
@@ -93,18 +96,19 @@ model Folder {
 }
 
 model StudySet {
-  id          String     @id @default(cuid())
-  ownerId     String
-  folderId    String?
-  title       String
-  description String?
-  termLang    String     @default("en")
-  defLang     String     @default("vi")
-  visibility  Visibility @default(PRIVATE)
-  cardCount   Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
+  id           String     @id @default(cuid())
+  ownerId      String
+  folderId     String?
+  title        String
+  description  String?
+  termLang     String     @default("en")
+  defLang      String     @default("vi")
+  visibility   Visibility @default(PRIVATE)
+  cardCount    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  /// ADMIN ẩn bộ vi phạm: người khác không thấy, chủ bộ và ADMIN vẫn thấy.
   hiddenAt     DateTime?
   hiddenReason String?
   hiddenById   String?
@@ -113,6 +117,7 @@ model StudySet {
   folder        Folder?        @relation(fields: [folderId], references: [id])
   cards         Card[]
   studySessions StudySession[]
+  assignments   Assignment[]
 
   @@index([ownerId, updatedAt])
   @@index([visibility])
@@ -187,6 +192,53 @@ model Attempt {
 
   @@index([cardId])
 }
+
+/// Lớp do một giáo viên quản lý. Học sinh tham gia bằng `joinCode`, giáo viên đổi được mã.
+model Class {
+  id          String    @id @default(cuid())
+  teacherId   String
+  name        String
+  description String?
+  joinCode    String    @unique
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  teacher     User          @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  members     ClassMember[]
+  assignments Assignment[]
+
+  @@index([teacherId])
+}
+
+model ClassMember {
+  classId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([classId, userId])
+  @@index([userId])
+}
+
+/// Bộ từ giao cho cả lớp với một chế độ học. `dueAt` null là không có hạn nộp.
+model Assignment {
+  id        String    @id @default(cuid())
+  classId   String
+  setId     String
+  mode      StudyMode
+  dueAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  class Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  set   StudySet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  @@index([classId, dueAt])
+  @@index([setId])
+}
 ```
 
 ## Ghi chú thiết kế
@@ -196,7 +248,7 @@ model Attempt {
 - `StudySet.hiddenAt`, `hiddenReason`, `hiddenById` lưu việc ADMIN ẩn bộ vi phạm (việc 2.12). Bộ bị ẩn không còn trong Khám phá và với người khác (`visibleTo()` chỉ cho xem bộ `PUBLIC` có `hiddenAt` null), chủ bộ và ADMIN vẫn thấy.
 - Xoá bộ từ là soft delete (`deletedAt`). `SetsPurgeService` xoá hẳn bộ có `deletedAt` quá 30 ngày, kèm thẻ, phiên học, câu trả lời và tiến độ theo cascade. Job chạy khoảng 1 phút sau khi API khởi động và mỗi 24 giờ (Render gói Free ngủ khi rảnh nên không dùng giờ cố định), xoá theo lô 200 bộ, giữ `pg_try_advisory_xact_lock` để nhiều instance không chạy trùng, ghi log số bộ đã xoá. MVP không có thùng rác, bộ đã xoá không khôi phục được.
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
-- `Class`, `ClassMember`, `Assignment` thêm ở giai đoạn 3, không ảnh hưởng bảng cũ.
+- `Class`, `ClassMember`, `Assignment` (việc 3.1) là nền cho lớp học, chưa có API. `Class.joinCode` duy nhất toàn hệ thống, giáo viên đổi mã bằng cách ghi mã mới. Lớp lưu trữ có `archivedAt`, không xoá. `ClassMember` có khoá chính `(classId, userId)` nên một học sinh không vào một lớp hai lần. `Assignment.dueAt` lưu UTC, `null` là không có hạn. Xoá giáo viên hoặc lớp thì xoá theo thành viên và bài giao; xoá học sinh chỉ xoá tư cách thành viên; bộ từ bị xoá hẳn (sau 30 ngày soft delete) thì bài giao của bộ đó bị xoá theo.
 
 ## Ý nghĩa một số trường
 
