@@ -1,12 +1,16 @@
 import {
   assignmentListSchema,
   assignmentResponseSchema,
+  assignmentResultListSchema,
+  assignmentSummaryResponseSchema,
   classListSchema,
   classMemberListSchema,
   classResponseSchema,
   setListSchema,
   type Assignment,
   type AssignmentList,
+  type AssignmentResultList,
+  type AssignmentSummary,
   type Class,
   type ClassList,
   type ClassMemberList,
@@ -27,6 +31,9 @@ export const classKeys = {
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
   assignments: (id: string) => ['classes', 'assignments', id] as const,
   mySets: ['classes', 'my-sets'] as const,
+  summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
+  results: (id: string, assignmentId: string, page: number) =>
+    ['classes', 'results', id, assignmentId, page] as const,
 };
 
 const classPath = (id: string) => `/classes/${encodeURIComponent(id)}`;
@@ -99,4 +106,28 @@ export async function removeAssignment(id: string, assignmentId: string): Promis
 export async function listMySetsForAssigning(): Promise<SetSummary[]> {
   const params = new URLSearchParams({ page: '1', limit: '100', sort: '-updatedAt' });
   return setListSchema.parse(await http(`/sets?${params.toString()}`)).data;
+}
+
+export const RESULTS_PAGE_SIZE = 50;
+
+const assignmentPath = (id: string, assignmentId: string) =>
+  `${classPath(id)}/assignments/${encodeURIComponent(assignmentId)}`;
+
+export async function getAssignmentSummary(
+  id: string,
+  assignmentId: string,
+): Promise<AssignmentSummary> {
+  const body = await http(`${assignmentPath(id, assignmentId)}/summary`);
+  return assignmentSummaryResponseSchema.parse(body).data;
+}
+
+export async function listAssignmentResults(
+  id: string,
+  assignmentId: string,
+  page: number,
+): Promise<AssignmentResultList> {
+  const params = new URLSearchParams({ page: String(page), limit: String(RESULTS_PAGE_SIZE) });
+  return assignmentResultListSchema.parse(
+    await http(`${assignmentPath(id, assignmentId)}/results?${params.toString()}`),
+  );
 }
