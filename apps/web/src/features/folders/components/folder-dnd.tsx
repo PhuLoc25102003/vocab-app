@@ -52,13 +52,11 @@ export function FolderDndArea({ children }: { children: ReactNode }) {
     if (folderId === data.folderId) {
       return;
     }
-    move.mutate(
-      { setId: String(active.id), folderId },
-      {
-        onSuccess: () =>
-          toast.success(folderId ? `Đã chuyển "${data.title}" vào thư mục` : 'Đã gỡ khỏi thư mục'),
-        onError: (error) => toast.error(formErrorMessage(error)),
-      },
+    // Promise vẫn resolve khi thẻ bộ từ đã rời danh sách đang xem, callback của `mutate` thì không.
+    move.mutateAsync({ setId: String(active.id), folderId }).then(
+      () =>
+        toast.success(folderId ? `Đã chuyển "${data.title}" vào thư mục` : 'Đã gỡ khỏi thư mục'),
+      (error: unknown) => toast.error(formErrorMessage(error)),
     );
   };
 

@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { listFolders, moveSetToFolder } from '../api';
 import { SetFolderPicker } from './set-folder-picker';
@@ -10,7 +11,7 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 function renderPicker(folderId: string | null, variant: 'chip' | 'icon' = 'chip') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  render(
+  return render(
     <QueryClientProvider client={client}>
       <SetFolderPicker setId="s1" folderId={folderId} variant={variant} setTitle="Hương 1" />
     </QueryClientProvider>,
@@ -40,6 +41,25 @@ describe('SetFolderPicker', () => {
     await userEvent.click(screen.getByRole('menuitemradio', { name: 'Ôn thi' }));
 
     await waitFor(() => expect(moveSetToFolder).toHaveBeenCalledWith('s1', 'f2'));
+  });
+
+  it('vẫn báo đã gỡ khi bộ từ rời danh sách trước lúc request xong (#312)', async () => {
+    let finish = () => {};
+    vi.mocked(moveSetToFolder).mockReturnValue(
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      }),
+    );
+    const { unmount } = renderPicker('f1', 'icon');
+    await userEvent.click(await screen.findByRole('button', { name: /Chuyển "Hương 1"/ }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Gỡ khỏi thư mục Lớp 6' }));
+    await waitFor(() => expect(moveSetToFolder).toHaveBeenCalled());
+
+    // Trang thư mục tải lại danh sách, thẻ bộ từ cùng nút này biến mất.
+    unmount();
+    finish();
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Đã gỡ khỏi thư mục'));
   });
 
   it('gỡ khỏi thư mục bằng mục "Không có thư mục"', async () => {
