@@ -136,7 +136,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
                 }}
                 className={cn(tileClass, 'font-card')}
               >
-                <span className="min-w-0 flex-1">{item.prompt}</span>
+                <span className="min-w-0 flex-1 wrap-anywhere">{item.prompt}</span>
                 {matched.has(item.id) ? (
                   <Check aria-label="Đã ghép" className="size-4 shrink-0" />
                 ) : null}
@@ -154,7 +154,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
                 onClick={() => pickTile(tile)}
                 className={tileClass}
               >
-                <span className="min-w-0 flex-1">{tile.text}</span>
+                <span className="min-w-0 flex-1 wrap-anywhere">{tile.text}</span>
               </button>
             </li>
           ))}

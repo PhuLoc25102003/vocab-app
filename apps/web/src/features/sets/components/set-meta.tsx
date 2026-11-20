@@ -14,7 +14,7 @@ export function SetMeta({ set: { visibility, cardCount, owner }, children }: Set
         {VISIBILITY_LABELS[visibility]}
       </span>
       <span className="tabular-nums">{cardCount} thẻ</span>
-      <span>Tạo bởi {owner.displayName}</span>
+      <span className="min-w-0 wrap-anywhere">Tạo bởi {owner.displayName}</span>
       {children}
     </div>
   );
