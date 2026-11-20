@@ -206,7 +206,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [ ] **2.30** Thư mục kiểu trình quản lý file: cột thư mục cuộn riêng, mở và đóng thư mục, kéo thả bộ từ vào thư mục, gỡ khỏi thư mục, thao tác bằng bàn phím thay cho kéo thả.
 - [ ] **2.31** "Bắt đầu học" là lộ trình nhiều kỹ năng liên tiếp (xem thẻ, trắc nghiệm, ghép cặp, viết), Flashcard thành một chế độ riêng trong lưới.
 - [ ] **2.32** Trang tạo và sửa bộ từ: danh sách thẻ nằm trong khung có thanh cuộn riêng, nút thêm thẻ luôn thấy được.
-- [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục.
+- [x] **2.33** Mọi thao tác xoá (bộ từ, thẻ, thư mục, bản offline, tài khoản, đăng xuất mọi thiết bị) hỏi lại bằng hộp thoại xác nhận, không thay nội dung tại chỗ làm xô lệch bố cục (#247).
 - [x] **2.25** Thiết kế lại trang giới thiệu: hiện đại, có hiệu ứng khi cuộn, minh hoạ các chế độ học, lời kêu gọi rõ ràng; đạt Lighthouse như trước (#220).
 
 ## Giai đoạn 3: Lớp học
