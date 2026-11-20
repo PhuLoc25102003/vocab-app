@@ -38,16 +38,23 @@ export function VisibilityField({ options, error, ...field }: VisibilityFieldPro
           return (
             <label
               key={visibility}
-              className="flex min-h-11 cursor-pointer items-start gap-3 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-text-muted has-checked:border-primary has-checked:bg-primary-soft"
+              className="group flex min-h-11 cursor-pointer items-start gap-3 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-text-muted has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
             >
+              {/* Cả thẻ là vùng bấm, nút radio gốc ẩn đi và vẽ lại bằng chấm tròn. */}
               <input
                 type="radio"
                 value={visibility}
                 aria-labelledby={titleId}
                 aria-describedby={descriptionId}
-                className="mt-0.5 size-5 shrink-0 accent-primary"
+                className="sr-only"
                 {...field}
               />
+              <span
+                aria-hidden
+                className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-border-strong bg-surface group-has-checked:border-primary"
+              >
+                <span className="size-2.5 rounded-full group-has-checked:bg-primary" />
+              </span>
               <span className="flex flex-col gap-1">
                 <span id={titleId} className="flex items-center gap-2 font-medium">
                   <Icon aria-hidden className="size-4 text-primary" />
