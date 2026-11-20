@@ -173,4 +173,43 @@ describe('học sinh xem bài cần làm', () => {
 
     expect(response.body).toMatchObject({ data: [], meta: { total: 0 } });
   });
+
+  it('trạng thái theo bài nộp, bỏ lỡ lên đầu, đã nộp xuống cuối', async () => {
+    const submitted = await assign({ dueAt: new Date(Date.now() + DAY) });
+    const missed = await assign({ dueAt: new Date(Date.now() - DAY) });
+    const started = await assign({ dueAt: new Date(Date.now() + 2 * DAY) });
+    await prisma.assignmentSubmission.create({
+      data: { assignmentId: submitted.id, userId: student.id, score: 80 },
+    });
+    await prisma.studySession.create({
+      data: {
+        userId: student.id,
+        setId,
+        mode: 'WRITE',
+        assignmentId: started.id,
+        finishedAt: new Date(),
+      },
+    });
+
+    const response = await list().expect(200);
+
+    expect(
+      response.body.data.map(
+        ({
+          id,
+          progressStatus,
+          doneModes,
+        }: {
+          id: string;
+          progressStatus: string;
+          doneModes: number;
+        }) => [id, progressStatus, doneModes],
+      ),
+    ).toEqual([
+      [missed.id, 'missed', 0],
+      [started.id, 'in_progress', 1],
+      [submitted.id, 'submitted', 0],
+    ]);
+    expect(response.body.data[0].modes).toEqual(['WRITE']);
+  });
 });

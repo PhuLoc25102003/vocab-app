@@ -102,14 +102,15 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
     student.getByRole('list', { name: 'Lớp đã tham gia' }).getByText(className),
   ).toBeVisible();
   const todo = student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link');
-  await expect(todo).toContainText('Cần làm');
+  await expect(todo).toContainText('Chưa làm');
   await todo.click();
   await student.waitForURL(`**/sets/${setId}/study/mcq`);
   await answerAll(student);
   await expect(student.getByText(/^Bạn nhớ/)).toBeVisible();
   await student.goto('/classes');
+  // Phiên mở từ danh sách chưa gắn bài giao nên chưa tính là đã nộp; trang bài tập có nút Nộp bài ở 5.14.
   await expect(student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link')).toContainText(
-    'Đã làm',
+    'Chưa làm',
   );
 
   // Giáo viên xem kết quả bài và kết quả của học sinh.

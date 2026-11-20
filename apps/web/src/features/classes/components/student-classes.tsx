@@ -7,7 +7,7 @@ import {
   joinClassSchema,
   JOIN_CODE_LENGTH,
   STUDY_MODE_LABELS,
-  type AssignmentStatus,
+  type ProgressStatus,
   type JoinClassInput,
   type JoinedClass,
   type MyAssignment,
@@ -19,6 +19,8 @@ import {
   CircleAlert,
   CircleCheck,
   CircleDashed,
+  CircleDot,
+  Clock,
   LogIn,
   LogOut,
   type LucideIcon,
@@ -49,13 +51,16 @@ import {
   leaveClass,
   listJoinedClasses,
   listMyAssignments,
+  MY_ASSIGNMENTS_PAGE_SIZE,
 } from '../api';
 import { formatDateTime } from '../format';
 
-const STATUS: Record<AssignmentStatus, { label: string; icon: LucideIcon; className: string }> = {
-  pending: { label: 'Cần làm', icon: CircleDashed, className: 'text-primary' },
-  overdue: { label: 'Quá hạn', icon: CircleAlert, className: 'text-danger' },
-  done: { label: 'Đã làm', icon: CircleCheck, className: 'text-success' },
+const STATUS: Record<ProgressStatus, { label: string; icon: LucideIcon; className: string }> = {
+  todo: { label: 'Chưa làm', icon: CircleDashed, className: 'text-text-muted' },
+  in_progress: { label: 'Đang làm', icon: CircleDot, className: 'text-primary' },
+  submitted: { label: 'Đã nộp', icon: CircleCheck, className: 'text-success' },
+  late: { label: 'Nộp trễ', icon: Clock, className: 'text-warning' },
+  missed: { label: 'Bỏ lỡ', icon: CircleAlert, className: 'text-danger' },
 };
 
 /** Đường dẫn chế độ học trùng tên chế độ viết thường, ví dụ `MCQ` thành `mcq`. */
@@ -127,7 +132,7 @@ function JoinDialog({
 }
 
 function AssignmentRow({ item }: { item: MyAssignment }) {
-  const { label, icon: Icon, className } = STATUS[item.status];
+  const { label, icon: Icon, className } = STATUS[item.progressStatus];
   return (
     <li className="border-b border-border last:border-b-0">
       <Link
@@ -146,7 +151,13 @@ function AssignmentRow({ item }: { item: MyAssignment }) {
             <span>{item.className}</span>
             <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
               {STUDY_MODE_LABELS[item.mode]}
+              {item.modes.length > 1 ? ` +${item.modes.length - 1}` : ''}
             </span>
+            {item.modes.length > 1 ? (
+              <span className="tabular-nums">
+                {item.doneModes}/{item.modes.length} chế độ
+              </span>
+            ) : null}
             {item.dueAt ? (
               <span className="flex items-center gap-1">
                 <CalendarClock aria-hidden className="size-4" />
@@ -162,7 +173,12 @@ function AssignmentRow({ item }: { item: MyAssignment }) {
 }
 
 function MyAssignments() {
-  const assignments = useQuery({ queryKey: classKeys.myAssignments, queryFn: listMyAssignments });
+  const searchParams = useSearchParams();
+  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('bpage') ?? undefined);
+  const assignments = useQuery({
+    queryKey: classKeys.myAssignmentsPage(page),
+    queryFn: () => listMyAssignments(page),
+  });
 
   let body;
   if (assignments.isPending) {
@@ -183,15 +199,20 @@ function MyAssignments() {
   } else if (assignments.data.data.length === 0) {
     body = <p className="text-text-muted">Chưa có bài nào. Bài giáo viên giao sẽ hiện ở đây.</p>;
   } else {
-    // Bài chưa làm lên trước, giữ thứ tự hạn gần nhất từ máy chủ.
-    const rank: Record<AssignmentStatus, number> = { overdue: 0, pending: 1, done: 2 };
-    const sorted = [...assignments.data.data].sort((a, b) => rank[a.status] - rank[b.status]);
+    const { meta } = assignments.data;
     body = (
-      <ul aria-label="Bài cần làm" className="flex flex-col">
-        {sorted.map((item) => (
-          <AssignmentRow key={item.id} item={item} />
-        ))}
-      </ul>
+      <>
+        <ul aria-label="Bài cần làm" className="flex flex-col">
+          {assignments.data.data.map((item) => (
+            <AssignmentRow key={item.id} item={item} />
+          ))}
+        </ul>
+        <Pagination
+          page={meta.page}
+          pageCount={Math.ceil(meta.total / MY_ASSIGNMENTS_PAGE_SIZE)}
+          hrefFor={(next) => `/classes?bpage=${next}` as Route}
+        />
+      </>
     );
   }
 

@@ -174,9 +174,22 @@ export type AssignmentStatus = z.infer<typeof assignmentStatusSchema>;
 
 export const myAssignmentListQuerySchema = paginationSchema;
 
+/**
+ * Trạng thái bài của học sinh theo bài nộp (việc 5.12): chưa làm, đang làm (xong ít nhất một chế
+ * độ), đã nộp đúng hạn, nộp trễ, bỏ lỡ (quá hạn chưa nộp).
+ */
+export const PROGRESS_STATUSES = ['todo', 'in_progress', 'submitted', 'late', 'missed'] as const;
+export const progressStatusSchema = z.enum(PROGRESS_STATUSES);
+export type ProgressStatus = z.infer<typeof progressStatusSchema>;
+
 export const myAssignmentSchema = assignmentSchema.extend({
   className: z.string(),
+  /** Trạng thái cũ theo phiên xong đầu tiên, giữ cho code cũ; dùng `progressStatus`. */
   status: assignmentStatusSchema,
+  progressStatus: progressStatusSchema,
+  modes: z.array(studyModeSchema),
+  /** Số chế độ đã xong một phiên gắn bài. */
+  doneModes: z.number().int(),
   /** Lần học xong đầu tiên sau khi được giao, `null` khi chưa làm. */
   completedAt: z.string().nullable(),
 });
