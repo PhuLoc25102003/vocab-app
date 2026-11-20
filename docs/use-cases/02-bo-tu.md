@@ -22,7 +22,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Bấm lưu nhiều lần: chỉ tạo một bộ.
   - Đã nhập mà rời trang: hỏi xác nhận.
 - **Test đã có:** `sets.integration`, `set-form.test`, E2E tạo bộ công khai.
-- **Sắp đổi:** form gọn hơn và "Ai xem được" có mô tả từng lựa chọn (việc 2.39, UC-X8).
+- **Đã đổi:** form gọn hơn, có nút đảo ngôn ngữ, "Ai xem được" là hai thẻ lựa chọn có mô tả (việc 2.39, UC-X8).
 
 ## UC-S3. Soạn thẻ từ
 

@@ -1,10 +1,4 @@
-import type { Visibility } from '@vocab/shared';
-
-export const VISIBILITY_LABELS: Record<Visibility, string> = {
-  PRIVATE: 'Riêng tư',
-  CLASS: 'Lớp học',
-  PUBLIC: 'Công khai',
-};
+export { VISIBILITY_LABELS } from '@/components/common/visibility-field';
 
 export const LANGUAGE_LABELS: Record<string, string> = {
   en: 'Tiếng Anh',
