@@ -162,7 +162,7 @@ Không tính vào tổng số việc.
 - [x] **1.47** Mở rộng E2E cho sửa, xoá, sao chép, Khám phá, Ôn hôm nay và các chế độ còn lại (GAP-11, #125).
 - [x] **1.48** Rate limit chung cho API (GAP-12, #95, #127).
 - [x] **1.49a** API quên mật khẩu (GAP-13, #300): `POST /auth/forgot-password`, `POST /auth/reset-password`, bảng `PasswordResetToken`, adapter `Mailer` gửi qua Brevo, thiếu `BREVO_API_KEY` thì dùng bộ gửi thư trong bộ nhớ và ghi log.
-- [x] **1.49b** Trang `/forgot-password`, `/reset-password` và liên kết "Quên mật khẩu?" ở trang đăng nhập. Token được xoá khỏi thanh địa chỉ ngay khi mở trang, trang không gửi `Referer`.
+- [x] **1.49b** Trang `/forgot-password`, `/reset-password` và liên kết "Quên mật khẩu?" ở trang đăng nhập. Token được xoá khỏi thanh địa chỉ ngay khi mở trang, trang không gửi `Referer` (#302).
 
 ## Giai đoạn 2: Mở rộng
 
