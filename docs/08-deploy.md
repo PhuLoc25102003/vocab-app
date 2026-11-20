@@ -49,6 +49,22 @@ Gói Free giới hạn 100 lần deploy mỗi ngày, mỗi lần push lên nhán
 
 Hiện web chạy ở `https://vocab-app-nine-psi.vercel.app`.
 
+## Cấp vai trò ADMIN, TEACHER
+
+Tài khoản mới luôn là `STUDENT`. Khi chưa có quy trình cấp quyền giáo viên (việc 3.2), gán vai trò bằng lệnh sau. Tài khoản phải đăng ký trên web trước.
+
+```bash
+npm run user:set-role -w @vocab/api -- ban@example.com ADMIN     # hoặc TEACHER, STUDENT
+```
+
+Lệnh dùng `DATABASE_URL` trong `apps/api/.env`. Muốn đổi trên production thì chạy ở máy với chuỗi kết nối Neon (lấy ở biến `DATABASE_URL` của Render), không commit chuỗi này:
+
+```bash
+DATABASE_URL="postgresql://..." npm run user:set-role -w @vocab/api -- ban@example.com ADMIN
+```
+
+API đọc vai trò từ database ở mỗi request nên quyền mới có hiệu lực ngay, chỉ cần tải lại trang web.
+
 ## Google OAuth
 
 Web dùng nút đăng nhập của Google, API kiểm tra token với cùng Client ID. Đặt Client ID ở cả hai nơi: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` trên Vercel, `GOOGLE_CLIENT_ID` trên Render. Hai giá trị khác nhau thì API từ chối đăng nhập.
