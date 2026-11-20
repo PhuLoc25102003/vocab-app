@@ -1,6 +1,6 @@
 'use client';
 
-import { paginationSchema } from '@vocab/shared';
+import { NO_FOLDER, paginationSchema, type SetSummary } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -50,18 +50,13 @@ function listHref({ q, sort, folder }: ListState, page = 1): Route {
   return (query ? `/sets?${query}` : '/sets') as Route;
 }
 
-export interface FolderFilterProps {
-  /** Id thư mục, `none`, hoặc chuỗi rỗng nghĩa là tất cả. */
-  value: string;
-  onChange: (value: string) => void;
-}
-
 interface MySetsProps {
-  /** Ô lọc theo thư mục, do tầng trang ghép từ feature thư mục. */
-  renderFolderFilter?: (props: FolderFilterProps) => ReactNode;
+  /** Thao tác trên từng thẻ, ví dụ menu thư mục, do tầng trang ghép từ feature thư mục. */
+  renderCardActions?: (set: SetSummary) => ReactNode;
 }
 
-export function MySets({ renderFolderFilter }: MySetsProps = {}) {
+/** Thư mục đang mở nằm trong URL (`?folder=`), cột thư mục cũng đọc và đổi tham số này. */
+export function MySets({ renderCardActions }: MySetsProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = toPage(searchParams.get('page'));
@@ -102,18 +97,22 @@ export function MySets({ renderFolderFilter }: MySetsProps = {}) {
               </option>
             ))}
           </SelectField>
-          {renderFolderFilter?.({
-            value: folder,
-            onChange: (value) => router.push(listHref({ ...state, folder: value })),
-          })}
         </div>
       ) : null}
-      <MySetsResults sets={sets} state={state} />
+      <MySetsResults sets={sets} state={state} renderCardActions={renderCardActions} />
     </>
   );
 }
 
-function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; state: ListState }) {
+function MySetsResults({
+  sets,
+  state,
+  renderCardActions,
+}: {
+  sets: ReturnType<typeof useMySets>;
+  state: ListState;
+  renderCardActions?: MySetsProps['renderCardActions'];
+}) {
   const { q, folder } = state;
   if (sets.isPending) {
     return <SetCardsLoading count={6} />;
@@ -145,11 +144,11 @@ function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; st
   if (meta.total === 0 && folder) {
     return (
       <EmptyState
-        title="Thư mục này chưa có bộ từ"
-        description="Mở một bộ từ rồi chọn thư mục để chuyển bộ vào đây."
+        title={folder === NO_FOLDER ? 'Bộ từ nào cũng đã có thư mục' : 'Thư mục này chưa có bộ từ'}
+        description="Bấm nút thư mục trên thẻ bộ từ để chuyển bộ vào đây."
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref({ ...state, folder: '' })}>Xem tất cả</Link>
+            <Link href={listHref({ ...state, folder: '' })}>Xem tất cả bộ từ</Link>
           </Button>
         }
       />
@@ -174,7 +173,7 @@ function MySetsResults({ sets, state }: { sets: ReturnType<typeof useMySets>; st
 
   return (
     <>
-      <SetCardGrid sets={data} />
+      <SetCardGrid sets={data} renderActions={renderCardActions} />
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}

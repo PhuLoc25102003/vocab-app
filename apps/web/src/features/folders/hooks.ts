@@ -10,7 +10,7 @@ export function useFolders() {
 }
 
 /** Mọi thay đổi thư mục đều làm đổi số bộ và danh sách bộ từ. */
-function useFolderMutation<TInput>(mutationFn: (input: TInput) => Promise<unknown>) {
+function useFolderMutation<TInput, TResult>(mutationFn: (input: TInput) => Promise<TResult>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn,

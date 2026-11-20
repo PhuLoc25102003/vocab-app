@@ -8,11 +8,11 @@ import { SetFolderPicker } from './set-folder-picker';
 vi.mock('../api');
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
-function renderPicker(folderId: string | null) {
+function renderPicker(folderId: string | null, variant: 'chip' | 'icon' = 'chip') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
-      <SetFolderPicker setId="s1" folderId={folderId} />
+      <SetFolderPicker setId="s1" folderId={folderId} variant={variant} setTitle="Hương 1" />
     </QueryClientProvider>,
   );
 }
@@ -46,6 +46,18 @@ describe('SetFolderPicker', () => {
     renderPicker('f1');
     await userEvent.click(await screen.findByRole('button', { name: /Thư mục: Lớp 6/ }));
     await userEvent.click(screen.getByRole('menuitemradio', { name: 'Không có thư mục' }));
+
+    await waitFor(() => expect(moveSetToFolder).toHaveBeenCalledWith('s1', null));
+  });
+
+  it('nút trên thẻ bộ từ có nhãn rõ ràng và mục gỡ khỏi thư mục', async () => {
+    renderPicker('f1', 'icon');
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: 'Chuyển "Hương 1" vào thư mục, đang ở: Lớp 6',
+      }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Gỡ khỏi thư mục Lớp 6' }));
 
     await waitFor(() => expect(moveSetToFolder).toHaveBeenCalledWith('s1', null));
   });

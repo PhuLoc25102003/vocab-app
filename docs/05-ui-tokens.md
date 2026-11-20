@@ -191,6 +191,12 @@ Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. 
 
 Bộ từ ở Bộ từ, Khám phá và "Bộ từ gần đây" của Tổng quan dùng `SetCardGrid` trong `features/sets/components/set-cards.tsx`. Lưới 1 cột ở 360 px, 2 cột từ 640 px, 3 cột từ 1024 px, khoảng cách 12 px. Mỗi thẻ: viền `border-strong`, nền `surface`, bo `md`, cao tối thiểu 160 px; hàng trên có nhãn phạm vi (chỉ thư viện của mình) và số thẻ; tên bộ `text-h3` tối đa 2 dòng; mô tả `text-small` tối đa 2 dòng; hàng cuối là ngày cập nhật (`library`) hoặc tác giả (`community`) và chỗ cho thao tác của thẻ. Cả thẻ bấm được nhờ link phủ toàn thẻ, thao tác nằm trên lớp link. Hover đổi viền sang `primary` và nền `primary-soft`.
 
+## Thư mục trên trang Bộ từ
+
+Trang Bộ từ chia hai cột từ 1024 px: cột thư mục rộng 240 px dính khi cuộn (`FolderPanel`) và danh sách bộ từ. Cột thư mục có "Tất cả bộ từ", "Chưa xếp thư mục" và từng thư mục kèm số bộ; danh sách cuộn riêng, cao tối đa vừa màn hình; có ô lọc khi hơn 6 thư mục; nút biểu tượng tạo thư mục mở ô đặt tên ngay trên cột. Thư mục đang mở có viền và nền `primary`, icon thư mục mở, `aria-current="page"`. Dưới 1024 px cột thành hàng chip cuộn ngang trên danh sách.
+
+Khi mở một thư mục, phía trên danh sách có thanh `FolderHeader`: đường dẫn "Bộ từ › tên thư mục" kèm số bộ, menu ba chấm (đổi tên tại chỗ, xoá qua hộp thoại) và nút đóng về Tất cả. Thư mục đang mở nằm trong URL (`?folder=`). Mỗi thẻ bộ từ có nút biểu tượng thư mục mở menu chọn thư mục và mục "Gỡ khỏi thư mục".
+
 ## Menu thao tác
 
 Dùng `Menu`, `MenuContent`, `MenuItem`, `MenuRadioItem` trong `components/ui/menu.tsx` (Radix Dropdown Menu), không tự viết danh sách nổi. Mục cao tối thiểu 44 px, nền `primary-soft` khi được chọn bằng chuột hoặc bàn phím, mục xoá dùng `danger` và đặt cuối sau một đường kẻ. Menu tự cuộn khi dài hơn khoảng trống trên màn hình.

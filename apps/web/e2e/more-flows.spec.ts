@@ -350,33 +350,45 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
   });
 
-  test('tạo thư mục, chuyển bộ vào, lọc rồi xoá thư mục mà bộ vẫn còn', async () => {
+  test('tạo thư mục trên cột thư mục, chuyển và gỡ bộ từ, mở, đổi tên rồi xoá thư mục', async () => {
     const folderName = `Lớp 10 ${stamp}`;
+    const folders = page.getByRole('navigation', { name: 'Thư mục' });
     await page.goto('/sets');
-    await page.getByText('Quản lý thư mục').click();
-    await page.getByLabel('Tên thư mục mới').fill(folderName);
-    await page.getByRole('button', { name: 'Tạo thư mục' }).click();
-    await expect(page.getByText(`${folderName} (0 bộ)`)).toBeVisible();
+    await folders.getByRole('button', { name: 'Tạo thư mục mới' }).click();
+    await folders.getByLabel('Tên thư mục mới').fill(folderName);
+    await folders.getByRole('button', { name: 'Tạo', exact: true }).click();
+    // Thư mục mới được mở ngay, đang trống.
+    await page.waitForURL('**/sets?folder=*');
+    await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
+    await page.getByRole('link', { name: 'Đóng thư mục' }).click();
+    await page.waitForURL(/\/sets$/);
 
-    await page.goto(setPath);
-    await page.getByRole('button', { name: /^Thư mục: chưa xếp/ }).click();
+    // Chuyển bộ vào thư mục ngay trên thẻ, không cần mở bộ từ.
+    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
     await page.getByRole('menuitemradio', { name: folderName }).click();
     await expect(page.getByText('Đã chuyển vào thư mục')).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: `Thư mục: ${folderName}. Đổi thư mục` }),
-    ).toBeVisible();
 
-    await page.goto('/sets');
-    await page.getByLabel('Thư mục', { exact: true }).selectOption({ label: `${folderName} (1)` });
+    await folders.getByRole('link', { name: new RegExp(folderName) }).click();
     await page.waitForURL('**/sets?folder=*');
     await expect(page.getByRole('link', { name: title })).toBeVisible();
     await expect(page.getByRole('link', { name: `Nhập CSV ${stamp}` })).toHaveCount(0);
 
-    await page.getByText('Quản lý thư mục').click();
-    await page.getByRole('button', { name: `Xoá ${folderName}` }).click();
+    await page.getByRole('button', { name: `Thao tác với thư mục ${folderName}` }).click();
+    await page.getByRole('menuitem', { name: 'Đổi tên thư mục' }).click();
+    await page.getByLabel('Tên thư mục', { exact: true }).fill(`${folderName} A`);
+    await page.getByRole('button', { name: 'Lưu' }).click();
+    await expect(page.getByText('Đã đổi tên thư mục')).toBeVisible();
+
+    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
+    await page.getByRole('menuitem', { name: `Gỡ khỏi thư mục ${folderName} A` }).click();
+    await expect(page.getByText('Đã gỡ khỏi thư mục')).toBeVisible();
+    await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
+
+    await page.getByRole('button', { name: `Thao tác với thư mục ${folderName} A` }).click();
+    await page.getByRole('menuitem', { name: 'Xoá thư mục' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Xoá thư mục' }).click();
     await expect(page.getByText('Đã xoá thư mục, bộ từ vẫn được giữ')).toBeVisible();
-    await page.goto('/sets');
+    await page.waitForURL(/\/sets$/);
     await expect(page.getByRole('link', { name: title })).toBeVisible();
   });
 
