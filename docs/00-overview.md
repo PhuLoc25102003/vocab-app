@@ -13,6 +13,8 @@ Nguồn: tách từ `spec-source.md` (bản 2026-11-18), đã đối chiếu v�
 | Giáo viên (TEACHER)    | Mọi quyền của học sinh, thêm tạo lớp, giao bộ từ, xem kết quả của lớp |
 | Quản trị (ADMIN)       | Quản lý người dùng, ẩn nội dung vi phạm                               |
 
+Mỗi vai trò có Tổng quan riêng (giai đoạn 5, `docs/use-cases/06-vai-tro-va-lop-hoc.md`): học sinh thấy bài tập lớp và việc ôn, giáo viên thấy lớp cần chú ý, ADMIN thấy tăng trưởng và việc cần xử lý.
+
 **Phạm vi MVP:**
 
 - Đăng ký, đăng nhập (email + mật khẩu, Google OAuth).

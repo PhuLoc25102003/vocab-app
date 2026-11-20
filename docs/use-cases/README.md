@@ -6,13 +6,14 @@ Trạng thái được đối chiếu với code ở `develop` ngày 2026-11-19.
 
 ## Cách đọc
 
-| File                               | Nội dung                                       |
-| ---------------------------------- | ---------------------------------------------- |
-| [01-tai-khoan.md](01-tai-khoan.md) | Đăng ký, đăng nhập, phiên, quyền, tài khoản    |
-| [02-bo-tu.md](02-bo-tu.md)         | Bộ từ, thẻ từ, trang công khai, Khám phá, nhập |
-| [03-hoc-tap.md](03-hoc-tap.md)     | Phiên học, 4 chế độ, lịch ôn, thống kê         |
-| [04-nen-tang.md](04-nen-tang.md)   | Nền tảng, trang giới thiệu, deploy, phát hành  |
-| [05-lo-trinh.md](05-lo-trinh.md)   | Giai đoạn 2, 3, 4                              |
+| File                                                 | Nội dung                                                               |
+| ---------------------------------------------------- | ---------------------------------------------------------------------- |
+| [01-tai-khoan.md](01-tai-khoan.md)                   | Đăng ký, đăng nhập, phiên, quyền, tài khoản                            |
+| [02-bo-tu.md](02-bo-tu.md)                           | Bộ từ, thẻ từ, trang công khai, Khám phá, nhập                         |
+| [03-hoc-tap.md](03-hoc-tap.md)                       | Phiên học, 4 chế độ, lịch ôn, thống kê                                 |
+| [04-nen-tang.md](04-nen-tang.md)                     | Nền tảng, trang giới thiệu, deploy, phát hành                          |
+| [05-lo-trinh.md](05-lo-trinh.md)                     | Giai đoạn 2, 3, 4                                                      |
+| [06-vai-tro-va-lop-hoc.md](06-vai-tro-va-lop-hoc.md) | Giai đoạn 5: tổng quan theo vai trò, giao và nộp bài, độ gọn giao diện |
 
 Mỗi use case gồm: việc liên quan, người dùng, trạng thái, phải có, luồng chính, ngoại lệ, test và phần còn thiếu.
 
@@ -61,46 +62,47 @@ Các mục này đã thành việc 1.37 đến 1.49 trong phần 1H của file t
 
 ## Bản đồ việc và use case
 
-| Việc             | Use case                                        |
-| ---------------- | ----------------------------------------------- |
-| 0.1 đến 0.13     | [Nền tảng](04-nen-tang.md#uc-p1-nền-tảng-dự-án) |
-| 1.1              | UC-A1, UC-A2                                    |
-| 1.2              | UC-A4, UC-A5                                    |
-| 1.3              | UC-A6                                           |
-| 1.4              | UC-A7, UC-A8                                    |
-| 1.5              | UC-A1, UC-A2, UC-A4, UC-A6                      |
-| 1.6              | UC-A3                                           |
-| 1.7              | UC-S1, UC-S2, UC-S4, UC-S5, UC-S6, UC-S9        |
-| 1.8              | UC-S3                                           |
-| 1.9              | UC-S7                                           |
-| 1.10             | UC-S1                                           |
-| 1.11             | UC-S2, UC-S3, UC-S4                             |
-| 1.12             | UC-S5, UC-S8                                    |
-| 1.13             | UC-L1, UC-L10                                   |
-| 1.14, 1.15       | UC-L2, UC-L3                                    |
-| 1.16             | UC-L4, UC-L5                                    |
-| 1.17             | UC-L6                                           |
-| 1.18 đến 1.20    | UC-P3                                           |
-| 1.21 đến 1.23    | UC-S10                                          |
-| 1.24, 1.25, 1.26 | UC-L7, UC-L8, UC-L9                             |
-| 1.27             | UC-L10                                          |
-| 1.28             | UC-L11                                          |
-| 1.29             | UC-P2                                           |
-| 1.30             | UC-P4                                           |
-| 1.31, 1.50       | UC-P5                                           |
-| 1.32, 1.48       | UC-P6                                           |
-| 1.33, 1.47       | UC-P7                                           |
-| 1.34             | UC-P8                                           |
-| 1.35             | UC-P9                                           |
-| 1.36             | UC-S9                                           |
-| 1.37, 1.38       | UC-S2, UC-S4                                    |
-| 1.39             | UC-L2                                           |
-| 1.40             | UC-A5, UC-A7, UC-A8                             |
-| 1.41             | UC-P10                                          |
-| 1.42             | UC-S9                                           |
-| 1.43             | UC-S1                                           |
-| 1.44             | UC-S5, UC-L11                                   |
-| 1.45             | UC-L3, UC-L10                                   |
-| 1.46             | UC-S5, UC-S8                                    |
-| 1.49a, 1.49b     | UC-A9                                           |
-| 2.1 đến 4.3      | [Lộ trình](05-lo-trinh.md)                      |
+| Việc             | Use case                                                          |
+| ---------------- | ----------------------------------------------------------------- |
+| 0.1 đến 0.13     | [Nền tảng](04-nen-tang.md#uc-p1-nền-tảng-dự-án)                   |
+| 1.1              | UC-A1, UC-A2                                                      |
+| 1.2              | UC-A4, UC-A5                                                      |
+| 1.3              | UC-A6                                                             |
+| 1.4              | UC-A7, UC-A8                                                      |
+| 1.5              | UC-A1, UC-A2, UC-A4, UC-A6                                        |
+| 1.6              | UC-A3                                                             |
+| 1.7              | UC-S1, UC-S2, UC-S4, UC-S5, UC-S6, UC-S9                          |
+| 1.8              | UC-S3                                                             |
+| 1.9              | UC-S7                                                             |
+| 1.10             | UC-S1                                                             |
+| 1.11             | UC-S2, UC-S3, UC-S4                                               |
+| 1.12             | UC-S5, UC-S8                                                      |
+| 1.13             | UC-L1, UC-L10                                                     |
+| 1.14, 1.15       | UC-L2, UC-L3                                                      |
+| 1.16             | UC-L4, UC-L5                                                      |
+| 1.17             | UC-L6                                                             |
+| 1.18 đến 1.20    | UC-P3                                                             |
+| 1.21 đến 1.23    | UC-S10                                                            |
+| 1.24, 1.25, 1.26 | UC-L7, UC-L8, UC-L9                                               |
+| 1.27             | UC-L10                                                            |
+| 1.28             | UC-L11                                                            |
+| 1.29             | UC-P2                                                             |
+| 1.30             | UC-P4                                                             |
+| 1.31, 1.50       | UC-P5                                                             |
+| 1.32, 1.48       | UC-P6                                                             |
+| 1.33, 1.47       | UC-P7                                                             |
+| 1.34             | UC-P8                                                             |
+| 1.35             | UC-P9                                                             |
+| 1.36             | UC-S9                                                             |
+| 1.37, 1.38       | UC-S2, UC-S4                                                      |
+| 1.39             | UC-L2                                                             |
+| 1.40             | UC-A5, UC-A7, UC-A8                                               |
+| 1.41             | UC-P10                                                            |
+| 1.42             | UC-S9                                                             |
+| 1.43             | UC-S1                                                             |
+| 1.44             | UC-S5, UC-L11                                                     |
+| 1.45             | UC-L3, UC-L10                                                     |
+| 1.46             | UC-S5, UC-S8                                                      |
+| 1.49a, 1.49b     | UC-A9                                                             |
+| 2.1 đến 4.3      | [Lộ trình](05-lo-trinh.md)                                        |
+| 5.1 đến 5.23     | [Vai trò và lớp học](06-vai-tro-va-lop-hoc.md), GAP-14 đến GAP-26 |

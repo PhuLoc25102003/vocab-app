@@ -10,8 +10,9 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-2. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Giai đoạn 5 theo thứ tự: sửa lỗi 5.1, 5.2; nền giao diện 5.3 đến 5.8; rồi 5.10 đến 5.14 (giao và nộp bài) trước dashboard 5.18 đến 5.22 vì dashboard cần số liệu bài nộp.
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -24,7 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **125** | **129** | **97%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |       0 |      23 | Chưa làm   |
+| **Toàn dự án**          |                                            | **125** | **152** | **82%**    |
 
 ## Cách cập nhật
 
@@ -254,6 +256,51 @@ Không tính vào tổng số việc.
 - [x] **4.3** Tải bộ từ về máy (IndexedDB), xem thẻ ở trang offline, xoá dữ liệu offline khi đăng xuất (#228).
 - [x] **4.5** Học Flashcard khi mất mạng với bộ đã tải, phiên đã xong vào hàng đợi trên máy; service worker lưu sẵn mã của trang offline (#231).
 - [x] **4.6** Gửi hàng đợi phiên học offline lên máy chủ khi có mạng và đã đăng nhập (#233).
+
+## Giai đoạn 5: Vai trò, lớp học và độ gọn
+
+**Xong khi:** mỗi vai trò có Tổng quan riêng trả lời đúng câu hỏi của mình; giáo viên giao bài nhiều chế độ, học sinh làm và nộp bài, giáo viên theo dõi từng em; form ngắn mở trong modal, danh sách dài có phân trang, chữ dài không phá bố cục. Phân tích và thiết kế ở `docs/use-cases/06-vai-tro-va-lop-hoc.md` (góp ý ngày 2026-11-20), làm theo skill `ui-ux-pro`.
+
+### 5A. Sửa lỗi
+
+- [ ] **5.1** Mục "Đăng xuất" kẹt ở "Đang đăng xuất" sau khi đăng nhập lại: đặt lại state khi người dùng đổi, test đăng xuất rồi đăng nhập lại (GAP-14).
+- [ ] **5.2** Luyện nói: nút micro tròn, trạng thái "Đang nghe… hãy đọc to từ" có hiệu ứng toả nhẹ (tắt khi giảm chuyển động), nút Dừng, `aria-live` (GAP-15).
+
+### 5B. Nền giao diện
+
+- [ ] **5.3** `FormDialog` dùng chung với `ConfirmDialog` (focus, Esc hỏi lại khi đã nhập, lỗi trong modal, toàn màn hình ở 360 px); ghi quy tắc "form ngắn trong modal" vào `docs/05-ui-tokens.md` (GAP-21).
+- [ ] **5.4** `DateTimeField` tiếng Việt: `dd/mm/yyyy`, giờ 24 tiếng, màu theo token, nút nhanh Hết hôm nay, Ngày mai, 1 tuần; thay `datetime-local` (GAP-22).
+- [ ] **5.5** Chống tràn chữ toàn site: `min-w-0`, `break-words`, cắt dòng cho tên và mô tả ở thẻ, hàng, header; test chuỗi 120 ký tự không dấu cách ở 360 px (GAP-25).
+- [ ] **5.6** Thẻ bộ từ gọn hơn: cao khoảng 112 px, mô tả 1 dòng, lưới 4 cột từ 1280 px; cập nhật mục "Thẻ bộ từ" trong `docs/05-ui-tokens.md` (GAP-24).
+- [ ] **5.7** Phân trang cho các danh sách còn tải hết: bài đã giao, bài cần làm, lớp đã tham gia, kết quả của một học sinh, thẻ trên trang bộ từ (50 thẻ); số trang trong URL (GAP-26).
+- [ ] **5.8** Chuyển form còn chèn trong trang sang modal: tạo và sửa lớp, tham gia lớp, tạo và đổi tên thư mục, khoá tài khoản, ẩn bộ từ. Cần 5.3 (GAP-21).
+
+### 5C. Tài khoản
+
+- [ ] **5.9** Thiết kế lại trang Tài khoản: thẻ hồ sơ bên trái, nhóm Hồ sơ, Bảo mật, Giọng đọc, Vùng nguy hiểm dạng hàng; đổi tên và mật khẩu qua modal; tài khoản Google ghi "Đăng nhập bằng Google". Cần 5.3 (GAP-23).
+
+### 5D. Giao bài và nộp bài
+
+- [ ] **5.10** Schema: `Assignment.modes`, `StudySession.assignmentId`, bảng `AssignmentSubmission`, backfill bài cũ và bài nộp từ phiên đã xong; cập nhật `docs/02-database.md` (GAP-17).
+- [ ] **5.11** API giao bài nhiều chế độ (1 đến 5, kiểm tra chế độ dùng được với bộ); giao bộ riêng tư cần `shareToClass` và đổi bộ sang `CLASS` trong cùng transaction. Cần 5.10 (GAP-17, GAP-18).
+- [ ] **5.12** API làm và nộp bài: phiên học nhận `assignmentId`, `GET /classes/assignments/:id`, `POST /classes/assignments/:id/submit`, tính đúng hạn, trễ, bỏ lỡ và điểm; danh sách bài cần làm trả trạng thái mới. Cần 5.10.
+- [ ] **5.13** Web modal giao bài: chọn bộ có tìm kiếm, chọn và sắp thứ tự chế độ (mặc định lộ trình đề xuất), cảnh báo bộ riêng tư, `DateTimeField`. Cần 5.3, 5.4, 5.11.
+- [ ] **5.14** Web học sinh làm bài: trang bài tập có danh sách chế độ và nút "Tiếp tục", phiên học mang `?assignment=`, màn kết quả về bài tập hoặc chế độ tiếp, nút Nộp bài có xác nhận, trạng thái Đã nộp hoặc Nộp trễ. Cần 5.12.
+
+### 5E. Giáo viên theo dõi lớp
+
+- [ ] **5.15** API số liệu học sinh trong lớp: đúng hạn, trễ, bỏ lỡ, đang chờ, điểm trung bình, hoạt động gần nhất; sắp xếp và tìm theo tên. Cần 5.12 (GAP-19).
+- [ ] **5.16** Web lớp học: danh sách lớp dạng thẻ hàng có số liệu, trang lớp gọn (mã lớp thành chip, modal "Mời học sinh", tab Bài tập và Học sinh trong URL, bảng có phân trang), modal hồ sơ học sinh. Cần 5.8, 5.15 (GAP-19, GAP-20).
+- [ ] **5.17** Trang kết quả bài giao theo bài nộp: trạng thái 5 loại, điểm theo từng chế độ, lọc theo trạng thái. Cần 5.12.
+
+### 5F. Tổng quan theo vai trò
+
+- [ ] **5.18** Tổng quan học sinh: khối "Bài tập lớp" đầu trang (bỏ lỡ, hạn gần nhất, tối đa 3), ẩn khi chưa vào lớp. Cần 5.12 (GAP-16).
+- [ ] **5.19** API `GET /teacher/overview`: ô số liệu, cần chú ý, sắp đến hạn, bài vừa nộp. Cần 5.15.
+- [ ] **5.20** Tổng quan giáo viên theo thiết kế: nút chính Giao bài (modal có chọn lớp), trạng thái trống 3 bước, phần học cá nhân thu gọn. Cần 5.13, 5.19 (GAP-16).
+- [ ] **5.21** API thống kê ADMIN mở rộng: người hoạt động 7 ngày, đăng ký mới, phiên học, phân bố vai trò, chuỗi 30 ngày, bộ công khai mới để rà (GAP-16).
+- [ ] **5.22** Tổng quan ADMIN theo thiết kế: 4 ô số liệu, biểu đồ 30 ngày, Cần xử lý, Vai trò, Người dùng mới, Bộ công khai mới có nút Ẩn. Cần 5.21 (GAP-16).
+- [ ] **5.23** E2E: giáo viên giao bài 3 chế độ từ bộ riêng tư, học sinh làm và nộp, giáo viên thấy ở Tổng quan và modal hồ sơ; audit accessibility các trang mới ở light, dark, 360 px.
 
 ## Quyết định cần chốt
 
