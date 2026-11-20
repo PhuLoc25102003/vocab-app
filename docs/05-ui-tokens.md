@@ -231,3 +231,7 @@ Nút chính "Bắt đầu học" trên trang bộ từ mở `/sets/:id/study/pat
 ## Phản hồi khi học
 
 Đúng dùng lớp `feedback-correct` (nảy nhẹ 200 ms), sai dùng `feedback-wrong` (rung ngang 240 ms), định nghĩa trong `globals.css` và tắt khi `prefers-reduced-motion`. Chuyển động chỉ đi kèm icon và chữ, không thay chúng.
+
+## Nút micro khi luyện nói
+
+Nút tròn 64 px viền 2 px `primary`. Chờ nói: nền `primary-soft`, icon micro màu `primary`, tên "Bấm để nói" (hoặc "Thử lại"), chú thích dưới nút "Bấm micro rồi đọc to từ" màu `text-muted`. Đang nghe: nền `primary`, icon vuông dừng màu `primary-fg`, tên "Dừng nghe", lớp `mic-listening` toả vòng `primary` 1,2 giây lặp lại; chú thích đổi thành icon micro kèm "Đang nghe… hãy đọc to từ" màu `primary` trong vùng `role="status"`. Giảm chuyển động thì không toả, thay bằng viền ngoài 4 px `primary-soft` đứng yên. Chỉ có một nút đổi vai trò nên focus bàn phím không mất; bấm Dừng hoặc rời câu thì huỷ lần nghe, không báo lỗi.

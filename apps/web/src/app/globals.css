@@ -258,6 +258,29 @@
   }
 }
 
+/* Luyện nói: vòng toả quanh nút micro khi đang nghe. Giảm chuyển động thì thay bằng viền đậm đứng yên. */
+@keyframes mic-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 16px color-mix(in oklab, var(--primary) 0%, transparent);
+  }
+}
+
+@layer components {
+  .mic-listening {
+    animation: mic-pulse 1.2s var(--ease-standard, ease-out) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic-listening {
+    animation: none;
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+}
+
 /* Trang giới thiệu: thẻ bay nhẹ, nội dung hiện dần khi vào màn hình và khi cuộn tới. */
 @keyframes landing-float {
   0%,

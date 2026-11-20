@@ -1,7 +1,7 @@
 'use client';
 
 import { getMode, gradeText, type GradeResult, type UserAnswer } from '@vocab/shared';
-import { Check, Mic, X } from 'lucide-react';
+import { Check, Mic, Square, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { FormError } from '@/components/common/form-message';
@@ -32,16 +32,21 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
   const shownAt = useRef(0);
   const first = useRef<UserAnswer | null>(null);
   const answered = useRef(false);
+  const listen = useRef<AbortController | null>(null);
 
   useEffect(() => {
     shownAt.current = Date.now();
+    // Rời câu khi micro còn mở thì tắt micro.
+    return () => listen.current?.abort();
   }, []);
 
   const speakNow = async () => {
+    const controller = new AbortController();
+    listen.current = controller;
     setListening(true);
     setFailure(null);
     try {
-      const transcripts = await listenOnce(languages.term);
+      const transcripts = await listenOnce(languages.term, controller.signal);
       // Lấy câu khớp từ đích nếu có trong các phương án, không thì lấy câu chắc chắn nhất.
       const value =
         transcripts.find((text) => gradeText(question.expected, text).isCorrect) ??
@@ -55,9 +60,22 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
         onChecked?.(answer);
       }
     } catch (error) {
-      setFailure(error instanceof ListenError ? error.reason : 'failed');
+      const reason = error instanceof ListenError ? error.reason : 'failed';
+      // Bấm Dừng không phải lỗi, chỉ quay về trạng thái chờ nói.
+      if (reason !== 'aborted') {
+        setFailure(reason);
+      }
     } finally {
+      listen.current = null;
       setListening(false);
+    }
+  };
+
+  const toggleMic = () => {
+    if (listening) {
+      listen.current?.abort();
+    } else {
+      void speakNow();
     }
   };
 
@@ -114,12 +132,40 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
       ) : null}
       {failure ? <FormError>{FAILURE_MESSAGES[failure]}</FormError> : null}
 
-      <div className="mt-auto flex flex-col gap-2">
+      <div className="mt-auto flex flex-col gap-4">
         {supported && !result?.isCorrect ? (
-          <Button loading={listening} onClick={() => void speakNow()}>
-            <Mic aria-hidden className="size-4" />
-            {heard === null ? 'Bấm để nói' : 'Thử lại'}
-          </Button>
+          <div className="flex flex-col items-center gap-2">
+            {/* Một nút duy nhất đổi vai trò Nói, Dừng nên focus bàn phím không bị mất. */}
+            <button
+              type="button"
+              onClick={toggleMic}
+              aria-label={listening ? 'Dừng nghe' : heard === null ? 'Bấm để nói' : 'Thử lại'}
+              className={cn(
+                'flex size-16 items-center justify-center rounded-full border-2 border-primary transition-colors duration-fast ease-standard',
+                listening
+                  ? 'mic-listening bg-primary text-primary-fg'
+                  : 'bg-primary-soft text-primary hover:bg-primary hover:text-primary-fg',
+              )}
+            >
+              {listening ? (
+                <Square aria-hidden className="size-5 fill-current" />
+              ) : (
+                <Mic aria-hidden className="size-7" />
+              )}
+            </button>
+            <p role="status" className="text-center text-small font-medium">
+              {listening ? (
+                <span className="inline-flex items-center gap-1 text-primary">
+                  <Mic aria-hidden className="size-4" />
+                  Đang nghe… hãy đọc to từ
+                </span>
+              ) : (
+                <span className="text-text-muted">
+                  {heard === null ? 'Bấm micro rồi đọc to từ' : 'Bấm micro để thử lại'}
+                </span>
+              )}
+            </p>
+          </div>
         ) : null}
         <Button variant={result?.isCorrect ? 'primary' : 'secondary'} onClick={next}>
           {heard !== null ? 'Câu tiếp theo' : 'Bỏ qua'}
