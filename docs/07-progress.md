@@ -4,11 +4,11 @@ Cập nhật lần cuối: 2026-11-20
 
 **Đang ở:** Giai đoạn 2 và 4 đã xong phần làm được trong repo (chế độ học, quản trị, giao diện, PWA, học offline). Còn lại cần tài khoản dịch vụ (Sentry, email, Upstash, R2, staging), quyết định cấp quyền giáo viên (3.2), phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
-Giai đoạn 3 đã có schema lớp học (3.1).
+Giai đoạn 3 đã có schema lớp học (3.1) và API giáo viên quản lý lớp (3.3).
 
 **Việc tiếp theo:**
 
-1. API tạo lớp, quản lý thành viên, tham gia lớp (việc 3.3), không cần chờ quyết định 3.2.
+1. API thành viên lớp (việc 3.9), không cần chờ quyết định 3.2.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận.
 3. Đo lại Lighthouse trên production (việc 1.34).
 
@@ -21,9 +21,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |     13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |     50 |      54 | Đang làm   |
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |     22 |      27 | Đang làm   |
-| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      1 |       8 | Đang làm   |
+| 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      2 |       9 | Đang làm   |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |      6 |       6 | Xong       |
-| **Toàn dự án**          |                                            | **92** | **108** | **85%**    |
+| **Toàn dự án**          |                                            | **93** | **109** | **85%**    |
 
 ## Cách cập nhật
 
@@ -209,7 +209,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - [x] **3.1** Schema `Class`, `ClassMember`, `Assignment` (#238).
 - [ ] **3.2** Quy trình cấp vai trò giáo viên.
-- [ ] **3.3** API tạo lớp, quản lý thành viên, tham gia lớp.
+- [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia.
+- [ ] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia.
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
 - [ ] **3.5** API giao bộ từ và theo dõi hạn nộp.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.

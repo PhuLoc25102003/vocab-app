@@ -99,7 +99,7 @@ src/
     ├── study/        controller, service, repository (SRS nằm ở shared)
     ├── progress/
     ├── health/
-    └── classes/      (giai đoạn 3)
+    └── classes/      controller, service, repository; giáo viên quản lý lớp (3.3)
 ```
 
 Luồng trong một module: **Controller → Service → Repository → Prisma**. Controller không gọi Prisma; Service không biết HTTP (không dùng `req`, `res`).

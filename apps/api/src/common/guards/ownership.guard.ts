@@ -29,6 +29,12 @@ const RESOURCES: Record<
     notFoundCode: ERROR_CODES.FOLDER_NOT_FOUND,
     notFoundMessage: 'Không tìm thấy thư mục',
   },
+  // Chủ lớp là giáo viên, ADMIN hỗ trợ được mọi lớp.
+  class: {
+    adminBypass: true,
+    notFoundCode: ERROR_CODES.CLASS_NOT_FOUND,
+    notFoundMessage: 'Không tìm thấy lớp',
+  },
 };
 
 /** Chạy sau `RolesGuard`. Chỉ áp dụng cho route có @CheckOwnership(). */
