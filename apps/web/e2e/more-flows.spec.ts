@@ -359,7 +359,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.goto('/sets/import');
     const [template] = await Promise.all([
       page.waitForEvent('download'),
-      page.getByRole('button', { name: 'Tải file mẫu .xlsx' }).click(),
+      page.getByRole('button', { name: 'Tải file mẫu Excel (.xlsx)' }).click(),
     ]);
     expect(template.suggestedFilename()).toBe('mau-nhap-tu-vung.xlsx');
     await page.locator('input[type="file"]').setInputFiles({
@@ -369,7 +369,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     });
     await expect(page.getByText('Đã nhận ra tiêu đề file mẫu')).toBeVisible();
     await page.getByRole('button', { name: 'Xem trước' }).click();
-    await expect(page.getByRole('heading', { name: 'Xem trước (3 thẻ)' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Xem trước (7 thẻ)' })).toBeVisible();
     await expect(page.getByLabel('Phiên âm').first()).toHaveValue('/ˈæp.əl/');
     await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
   });

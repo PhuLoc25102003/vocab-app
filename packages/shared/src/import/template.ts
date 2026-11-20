@@ -4,11 +4,18 @@ import { detectDelimiter, readFirstRecord } from './parse';
 /** Hàng tiêu đề của file mẫu, theo thứ tự cột. */
 export const IMPORT_TEMPLATE_HEADERS = ['Từ', 'Nghĩa', 'Phiên âm', 'Ví dụ'] as const;
 
-/** Dòng ví dụ trong file mẫu. Dòng cuối để trống ví dụ để thấy cột này không bắt buộc. */
+/**
+ * Dòng ví dụ trong file mẫu: từ đơn, cụm từ, dòng thiếu phiên âm, dòng thiếu ví dụ,
+ * để người dùng thấy hai cột sau không bắt buộc.
+ */
 export const IMPORT_TEMPLATE_ROWS: readonly (readonly string[])[] = [
   ['apple', 'quả táo', '/ˈæp.əl/', 'I eat an apple every day.'],
   ['learn', 'học', '/lɜːn/', 'We learn English at school.'],
   ['beautiful', 'đẹp', '/ˈbjuː.tɪ.fəl/', ''],
+  ['look after', 'chăm sóc', '/lʊk ˈɑːf.tər/', 'She looks after her little brother.'],
+  ['homework', 'bài tập về nhà', '', 'I do my homework after dinner.'],
+  ['friendly', 'thân thiện', '/ˈfrend.li/', 'My classmates are very friendly.'],
+  ['take part in', 'tham gia', '', ''],
 ];
 
 export interface TemplateColumns {

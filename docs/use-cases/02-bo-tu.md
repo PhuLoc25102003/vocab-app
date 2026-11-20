@@ -99,7 +99,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 - **Phải có:**
   - Dán text, tải `.csv`, `.xlsx`, `.txt` tối đa 2 MB.
   - Chọn ký tự phân cách, cột từ, cột nghĩa. Cột phiên âm và cột ví dụ **không bắt buộc**, mặc định là "Không có".
-  - Nút "Tải file mẫu" với hai định dạng `.xlsx` và `.csv` (UTF-8 có BOM). File mẫu có hàng tiêu đề `Từ`, `Nghĩa`, `Phiên âm`, `Ví dụ` và 3 dòng ví dụ, như `apple`, `quả táo`, `/ˈæp.əl/`, `I eat an apple every day.`. Trang nhập có một dòng giải thích ngắn về các cột.
+  - Nút "Tải file mẫu Excel (.xlsx)" (việc 2.38, trước đó có thêm mẫu `.csv`). Sheet đầu "Từ vựng" có hàng tiêu đề `Từ`, `Nghĩa`, `Phiên âm`, `Ví dụ` định dạng sẵn và 7 dòng ví dụ, như `apple`, `quả táo`, `/ˈæp.əl/`, `I eat an apple every day.`; sheet "Hướng dẫn" giải thích từng cột. Trang nhập có một dòng giải thích ngắn về các cột.
   - Nếu hàng đầu tiên trùng tiêu đề của file mẫu (không phân biệt hoa thường, bỏ khoảng trắng thừa), web tự bật "Dòng đầu là tiêu đề" và chọn đúng 4 cột. Người dùng vẫn đổi lại được.
   - Bảng xem trước hiện cả phiên âm và ví dụ khi có chọn cột, báo lỗi từng dòng, sửa hoặc bỏ dòng trước khi lưu.
   - Nhập vào bộ mới hoặc bộ có sẵn. Thẻ đã lưu có `phonetic` và `example` khi dòng có giá trị.
@@ -113,6 +113,6 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Mã hoá UTF-8 có BOM, dấu tiếng Việt và ký tự IPA phải đúng.
   - Rời trang khi chưa lưu phải hỏi xác nhận.
 - **Điểm vào:** nút "Nhập từ file" ở trang Bộ từ mở `/sets/import`, nút "Nhập thêm thẻ" của chủ bộ từ mở `/sets/import?setId=...`.
-- **Test đã có:** `parse.test`, `template.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test` (gồm XLSX hợp lệ, hỏng, rỗng, ô công thức, dấu tiếng Việt và IPA, file `.xls`), `import-source.test` (gồm nhận diện tiêu đề mẫu khi chọn file và khi dán), `template-file.test`, `import-preview.test`, `import-wizard.test` (gồm cột phiên âm, ví dụ, cột trùng, lưu thẻ có phiên âm và ví dụ), E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi tải file `.xlsx` có cột phiên âm để nhập thêm vào bộ có sẵn, tải file mẫu `.xlsx` rồi chọn lại để kiểm tra tự chọn cột, audit accessibility trang nhập.
-- **Test cần thêm:** mở file mẫu `.xlsx` bằng Excel và LibreOffice thật (thủ công).
-- **Sắp đổi:** trang chia ba bước, đổi tên "Ký tự phân cách", file mẫu `.xlsx` có định dạng và sheet hướng dẫn, bỏ mẫu `.csv` (việc 2.37, 2.38, UC-X8).
+- **Test đã có:** `parse.test`, `template.test` (shared), `import-preview.integration`, `sets-import.integration`, `read-file.test` (gồm XLSX hợp lệ, hỏng, rỗng, ô công thức, dấu tiếng Việt và IPA, file `.xls`), `import-source.test` (gồm nhận diện tiêu đề mẫu khi chọn file và khi dán), `template-file.test`, `import-preview.test`, `import-wizard.test` (gồm cột phiên âm, ví dụ, cột trùng, lưu thẻ có phiên âm và ví dụ), E2E tải CSV có BOM, sửa dòng lỗi, lưu bộ mới rồi tải file `.xlsx` có cột phiên âm để nhập thêm vào bộ có sẵn, tải file mẫu `.xlsx` rồi chọn lại để kiểm tra tự chọn cột (7 thẻ), audit accessibility trang nhập.
+- **Test cần thêm:** mở file mẫu `.xlsx` bằng LibreOffice và Google Sheets (thủ công). Đã mở bằng Excel trên Windows ngày 2026-11-20.
+- **Đã đổi:** trang chia ba bước, đổi tên "Ký tự phân cách" (việc 2.37); file mẫu `.xlsx` có định dạng và sheet hướng dẫn, bỏ mẫu `.csv` vì Excel tiếng Việt dùng dấu `;` nên mở ra dồn hết vào cột A (việc 2.38). Xem UC-X8.

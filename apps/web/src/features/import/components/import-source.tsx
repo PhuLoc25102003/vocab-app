@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { previewImport } from '../api';
 import { IMPORT_FILE_ACCEPT, ImportFileError, readImportFile } from '../read-file';
-import { downloadTemplate, type TemplateFormat } from '../template-file';
+import { downloadTemplate } from '../template-file';
 
 const DELIMITER_LABELS: Record<ImportDelimiter, string> = {
   auto: 'Tự nhận (nên dùng)',
@@ -130,9 +130,9 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     }
   };
 
-  const saveTemplate = async (format: TemplateFormat) => {
+  const saveTemplate = async () => {
     try {
-      await downloadTemplate(format);
+      await downloadTemplate();
       setTemplateError(null);
     } catch {
       setTemplateError('Không tạo được file mẫu. Hãy thử lại.');
@@ -222,17 +222,13 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
           Lấy file mẫu <span className="font-normal text-text-muted">(không bắt buộc)</span>
         </StepTitle>
         <p className="max-w-[65ch] text-text-muted">
-          Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống. Giữ nguyên hàng tiêu đề
-          để trang tự chọn cột.
+          File Excel có sẵn dòng ví dụ và sheet hướng dẫn, mở được bằng Excel hoặc Google Sheets.
+          Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống.
         </p>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" onClick={() => void saveTemplate('xlsx')}>
+        <div>
+          <Button type="button" variant="secondary" onClick={() => void saveTemplate()}>
             <Download aria-hidden className="size-4" />
-            Tải file mẫu .xlsx
-          </Button>
-          <Button type="button" variant="secondary" onClick={() => void saveTemplate('csv')}>
-            <Download aria-hidden className="size-4" />
-            Tải file mẫu .csv
+            Tải file mẫu Excel (.xlsx)
           </Button>
         </div>
         {templateError ? <FormError>{templateError}</FormError> : null}
