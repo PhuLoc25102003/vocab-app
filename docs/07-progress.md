@@ -210,7 +210,7 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 - [x] **3.1** Schema `Class`, `ClassMember`, `Assignment` (#238).
 - [ ] **3.2** Quy trình cấp vai trò giáo viên.
 - [x] **3.3** API giáo viên tạo, xem, sửa, lưu trữ lớp và đổi mã tham gia (#241).
-- [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia.
+- [x] **3.9** API thành viên lớp: tham gia bằng mã, rời lớp, giáo viên xem và xoá thành viên, học sinh xem lớp đã tham gia (#243).
 - [ ] **3.4** Quyền xem bộ từ có `visibility = CLASS`.
 - [ ] **3.5** API giao bộ từ và theo dõi hạn nộp.
 - [ ] **3.6** API kết quả theo lớp và theo học sinh.
