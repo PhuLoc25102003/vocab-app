@@ -6,7 +6,7 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 
 ### UC-X1. Hạ tầng dùng chung
 
-- **Việc 2.1, Rate limit Redis:** bộ đếm dùng chung nhiều instance qua Upstash REST, đặt sau một interface để thay bằng bộ đếm trong bộ nhớ khi thiếu `UPSTASH_REDIS_REST_URL`. Redis lỗi thì API vẫn chạy và ghi log. Test hai instance cùng tính một giới hạn bằng bản giả dùng chung.
+- **Việc 2.1, Rate limit Redis (xong):** bộ đếm dùng chung nhiều instance qua Upstash REST, đặt sau một interface để thay bằng bộ đếm trong bộ nhớ khi thiếu `UPSTASH_REDIS_REST_URL`. Redis lỗi thì API vẫn chạy và ghi log. Test hai instance cùng tính một giới hạn bằng bản giả dùng chung (`shared-rate-limit.integration`, `shared-throttler-storage.test`).
 - **Việc 2.2, Cache bộ công khai:** cache `GET /sets/:id` của bộ công khai trên cùng Redis, sửa, xoá, đổi phạm vi, thêm hoặc sửa thẻ phải xoá cache. Thiếu Redis thì không cache. Trang công khai của web vẫn cache 5 phút như hiện nay. Test bộ chuyển sang riêng tư không còn đọc được từ cache.
 - **Việc 2.3, Staging:** làm sau 1.35. `develop` tự deploy lên Render service thứ hai và tên miền Vercel riêng, database là Neon branch `staging`, secret riêng. Toàn bộ là thao tác trên dashboard theo `docs/08-deploy.md`. Test smoke trên staging trước khi phát hành.
 

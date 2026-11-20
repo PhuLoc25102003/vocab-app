@@ -34,6 +34,13 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().trim().default(''),
   /** Địa chỉ web để tạo liên kết trong thư. Để trống thì lấy origin đầu tiên của CORS_ORIGINS. */
   WEB_ORIGIN: z.string().trim().default(''),
+  /** Upstash Redis REST, dùng chung bộ đếm rate limit giữa các instance. Để trống thì đếm trong bộ nhớ. */
+  UPSTASH_REDIS_REST_URL: z
+    .string()
+    .trim()
+    .pipe(z.union([z.literal(''), z.url()]))
+    .default(''),
+  UPSTASH_REDIS_REST_TOKEN: z.string().trim().default(''),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

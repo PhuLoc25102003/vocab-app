@@ -10,6 +10,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 import { validateEnv } from './config/env';
 import { MailModule } from './infrastructure/mail/mail.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CardsModule } from './modules/cards/cards.module';
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module';
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     PrismaModule,
     MailModule,
+    RedisModule,
     AuthCoreModule,
     AuthModule,
     UsersModule,
