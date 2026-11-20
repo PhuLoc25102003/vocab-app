@@ -7,7 +7,7 @@ description: Chạy trọn một task của vocab-app từ issue đến merge v�
 
 Lệnh của người dùng là sự đồng ý cho toàn bộ flow dưới đây: tạo issue, tạo nhánh, code, commit, push, mở PR và squash merge vào `develop`, nếu đủ điều kiện ở bước 8. Không hỏi lại giữa chừng, trừ các trường hợp ở mục "Dừng lại và hỏi".
 
-Mỗi lệnh làm **một** task. Chi tiết về đặt tên và mẫu issue, PR nằm trong skill `git-workflow`.
+Mỗi task có issue, nhánh và PR riêng. Trong lúc PR chờ CI thì làm task tiếp theo (bước 7), không ngồi đợi; cứ thế làm tiếp cho tới khi các task còn lại đều rơi vào mục "Dừng lại và hỏi". Chi tiết về đặt tên và mẫu issue, PR nằm trong skill `git-workflow`.
 
 ## Không bao giờ làm
 
@@ -74,21 +74,33 @@ Sau đó chạy skill `code-review` và sửa hết mục "Chưa đạt".
 3. Mở PR vào `develop` theo mẫu trong `git-workflow`, có `Closes #<số>`.
 4. Ghi số PR vào dòng của task trong file tiến độ, commit và push.
 
-### 7. Chờ CI
+### 7. Chờ CI, không ngồi đợi
+
+CI mất vài phút. Theo dõi ở nền và làm task tiếp theo trong lúc đó:
 
 ```bash
-gh pr checks <số-pr> --watch --interval 20
+gh pr checks <số-pr> --watch --interval 30   # chạy nền, có thông báo khi xong
 ```
 
-Nếu báo chưa có check, chạy lại sau khi GitHub nhận commit. CI đỏ thì đọc log bằng `gh run view <id> --log-failed`, sửa và push. Đỏ sau 2 lần sửa thì dừng lại và báo.
+1. Chọn task tiếp theo như bước 1 và tạo issue như bước 2.
+2. Task mới không phụ thuộc PR đang chờ: tạo nhánh từ `origin/develop`. Có phụ thuộc: tạo nhánh từ nhánh của PR, sau khi PR được squash merge thì `git rebase --onto origin/develop <commit-cuối-của-PR>`.
+3. Code task mới như bước 4 và 5.
+4. Khi CI của PR cũ xong:
+   - Cất phần đang làm: `git stash push -u -m <task-mới>` (hoặc commit tạm trên nhánh mới).
+   - Xanh: merge theo bước 8.
+   - Đỏ: `git switch <nhánh-PR>`, đọc log bằng `gh run view <id> --log-failed`, sửa, push, rồi quay lại task mới trong lúc chờ lần CI tiếp theo. Đỏ sau 2 lần sửa vì cùng một nguyên nhân thì dừng lại và báo.
+   - Quay về nhánh task mới, `git rebase origin/develop`, `git stash pop`, làm tiếp.
+5. Không để quá hai PR cùng chờ CI. Không dùng `git worktree` cho repo này: mỗi worktree phải cài lại `node_modules` và `.env`.
+
+Nếu báo chưa có check, chạy lại sau khi GitHub nhận commit.
 
 ### 8. Tự merge
 
 Chỉ merge khi **tất cả** điều kiện đều đúng:
 
 - [ ] PR nhắm vào `develop`
-- [ ] `Verify` xanh trên commit mới nhất
-- [ ] `mergeStateStatus` là `CLEAN`
+- [ ] `Verify` và `E2E` xanh trên commit mới nhất
+- [ ] `mergeStateStatus` là `CLEAN`, hoặc `UNSTABLE` chỉ vì check `Vercel` báo hết lượt deploy (giới hạn gói miễn phí, ngoài repo) trong khi `Verify` và `E2E` xanh; ghi rõ điều này trong báo cáo
 - [ ] Lệnh ở bước 5 đều qua và `code-review` không còn "Chưa đạt"
 - [ ] Không rơi vào mục "Dừng lại và hỏi"
 
