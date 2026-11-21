@@ -107,9 +107,11 @@
     "saving": "Đang lưu kết quả"
   },
   "chain": {
+    "steps": "Các bước ôn tập",
     "remaining": "Còn <0>{{count}}</0> chế độ ôn với các thẻ này.",
     "mode": "Chế độ tiếp: {{mode}}",
     "skipped": "Bỏ qua {{mode}}: chế độ này chưa dùng được với bộ từ.",
+    "finished": "Đã hoàn thành tất cả các chế độ ôn tập hôm nay!",
     "backToReview": "Về Ôn hôm nay"
   },
   "assignment": {

@@ -42,24 +42,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Đọc cookie ngôn ngữ trong `Suspense` vì `cacheComponents` không cho đọc dữ liệu runtime ngoài
- * ranh giới đó. `<html lang>` tĩnh là `vi`; script chạy ngay khi phần này tới trình duyệt để đổi
- * sang ngôn ngữ trong cookie trước khi React hydrate (ADR 0003).
+ * ranh giới đó. `<html lang>` tĩnh là `vi`; `themeInitScript` ở `<head>` và `I18nProvider` đồng bộ
+ * sang ngôn ngữ trong cookie trước và sau khi React hydrate (ADR 0003).
  */
 async function LocaleRoot({ children }: { children: ReactNode }) {
   const locale = await getLocale();
   return (
-    <>
-      {locale === DEFAULT_LOCALE ? null : (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.lang=${JSON.stringify(locale)}`,
-          }}
-        />
-      )}
-      <I18nProvider locale={locale}>
-        <Providers>{children}</Providers>
-      </I18nProvider>
-    </>
+    <I18nProvider locale={locale}>
+      <Providers>{children}</Providers>
+    </I18nProvider>
   );
 }
 
@@ -67,11 +58,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang={DEFAULT_LOCALE}
-      className={`${beVietnamPro.variable} ${literata.variable} ${notoSerif.variable} h-full antialiased`}
+      translate="no"
+      className={`${beVietnamPro.variable} ${literata.variable} ${notoSerif.variable} notranslate h-full antialiased`}
       // Script bên dưới đổi class của <html> trước khi React hydrate.
       suppressHydrationWarning
     >
       <head>
+        <meta name="google" content="notranslate" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="flex min-h-full flex-col font-sans">

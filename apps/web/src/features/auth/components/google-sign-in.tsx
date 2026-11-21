@@ -20,6 +20,8 @@ import { safeNextPath } from '../next-path';
 import { refreshSession, startSession } from '../session';
 import { FormError } from '@/components/common/form-message';
 import { useTranslation } from 'react-i18next';
+import { toLocale } from '@/lib/i18n/config';
+import { HttpError } from '@/lib/http';
 
 /** Nút lớn nhất của Google cao 40 px, phóng lên để đạt vùng bấm 44 px. */
 const BUTTON_SCALE = 1.1;
@@ -32,7 +34,8 @@ function toGoogleWidth(frameWidth: number): number {
 }
 
 function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButtonText }) {
-  const { t } = useTranslation('auth');
+  const { t, i18n } = useTranslation('auth');
+  const locale = toLocale(i18n.language);
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
@@ -43,9 +46,12 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
   const submittingRef = useRef(false);
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
   const [submitting, setSubmitting] = useState(redirectDone);
-  const [error, setError] = useState<string | null>(() =>
-    redirectError ? errorCodeMessage(redirectError) : null,
-  );
+  const [authError, setAuthError] = useState<unknown | null>(null);
+  const error = authError
+    ? formErrorMessage(authError, locale)
+    : redirectError
+      ? errorCodeMessage(redirectError, locale)
+      : null;
 
   // Quay về từ chế độ redirect: API đã đặt cookie refresh, chỉ cần lấy phiên rồi đi tiếp.
   useEffect(() => {
@@ -61,7 +67,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       }
       submittingRef.current = false;
       setSubmitting(false);
-      setError(errorCodeMessage(ERROR_CODES.INTERNAL_ERROR));
+      setAuthError(new HttpError('', 500, ERROR_CODES.INTERNAL_ERROR));
     });
   }, [redirectDone, router]);
 
@@ -82,7 +88,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       }
       submittingRef.current = true;
       setSubmitting(true);
-      setError(null);
+      setAuthError(null);
       void loginWithGoogle({ credential })
         .then((session) => {
           startSession(session);
@@ -90,7 +96,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
           router.refresh();
           router.replace(safeNextPath(next) as Route);
         })
-        .catch((reason: unknown) => setError(formErrorMessage(reason)))
+        .catch((reason: unknown) => setAuthError(reason))
         .finally(() => {
           submittingRef.current = false;
           setSubmitting(false);
@@ -116,7 +122,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
               text,
               shape: 'rectangular',
               logo_alignment: 'center',
-              locale: 'vi',
+              locale: locale === 'en' ? 'en' : 'vi',
               width,
             });
             setStatus('ready');
@@ -135,7 +141,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       observer?.disconnect();
       stopListening();
     };
-  }, [clientId, next, redirectDone, router, text]);
+  }, [clientId, locale, next, redirectDone, router, text]);
 
   if (status === 'unavailable') {
     return <p className="text-small text-text-muted">{t('google.failed')}</p>;

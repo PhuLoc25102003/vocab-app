@@ -109,9 +109,18 @@ function ReviewModePicker({
   const all = modes.length === REVIEW_MODES.length;
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="mb-2 text-small font-medium text-board-fg">
-        {t('review.modesLegend')}
-      </legend>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <legend className="text-small font-medium text-board-fg">{t('review.modesLegend')}</legend>
+        <button
+          type="button"
+          aria-pressed={all}
+          onClick={() => onModesChange(all ? ['FLASHCARD'] : [...REVIEW_MODES])}
+          className="inline-flex min-h-11 items-center gap-1 text-tiny font-medium text-board-fg/80 underline underline-offset-4 transition-colors hover:text-board-fg"
+        >
+          {all ? null : <Check aria-hidden className="size-3.5" />}
+          {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
+        </button>
+      </div>
       <div className="flex flex-wrap gap-2">
         {REVIEW_MODES.map((mode) => {
           const order = modes.indexOf(mode);
@@ -123,10 +132,11 @@ function ReviewModePicker({
               aria-pressed={on}
               onClick={() => toggle(mode)}
               className={cn(
-                'inline-flex h-9 min-h-9 items-center gap-2 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard sm:h-10 sm:min-h-10',
+                // Chip cao 36 px cho gọn ở 360 px; lớp ::after nới vùng bấm lên 44 px, khít với khoảng cách hàng 8 px.
+                "relative inline-flex h-9 min-h-9 items-center gap-2 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-full after:content-['']",
                 on
-                  ? 'border-board-fg bg-board-fg text-board'
-                  : 'border-board-muted/70 text-board-fg hover:border-board-fg',
+                  ? 'border-board-fg bg-board-fg text-board shadow-xs'
+                  : 'border-board-muted/60 text-board-fg hover:border-board-fg hover:bg-board-muted/20',
               )}
             >
               <span
@@ -145,17 +155,6 @@ function ReviewModePicker({
           );
         })}
       </div>
-      <div className="mt-1 flex items-center">
-        <button
-          type="button"
-          aria-pressed={all}
-          onClick={() => onModesChange(all ? ['FLASHCARD'] : [...REVIEW_MODES])}
-          className="inline-flex min-h-8 items-center gap-1.5 text-small font-medium text-board-fg/90 underline underline-offset-4 transition-colors hover:text-board-fg"
-        >
-          {all ? null : <Check aria-hidden className="size-4" />}
-          {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
-        </button>
-      </div>
     </fieldset>
   );
 }
@@ -165,34 +164,44 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
   return (
     <section
       aria-labelledby="review-summary"
-      className="flex flex-col gap-6 rounded-lg bg-board p-4 text-board-fg sm:p-6 md:flex-row md:items-end md:justify-between md:p-8"
+      className="flex flex-col gap-4 rounded-lg bg-board p-4 text-board-fg sm:p-5 md:flex-row md:items-center md:justify-between"
     >
-      <div className="flex flex-col gap-1">
-        <h2 id="review-summary" className="text-small font-medium text-board-muted">
+      <div className="flex flex-col gap-0.5 sm:min-w-[160px]">
+        <h2
+          id="review-summary"
+          className="text-tiny font-medium uppercase tracking-wider text-board-muted"
+        >
           {t('review.dueToday')}
         </h2>
-        <p className="flex items-baseline gap-3">
-          <span className="text-card tabular-nums">{dueCards}</span>
-          <span className="text-h3">{t('review.cards')}</span>
+        <p className="flex items-baseline gap-2">
+          <span className="text-h1 font-bold tabular-nums leading-none text-board-fg">
+            {dueCards}
+          </span>
+          <span className="text-small font-medium text-board-muted">{t('review.cards')}</span>
         </p>
-        <p className="text-board-muted">
+        <p className="text-small text-board-muted">
           <Trans
             t={t}
             i18nKey="review.inSets"
             values={{ count: setCount }}
-            components={[<span key="c" className="tabular-nums" />]}
+            components={[<span key="c" className="tabular-nums font-medium text-board-fg" />]}
           />
         </p>
       </div>
-      <div className="flex flex-col items-start gap-4 md:max-w-[560px]">
+      <div className="flex flex-1 flex-col gap-3 md:max-w-[580px]">
         <ReviewModePicker modes={modes} onModesChange={onModesChange} />
         {first ? (
-          <Button asChild className="bg-board-fg text-board hover:bg-surface">
-            <Link href={reviewHref(first.setId, modes)}>
-              <Play aria-hidden className="size-4" />
-              {t('review.startFirst')}
-            </Link>
-          </Button>
+          <div className="flex items-center pt-0.5">
+            <Button
+              asChild
+              className="min-h-11 rounded-full bg-board-fg px-5 font-semibold text-board shadow-sm hover:bg-surface motion-safe:active:scale-[0.98]"
+            >
+              <Link href={reviewHref(first.setId, modes)}>
+                <Play aria-hidden className="size-3.5 fill-current" />
+                {t('review.startFirst')}
+              </Link>
+            </Button>
+          </div>
         ) : null}
       </div>
     </section>

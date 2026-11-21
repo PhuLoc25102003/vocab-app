@@ -1,6 +1,6 @@
 import { ERROR_CODES } from '@vocab/shared';
 import { getI18n } from 'react-i18next';
-import { DEFAULT_LOCALE, resources, toLocale } from './i18n/config';
+import { DEFAULT_LOCALE, type Locale, resources, toLocale } from './i18n/config';
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 import { HttpError } from './http';
 
@@ -16,23 +16,39 @@ function isFieldIssues(details: unknown): details is FieldIssue[] {
   );
 }
 
+/** Xác định locale hiện hành: ưu tiên tham số truyền vào -> getI18n() -> DOM lang -> cookie -> mặc định */
+export function resolveCurrentLocale(forcedLocale?: Locale): Locale {
+  if (forcedLocale) return toLocale(forcedLocale);
+  const fromI18n = getI18n()?.language;
+  if (fromI18n) return toLocale(fromI18n);
+  if (typeof document !== 'undefined') {
+    if (document.documentElement.lang) {
+      return toLocale(document.documentElement.lang);
+    }
+    const match = document.cookie.match(/(?:^|; )vocab\.locale=([^;]+)/);
+    if (match && match[1]) return toLocale(match[1]);
+  }
+  return DEFAULT_LOCALE;
+}
+
 /**
  * Thông báo lỗi theo ngôn ngữ đang dùng (việc 6.2a). Tiếng Việt giữ thông báo của máy chủ vì API
  * trả tiếng Việt và thường cụ thể hơn câu chung của mã; ngôn ngữ khác dịch theo `error.code`,
  * mã chưa có bản dịch thì dùng thông báo của máy chủ. Lỗi mạng luôn dịch.
  */
-export function formErrorMessage(error: unknown): string {
-  const locale = toLocale(getI18n()?.language);
+export function formErrorMessage(error: unknown, forcedLocale?: Locale): string {
+  const locale = resolveCurrentLocale(forcedLocale);
   const errors = resources[locale].errors;
   if (!(error instanceof HttpError)) return errors.network;
-  if (locale === DEFAULT_LOCALE) return error.message;
   const codes: Partial<Record<string, string>> = errors.codes;
-  return codes[error.code] ?? error.message;
+  if (locale === DEFAULT_LOCALE && error.message) return error.message;
+  return codes[error.code] ?? (error.message || errors.network);
 }
 
 /** Thông báo khi chỉ có mã lỗi, ví dụ mã trên URL sau khi API chuyển hướng về web. */
-export function errorCodeMessage(code: string): string {
-  const errors = resources[toLocale(getI18n()?.language)].errors;
+export function errorCodeMessage(code: string, forcedLocale?: Locale): string {
+  const locale = resolveCurrentLocale(forcedLocale);
+  const errors = resources[locale].errors;
   const codes: Partial<Record<string, string>> = errors.codes;
   return codes[code] ?? codes[ERROR_CODES.INTERNAL_ERROR] ?? errors.network;
 }
@@ -42,6 +58,7 @@ export function applyFormError<T extends FieldValues>(
   error: unknown,
   fields: readonly Path<T>[],
   setError: UseFormSetError<T>,
+  forcedLocale?: Locale,
 ): string | null {
   if (
     error instanceof HttpError &&
@@ -54,5 +71,5 @@ export function applyFormError<T extends FieldValues>(
       return null;
     }
   }
-  return formErrorMessage(error);
+  return formErrorMessage(error, forcedLocale);
 }

@@ -87,12 +87,18 @@
 
 ## UC-L10. Ôn hôm nay
 
-- **Việc:** 1.13, 1.27, 1.45. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
+- **Việc:** 1.13, 1.27, 1.45, 5.28, 5.36. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tổng số thẻ đến hạn, danh sách bộ có thẻ đến hạn, phân trang, chọn chế độ ôn, phiên chỉ gồm thẻ đến hạn.
 - **Luồng chính:** mở trang, chọn bộ và chế độ, ôn xong thì số thẻ giảm.
-- **Nhiều chế độ (5.28):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard như hiện nay). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình: thanh bước ở đầu, xong chế độ này sang chế độ kế, màn kết quả cuối có nút về Ôn hôm nay. Chế độ không dùng được với bộ thì tự bỏ qua và báo một dòng. Lựa chọn lưu trên thiết bị.
+- **Nhiều chế độ (5.28, 5.36):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình:
+  - Thanh bước ở đầu (`ReviewSteps` / `header`) hiển thị các chế độ đã chọn, đánh dấu chế độ đã học (check xanh), chế độ đang học (nổi bật) và chế độ kế tiếp.
+  - Sau phiên đầu tiên, danh sách thẻ của phiên đầu được lưu trong `sessionStorage` (`vocab.review-cards:<setId>`) và chuỗi chế độ (`vocab.review-chain:<setId>`) để các chế độ tiếp theo ôn đúng tập thẻ này mà không bị lỗi hết thẻ do thẻ đã được dời lịch.
+  - Khi hoàn thành từng chế độ, màn kết quả có nút chuyển sang chế độ tiếp theo (`chainHref`), tự động cập nhật danh sách chế độ còn lại trong query param `next`.
+  - Màn kết quả của chế độ cuối cùng trong chuỗi báo đã hoàn thành mọi chế độ, có nút "Về Ôn hôm nay" và xoá tập thẻ, chuỗi chế độ đã lưu.
+  - Chế độ không dùng được với bộ thì tự bỏ qua và báo một dòng thông báo (toast).
+  - Lựa chọn chế độ lưu trên thiết bị. Kiểu khối tóm tắt, chip chế độ và thanh bước ở mục "Khối Ôn hôm nay" trong `docs/05-ui-tokens.md`.
 - **Ngoại lệ:** không có thẻ đến hạn thì mời học thêm; ôn xong hết thì báo đã xong; bộ đã xoá không xuất hiện; thẻ sai sẽ quay lại sau 10 phút.
-- **Test đã có:** `review-due.integration`, `due-sets.test`.
+- **Test đã có:** `review-due.integration`, `due-sets.test`, `review-chain.test`.
 - **Test cần thêm:** E2E đặt thẻ đến hạn trong database test, ôn xong danh sách cập nhật.
 
 ## UC-L11. Thống kê

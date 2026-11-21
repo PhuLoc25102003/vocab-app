@@ -2,6 +2,7 @@ import { ERROR_CODES, type AuthSession } from '@vocab/shared';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
+import { createI18n } from '@/lib/i18n/config';
 import { loginWithGoogle } from '../api';
 import { refreshSession } from '../session';
 import { useAuthStore } from '../store';
@@ -228,6 +229,25 @@ describe('GoogleSignIn', () => {
 
       expect(await screen.findByRole('alert')).toHaveTextContent('Email này đã có tài khoản');
       expect(refreshSession).not.toHaveBeenCalled();
+    });
+
+    it('dịch thông báo lỗi và đặt locale tiếng Anh cho nút Google khi giao diện là tiếng Anh', async () => {
+      createI18n('en');
+      navigation.params = new URLSearchParams(`google_error=${ERROR_CODES.ACCOUNT_LOCKED}`);
+      const client = stubGoogle();
+
+      render(<GoogleSignIn text="signin_with" />);
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'This account is locked. Contact an administrator.',
+      );
+      await waitFor(() => {
+        expect(client.renderButton).toHaveBeenCalledWith(
+          expect.any(HTMLElement),
+          expect.objectContaining({ locale: 'en' }),
+        );
+      });
+      createI18n('vi');
     });
   });
 });

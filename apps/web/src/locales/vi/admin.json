@@ -45,7 +45,8 @@
   "todo": {
     "locked": "{{count}} tài khoản đang khoá",
     "hidden": "{{count}} bộ từ đang ẩn",
-    "newPublic": "{{count}} bộ công khai mới cần rà"
+    "newPublic": "{{count}} bộ công khai mới cần rà",
+    "view": "Xem"
   },
   "noUsers": "Chưa có tài khoản nào.",
   "noNewPublic": "Không có bộ công khai mới trong 7 ngày.",

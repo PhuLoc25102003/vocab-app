@@ -311,3 +311,31 @@ Nút chính "Bắt đầu học" trên trang bộ từ mở `/sets/:id/study/pat
 ## Nút micro khi luyện nói
 
 Nút tròn 64 px viền 2 px `primary`. Chờ nói: nền `primary-soft`, icon micro màu `primary`, tên "Bấm để nói" (hoặc "Thử lại"), chú thích dưới nút "Bấm micro rồi đọc to từ" màu `text-muted`. Đang nghe: nền `primary`, icon vuông dừng màu `primary-fg`, tên "Dừng nghe", lớp `mic-listening` toả vòng `primary` 1,2 giây lặp lại; chú thích đổi thành icon micro kèm "Đang nghe… hãy đọc to từ" màu `primary` trong vùng `role="status"`. Giảm chuyển động thì không toả, thay bằng viền ngoài 4 px `primary-soft` đứng yên. Chỉ có một nút đổi vai trò nên focus bàn phím không mất; bấm Dừng hoặc rời câu thì huỷ lần nghe, không báo lỗi.
+
+## Thẻ thống kê trên trang Tổng quan 3 vai trò
+
+Dùng chung cho `StatsOverview` (học sinh), `TeacherOverview` và `AdminOverview` (GAP-36). Mỗi thẻ là một `div` trong `<dl>`, thứ tự DOM là `<dt>` nhãn, `<dd>` số, `<dd>` chú thích rồi icon, để trình đọc màn hình đọc nhãn trước số. Vị trí hiển thị do grid quyết định: `grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5`.
+
+- Khung: `rounded-lg border border-border-strong bg-surface p-4 sm:p-5`, hover đổi viền `hover:border-primary/60` với `transition-colors duration-fast`. Không bóng, không phóng to.
+- Hàng 1: số `text-h2 font-bold tabular-nums text-text` (`col-start-1 row-start-1`), icon 32 px `size-8 rounded-md` (`col-start-2 row-start-1`), icon `size-4`, `aria-hidden`.
+- Hàng 2: nhãn `font-medium text-text` (`col-span-2 row-start-2`).
+- Hàng 3 (không bắt buộc): chú thích `text-small text-text-muted` (`col-span-2 row-start-3`), ví dụ "+3 mới", quy tắc tính từ đã thuộc.
+- Màu icon chỉ lấy từ token, theo nghĩa của số liệu:
+
+| Nhóm        | Nền + màu icon                   | Học sinh        | Giáo viên      | Admin             |
+| ----------- | -------------------------------- | --------------- | -------------- | ----------------- |
+| Chính       | `bg-primary-soft text-primary`   | Từ đã thuộc     | Lớp học        | Người dùng        |
+| Kết quả tốt | `bg-success-soft text-success`   | Trả lời hôm nay | Tỉ lệ đúng hạn | Hoạt động 30 ngày |
+| Cần chú ý   | `bg-highlight text-highlight-fg` | Chuỗi ngày      | Bài đang mở    | Phiên học         |
+| Trung tính  | `bg-bg text-text-muted`          | Đang học        | Học sinh       | Bộ từ             |
+
+Số định dạng theo locale bằng `Intl.NumberFormat`.
+
+## Khối Ôn hôm nay và ôn nối tiếp nhiều chế độ
+
+- Khối tóm tắt (`ReviewSummary`): nền `bg-board`, chữ `text-board-fg`, chữ phụ `text-board-muted`, `rounded-lg p-4 sm:p-5`. Mobile xếp dọc, từ `md` chia hai cột `md:flex-row md:items-center md:justify-between`. Tiêu đề "Đến hạn hôm nay" `text-tiny uppercase tracking-wider`, số thẻ `text-h1 font-bold tabular-nums`.
+- Chip chế độ (`ReviewModePicker`): `rounded-full h-9 px-3 text-small font-medium`. Đang chọn `border-board-fg bg-board-fg text-board shadow-xs`, giữ nguyên độ đậm chữ, chưa chọn `border-board-muted/60 text-board-fg hover:border-board-fg hover:bg-board-muted/20`. Badge thứ tự `size-5` luôn chiếm chỗ (chưa chọn thì chữ trong suốt) để chip không đổi kích thước. Chip nhìn cao 36 px cho gọn ở 360 px, lớp `after:` (`relative after:absolute after:inset-x-0 after:-inset-y-1`) nới vùng bấm lên 44 px, vừa khít khoảng cách hàng `gap-2` nên vùng bấm các hàng không chồng nhau (6.9).
+- Nút "Chọn tất cả" / "Chỉ Flashcard" nằm cạnh legend, `min-h-11 text-tiny underline`.
+- Nút "Ôn bộ đầu tiên": `rounded-full min-h-11 px-5 font-semibold bg-board-fg text-board shadow-sm hover:bg-surface`, icon `Play` đặc `size-3.5 fill-current`. Hiệu ứng nhấn `motion-safe:active:scale-[0.98]` tắt khi giảm chuyển động.
+- Thanh bước (`ReviewSteps`) truyền vào prop `header` của `StudyShell`, cùng kiểu với `PathSteps` của lộ trình: pill `rounded-full border px-2.5 py-0.5 text-small`. Đã xong `border-primary bg-primary-soft text-primary` kèm icon `Check` và chữ ẩn "đã xong", đang học `border-primary bg-primary font-semibold text-primary-fg` với `aria-current="step"`, chưa tới `border-border text-text-muted`.
+- Màn kết quả chế độ cuối: dòng `ReviewFinished` `rounded-md border border-primary bg-primary-soft p-3 font-medium text-primary` kèm icon `PartyPopper`.

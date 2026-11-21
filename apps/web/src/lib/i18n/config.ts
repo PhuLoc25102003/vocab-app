@@ -69,7 +69,9 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 export function toLocale(value: unknown): Locale {
-  return isLocale(value) ? value : DEFAULT_LOCALE;
+  if (typeof value !== 'string') return DEFAULT_LOCALE;
+  const norm = value.trim().toLowerCase().slice(0, 2);
+  return norm === 'en' ? 'en' : 'vi';
 }
 
 /**
@@ -88,6 +90,9 @@ export function createI18n(locale: Locale): i18n {
     interpolation: { escapeValue: false },
     initAsync: false,
     returnNull: false,
+    react: {
+      useSuspense: false,
+    },
   });
   return instance;
 }

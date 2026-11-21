@@ -107,9 +107,11 @@
     "saving": "Saving results"
   },
   "chain": {
+    "steps": "Review chain steps",
     "remaining": "<0>{{count}}</0> more review modes with these cards.",
     "mode": "Next mode: {{mode}}",
     "skipped": "Skipped {{mode}}: it is not available for this set.",
+    "finished": "Completed all review modes for today!",
     "backToReview": "Back to Review today"
   },
   "assignment": {

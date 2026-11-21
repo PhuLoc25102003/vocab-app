@@ -35,4 +35,24 @@ describe('formErrorMessage', () => {
       'Could not reach the server. Check your connection and try again.',
     );
   });
+
+  it('hỗ trợ ép locale qua tham số hoặc tự nhận diện từ document.documentElement.lang', () => {
+    createI18n('vi');
+    const lockedError = new HttpError(
+      'Tài khoản đã bị khoá. Hãy liên hệ quản trị viên.',
+      403,
+      ERROR_CODES.ACCOUNT_LOCKED,
+    );
+    // Khi ép locale = 'en'
+    expect(formErrorMessage(lockedError, 'en')).toBe(
+      'This account is locked. Contact an administrator.',
+    );
+
+    // Khi document.documentElement.lang là 'en' mà getI18n không xác định
+    document.documentElement.lang = 'en';
+    expect(formErrorMessage(lockedError, 'en')).toBe(
+      'This account is locked. Contact an administrator.',
+    );
+    document.documentElement.lang = 'vi';
+  });
 });

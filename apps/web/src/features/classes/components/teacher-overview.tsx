@@ -2,7 +2,16 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { OverviewAssignment, TeacherOverview as Overview } from '@vocab/shared';
-import { CircleCheck, Plus, Send } from 'lucide-react';
+import {
+  CheckCircle2,
+  CircleCheck,
+  ClipboardList,
+  GraduationCap,
+  Plus,
+  Send,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
@@ -11,6 +20,7 @@ import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { classKeys, getTeacherOverview, listClasses } from '../api';
 import { dueText } from './class-work';
 import { formatDateTime } from '../format';
@@ -18,12 +28,38 @@ import { AssignDialog } from './assign-dialog';
 import { CreateClassDialog } from './teacher-classes';
 import { useTranslation } from 'react-i18next';
 
-function Tile({ label, value, note }: { label: string; value: string; note?: string }) {
+function Tile({
+  label,
+  value,
+  note,
+  icon: Icon,
+  iconColor,
+  iconBg,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+  icon?: LucideIcon;
+  iconColor?: string;
+  iconBg?: string;
+}) {
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-border-strong bg-surface p-4">
-      <dd className="text-h2 tabular-nums">{value}</dd>
-      <dt className="font-medium">{label}</dt>
-      {note ? <dd className="text-small text-text-muted">{note}</dd> : null}
+    <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5">
+      <dt className="col-span-2 row-start-2 font-medium text-text">{label}</dt>
+      <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">{value}</dd>
+      {note ? <dd className="col-span-2 row-start-3 text-small text-text-muted">{note}</dd> : null}
+      {Icon ? (
+        <span
+          aria-hidden
+          className={cn(
+            'col-start-2 row-start-1 flex size-8 items-center justify-center rounded-md',
+            iconBg,
+            iconColor,
+          )}
+        >
+          <Icon className="size-4" />
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -228,23 +264,38 @@ export function TeacherOverview() {
     <>
       {header}
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Tile label={t('overview.classes')} value={String(data.classCount)} />
+        <Tile
+          label={t('overview.classes')}
+          value={String(data.classCount)}
+          icon={GraduationCap}
+          iconColor="text-primary"
+          iconBg="bg-primary-soft"
+        />
         <Tile
           label={t('overview.students')}
           value={String(data.studentCount)}
           note={
             data.newStudents ? t('overview.newStudents', { count: data.newStudents }) : undefined
           }
+          icon={Users}
+          iconColor="text-text-muted"
+          iconBg="bg-bg"
         />
         <Tile
           label={t('overview.open')}
           value={String(data.openAssignmentCount)}
           note={data.dueSoonCount ? t('overview.dueSoon', { count: data.dueSoonCount }) : undefined}
+          icon={ClipboardList}
+          iconColor="text-highlight-fg"
+          iconBg="bg-highlight"
         />
         <Tile
           label={t('overview.onTime')}
           value={data.onTimeRate === null ? t('overview.none') : `${data.onTimeRate}%`}
           note={t('overview.last30')}
+          icon={CheckCircle2}
+          iconColor="text-success"
+          iconBg="bg-success-soft"
         />
       </dl>
       <div className="grid gap-4 lg:grid-cols-2">

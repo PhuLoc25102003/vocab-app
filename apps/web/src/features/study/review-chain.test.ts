@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   chainHref,
   clearReviewCards,
+  clearReviewChain,
   loadReviewCards,
+  loadReviewChain,
   loadReviewModes,
   parseModeList,
   reviewHref,
   saveReviewCards,
+  saveReviewChain,
   saveReviewModes,
 } from './review-chain';
 
@@ -39,5 +42,19 @@ describe('review-chain', () => {
     expect(loadReviewCards('s1')).toEqual(['c1', 'c2']);
     clearReviewCards('s1');
     expect(loadReviewCards('s1')).toBeNull();
+  });
+
+  it('giữ chuỗi chế độ ôn trong tab, xoá khi kết thúc chuỗi', () => {
+    saveReviewChain('s1', ['FLASHCARD', 'LEARN', 'WRITE']);
+    expect(loadReviewChain('s1')).toEqual(['FLASHCARD', 'LEARN', 'WRITE']);
+    clearReviewChain('s1');
+    expect(loadReviewChain('s1')).toBeNull();
+  });
+
+  it('bỏ chế độ lạ khi đọc chuỗi đã lưu', () => {
+    window.sessionStorage.setItem('vocab.review-chain:s1', '["FLASHCARD","HACK",3]');
+    expect(loadReviewChain('s1')).toEqual(['FLASHCARD']);
+    window.sessionStorage.setItem('vocab.review-chain:s1', '{"a":1}');
+    expect(loadReviewChain('s1')).toBeNull();
   });
 });
