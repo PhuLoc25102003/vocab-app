@@ -324,7 +324,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **5.33** Lớp đang dạy: API `GET /classes` nhận `q`, `sort` (`-createdAt`, `name`, `-memberCount`); web dùng `ListPanel` có tìm, sắp xếp, phân trang. Cần 5.29 (GAP-33). (#395)
 - [x] **5.34** Thư mục trên mobile: nút "Thư mục: <tên>" mở tấm đáy chọn thư mục (tìm, tạo mới); "⋯ > Chuyển vào thư mục" thay kéo thả trên màn hình cảm ứng; ô tìm và nút sắp xếp chung hàng (GAP-34). (#397)
 - [x] **5.35** Trang Quản lý người dùng đồng bộ với các danh sách khác: nút quay lại Tổng quan, `ListPanel` có tab trạng thái (Tất cả, Đang hoạt động, Đã khoá), tìm, lọc vai trò, sắp xếp, chân "1–20 trên N" kèm phân trang; API `GET /admin/users` nhận `role`, `status`. Cần 5.29 (#405, #406).
-- [ ] **5.36** Sửa lỗi layout trên mobile 360 px (GAP-35): nhãn Bottom Nav 1 dòng ở cả 2 ngôn ngữ ("Review" / "Ôn tập"); thanh tìm kiếm và sắp xếp trang Bộ từ gọn gàng; ô chọn trong `ListToolbar` ở Quản lý người dùng không gãy chữ làm lệch hàng; ẩn tay nắm kéo thả bộ từ trên mobile. Cần 5.29, 5.34, 5.35, 6.7.
+- [ ] **5.36** Sửa lỗi layout trên mobile 360 px (GAP-35): nhãn Bottom Nav 1 dòng ở cả 2 ngôn ngữ ("Review" / "Ôn tập"); thanh tìm kiếm và sắp xếp trang Bộ từ gọn gàng; ô chọn trong `ListToolbar` ở Quản lý người dùng không gãy chữ làm lệch hàng; ẩn tay nắm kéo thả bộ từ trên mobile; khối tóm tắt Ôn hôm nay gọn và không nhảy dòng khi chọn/nhả chế độ ôn. Cần 5.28, 5.29, 5.34, 5.35, 6.7.
 
 ## Giai đoạn 6: Đa ngôn ngữ
 

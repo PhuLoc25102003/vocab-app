@@ -248,7 +248,15 @@ Bộ từ ở Bộ từ, Khám phá, "Bộ từ gần đây" của Tổng quan v
 
 ## Trang Ôn hôm nay
 
-Đầu trang là khối tóm tắt nền `board`, chữ `board-fg` và `board-muted`, bo `lg`: số thẻ đến hạn cỡ `text-card`, số bộ có thẻ đến hạn, ô chọn chế độ ôn (chữ trong ô giữ màu `text`) và nút chính nền `board-fg` chữ `board` "Ôn bộ đầu tiên". Dưới đó "Khi nào thẻ đến hạn ôn?" là `details` trông như nút: viền `border-strong`, icon thông tin màu `primary`, chữ "Xem cách tính" và mũi tên xoay 180° khi mở, nền `primary-soft` khi rê chuột; nội dung là bốn bước lịch ôn xếp hai cột. Bộ đến hạn dùng `SetCardShell` với nhãn "Đến hạn", số thẻ đến hạn và nút "Ôn ngay".
+Đầu trang là khối tóm tắt nền `board`, chữ `board-fg` và `board-muted`, bo `lg`, padding gọn gàng `p-4 sm:p-6 md:p-8`: số thẻ đến hạn cỡ `text-card` (co giãn vừa phải trên mobile), số bộ có thẻ đến hạn, chọn chế độ ôn (`ReviewModePicker`) và nút chính nền `board-fg` chữ `board` "Ôn bộ đầu tiên".
+
+Quy chuẩn chọn chế độ ôn tập (chống nhảy layout - zero layout shift):
+
+- Các chip chế độ ôn xếp trong hàng `flex flex-wrap gap-2`, kích thước gọn gàng (`h-9` hoặc `min-h-9`, padding vừa vặn).
+- **Tuyệt đối không làm thay đổi bề rộng chip khi bật hoặc tắt lựa chọn**: Dùng một ô chỉ báo (indicator/badge) có kích thước cố định (`w-5 h-5`) bên trong chip cho cả 2 trạng thái (khi chưa chọn: vòng tròn rỗng mờ; khi chọn: số thứ tự ôn `1`, `2` trong vòng tròn). Tránh việc chèn/xoá text đột ngột làm chip phình to/co lại gây nhảy dòng các chip xung quanh (GAP-35).
+- Nút "Chọn tất cả" / "Chỉ Flashcard" đặt thành hàng điều khiển riêng biệt hoặc giữ chiều rộng ổn định để không đẩy lệch các chip chế độ.
+
+Dưới đó "Khi nào thẻ đến hạn ôn?" là `details` trông như nút: viền `border-strong`, icon thông tin màu `primary`, chữ "Xem cách tính" và mũi tên xoay 180° khi mở, nền `primary-soft` khi rê chuột; nội dung là bốn bước lịch ôn xếp hai cột. Bộ đến hạn dùng `SetCardShell` với nhãn "Đến hạn", số thẻ đến hạn và nút "Ôn ngay".
 
 ## Thư mục trên trang Bộ từ
 
