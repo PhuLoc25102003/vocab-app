@@ -14,7 +14,7 @@ Giao diện web hiện viết cứng tiếng Việt trong khoảng 150 file `.ts
 - Server component lấy chuỗi qua `getT(namespace)` trong `lib/i18n/server.ts`: đọc cookie, tạo instance i18next riêng cho mỗi request bằng `createInstance()`. Client component dùng `useTranslation(namespace)` dưới `I18nProvider` do root layout truyền ngôn ngữ xuống. Root layout đặt `<html lang>` theo ngôn ngữ.
 - Đổi ngôn ngữ: ghi cookie, client đổi ngay bằng `i18n.changeLanguage`, rồi `router.refresh()` để server component render lại. Nút đổi ở header (cả trang giới thiệu) và trong Tài khoản.
 - Khoá dịch có kiểu: khai báo `CustomTypeOptions` của i18next từ file `vi`, gõ sai khoá là lỗi TypeScript. Test kiểm tra hai ngôn ngữ có cùng bộ khoá.
-- Lỗi API: web hiện thông báo theo `error.code` (namespace `errors`), chỉ dùng `message` của máy chủ khi không có khoá. API giữ thông báo tiếng Việt như hiện nay.
+- Lỗi API: web hiện thông báo theo `error.code` (namespace `errors`), chỉ dùng `message` của máy chủ khi không có khoá. API giữ thông báo tiếng Việt như hiện nay. Điều chỉnh ở việc 6.2a: khi giao diện là tiếng Việt thì vẫn hiện `message` của máy chủ, vì nó đã là tiếng Việt và thường cụ thể hơn câu chung của mã (ví dụ lỗi `VALIDATION_ERROR` nói rõ ô nào sai); ngôn ngữ khác dịch theo mã.
 - Zod schema trong shared đổi `message` thành khoá dịch (ví dụ `validation.titleRequired`), web dịch khi hiện lỗi form; API trả khoá trong `details` như cũ.
 - Ngày giờ và số dùng `Intl` với ngôn ngữ hiện tại (`vi-VN` hoặc `en-US`). Nội dung người dùng nhập (bộ từ, thẻ, tên lớp) không dịch.
 

@@ -1,7 +1,9 @@
 import { createInstance, type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enCommon from '@/locales/en/common.json';
+import enErrors from '@/locales/en/errors.json';
 import viCommon from '@/locales/vi/common.json';
+import viErrors from '@/locales/vi/errors.json';
 
 /** Hai ngôn ngữ giao diện, `vi` mặc định (ADR 0003). */
 export const LOCALES = ['vi', 'en'] as const;
@@ -14,8 +16,8 @@ export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 /** Mỗi feature một namespace; thêm file JSON vào cả `vi` và `en` rồi khai báo ở đây. */
 export const resources = {
-  vi: { common: viCommon },
-  en: { common: enCommon },
+  vi: { common: viCommon, errors: viErrors },
+  en: { common: enCommon, errors: enErrors },
 } as const;
 
 export type Namespace = keyof (typeof resources)['vi'];
