@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { STUDY_MODE_LABELS, type AssignmentModeProgress, type StudyMode } from '@vocab/shared';
+import type { AssignmentModeProgress, StudyMode } from '@vocab/shared';
 import { ArrowRight, Send } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { accountStudyBackend, getAssignmentProgress } from '../api';
 import { studyKeys } from '../query-keys';
 import { StudyShell } from './study-shell';
+import { Trans, useTranslation } from 'react-i18next';
 
 /** Khoá gốc của dữ liệu lớp học, làm mới để danh sách và trang bài tập thấy chế độ vừa xong. */
 const CLASSES_QUERY_ROOT = ['classes'] as const;
@@ -39,6 +40,7 @@ function AssignmentNext({
   mode: StudyMode;
   assignmentId: string;
 }) {
+  const { t } = useTranslation(['study', 'common']);
   const progress = useQuery({
     queryKey: studyKeys.assignment(assignmentId),
     queryFn: () => getAssignmentProgress(assignmentId),
@@ -54,23 +56,27 @@ function AssignmentNext({
   return (
     <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
       <p className="text-small text-text-muted">
-        Bài tập lớp <span className="font-semibold text-text">{progress.data.className}</span>:{' '}
-        <span className="tabular-nums">
-          {doneCount}/{modes.length}
-        </span>{' '}
-        chế độ đã xong.
+        <Trans
+          t={t}
+          i18nKey="assignment.progress"
+          values={{ className: progress.data.className, done: doneCount, total: modes.length }}
+          components={[
+            <span key="c" className="font-semibold text-text" />,
+            <span key="n" className="tabular-nums" />,
+          ]}
+        />
       </p>
       {next ? (
         <Button asChild className="self-start">
           <Link href={assignmentStudyHref(setId, next, assignmentId)}>
-            Chế độ tiếp: {STUDY_MODE_LABELS[next]}
+            {t('chain.mode', { mode: t(`common:modes.${next}`) })}
             <ArrowRight aria-hidden className="size-4" />
           </Link>
         </Button>
       ) : (
         <Button asChild className="self-start">
           <Link href={assignmentHref(assignmentId)}>
-            {submission ? 'Về bài tập' : 'Về bài tập để nộp'}
+            {t(submission ? 'assignment.back' : 'assignment.backToSubmit')}
             {submission ? null : <Send aria-hidden className="size-4" />}
           </Link>
         </Button>
@@ -87,6 +93,7 @@ interface AssignmentStudyProps {
 
 /** Phiên học làm cho một bài giao: thoát về trang bài tập, kết quả gợi ý chế độ tiếp theo. */
 export function AssignmentStudy({ setId, mode, assignmentId }: AssignmentStudyProps) {
+  const { t } = useTranslation(['study', 'common']);
   const queryClient = useQueryClient();
   const onFinished = useCallback(() => {
     void queryClient.invalidateQueries({ queryKey: studyKeys.assignment(assignmentId) });
@@ -100,7 +107,7 @@ export function AssignmentStudy({ setId, mode, assignmentId }: AssignmentStudyPr
       mode={mode}
       assignmentId={assignmentId}
       exitHref={assignmentHref(assignmentId)}
-      exitLabel="Về bài tập"
+      exitLabel={t('assignment.back')}
       onFinished={onFinished}
       resultNote={<AssignmentNext setId={setId} mode={mode} assignmentId={assignmentId} />}
     />

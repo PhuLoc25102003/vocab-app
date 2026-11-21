@@ -4,20 +4,22 @@ import { AudioButton } from '@/components/common/audio-button';
 import { CardImage } from '@/components/common/card-image';
 import { TypedAnswer } from '../typed/typed-answer';
 import type { StudyModeProps } from '../views';
+import { useTranslation } from 'react-i18next';
 
 export function WriteModeView(props: StudyModeProps) {
+  const { t } = useTranslation('study');
   const { question, languages } = props;
 
   return (
     <TypedAnswer
       {...props}
-      inputLabel="Nhập từ"
+      inputLabel={t('typeTerm')}
       prompt={
         <div className="flex flex-col gap-3">
           {question.imageUrl ? (
             <CardImage
               src={question.imageUrl}
-              alt="Ảnh minh hoạ cho nghĩa"
+              alt={t('write.imageAlt')}
               className="aspect-[4/3] w-40"
             />
           ) : null}
@@ -25,7 +27,11 @@ export function WriteModeView(props: StudyModeProps) {
             <p lang={languages.definition} className="min-w-0 text-h1 break-words">
               {question.prompt}
             </p>
-            <AudioButton text={question.prompt} lang={languages.definition} label="Nghe nghĩa" />
+            <AudioButton
+              text={question.prompt}
+              lang={languages.definition}
+              label={t('listenDefinition')}
+            />
           </div>
         </div>
       }

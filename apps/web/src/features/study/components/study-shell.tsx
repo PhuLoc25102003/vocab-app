@@ -24,6 +24,7 @@ import {
 } from '../session-snapshot';
 import { useStudyStore } from '../session.store';
 import { StudyResult } from './study-result';
+import { useTranslation } from 'react-i18next';
 
 const BACKGROUND_SYNC_SIZE = 10;
 /** Phiên đã hết hiệu lực trên server, ví dụ đã kết thúc ở lần trước. */
@@ -69,17 +70,18 @@ function StudyFrame({
   header?: ReactNode;
   children: ReactNode;
 }) {
+  const { t } = useTranslation('study');
   return (
     <div className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-bg">
       <header className="mx-auto flex w-full max-w-[720px] items-center gap-3 px-4 py-2">
         <Button asChild variant="ghost" size="icon">
-          <Link href={exitHref} aria-label="Thoát phiên học">
+          <Link href={exitHref} aria-label={t('shell.exit')}>
             <X aria-hidden className="size-5" />
           </Link>
         </Button>
         <div
           role="progressbar"
-          aria-label="Tiến độ phiên học"
+          aria-label={t('shell.progress')}
           aria-valuemin={0}
           aria-valuemax={total}
           aria-valuenow={position}
@@ -111,15 +113,16 @@ function StartFailure({
   exitHref: Route;
   onRetry: () => void;
 }) {
+  const { t } = useTranslation('study');
   const code = error instanceof HttpError ? error.code : null;
   if (code === ERROR_CODES.NO_CARDS_DUE) {
     return (
       <EmptyState
-        title="Đã ôn hết thẻ đến hạn"
-        description="Bộ từ này hiện không còn thẻ cần ôn."
+        title={t('shell.allReviewed')}
+        description={t('shell.allReviewedHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href={exitHref}>Quay lại</Link>
+            <Link href={exitHref}>{t('shell.back')}</Link>
           </Button>
         }
       />
@@ -128,11 +131,11 @@ function StartFailure({
   if (code === ERROR_CODES.NO_QUESTIONS_FOR_MODE) {
     return (
       <EmptyState
-        title="Chưa có thẻ phù hợp"
-        description="Chế độ Điền từ cần thẻ có câu ví dụ chứa đúng từ đó. Hãy thêm ví dụ khi sửa bộ từ hoặc chọn chế độ khác."
+        title={t('shell.noCloze')}
+        description={t('shell.noClozeHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href={exitHref}>Quay lại</Link>
+            <Link href={exitHref}>{t('shell.back')}</Link>
           </Button>
         }
       />
@@ -141,15 +144,13 @@ function StartFailure({
   if (code === ERROR_CODES.SET_HAS_NO_CARDS || code === ERROR_CODES.SET_NOT_FOUND) {
     return (
       <EmptyState
-        title={code === ERROR_CODES.SET_HAS_NO_CARDS ? 'Bộ từ chưa có thẻ' : 'Không tìm thấy bộ từ'}
+        title={t(code === ERROR_CODES.SET_HAS_NO_CARDS ? 'shell.noCards' : 'shell.notFound')}
         description={
-          code === ERROR_CODES.SET_HAS_NO_CARDS
-            ? 'Hãy thêm thẻ trước khi học.'
-            : 'Bộ từ này đã bị xoá hoặc bạn không có quyền xem.'
+          code === ERROR_CODES.SET_HAS_NO_CARDS ? t('shell.noCardsHint') : t('shell.notFoundHint')
         }
         action={
           <Button asChild variant="secondary">
-            <Link href={exitHref}>Quay lại</Link>
+            <Link href={exitHref}>{t('shell.back')}</Link>
           </Button>
         }
       />
@@ -157,8 +158,8 @@ function StartFailure({
   }
   return (
     <ErrorState
-      title="Không bắt đầu được phiên học"
-      description="Hãy kiểm tra mạng rồi thử lại."
+      title={t('shell.startFailed')}
+      description={t('shell.checkNetwork')}
       onRetry={onRetry}
     />
   );
@@ -178,6 +179,7 @@ export function StudyShell({
   onFinished,
   cardIds: initialCardIds,
 }: StudyShellProps) {
+  const { t } = useTranslation('study');
   const queryClient = useQueryClient();
   const snapshotKey =
     backend.resumable && !initialCardIds
@@ -301,7 +303,7 @@ export function StudyShell({
   }
   if (!ready) {
     return frame(
-      <LoadingState label="Đang chuẩn bị phiên học">
+      <LoadingState label={t('shell.preparing')}>
         <Skeleton className="h-64 w-full" />
       </LoadingState>,
     );
@@ -325,8 +327,8 @@ export function StudyShell({
   if (completion.isError) {
     return frame(
       <ErrorState
-        title="Chưa lưu được kết quả"
-        description="Đáp án của bạn vẫn còn. Hãy kiểm tra mạng rồi thử lại."
+        title={t('shell.saveFailed')}
+        description={t('shell.saveFailedHint')}
         onRetry={() => complete(data.session.id)}
       />,
     );
@@ -336,7 +338,7 @@ export function StudyShell({
   const View = STUDY_VIEWS[mode];
   if (!question || !View) {
     return frame(
-      <LoadingState label="Đang lưu kết quả">
+      <LoadingState label={t('shell.saving')}>
         <Skeleton className="h-64 w-full" />
       </LoadingState>,
     );

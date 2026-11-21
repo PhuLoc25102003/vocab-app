@@ -1,12 +1,12 @@
 import type { StudyMode } from '@vocab/shared';
 
-/** Từ dễ đến khó: nhận mặt từ, chọn nghĩa, ghép nhanh, rồi tự viết lại. */
-export const PATH_STEPS: { mode: StudyMode; label: string }[] = [
-  { mode: 'FLASHCARD', label: 'Xem thẻ' },
-  { mode: 'MCQ', label: 'Trắc nghiệm' },
-  { mode: 'MATCH', label: 'Ghép cặp' },
-  { mode: 'WRITE', label: 'Luyện viết' },
-];
+/** Từ dễ đến khó: nhận mặt từ, chọn nghĩa, ghép nhanh, rồi tự viết lại. Tên bước ở `study:path.<mode>`. */
+export const PATH_STEPS = [
+  { mode: 'FLASHCARD' },
+  { mode: 'MCQ' },
+  { mode: 'MATCH' },
+  { mode: 'WRITE' },
+] as const satisfies readonly { mode: StudyMode }[];
 
 /**
  * Bước trong URL bắt đầu từ 1, giá trị lạ thì về bước đầu. Để ở module thường (không

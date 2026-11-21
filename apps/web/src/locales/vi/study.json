@@ -1,0 +1,220 @@
+{
+  "correct": "Chính xác",
+  "wrong": "Chưa đúng",
+  "nextQuestion": "Câu tiếp theo",
+  "check": "Kiểm tra",
+  "expected": "Đáp án đúng",
+  "listenTerm": "Nghe phát âm",
+  "listenDefinition": "Nghe nghĩa",
+  "typeTerm": "Nhập từ",
+  "cloze": {
+    "blank": "chỗ trống",
+    "input": "Điền từ còn thiếu",
+    "hint": "Gợi ý: {{hint}}"
+  },
+  "dictation": {
+    "unsupported": "Trình duyệt này không đọc được từ",
+    "unsupportedHint": "Hãy mở bằng Chrome, Edge hoặc Safari để dùng chế độ Nghe viết.",
+    "skip": "Bỏ qua câu này",
+    "input": "Nhập từ bạn nghe được",
+    "replay": "Nghe lại",
+    "slow": "Nghe chậm"
+  },
+  "flashcard": {
+    "imageAlt": "Ảnh minh hoạ cho {{term}}",
+    "flipBack": "Lật về mặt trước",
+    "flip": "Lật thẻ",
+    "notYet": "Chưa nhớ",
+    "remembered": "Đã nhớ",
+    "showMeaning": "Xem nghĩa"
+  },
+  "learn": {
+    "round": "Vòng này đã thuộc <0>{{mastered}}</0>/<1>{{total}}</1> câu",
+    "retryWrong": "Hỏi lại câu trả lời sai"
+  },
+  "match": {
+    "pickTermFirst": "Hãy chọn một từ trước.",
+    "wrongPair": "Chưa đúng, \"{{meaning}}\" không phải nghĩa của \"{{term}}\".",
+    "rightPair": "Đúng: {{term}} là {{meaning}}.",
+    "title": "Ghép từ với nghĩa",
+    "time": "Thời gian ",
+    "terms": "Từ",
+    "matched": "Đã ghép",
+    "meanings": "Nghĩa",
+    "done": "Xong vòng trong {{time}}.",
+    "continue": "Tiếp tục"
+  },
+  "mcq": {
+    "yourChoice": "Bạn đã chọn"
+  },
+  "speak": {
+    "unsupported": "Trình duyệt này chưa nhận được giọng nói. Hãy dùng Chrome hoặc Edge, hoặc bỏ qua.",
+    "denied": "Bạn chưa cho phép dùng micro. Hãy bật quyền micro cho trang này rồi thử lại.",
+    "noSpeech": "Chưa nghe thấy gì. Hãy nói rõ hơn rồi thử lại.",
+    "failed": "Không nhận được giọng nói. Hãy thử lại.",
+    "sample": "Nghe mẫu",
+    "youSaid": "Bạn nói:",
+    "stop": "Dừng nghe",
+    "start": "Bấm để nói",
+    "retry": "Thử lại",
+    "listening": "Đang nghe… hãy đọc to từ",
+    "tapMic": "Bấm micro rồi đọc to từ",
+    "tapMicAgain": "Bấm micro để thử lại",
+    "skip": "Bỏ qua"
+  },
+  "test": {
+    "intro": "Trả lời hết rồi nộp bài. Bài chỉ được chấm sau khi nộp.",
+    "question": "Câu {{number}}.",
+    "chooseFor": "Chọn nghĩa cho câu {{number}}",
+    "typeFor": "Nhập từ cho câu {{number}}",
+    "blank": "Còn {{count}} câu chưa trả lời. Các câu này sẽ tính là sai nếu bạn vẫn nộp bài.",
+    "submitAnyway": "Vẫn nộp bài",
+    "submit": "Nộp bài"
+  },
+  "write": {
+    "imageAlt": "Ảnh minh hoạ cho nghĩa"
+  },
+  "result": {
+    "great": "Xuất sắc! Bạn nhớ gần như toàn bộ.",
+    "good": "Làm tốt lắm! Ôn thêm vài thẻ là thuộc hết.",
+    "ok": "Khá ổn. Học lại các thẻ sai để nhớ chắc hơn.",
+    "start": "Khởi đầu nào cũng cần thời gian. Học lại các thẻ sai nhé.",
+    "backToSet": "Về bộ từ",
+    "done": "Đã xong phiên học",
+    "rate": "Tỉ lệ nhớ",
+    "score": "Bạn nhớ <0>{{correct}}</0> trên <1>{{total}}</1> thẻ.",
+    "reviewMore": "Cần ôn thêm",
+    "retryWrong": "Học lại thẻ sai",
+    "restart": "Học lại từ đầu"
+  },
+  "shell": {
+    "exit": "Thoát phiên học",
+    "progress": "Tiến độ phiên học",
+    "allReviewed": "Đã ôn hết thẻ đến hạn",
+    "allReviewedHint": "Bộ từ này hiện không còn thẻ cần ôn.",
+    "back": "Quay lại",
+    "noCloze": "Chưa có thẻ phù hợp",
+    "noClozeHint": "Chế độ Điền từ cần thẻ có câu ví dụ chứa đúng từ đó. Hãy thêm ví dụ khi sửa bộ từ hoặc chọn chế độ khác.",
+    "noCards": "Bộ từ chưa có thẻ",
+    "notFound": "Không tìm thấy bộ từ",
+    "noCardsHint": "Hãy thêm thẻ trước khi học.",
+    "notFoundHint": "Bộ từ này đã bị xoá hoặc bạn không có quyền xem.",
+    "startFailed": "Không bắt đầu được phiên học",
+    "checkNetwork": "Hãy kiểm tra mạng rồi thử lại.",
+    "preparing": "Đang chuẩn bị phiên học",
+    "saveFailed": "Chưa lưu được kết quả",
+    "saveFailedHint": "Đáp án của bạn vẫn còn. Hãy kiểm tra mạng rồi thử lại.",
+    "saving": "Đang lưu kết quả"
+  },
+  "chain": {
+    "remaining": "Còn <0>{{count}}</0> chế độ ôn với các thẻ này.",
+    "mode": "Chế độ tiếp: {{mode}}",
+    "skipped": "Bỏ qua {{mode}}: chế độ này chưa dùng được với bộ từ.",
+    "backToReview": "Về Ôn hôm nay"
+  },
+  "assignment": {
+    "progress": "Bài tập lớp <0>{{className}}</0>: <1>{{done}}/{{total}}</1> chế độ đã xong.",
+    "back": "Về bài tập",
+    "backToSubmit": "Về bài tập để nộp"
+  },
+  "path": {
+    "steps": "Các bước của lộ trình",
+    "next": "Bước tiếp: {{step}}",
+    "finished": "Bạn đã đi hết lộ trình: xem thẻ, trắc nghiệm, ghép cặp và luyện viết.",
+    "FLASHCARD": "Xem thẻ",
+    "MCQ": "Trắc nghiệm",
+    "MATCH": "Ghép cặp",
+    "WRITE": "Luyện viết",
+    "done": " (xong)"
+  },
+  "guest": {
+    "note": "Đây là phiên học thử nên tiến độ chưa được lưu.",
+    "login": "Đăng nhập để lưu tiến độ"
+  },
+  "offline": {
+    "study": "Học offline",
+    "note": "Kết quả đã lưu trên máy và sẽ được gửi lên khi có mạng.",
+    "synced": "Đã gửi {{count}} phiên học offline lên máy chủ",
+    "notDownloaded": "Bộ từ chưa được tải về máy"
+  },
+  "review": {
+    "loading": "Đang tải thẻ cần ôn",
+    "loadingSets": "Đang tải bộ từ có thẻ đến hạn",
+    "schedule": {
+      "wrong": {
+        "when": "Trả lời sai",
+        "then": "Thẻ quay lại sau 10 phút."
+      },
+      "first": {
+        "when": "Đúng lần đầu",
+        "then": "Hẹn ôn sau 1 ngày."
+      },
+      "second": {
+        "when": "Đúng tiếp khi đến hạn",
+        "then": "Giãn ra 6 ngày, từ được tính là đã thuộc."
+      },
+      "later": {
+        "when": "Về sau",
+        "then": "Khoảng cách tiếp tục tăng. Học lại trước hạn không làm thẻ tiến nhanh hơn."
+      }
+    },
+    "whenDue": "Khi nào thẻ đến hạn ôn?",
+    "howItWorks": "Xem cách tính",
+    "modesLegend": "Ôn bằng chế độ (chọn nhiều để ôn nối tiếp)",
+    "onlyFlashcard": "Chỉ Flashcard",
+    "selectAll": "Chọn tất cả",
+    "dueToday": "Cần ôn hôm nay",
+    "cards": "thẻ",
+    "inSets": "trong <0>{{count}}</0> bộ từ. Ôn đúng hạn để nhớ lâu hơn.",
+    "startFirst": "Ôn bộ đầu tiên",
+    "loadFailed": "Không tải được thẻ cần ôn",
+    "nothing": "Hôm nay chưa có từ cần ôn",
+    "nextDue": "Thẻ tiếp theo đến hạn lúc {{time}}.",
+    "nothingHint": "Học thêm một bộ từ, các từ đến hạn ôn sẽ hiện ở đây.",
+    "seeSets": "Xem bộ từ",
+    "setsWithDue": "Bộ từ có thẻ đến hạn",
+    "due": "Đến hạn",
+    "dueCount": "{{count}} thẻ đến hạn",
+    "reviewSet": "Ôn bộ từ {{title}}",
+    "now": "Ôn ngay"
+  },
+  "stats": {
+    "new": "Mới",
+    "learning": "Đang học",
+    "mastered": "Đã thuộc",
+    "notStarted": "Chưa học",
+    "dueNow": "Đã đến hạn ôn",
+    "reviewOn": "Ôn lại {{date}}",
+    "activity": "Câu trả lời 7 ngày gần nhất",
+    "dayAnswers": "{{day}}: {{count}} câu",
+    "byDay": "Số câu trả lời theo ngày",
+    "day": "Ngày",
+    "answers": "Câu trả lời",
+    "masteryTitle": "Mức nhớ các từ đã học",
+    "noWords": "Chưa có từ nào được học.",
+    "masteryRule": "Từ được tính là đã thuộc khi bạn trả lời đúng ở hai ngày khác nhau.",
+    "loadingProgress": "Đang tải tiến độ",
+    "progressFailed": "Không tải được tiến độ",
+    "noCardsStudied": "Bạn chưa học thẻ nào trong bộ từ này.",
+    "yourProgress": "Tiến độ của bạn",
+    "progressRule": "Thẻ đúng lần đầu hẹn ôn sau 1 ngày. Đúng tiếp khi đến hạn thì giãn ra 6 ngày và được tính là đã thuộc, nên cần đúng ở hai ngày khác nhau. Học lại trong cùng ngày không làm thẻ tiến lên.",
+    "reviewDue": "Ôn {{count}} thẻ đến hạn",
+    "loading": "Đang tải thống kê",
+    "failed": "Không tải được thống kê",
+    "empty": "Chưa có số liệu học tập",
+    "emptyHint": "Học một bộ từ để bắt đầu chuỗi ngày học.",
+    "findSets": "Tìm bộ từ để học",
+    "streak": "Ngày học liên tiếp",
+    "masteredWords": "Từ đã thuộc",
+    "learningWords": "Từ đang học",
+    "answersToday": "Câu trả lời hôm nay",
+    "title": "Thống kê",
+    "dueBanner": "Bạn có <0>{{count}}</0> thẻ đến hạn ôn. Ôn ngay để không quên.",
+    "noDue": "Hôm nay không còn thẻ đến hạn. Học thêm một bộ để giữ chuỗi ngày học.",
+    "reviewNow": "Ôn ngay",
+    "keepStudying": "Học tiếp",
+    "masteredRule": "Đúng ở hai ngày khác nhau",
+    "hardWords": "Từ hay sai",
+    "wrongCount": "Sai {{count}} lần"
+  }
+}

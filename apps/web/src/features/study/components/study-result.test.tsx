@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { resources } from '@/lib/i18n/config';
 import { encouragement, StudyResult } from './study-result';
 
 describe('StudyResult', () => {
@@ -33,6 +34,10 @@ describe('StudyResult', () => {
     [40, 'Khá ổn.'],
     [0, 'Khởi đầu nào'],
   ])('lời khích lệ cho %i%%', (percent, start) => {
-    expect(encouragement(percent).startsWith(start)).toBe(true);
+    const key = encouragement(percent).replace(
+      'result.',
+      '',
+    ) as keyof typeof resources.vi.study.result;
+    expect(resources.vi.study.result[key].startsWith(start)).toBe(true);
   });
 });

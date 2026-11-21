@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { McqModeView } from '../mcq/mcq-mode';
 import type { StudyModeProps } from '../views';
 import { WriteModeView } from '../write/write-mode';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface Turn {
   question: Question;
@@ -19,6 +20,7 @@ interface Turn {
  * nên xong vòng mới gửi đáp án lần đầu của từng câu theo đúng thứ tự.
  */
 export function LearnModeView({ question, round, languages, onAnswer }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const [items] = useState<Question[]>(() => (round?.length ? round : [question]));
   const [queue, setQueue] = useState<Turn[]>(() =>
     items.map((item) => ({ question: item, attempt: 0 })),
@@ -60,13 +62,20 @@ export function LearnModeView({ question, round, languages, onAnswer }: StudyMod
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2 text-small text-text-muted">
         <p aria-live="polite">
-          Vòng này đã thuộc <span className="tabular-nums">{mastered}</span>/
-          <span className="tabular-nums">{items.length}</span> câu
+          <Trans
+            t={t}
+            i18nKey="learn.round"
+            values={{ mastered, total: items.length }}
+            components={[
+              <span key="m" className="tabular-nums" />,
+              <span key="t" className="tabular-nums" />,
+            ]}
+          />
         </p>
         {turn.attempt > 0 ? (
           <p className="flex items-center gap-1 text-primary">
             <RotateCcw aria-hidden className="size-4" />
-            Hỏi lại câu trả lời sai
+            {t('learn.retryWrong')}
           </p>
         ) : null}
       </div>

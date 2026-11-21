@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getStatsOverview } from '../api';
 import { ActivityChart, MasteryBar } from './overview-charts';
+import { Trans, useTranslation } from 'react-i18next';
 
 export function StatsOverview() {
+  const { t } = useTranslation('study');
   const stats = useQuery({
     queryKey: ['stats', 'overview'],
     queryFn: getStatsOverview,
@@ -20,7 +22,7 @@ export function StatsOverview() {
 
   if (stats.isPending) {
     return (
-      <LoadingState label="Đang tải thống kê">
+      <LoadingState label={t('stats.loading')}>
         <Skeleton className="h-20 w-full" />
       </LoadingState>
     );
@@ -28,8 +30,8 @@ export function StatsOverview() {
   if (stats.isError) {
     return (
       <ErrorState
-        title="Không tải được thống kê"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('stats.failed')}
+        description={t('shell.checkNetwork')}
         onRetry={() => void stats.refetch()}
       />
     );
@@ -46,11 +48,11 @@ export function StatsOverview() {
   ) {
     return (
       <EmptyState
-        title="Chưa có số liệu học tập"
-        description="Học một bộ từ để bắt đầu chuỗi ngày học."
+        title={t('stats.empty')}
+        description={t('stats.emptyHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href="/explore">Tìm bộ từ để học</Link>
+            <Link href="/explore">{t('stats.findSets')}</Link>
           </Button>
         }
       />
@@ -58,30 +60,38 @@ export function StatsOverview() {
   }
 
   const items = [
-    { label: 'Ngày học liên tiếp', value: streakDays },
-    { label: 'Từ đã thuộc', value: masteredCards },
-    { label: 'Từ đang học', value: learningCards },
-    { label: 'Câu trả lời hôm nay', value: answersToday },
-  ];
+    { label: 'stats.streak', value: streakDays },
+    { label: 'stats.masteredWords', value: masteredCards },
+    { label: 'stats.learningWords', value: learningCards },
+    { label: 'stats.answersToday', value: answersToday },
+  ] as const;
 
   return (
     <section aria-labelledby="stats-heading" className="flex flex-col gap-6">
       <h2 id="stats-heading" className="sr-only">
-        Thống kê
+        {t('stats.title')}
       </h2>
       <div className="flex flex-wrap items-center justify-between gap-3 border-l-4 border-primary bg-primary-soft px-4 py-3">
         <p>
           {dueCards > 0 ? (
             <>
-              Bạn có <span className="font-semibold tabular-nums">{dueCards}</span> thẻ đến hạn ôn.
-              Ôn ngay để không quên.
+              <Trans
+                t={t}
+                i18nKey="stats.dueBanner"
+                values={{ count: dueCards }}
+                components={[<span key="c" className="font-semibold tabular-nums" />]}
+              />
             </>
           ) : (
-            'Hôm nay không còn thẻ đến hạn. Học thêm một bộ để giữ chuỗi ngày học.'
+            t('stats.noDue')
           )}
         </p>
         <Button asChild>
-          {dueCards > 0 ? <Link href="/review">Ôn ngay</Link> : <Link href="/sets">Học tiếp</Link>}
+          {dueCards > 0 ? (
+            <Link href="/review">{t('stats.reviewNow')}</Link>
+          ) : (
+            <Link href="/sets">{t('stats.keepStudying')}</Link>
+          )}
         </Button>
       </div>
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -91,9 +101,9 @@ export function StatsOverview() {
             className="flex flex-col-reverse gap-1 rounded-md border border-border bg-surface p-4"
           >
             <dt className="text-small text-text-muted">
-              {label}
-              {label === 'Từ đã thuộc' ? (
-                <span className="block text-tiny">Đúng ở hai ngày khác nhau</span>
+              {t(label)}
+              {label === 'stats.masteredWords' ? (
+                <span className="block text-tiny">{t('stats.masteredRule')}</span>
               ) : null}
             </dt>
             <dd className="text-h1 tabular-nums">{value}</dd>
@@ -107,7 +117,7 @@ export function StatsOverview() {
 
       {hardCards.length > 0 ? (
         <div className="flex flex-col gap-2">
-          <h3 className="text-h3">Từ hay sai</h3>
+          <h3 className="text-h3">{t('stats.hardWords')}</h3>
           <ul className="border-t border-border">
             {hardCards.map(({ cardId, setId, term, definition, wrongCount }) => (
               <li
@@ -121,7 +131,9 @@ export function StatsOverview() {
                   {term}
                 </Link>
                 <span className="min-w-0 flex-1 break-words text-text-muted">{definition}</span>
-                <span className="text-small tabular-nums">Sai {wrongCount} lần</span>
+                <span className="text-small tabular-nums">
+                  {t('stats.wrongCount', { count: wrongCount })}
+                </span>
               </li>
             ))}
           </ul>

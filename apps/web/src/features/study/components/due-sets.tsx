@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { paginationSchema, STUDY_MODE_LABELS, type StudyMode } from '@vocab/shared';
+import { paginationSchema, type StudyMode } from '@vocab/shared';
 import { CalendarClock, Check, ChevronDown, Info, Play } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -18,15 +18,17 @@ import { listDueSets } from '../api';
 import { loadReviewModes, REVIEW_MODES, reviewHref, saveReviewModes } from '../review-chain';
 import { cn } from '@/lib/utils';
 import { studyKeys } from '../query-keys';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const DUE_PAGE_SIZE = 20;
 
 export function DueSetsLoading() {
+  const { t } = useTranslation(['study', 'common']);
   return (
-    <LoadingState label="Đang tải thẻ cần ôn">
+    <LoadingState label={t('review.loading')}>
       <div className="flex flex-col gap-4">
         <Skeleton className="h-48 w-full" />
-        <SetCardsSkeleton count={2} label="Đang tải bộ từ có thẻ đến hạn" />
+        <SetCardsSkeleton count={2} label={t('review.loadingSets')} />
       </div>
     </LoadingState>
   );
@@ -36,35 +38,30 @@ function pageHref(page: number): Route {
   return (page === 1 ? '/review' : `/review?page=${page}`) as Route;
 }
 
-const dueFormat = new Intl.DateTimeFormat('vi-VN', {
-  hour: '2-digit',
-  minute: '2-digit',
-  day: '2-digit',
-  month: '2-digit',
-});
+const formatDueTime = (date: Date, locale: string) =>
+  new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+    hour: locale === 'en' ? 'numeric' : '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    hour12: locale === 'en',
+  }).format(date);
 
-const SCHEDULE_STEPS = [
-  { when: 'Trả lời sai', then: 'Thẻ quay lại sau 10 phút.' },
-  { when: 'Đúng lần đầu', then: 'Hẹn ôn sau 1 ngày.' },
-  { when: 'Đúng tiếp khi đến hạn', then: 'Giãn ra 6 ngày, từ được tính là đã thuộc.' },
-  {
-    when: 'Về sau',
-    then: 'Khoảng cách tiếp tục tăng. Học lại trước hạn không làm thẻ tiến nhanh hơn.',
-  },
-];
+const SCHEDULE_STEPS = ['wrong', 'first', 'second', 'later'] as const;
 
 /**
  * Giải thích vì sao thẻ xuất hiện ở đây. Trông như một nút (icon, viền, mũi tên xoay khi mở)
  * để người học nhận ra bấm được.
  */
 function ScheduleNote() {
+  const { t } = useTranslation(['study', 'common']);
   return (
     <details className="group rounded-md border border-border-strong bg-surface">
       <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-md px-4 font-medium transition-colors duration-fast ease-standard hover:bg-primary-soft [&::-webkit-details-marker]:hidden">
         <Info aria-hidden className="size-5 shrink-0 text-primary" />
-        <span className="flex-1">Khi nào thẻ đến hạn ôn?</span>
+        <span className="flex-1">{t('review.whenDue')}</span>
         <span className="hidden text-small font-normal text-text-muted group-open:hidden sm:inline">
-          Xem cách tính
+          {t('review.howItWorks')}
         </span>
         <ChevronDown
           aria-hidden
@@ -72,10 +69,10 @@ function ScheduleNote() {
         />
       </summary>
       <ol className="grid gap-3 border-t border-border p-4 text-small sm:grid-cols-2">
-        {SCHEDULE_STEPS.map(({ when, then }) => (
-          <li key={when} className="flex flex-col gap-0.5">
-            <span className="font-medium">{when}</span>
-            <span className="text-text-muted">{then}</span>
+        {SCHEDULE_STEPS.map((step) => (
+          <li key={step} className="flex flex-col gap-0.5">
+            <span className="font-medium">{t(`review.schedule.${step}.when`)}</span>
+            <span className="text-text-muted">{t(`review.schedule.${step}.then`)}</span>
           </li>
         ))}
       </ol>
@@ -100,6 +97,7 @@ function ReviewModePicker({
   modes: StudyMode[];
   onModesChange: (modes: StudyMode[]) => void;
 }) {
+  const { t } = useTranslation(['study', 'common']);
   const toggle = (mode: StudyMode) =>
     onModesChange(
       modes.includes(mode)
@@ -112,7 +110,7 @@ function ReviewModePicker({
   return (
     <fieldset className="flex flex-col gap-2">
       <legend className="mb-2 text-small font-medium text-board-fg">
-        Ôn bằng chế độ (chọn nhiều để ôn nối tiếp)
+        {t('review.modesLegend')}
       </legend>
       <div className="flex flex-wrap gap-2">
         {REVIEW_MODES.map((mode) => {
@@ -136,7 +134,7 @@ function ReviewModePicker({
                   {order + 1}.
                 </span>
               ) : null}
-              {STUDY_MODE_LABELS[mode]}
+              {t(`common:modes.${mode}`)}
             </button>
           );
         })}
@@ -147,7 +145,7 @@ function ReviewModePicker({
           className="flex min-h-11 items-center gap-1.5 rounded-full px-3 text-small font-medium text-board-fg underline underline-offset-4"
         >
           {all ? null : <Check aria-hidden className="size-4" />}
-          {all ? 'Chỉ Flashcard' : 'Chọn tất cả'}
+          {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
         </button>
       </div>
     </fieldset>
@@ -155,6 +153,7 @@ function ReviewModePicker({
 }
 
 function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: ReviewSummaryProps) {
+  const { t } = useTranslation(['study', 'common']);
   return (
     <section
       aria-labelledby="review-summary"
@@ -162,14 +161,19 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
     >
       <div className="flex flex-col gap-1">
         <h2 id="review-summary" className="text-small font-medium text-board-muted">
-          Cần ôn hôm nay
+          {t('review.dueToday')}
         </h2>
         <p className="flex items-baseline gap-3">
           <span className="text-card tabular-nums">{dueCards}</span>
-          <span className="text-h3">thẻ</span>
+          <span className="text-h3">{t('review.cards')}</span>
         </p>
         <p className="text-board-muted">
-          trong <span className="tabular-nums">{setCount}</span> bộ từ. Ôn đúng hạn để nhớ lâu hơn.
+          <Trans
+            t={t}
+            i18nKey="review.inSets"
+            values={{ count: setCount }}
+            components={[<span key="c" className="tabular-nums" />]}
+          />
         </p>
       </div>
       <div className="flex flex-col items-start gap-4 md:max-w-[560px]">
@@ -178,7 +182,7 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
           <Button asChild className="bg-board-fg text-board hover:bg-surface">
             <Link href={reviewHref(first.setId, modes)}>
               <Play aria-hidden className="size-4" />
-              Ôn bộ đầu tiên
+              {t('review.startFirst')}
             </Link>
           </Button>
         ) : null}
@@ -188,6 +192,7 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
 }
 
 export function DueSets() {
+  const { t, i18n } = useTranslation(['study', 'common']);
   const [modes, setModesState] = useState<StudyMode[]>(['FLASHCARD']);
   useEffect(() => {
     // Đọc lựa chọn đã lưu sau khi hiện để HTML từ máy chủ và trình duyệt giống nhau.
@@ -212,8 +217,8 @@ export function DueSets() {
   if (due.isError) {
     return (
       <ErrorState
-        title="Không tải được thẻ cần ôn"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('review.loadFailed')}
+        description={t('shell.checkNetwork')}
         onRetry={() => void due.refetch()}
       />
     );
@@ -224,15 +229,15 @@ export function DueSets() {
     return (
       <>
         <EmptyState
-          title="Hôm nay chưa có từ cần ôn"
+          title={t('review.nothing')}
           description={
             summary.nextDueAt
-              ? `Thẻ tiếp theo đến hạn lúc ${dueFormat.format(summary.nextDueAt)}.`
-              : 'Học thêm một bộ từ, các từ đến hạn ôn sẽ hiện ở đây.'
+              ? t('review.nextDue', { time: formatDueTime(summary.nextDueAt, i18n.language) })
+              : t('review.nothingHint')
           }
           action={
             <Button asChild variant="secondary">
-              <Link href="/sets">Xem bộ từ</Link>
+              <Link href="/sets">{t('review.seeSets')}</Link>
             </Button>
           }
         />
@@ -253,7 +258,7 @@ export function DueSets() {
       <ScheduleNote />
       <section aria-labelledby="due-sets" className="flex flex-col gap-4">
         <h2 id="due-sets" className="text-h2">
-          Bộ từ có thẻ đến hạn
+          {t('review.setsWithDue')}
         </h2>
         <SetCardList>
           {data.map(({ setId, title, dueCount }) => (
@@ -264,14 +269,21 @@ export function DueSets() {
               badge={
                 <span className="flex items-center gap-1 rounded-sm bg-primary-soft px-2 text-tiny text-primary">
                   <CalendarClock aria-hidden className="size-3.5" />
-                  Đến hạn
+                  {t('review.due')}
                 </span>
               }
-              count={<span className="font-medium text-text">{dueCount} thẻ đến hạn</span>}
+              count={
+                <span className="font-medium text-text">
+                  {t('review.dueCount', { count: dueCount })}
+                </span>
+              }
               actions={
                 <Button asChild>
-                  <Link href={reviewHref(setId, modes)} aria-label={`Ôn bộ từ ${title}`}>
-                    Ôn ngay
+                  <Link
+                    href={reviewHref(setId, modes)}
+                    aria-label={t('review.reviewSet', { title })}
+                  >
+                    {t('review.now')}
                   </Link>
                 </Button>
               }

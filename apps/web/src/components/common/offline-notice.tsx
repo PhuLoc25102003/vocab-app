@@ -4,8 +4,13 @@ import { WifiOff } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { listOfflineSets, type OfflineSet } from '@/lib/offline-store';
+import { useTranslation } from 'react-i18next';
 
-const dateFormat = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit' });
+const formatSavedDate = (date: Date, locale: string) =>
+  new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+  }).format(date);
 
 /** Trang service worker trả về khi mất mạng, kèm các bộ từ đã tải về máy. */
 export function OfflineNotice({
@@ -14,6 +19,7 @@ export function OfflineNotice({
   /** Hành động cho từng bộ đã tải, ví dụ học offline. */
   renderSetAction?: (setId: string) => ReactNode;
 } = {}) {
+  const { t, i18n } = useTranslation();
   const [sets, setSets] = useState<OfflineSet[] | null>(null);
 
   useEffect(() => {
@@ -25,17 +31,14 @@ export function OfflineNotice({
   return (
     <main className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-start gap-4 px-4 py-16">
       <WifiOff aria-hidden className="size-10 text-primary" />
-      <h1 className="text-h1">Bạn đang offline</h1>
-      <p className="text-text-muted">
-        Không kết nối được mạng nên chưa mở được trang này. Hãy kiểm tra Wi-Fi hoặc dữ liệu di động
-        rồi thử lại.
-      </p>
-      <Button onClick={() => window.location.reload()}>Thử lại</Button>
+      <h1 className="text-h1">{t('offline.title')}</h1>
+      <p className="text-text-muted">{t('offline.description')}</p>
+      <Button onClick={() => window.location.reload()}>{t('actions.retry')}</Button>
 
       {sets && sets.length > 0 ? (
         <section aria-labelledby="offline-sets" className="flex w-full flex-col gap-3 pt-6">
           <h2 id="offline-sets" className="text-h2">
-            Bộ từ đã tải về máy
+            {t('offline.savedSets')}
           </h2>
           <ul className="flex flex-col gap-2">
             {sets.map(({ set, savedAt }) => (
@@ -44,7 +47,10 @@ export function OfflineNotice({
                   <summary className="flex min-h-11 cursor-pointer flex-wrap items-center justify-between gap-2">
                     <span className="font-medium wrap-anywhere">{set.title}</span>
                     <span className="text-small text-text-muted tabular-nums">
-                      {set.cards.length} thẻ, tải ngày {dateFormat.format(new Date(savedAt))}
+                      {t('offline.savedMeta', {
+                        count: set.cards.length,
+                        date: formatSavedDate(new Date(savedAt), i18n.language),
+                      })}
                     </span>
                   </summary>
                   {renderSetAction ? <div className="py-2">{renderSetAction(set.id)}</div> : null}

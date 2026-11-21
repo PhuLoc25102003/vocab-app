@@ -33,12 +33,7 @@ import {
   setUserRole,
   unlockUser,
 } from '../api';
-
-const ROLE_LABELS: Record<AdminUser['role'], string> = {
-  STUDENT: 'Học sinh',
-  TEACHER: 'Giáo viên',
-  ADMIN: 'Quản trị',
-};
+import { useTranslation } from 'react-i18next';
 
 function usersHref(q: string, page = 1): Route {
   const params = new URLSearchParams();
@@ -57,6 +52,7 @@ function LockDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   const lock = useMutation({ mutationFn: (dto: LockUserDto) => lockUser(user.id, dto.reason) });
   const form = useForm<LockUserDto>({
@@ -74,7 +70,7 @@ function LockDialog({
     try {
       await lock.mutateAsync(dto);
       await queryClient.invalidateQueries({ queryKey: adminKeys.users });
-      toast.success(`Đã khoá tài khoản ${user.email}`);
+      toast.success(t('lock.done', { email: user.email }));
       close(false);
     } catch {
       // Lỗi hiện qua `lock.error`.
@@ -85,16 +81,16 @@ function LockDialog({
     <FormDialog
       open={open}
       onOpenChange={close}
-      title={`Khoá tài khoản ${user.email}?`}
-      description="Người này không đăng nhập được cho tới khi mở khoá. Lý do hiện trong danh sách người dùng."
-      submitLabel="Khoá tài khoản"
+      title={t('lock.title', { email: user.email })}
+      description={t('lock.description')}
+      submitLabel={t('lock.submit')}
       pending={lock.isPending}
       error={lock.error ? formErrorMessage(lock.error) : null}
       dirty={form.formState.isDirty}
       onSubmit={(event) => void submit(event)}
     >
       <TextareaField
-        label="Lý do khoá"
+        label={t('lock.reason')}
         rows={2}
         error={form.formState.errors.reason?.message}
         {...form.register('reason')}
@@ -104,13 +100,14 @@ function LockDialog({
 }
 
 function UserRow({ user }: { user: AdminUser }) {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   const [locking, setLocking] = useState(false);
   const unlock = useMutation({
     mutationFn: () => unlockUser(user.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: adminKeys.users });
-      toast.success(`Đã mở khoá tài khoản ${user.email}`);
+      toast.success(t('unlocked', { email: user.email }));
     },
     onError: (error) => toast.error(formErrorMessage(error)),
   });
@@ -118,7 +115,7 @@ function UserRow({ user }: { user: AdminUser }) {
     mutationFn: (role: Role) => setUserRole(user.id, role),
     onSuccess: async (updated) => {
       await queryClient.invalidateQueries({ queryKey: adminKeys.users });
-      toast.success(`Đã đổi ${updated.email} thành ${ROLE_LABELS[updated.role]}`);
+      toast.success(t('roleChanged', { email: updated.email, role: t(`roles.${updated.role}`) }));
     },
     onError: (error) => toast.error(formErrorMessage(error)),
   });
@@ -129,18 +126,18 @@ function UserRow({ user }: { user: AdminUser }) {
         <p className="text-h3 break-words">{user.displayName}</p>
         <p className="text-small break-all text-text-muted">{user.email}</p>
         <p className="text-small">
-          {ROLE_LABELS[user.role]} ·{' '}
+          {t(`roles.${user.role}`)} ·{' '}
           {user.lockedAt ? (
-            <span className="text-danger">Đã khoá: {user.lockReason}</span>
+            <span className="text-danger">{t('lockedReason', { reason: user.lockReason })}</span>
           ) : (
-            'Đang hoạt động'
+            t('active')
           )}
         </p>
       </div>
       <div className="w-40">
         <SelectField
-          label="Vai trò"
-          aria-label={`Vai trò của ${user.email}`}
+          label={t('role')}
+          aria-label={t('roleOf', { email: user.email })}
           value={user.role}
           disabled={changeRole.isPending}
           onChange={(event) => {
@@ -150,7 +147,7 @@ function UserRow({ user }: { user: AdminUser }) {
         >
           {roleSchema.options.map((role) => (
             <option key={role} value={role}>
-              {ROLE_LABELS[role]}
+              {t(`roles.${role}`)}
             </option>
           ))}
         </SelectField>
@@ -160,18 +157,18 @@ function UserRow({ user }: { user: AdminUser }) {
         <Button
           variant="secondary"
           loading={unlock.isPending}
-          aria-label={`Mở khoá ${user.email}`}
+          aria-label={t('unlockLabel', { email: user.email })}
           onClick={() => unlock.mutate()}
         >
-          Mở khoá
+          {t('unlock')}
         </Button>
       ) : (
         <Button
           variant="secondary"
-          aria-label={`Khoá ${user.email}`}
+          aria-label={t('lockLabel', { email: user.email })}
           onClick={() => setLocking(true)}
         >
-          Khoá
+          {t('lock.button')}
         </Button>
       )}
       <LockDialog user={user} open={locking && !user.lockedAt} onOpenChange={setLocking} />
@@ -180,8 +177,9 @@ function UserRow({ user }: { user: AdminUser }) {
 }
 
 export function AdminUsersLoading() {
+  const { t } = useTranslation('admin');
   return (
-    <LoadingState label="Đang tải người dùng">
+    <LoadingState label={t('users.loading')}>
       <Skeleton className="h-11 max-w-[480px]" />
       <Skeleton className="h-64" />
     </LoadingState>
@@ -189,6 +187,7 @@ export function AdminUsersLoading() {
 }
 
 export function AdminUsers() {
+  const { t } = useTranslation('admin');
   const router = useRouter();
   const searchParams = useSearchParams();
   const q = (searchParams.get('q') ?? '').trim().slice(0, 100);
@@ -208,16 +207,10 @@ export function AdminUsers() {
   const searchForm = (
     <form role="search" onSubmit={search} className="flex max-w-[480px] items-end gap-2">
       <div className="flex-1">
-        <FormField
-          key={q}
-          name="q"
-          label="Tìm theo email hoặc tên"
-          defaultValue={q}
-          maxLength={100}
-        />
+        <FormField key={q} name="q" label={t('users.search')} defaultValue={q} maxLength={100} />
       </div>
       <Button type="submit" variant="secondary">
-        Tìm
+        {t('users.searchSubmit')}
       </Button>
     </form>
   );
@@ -227,17 +220,12 @@ export function AdminUsers() {
   }
   if (users.isError) {
     if (users.error instanceof HttpError && users.error.status === 403) {
-      return (
-        <EmptyState
-          title="Bạn không có quyền xem trang này"
-          description="Chỉ quản trị viên mới quản lý được người dùng."
-        />
-      );
+      return <EmptyState title={t('users.forbidden')} description={t('users.forbiddenHint')} />;
     }
     return (
       <ErrorState
-        title="Không tải được danh sách người dùng"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('users.failed')}
+        description={t('checkNetwork')}
         onRetry={() => void users.refetch()}
       />
     );
@@ -249,19 +237,21 @@ export function AdminUsers() {
       {searchForm}
       {data.length === 0 ? (
         <EmptyState
-          title="Không tìm thấy người dùng"
-          description={q ? `Không có ai khớp với “${q}”.` : 'Chưa có người dùng nào.'}
+          title={t('users.notFound')}
+          description={q ? t('users.noMatch', { q }) : t('users.empty')}
           action={
             q ? (
               <Button variant="secondary" onClick={() => router.push(usersHref(''))}>
-                Xem tất cả
+                {t('users.seeAll')}
               </Button>
             ) : undefined
           }
         />
       ) : (
         <>
-          <p className="text-small text-text-muted tabular-nums">{meta.total} người dùng</p>
+          <p className="text-small text-text-muted tabular-nums">
+            {t('users.count', { count: meta.total })}
+          </p>
           <ul className="border-t border-border">
             {data.map((user) => (
               <UserRow key={user.id} user={user} />

@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { createGuestBackend } from '../guest-backend';
 import { StudyShell } from './study-shell';
+import { useTranslation } from 'react-i18next';
 
 export function GuestStudy({ setId, mode }: { setId: string; mode: StudyMode }) {
+  const { t } = useTranslation('study');
   const [backend] = useState(createGuestBackend);
   const studyPath = `/sets/${setId}/study/${mode.toLowerCase()}`;
 
@@ -19,12 +21,12 @@ export function GuestStudy({ setId, mode }: { setId: string; mode: StudyMode }) 
       exitHref={`/public/sets/${setId}` as Route}
       resultNote={
         <p className="text-small text-text-muted">
-          Đây là phiên học thử nên tiến độ chưa được lưu.{' '}
+          {t('guest.note')}{' '}
           <Link
             href={`/login?next=${encodeURIComponent(studyPath)}` as Route}
             className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
           >
-            Đăng nhập để lưu tiến độ
+            {t('guest.login')}
           </Link>
         </p>
       }

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 import { playCorrectSound } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 const LONG_TEXT_LENGTH = 24;
 const FACE =
@@ -21,6 +22,7 @@ function isInteractive(target: EventTarget | null): boolean {
 }
 
 export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const [flipped, setFlipped] = useState(false);
   const shownAt = useRef(0);
   const answered = useRef(false);
@@ -88,7 +90,7 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
             {question.imageUrl ? (
               <CardImage
                 src={question.imageUrl}
-                alt={`Ảnh minh hoạ cho ${question.prompt}`}
+                alt={t('flashcard.imageAlt', { term: question.prompt })}
                 className="max-h-36 w-auto max-w-full"
               />
             ) : null}
@@ -99,7 +101,7 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
         </div>
         <button
           type="button"
-          aria-label={flipped ? 'Lật về mặt trước' : 'Lật thẻ'}
+          aria-label={t(flipped ? 'flashcard.flipBack' : 'flashcard.flip')}
           onClick={() => setFlipped((value) => !value)}
           className="absolute inset-0 rounded-lg"
         />
@@ -109,14 +111,14 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
               withSlow
               text={question.expected}
               lang={languages.definition}
-              label="Nghe nghĩa"
+              label={t('listenDefinition')}
               className="text-board-fg hover:bg-board-muted/20"
             />
           ) : (
             <AudioButton
               text={question.prompt}
               lang={languages.term}
-              label="Nghe phát âm"
+              label={t('listenTerm')}
               className="bg-surface"
             />
           )}
@@ -127,17 +129,17 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
         {flipped ? (
           <div className="grid grid-cols-2 gap-2">
             <Button variant="secondary" onClick={() => answer(FLASHCARD_ANSWERS.unknown)}>
-              Chưa nhớ
+              {t('flashcard.notYet')}
               <kbd className="hidden text-tiny text-text-muted pointer-fine:inline">1</kbd>
             </Button>
             <Button onClick={() => answer(FLASHCARD_ANSWERS.known)}>
-              Đã nhớ
+              {t('flashcard.remembered')}
               <kbd className="hidden text-tiny pointer-fine:inline">2</kbd>
             </Button>
           </div>
         ) : (
           <Button variant="secondary" onClick={() => setFlipped(true)}>
-            Xem nghĩa
+            {t('flashcard.showMeaning')}
             <kbd className="hidden text-tiny text-text-muted pointer-fine:inline">Space</kbd>
           </Button>
         )}

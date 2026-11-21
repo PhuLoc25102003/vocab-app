@@ -6,6 +6,7 @@ import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { StudyModeProps } from '../views';
+import { useTranslation } from 'react-i18next';
 
 const MAX_ANSWER_LENGTH = 500;
 
@@ -14,6 +15,7 @@ const MAX_ANSWER_LENGTH = 500;
  * Nộp bài thì gửi đáp án của cả phần, câu bỏ trống tính là sai, server chấm và trả kết quả.
  */
 export function TestModeView({ question, round, languages, onAnswer }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const [items] = useState<Question[]>(() => (round?.length ? round : [question]));
   const [values, setValues] = useState<Record<string, string>>({});
   const [confirmBlank, setConfirmBlank] = useState(false);
@@ -59,9 +61,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="flex flex-1 flex-col gap-6">
-      <p className="text-small text-text-muted">
-        Trả lời hết rồi nộp bài. Bài chỉ được chấm sau khi nộp.
-      </p>
+      <p className="text-small text-text-muted">{t('test.intro')}</p>
       <ol className="flex flex-col border-t border-border">
         {items.map((item, index) => {
           const number = index + 1;
@@ -70,14 +70,16 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
           return (
             <li key={item.id} className="flex flex-col gap-3 border-b border-border py-4">
               <p className="flex gap-2">
-                <span className="text-small text-text-muted tabular-nums">Câu {number}.</span>
+                <span className="text-small text-text-muted tabular-nums">
+                  {t('test.question', { number })}
+                </span>
                 <span lang={promptLang} className="min-w-0 font-card text-h3 break-words">
                   {item.prompt}
                 </span>
               </p>
               {item.choices ? (
                 <fieldset className="flex flex-col gap-2">
-                  <legend className="sr-only">Chọn nghĩa cho câu {number}</legend>
+                  <legend className="sr-only">{t('test.chooseFor', { number })}</legend>
                   {item.choices.map((choice, choiceIndex) => (
                     <label
                       key={choice}
@@ -100,7 +102,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                 </fieldset>
               ) : (
                 <Input
-                  aria-label={`Nhập từ cho câu ${number}`}
+                  aria-label={t('test.typeFor', { number })}
                   lang={answerLang}
                   value={values[item.id] ?? ''}
                   maxLength={MAX_ANSWER_LENGTH}
@@ -116,13 +118,9 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
           );
         })}
       </ol>
-      {confirmBlank ? (
-        <FormError>
-          Còn {blankCount} câu chưa trả lời. Các câu này sẽ tính là sai nếu bạn vẫn nộp bài.
-        </FormError>
-      ) : null}
+      {confirmBlank ? <FormError>{t('test.blank', { count: blankCount })}</FormError> : null}
       <div className="mt-auto flex flex-col">
-        <Button type="submit">{confirmBlank ? 'Vẫn nộp bài' : 'Nộp bài'}</Button>
+        <Button type="submit">{t(confirmBlank ? 'test.submitAnyway' : 'test.submit')}</Button>
       </div>
     </form>
   );
