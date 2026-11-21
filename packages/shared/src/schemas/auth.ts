@@ -61,6 +61,13 @@ export const googleLoginSchema = z.object({
 });
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
 
+/**
+ * Nút Google ở chế độ redirect (mobile) POST form có `credential` về `login_uri`.
+ * Cookie chứa nonce mà web đưa cho Google, API so với `nonce` trong ID token. */
+export const GOOGLE_NONCE_COOKIE = 'google_nonce';
+/** Chỉ gửi tới route nhận kết quả redirect. */
+export const GOOGLE_NONCE_COOKIE_PATH = '/api/v1/auth/google/redirect';
+
 export const updateAccountSchema = z
   .object({
     displayName: displayNameSchema.optional(),

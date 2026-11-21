@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ERROR_CODES,
   type AuthUser,
@@ -8,6 +9,7 @@ import {
 } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
+import { resolveWebOrigin, type Env } from '../../config/env';
 import { UsersRepository, type Account } from '../users/users.repository';
 import { AuthSessionService, type IssuedSession, type SessionClient } from './auth-session.service';
 import { GoogleIdentityService } from './google-identity.service';
@@ -43,7 +45,17 @@ export class AuthService {
     private readonly passwords: PasswordService,
     private readonly sessions: AuthSessionService,
     private readonly google: GoogleIdentityService,
+    private readonly config: ConfigService<Env, true>,
   ) {}
+
+  /** Trang đăng nhập của web, nơi API chuyển về sau luồng redirect của Google. */
+  webLoginUrl(query: URLSearchParams): string {
+    const origin = resolveWebOrigin(
+      this.config.get('WEB_ORIGIN', { infer: true }),
+      this.config.get('CORS_ORIGINS', { infer: true }),
+    );
+    return `${origin}/login?${query.toString()}`;
+  }
 
   /** Email đã có hay chưa đều hash và trả cùng kết quả, để không lộ email đã đăng ký. */
   async register({ email, password, displayName }: RegisterInput) {
@@ -68,8 +80,8 @@ export class AuthService {
   }
 
   /** Google đã xác minh email, nên email trùng được gộp vào tài khoản có sẵn. */
-  async loginWithGoogle({ credential }: GoogleLoginInput, client: SessionClient) {
-    const identity = await this.google.verify(credential);
+  async loginWithGoogle({ credential }: GoogleLoginInput, client: SessionClient, nonce?: string) {
+    const identity = await this.google.verify(credential, nonce);
     const account =
       (await this.users.findByGoogleId(identity.googleId)) ??
       (await this.users.linkGoogleByEmail(identity.email, identity.googleId)) ??

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ERROR_CODES, type ForgotPasswordInput, type ResetPasswordInput } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
-import { parseCorsOrigins, type Env } from '../../config/env';
+import { resolveWebOrigin, type Env } from '../../config/env';
 import { Mailer } from '../../infrastructure/mail/mailer';
 import { UsersRepository } from '../users/users.repository';
 import { PasswordService } from './password.service';
@@ -66,9 +66,10 @@ export class PasswordResetService {
   }
 
   private webOrigin(): string {
-    const configured = this.config.get('WEB_ORIGIN', { infer: true });
-    const [first] = parseCorsOrigins(this.config.get('CORS_ORIGINS', { infer: true }));
-    return (configured || first || '').replace(/\/$/, '');
+    return resolveWebOrigin(
+      this.config.get('WEB_ORIGIN', { infer: true }),
+      this.config.get('CORS_ORIGINS', { infer: true }),
+    );
   }
 }
 

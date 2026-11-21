@@ -30,6 +30,13 @@ export function formErrorMessage(error: unknown): string {
   return codes[error.code] ?? error.message;
 }
 
+/** Thông báo khi chỉ có mã lỗi, ví dụ mã trên URL sau khi API chuyển hướng về web. */
+export function errorCodeMessage(code: string): string {
+  const errors = resources[toLocale(getI18n()?.language)].errors;
+  const codes: Partial<Record<string, string>> = errors.codes;
+  return codes[code] ?? codes[ERROR_CODES.INTERNAL_ERROR] ?? errors.network;
+}
+
 /** Gắn lỗi validate vào từng ô. Lỗi còn lại trả về để hiện ở đầu form. */
 export function applyFormError<T extends FieldValues>(
   error: unknown,

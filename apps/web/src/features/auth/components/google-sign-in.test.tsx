@@ -3,6 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
 import { loginWithGoogle } from '../api';
+import { refreshSession } from '../session';
 import { useAuthStore } from '../store';
 import { GoogleSignIn } from './google-sign-in';
 
@@ -17,6 +18,16 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => navigation.params,
 }));
 vi.mock('../api');
+vi.mock('../session', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../session')>()),
+  refreshSession: vi.fn(),
+}));
+
+function stubPointer(coarse: boolean) {
+  vi.mocked(window.matchMedia).mockImplementation(
+    (query: string) => ({ matches: coarse && query === '(pointer: coarse)' }) as MediaQueryList,
+  );
+}
 
 const session: AuthSession = {
   accessToken: 'token',
@@ -43,6 +54,8 @@ describe('GoogleSignIn', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     navigation.params = new URLSearchParams();
+    sessionStorage.clear();
+    stubPointer(false);
     useAuthStore.setState({ status: 'loading', user: null, accessToken: null });
     vi.stubEnv('NEXT_PUBLIC_GOOGLE_CLIENT_ID', 'client-id');
     vi.stubGlobal(
@@ -147,5 +160,74 @@ describe('GoogleSignIn', () => {
 
     expect(await screen.findByText(/vẫn có thể dùng email và mật khẩu/)).toBeInTheDocument();
     expect(document.head.querySelector('script[src*="accounts.google"]')).toBeNull();
+  });
+  describe('chế độ redirect trên mobile', () => {
+    it('màn hình cảm ứng dùng redirect kèm nonce và nhớ trang cần về', async () => {
+      stubPointer(true);
+      navigation.params = new URLSearchParams('next=/sets/1');
+      const setCookie = vi.spyOn(document, 'cookie', 'set');
+
+      const { client } = await renderReady();
+
+      expect(client.initialize).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ux_mode: 'redirect',
+          login_uri: expect.stringMatching(/\/auth\/google\/redirect$/),
+          nonce: expect.any(String),
+        }),
+      );
+      const { nonce } = client.initialize.mock.calls[0]?.[0] as { nonce: string };
+      // Cookie chỉ gửi tới route redirect nên `document.cookie` của trang không đọc lại được.
+      expect(setCookie).toHaveBeenCalledWith(
+        expect.stringMatching(
+          new RegExp(
+            `^google_nonce=${nonce}; Path=/api/v1/auth/google/redirect;.*SameSite=None; Secure$`,
+          ),
+        ),
+      );
+      expect(sessionStorage.getItem('vocab.googleNext')).toBe('/sets/1');
+    });
+
+    it('máy tính giữ popup', async () => {
+      const { client } = await renderReady();
+
+      expect(client.initialize.mock.calls[0]?.[0]).not.toHaveProperty('ux_mode');
+    });
+
+    it('quay về với google=done thì lấy phiên rồi tới trang đã nhớ', async () => {
+      stubPointer(true);
+      sessionStorage.setItem('vocab.googleNext', '/sets/1');
+      navigation.params = new URLSearchParams('google=done');
+      vi.mocked(refreshSession).mockResolvedValue('token');
+      stubGoogle();
+
+      render(<GoogleSignIn text="signin_with" />);
+
+      expect(screen.getByRole('status')).toHaveTextContent('Đang đăng nhập bằng Google');
+      await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/1'));
+      expect(navigation.refresh).toHaveBeenCalled();
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+    });
+
+    it('báo lỗi khi không lấy được phiên', async () => {
+      navigation.params = new URLSearchParams('google=done');
+      vi.mocked(refreshSession).mockResolvedValue(null);
+      stubGoogle();
+
+      render(<GoogleSignIn text="signin_with" />);
+
+      expect(await screen.findByRole('alert')).toBeInTheDocument();
+      expect(navigation.replace).not.toHaveBeenCalled();
+    });
+
+    it('hiện thông báo theo mã lỗi API gửi về', async () => {
+      navigation.params = new URLSearchParams(`google_error=${ERROR_CODES.GOOGLE_EMAIL_IN_USE}`);
+      stubGoogle();
+
+      render(<GoogleSignIn text="signin_with" />);
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Email này đã có tài khoản');
+      expect(refreshSession).not.toHaveBeenCalled();
+    });
   });
 });

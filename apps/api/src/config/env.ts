@@ -86,6 +86,12 @@ export function parseCorsOrigins(value: string): string[] {
   return parseList(value);
 }
 
+/** Địa chỉ web cho liên kết và chuyển hướng: `WEB_ORIGIN`, thiếu thì lấy origin đầu của CORS. */
+export function resolveWebOrigin(webOrigin: string, corsOrigins: string): string {
+  const [first] = parseCorsOrigins(corsOrigins);
+  return (webOrigin || first || '').replace(/\/$/, '');
+}
+
 /**
  * Không có proxy thì trả `false`, để Fastify bỏ qua header `X-Forwarded-For`.
  * Một số nguyên dương là số tầng proxy, ví dụ `2` cho Vercel rồi Render.

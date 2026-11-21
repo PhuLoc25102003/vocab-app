@@ -1,8 +1,22 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import {
+  ERROR_CODES,
   forgotPasswordSchema,
+  GOOGLE_NONCE_COOKIE,
+  GOOGLE_NONCE_COOKIE_PATH,
   googleLoginSchema,
   loginSchema,
   registerSchema,
@@ -20,6 +34,7 @@ import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
+import { AppError } from '../../common/errors/app-error';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { InvalidRefreshTokenError } from './auth-session.service';
 import { AuthThrottlerGuard, RefreshThrottle, RegisterThrottle } from './auth-throttler.guard';
@@ -28,11 +43,23 @@ import { AuthService } from './auth.service';
 import { PasswordResetService } from './password-reset.service';
 import { RefreshCookie, sessionClientOf } from './refresh-cookie';
 
+function errorCodeOf(error: unknown): string {
+  if (error instanceof HttpException) {
+    const response: unknown = error.getResponse();
+    if (typeof response === 'object' && response !== null && 'code' in response) {
+      return String(response.code);
+    }
+  }
+  return ERROR_CODES.INTERNAL_ERROR;
+}
+
 @ApiTags('auth')
 @Controller('auth')
 @SkipApiRateLimit()
 @UseGuards(AuthThrottlerGuard)
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly auth: AuthService,
     private readonly refreshCookie: RefreshCookie,
@@ -103,6 +130,47 @@ export class AuthController {
     const result = await this.auth.loginWithGoogle(dto, sessionClientOf(request));
     this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
     return result.body;
+  }
+
+  /**
+   * Nút Google ở chế độ redirect (mobile) POST form về đây từ `accounts.google.com`, nên không
+   * kiểm tra `Origin` mà so `nonce` trong token với cookie do chính web đặt (chống login CSRF).
+   * Luôn chuyển về `/login` của web: thành công thì web gọi refresh để lấy phiên, lỗi thì hiện mã lỗi.
+   * Không dùng `ZodValidationPipe` vì lỗi phải thành trang chuyển hướng, không phải JSON.
+   */
+  @Public()
+  @Post('google/redirect')
+  @SkipThrottle({ account: true })
+  @ApiOperation({ summary: 'Nhận kết quả đăng nhập Google ở chế độ redirect' })
+  async googleRedirect(
+    @Body() body: unknown,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ): Promise<void> {
+    const input = googleLoginSchema.safeParse(body);
+    const nonce = request.cookies[GOOGLE_NONCE_COOKIE];
+    void reply.clearCookie(GOOGLE_NONCE_COOKIE, { path: GOOGLE_NONCE_COOKIE_PATH });
+
+    const target = new URLSearchParams();
+    try {
+      if (!input.success || !nonce) {
+        throw new AppError(
+          ERROR_CODES.GOOGLE_TOKEN_INVALID,
+          'Không xác minh được tài khoản Google. Hãy thử lại.',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      const result = await this.auth.loginWithGoogle(input.data, sessionClientOf(request), nonce);
+      this.refreshCookie.set(reply, result.refreshToken, result.refreshExpiresAt);
+      target.set('google', 'done');
+    } catch (error) {
+      const code = errorCodeOf(error);
+      if (code === ERROR_CODES.INTERNAL_ERROR) {
+        this.logger.error(error);
+      }
+      target.set('google_error', code);
+    }
+    await reply.redirect(this.auth.webLoginUrl(target), HttpStatus.SEE_OTHER);
   }
 
   @Public()
