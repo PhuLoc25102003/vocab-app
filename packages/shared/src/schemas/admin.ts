@@ -68,6 +68,40 @@ export const adminStatsSchema = z.object({
   lockedUsers: z.number(),
   sets: z.number(),
   hiddenSets: z.number(),
+  /** Các trường dưới đây thêm ở việc 5.21. */
+  newUsers: z.number().int(),
+  /** Người có ít nhất một phiên học trong 7 ngày. */
+  activeUsers: z.number().int(),
+  sessions: z.number().int(),
+  publicSets: z.number().int(),
+  roles: z.object({
+    STUDENT: z.number().int(),
+    TEACHER: z.number().int(),
+    ADMIN: z.number().int(),
+  }),
+  /** 30 ngày học (giờ Việt Nam), cũ nhất trước. */
+  daily: z.array(
+    z.object({ day: z.string(), signups: z.number().int(), active: z.number().int() }),
+  ),
+  recentUsers: z.array(
+    z.object({
+      id: z.string(),
+      displayName: z.string(),
+      email: z.string(),
+      role: roleSchema,
+      createdAt: z.string(),
+    }),
+  ),
+  /** Bộ công khai tạo trong 7 ngày, chưa ẩn: hàng chờ rà nội dung. */
+  newPublicSets: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      ownerName: z.string(),
+      cardCount: z.number().int(),
+      createdAt: z.string(),
+    }),
+  ),
 });
 export type AdminStats = z.infer<typeof adminStatsSchema>;
 export const adminStatsResponseSchema = z.object({ data: adminStatsSchema });

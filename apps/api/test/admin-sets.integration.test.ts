@@ -113,6 +113,12 @@ describe('ẩn bộ từ vi phạm', () => {
     });
 
     const { body } = await stats(admin.token).expect(200);
-    expect(body.data).toEqual({ users: 3, lockedUsers: 1, sets: 1, hiddenSets: 1 });
+    expect(body.data).toMatchObject({ users: 3, lockedUsers: 1, sets: 1, hiddenSets: 1 });
+    // Việc 5.21: số liệu tăng trưởng, vai trò, chuỗi 30 ngày, hàng chờ rà.
+    expect(body.data).toMatchObject({ newUsers: 3, activeUsers: 0, sessions: 0 });
+    expect(body.data.roles.ADMIN).toBe(1);
+    expect(body.data.daily).toHaveLength(30);
+    expect(body.data.daily.at(-1).signups).toBe(3);
+    expect(body.data.recentUsers).toHaveLength(3);
   });
 });
