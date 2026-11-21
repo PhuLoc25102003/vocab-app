@@ -121,10 +121,12 @@ describe('giao bài cho lớp', () => {
     });
 
     await assign({ setId: classSetId, modes: ['MCQ', 'MCQ'] }).expect(400);
-    await assign({
+    // Không còn giới hạn 5 chế độ (việc 5.27).
+    const many = await assign({
       setId: classSetId,
       modes: ['FLASHCARD', 'MCQ', 'WRITE', 'CLOZE', 'DICTATION', 'LEARN'],
-    }).expect(400);
+    }).expect(201);
+    expect(many.body.data.modes).toHaveLength(6);
     await assign({ setId: classSetId, modes: [] }).expect(400);
     const match = await assign({ setId: classSetId, modes: ['MATCH'] }).expect(422);
     expect(match.body.error.details[0].path).toBe('modes');

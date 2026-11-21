@@ -168,4 +168,24 @@ describe('ClassAssignments', () => {
     expect(await screen.findByText(/Chưa giao bài nào/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Giao bài' })).not.toBeInTheDocument();
   });
+
+  it('chọn tất cả chế độ hoặc bỏ chọn hết, không giới hạn 5', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([]));
+    renderSection();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Giao bài' });
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Chọn tất cả' }));
+    const checked = within(dialog)
+      .getAllByRole('checkbox')
+      .filter((box) => (box as HTMLInputElement).checked);
+    expect(checked.length).toBeGreaterThan(5);
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Bỏ chọn' }));
+    expect(
+      within(dialog)
+        .getAllByRole('checkbox')
+        .filter((box) => (box as HTMLInputElement).checked),
+    ).toHaveLength(0);
+  });
 });
