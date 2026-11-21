@@ -7,7 +7,7 @@ description: Chạy trọn một task của vocab-app từ issue đến merge v�
 
 Lệnh của người dùng là sự đồng ý cho toàn bộ flow dưới đây: tạo issue, tạo nhánh, code, commit, push, mở PR và squash merge vào `develop`, nếu đủ điều kiện ở bước 8. Không hỏi lại giữa chừng, trừ các trường hợp ở mục "Dừng lại và hỏi".
 
-Mỗi task có issue, nhánh và PR riêng. Trong lúc PR chờ CI thì làm task tiếp theo (bước 7), không ngồi đợi; cứ thế làm tiếp cho tới khi các task còn lại đều rơi vào mục "Dừng lại và hỏi". Chi tiết về đặt tên và mẫu issue, PR nằm trong skill `git-workflow`.
+Mỗi task có issue, nhánh và PR riêng. Làm **tuần tự từng task**: xong task, chờ CI, merge rồi mới bắt đầu task mới (bước 7). Không làm task mới khi còn PR task đang chờ CI, vì task sau merge trước sẽ làm PR trước xung đột và phải chạy lại CI. Cứ thế làm tiếp cho tới khi các task còn lại đều rơi vào mục "Dừng lại và hỏi". Chi tiết về đặt tên và mẫu issue, PR nằm trong skill `git-workflow`.
 
 ## Không bao giờ làm
 
@@ -78,29 +78,23 @@ Mỗi task một commit. Không đoán trước số PR.
 
 #### Tránh xung đột docs
 
-- Dòng của từng task không bao giờ trùng nhau nên các PR song song không xung đột ở `docs/07-progress.md`. Xung đột chỉ đến từ các dòng chung, nên PR của task không chạm vào chúng.
-- Bảng tổng quan đồng bộ bằng `npm run progress`. Khi không còn PR nào khác đang mở, mở PR `docs(progress): sync` gồm `npm run progress`, "Đang ở" và "Việc tiếp theo", merge ngay khi CI xanh.
+- PR của task chỉ sửa dòng của task trong `docs/07-progress.md`, không chạm bảng tổng quan, "Đang ở", "Việc tiếp theo".
+- Bảng tổng quan đồng bộ bằng `npm run progress`. Sau khi merge, nếu không còn PR task nào đang mở, mở PR `docs(progress): sync` gồm `npm run progress`, "Đang ở" và "Việc tiếp theo", merge ngay khi CI xanh, rồi mới sang task mới.
 - Người dùng giao thêm việc giữa chừng: tạo nhánh `docs/<số>-them-viec` từ `origin/develop`, chỉ thêm dòng việc và use case, mở PR và merge ngay khi CI xanh. Không gộp vào PR đang code.
-- Tránh nhánh xếp chồng. Chỉ tách nhánh từ nhánh của PR khác khi task mới sửa cùng file code. Khi PR gốc đã squash merge: `git rebase --onto origin/develop <commit-cuối-của-PR-gốc>`.
-- Nếu vẫn xung đột và chỉ ở file docs: giữ cả hai phía (mỗi dòng task lấy bản `[x]` mới hơn), chạy `npm run progress` nếu bảng bị đụng, `git rebase --continue`, push, rồi merge ngay khi CI xanh, không cần hỏi.
+- Nếu rebase vẫn xung đột và chỉ ở file docs: giữ cả hai phía (mỗi dòng task lấy bản `[x]` mới hơn), chạy `npm run progress` nếu bảng bị đụng, `git rebase --continue`, `git push --force-with-lease`, rồi merge ngay khi CI xanh, không cần hỏi.
 
-### 7. Chờ CI, không ngồi đợi
+### 7. Chờ CI rồi mới làm tiếp
 
-CI mất vài phút. Theo dõi ở nền và làm task tiếp theo trong lúc đó:
+Theo dõi CI ở nền và **không làm task khác** trong lúc chờ:
 
 ```bash
 gh pr checks <số-pr> --watch --interval 30   # chạy nền, có thông báo khi xong
 ```
 
-1. Chọn task tiếp theo như bước 1 và tạo issue như bước 2.
-2. Task mới không sửa cùng file code với PR đang chờ: tạo nhánh từ `origin/develop` (kể cả khi cả hai cùng đánh dấu `docs/07-progress.md`, vì mỗi PR chỉ sửa dòng của mình). Có sửa cùng file code: tạo nhánh từ nhánh của PR, sau khi PR được squash merge thì `git rebase --onto origin/develop <commit-cuối-của-PR>`.
-3. Code task mới như bước 4 và 5.
-4. Khi CI của PR cũ xong:
-   - Cất phần đang làm: `git stash push -u -m <task-mới>` (hoặc commit tạm trên nhánh mới).
-   - Xanh: merge theo bước 8.
-   - Đỏ: `git switch <nhánh-PR>`, đọc log bằng `gh run view <id> --log-failed`, sửa, push, rồi quay lại task mới trong lúc chờ lần CI tiếp theo. Đỏ sau 2 lần sửa vì cùng một nguyên nhân thì dừng lại và báo.
-   - Quay về nhánh task mới, `git rebase origin/develop`, `git stash pop`, làm tiếp.
-5. Không để quá hai PR cùng chờ CI. Không dùng `git worktree` cho repo này: mỗi worktree phải cài lại `node_modules` và `.env`.
+- Chờ thông báo, không poll, không đọc file hay viết code cho task khác để tiết kiệm token.
+- Xanh: merge theo bước 8, đồng bộ docs nếu cần, rồi mới quay lại bước 1 cho task mới (nhánh mới luôn tạo từ `develop` vừa pull).
+- Đỏ: đọc log bằng `gh run view <id> --log-failed`, sửa, push, chờ lần CI tiếp theo. Đỏ sau 2 lần sửa vì cùng một nguyên nhân thì dừng lại và báo.
+- Chỉ có tối đa **một** PR task mở tại một thời điểm. Không dùng `git worktree` cho repo này.
 
 Nếu báo chưa có check, chạy lại sau khi GitHub nhận commit.
 
