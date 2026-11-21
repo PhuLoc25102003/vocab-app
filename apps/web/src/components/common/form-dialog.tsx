@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { useTranslation } from 'react-i18next';
 
 interface FormDialogProps {
   open: boolean;
@@ -40,7 +41,7 @@ export function FormDialog({
   title,
   description,
   submitLabel,
-  cancelLabel = 'Huỷ',
+  cancelLabel,
   pending = false,
   error,
   dirty = false,
@@ -51,6 +52,7 @@ export function FormDialog({
   const titleId = useId();
   const descriptionId = useId();
   const formRef = useRef<HTMLFormElement>(null);
+  const { t } = useTranslation();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const requestClose = () => {
@@ -97,7 +99,7 @@ export function FormDialog({
               type="button"
               variant="ghost"
               size="icon"
-              aria-label="Đóng"
+              aria-label={t('actions.close')}
               disabled={pending}
               onClick={requestClose}
               className="-mt-2 -mr-3 shrink-0"
@@ -112,7 +114,7 @@ export function FormDialog({
             {error ? <FormError>{error}</FormError> : null}
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <Button type="button" variant="secondary" disabled={pending} onClick={requestClose}>
-                {cancelLabel}
+                {cancelLabel ?? t('actions.cancel')}
               </Button>
               <Button type="submit" loading={pending}>
                 {submitLabel}
@@ -124,10 +126,10 @@ export function FormDialog({
       <ConfirmDialog
         open={confirmDiscard}
         onOpenChange={setConfirmDiscard}
-        title="Bỏ nội dung đang nhập?"
-        description="Những gì bạn đã nhập trong hộp thoại này sẽ mất."
-        confirmLabel="Bỏ nội dung"
-        cancelLabel="Nhập tiếp"
+        title={t('formDialog.discardTitle')}
+        description={t('formDialog.discardDescription')}
+        confirmLabel={t('formDialog.discard')}
+        cancelLabel={t('formDialog.keepEditing')}
         onConfirm={() => {
           setConfirmDiscard(false);
           onOpenChange(false);

@@ -4,6 +4,7 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ConfirmDialog } from './confirm-dialog';
+import { useTranslation } from 'react-i18next';
 
 const HISTORY_TIMEOUT_MS = 500;
 
@@ -53,6 +54,7 @@ export function useUnsavedGuard(
   const hasGuardEntry = useRef(false);
   const released = useRef(false);
   const hasDataRef = useRef(hasData);
+  const { t } = useTranslation();
   const [pending, setPending] = useState<PendingLeave | null>(null);
 
   useEffect(() => {
@@ -167,10 +169,10 @@ export function useUnsavedGuard(
     <ConfirmDialog
       open={pending !== null}
       onOpenChange={(open) => !open && setPending(null)}
-      title="Rời trang khi chưa lưu?"
-      description="Những gì bạn vừa nhập ở trang này sẽ mất."
-      confirmLabel="Rời trang"
-      cancelLabel="Ở lại"
+      title={t('unsaved.title')}
+      description={t('unsaved.description')}
+      confirmLabel={t('unsaved.leave')}
+      cancelLabel={t('unsaved.stay')}
       onConfirm={leave}
     />
   );
