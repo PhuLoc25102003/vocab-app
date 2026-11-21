@@ -3,10 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  CLASS_MEMBER_SEARCH_MAX_LENGTH,
+  classMemberListQuerySchema,
   createClassSchema,
   paginationSchema,
   type Class,
-  type ClassMember,
   type CreateClassInput,
   type UpdateClassInput,
 } from '@vocab/shared';
@@ -17,13 +18,12 @@ import {
   MoreHorizontal,
   Pencil,
   RefreshCw,
-  Trash2,
   UserPlus,
   X,
 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -34,24 +34,16 @@ import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { FormDialog } from '@/components/common/form-dialog';
 import { FormField, TextareaField } from '@/components/common/form-field';
-import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import {
-  classKeys,
-  getClass,
-  listMembers,
-  MEMBERS_PAGE_SIZE,
-  regenerateJoinCode,
-  removeMember,
-  updateClass,
-} from '../api';
+import { classKeys, getClass, regenerateJoinCode, updateClass } from '../api';
 import { formatDate } from '../format';
 import { ClassAssignments } from './class-assignments';
+import { ClassMembers } from './class-members';
 
 function useClassMutation<T>(mutationFn: (value: T) => Promise<unknown>) {
   const queryClient = useQueryClient();
@@ -329,117 +321,6 @@ function ClassHeader({ klass }: { klass: Class }) {
   );
 }
 
-function MemberRow({ classId, member }: { classId: string; member: ClassMember }) {
-  const [confirming, setConfirming] = useState(false);
-  const remove = useClassMutation(() => removeMember(classId, member.userId));
-
-  return (
-    <li className="flex min-h-14 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
-      <span className="flex min-w-0 flex-col">
-        <Link
-          href={`/classes/${classId}/members/${member.userId}` as Route}
-          className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
-        >
-          {member.displayName}
-          <span className="sr-only">, xem kết quả</span>
-        </Link>
-        <span className="text-small text-text-muted">Vào lớp {formatDate(member.joinedAt)}</span>
-      </span>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Xoá ${member.displayName} khỏi lớp`}
-        onClick={() => setConfirming(true)}
-      >
-        <Trash2 aria-hidden className="size-5" />
-      </Button>
-      <ConfirmDialog
-        open={confirming}
-        onOpenChange={setConfirming}
-        title={`Xoá ${member.displayName} khỏi lớp?`}
-        description="Học sinh không còn xem được bộ từ của lớp. Muốn vào lại thì cần mã lớp."
-        confirmLabel="Xoá khỏi lớp"
-        pending={remove.isPending}
-        error={remove.error ? formErrorMessage(remove.error) : null}
-        onConfirm={() =>
-          remove.mutate(undefined, {
-            onSuccess: () => {
-              setConfirming(false);
-              toast.success(`Đã xoá ${member.displayName} khỏi lớp`);
-            },
-          })
-        }
-      />
-    </li>
-  );
-}
-
-function Members({
-  klass,
-  page,
-  hrefFor,
-}: {
-  klass: Class;
-  page: number;
-  hrefFor: (page: number) => Route;
-}) {
-  const members = useQuery({
-    queryKey: classKeys.members(klass.id, page),
-    queryFn: () => listMembers(klass.id, page),
-  });
-
-  let body;
-  if (members.isPending) {
-    body = (
-      <LoadingState label="Đang tải học sinh">
-        {Array.from({ length: 3 }, (_, index) => (
-          <Skeleton key={index} className="h-14 w-full" />
-        ))}
-      </LoadingState>
-    );
-  } else if (members.isError) {
-    body = (
-      <ErrorState
-        title="Không tải được học sinh"
-        description="Kiểm tra kết nối mạng rồi thử lại."
-        onRetry={() => void members.refetch()}
-      />
-    );
-  } else if (members.data.data.length === 0) {
-    body = (
-      <EmptyState
-        title="Chưa có học sinh"
-        description={`Gửi mã ${klass.joinCode} cho học sinh để các em tham gia lớp.`}
-      />
-    );
-  } else {
-    const { data, meta } = members.data;
-    body = (
-      <>
-        <ul aria-label="Học sinh trong lớp" className="flex flex-col">
-          {data.map((member) => (
-            <MemberRow key={member.userId} classId={klass.id} member={member} />
-          ))}
-        </ul>
-        <Pagination
-          page={meta.page}
-          pageCount={Math.ceil(meta.total / MEMBERS_PAGE_SIZE)}
-          hrefFor={hrefFor}
-        />
-      </>
-    );
-  }
-
-  return (
-    <section aria-labelledby="members-title" className="flex flex-col gap-3">
-      <h2 id="members-title" className="text-h2">
-        Học sinh <span className="text-text-muted tabular-nums">({klass.memberCount})</span>
-      </h2>
-      {body}
-    </section>
-  );
-}
-
 type ClassTab = 'assignments' | 'students';
 
 function TabLink({ href, current, children }: { href: Route; current: boolean; children: string }) {
@@ -461,11 +342,24 @@ export function ClassDetail({ id }: { id: string }) {
   const page = readPage('page');
   const assignmentsPage = readPage('apage');
   const tab: ClassTab = searchParams.get('tab') === 'students' ? 'students' : 'assignments';
+  const memberQuery = (searchParams.get('q') ?? '').slice(0, CLASS_MEMBER_SEARCH_MAX_LENGTH);
+  const memberSort = classMemberListQuerySchema.shape.sort.parse(
+    searchParams.get('sort') ?? undefined,
+  );
+  const router = useRouter();
   // Tab và số trang nằm trong URL để nút quay lại của trình duyệt về đúng chỗ.
-  const classHref = (next: { tab?: ClassTab; page?: number; apage?: number }) => {
+  const classHref = (next: {
+    tab?: ClassTab;
+    page?: number;
+    apage?: number;
+    q?: string;
+    sort?: string;
+  }) => {
     const params = new URLSearchParams();
     const nextTab = next.tab ?? tab;
     if (nextTab === 'students') params.set('tab', 'students');
+    if (next.q) params.set('q', next.q);
+    if (next.sort && next.sort !== 'joinedAt') params.set('sort', next.sort);
     if ((next.page ?? 1) > 1) params.set('page', String(next.page));
     if ((next.apage ?? 1) > 1) params.set('apage', String(next.apage));
     const query = params.toString();
@@ -522,10 +416,16 @@ export function ClassDetail({ id }: { id: string }) {
           hrefFor={(next) => classHref({ tab: 'assignments', apage: next })}
         />
       ) : (
-        <Members
+        <ClassMembers
+          key={`${memberQuery}:${memberSort}`}
           klass={klass.data}
           page={page}
-          hrefFor={(next) => classHref({ tab: 'students', page: next })}
+          query={memberQuery}
+          sort={memberSort}
+          hrefFor={(next) =>
+            classHref({ tab: 'students', page: next, q: memberQuery, sort: memberSort })
+          }
+          onSearch={({ q, sort }) => router.push(classHref({ tab: 'students', q, sort }))}
         />
       )}
     </>
