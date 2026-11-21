@@ -90,6 +90,7 @@
 - **Việc:** 1.13, 1.27, 1.45. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tổng số thẻ đến hạn, danh sách bộ có thẻ đến hạn, phân trang, chọn chế độ ôn, phiên chỉ gồm thẻ đến hạn.
 - **Luồng chính:** mở trang, chọn bộ và chế độ, ôn xong thì số thẻ giảm.
+- **Nhiều chế độ (5.28):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard như hiện nay). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình: thanh bước ở đầu, xong chế độ này sang chế độ kế, màn kết quả cuối có nút về Ôn hôm nay. Chế độ không dùng được với bộ thì tự bỏ qua và báo một dòng. Lựa chọn lưu trên thiết bị.
 - **Ngoại lệ:** không có thẻ đến hạn thì mời học thêm; ôn xong hết thì báo đã xong; bộ đã xoá không xuất hiện; thẻ sai sẽ quay lại sau 10 phút.
 - **Test đã có:** `review-due.integration`, `due-sets.test`.
 - **Test cần thêm:** E2E đặt thẻ đến hạn trong database test, ôn xong danh sách cập nhật.
@@ -102,3 +103,12 @@
 - **Ngoại lệ:** chưa học gì thì mời bắt đầu; lỗi mạng có nút thử lại; bộ đã xoá không nằm trong từ hay sai.
 - **Test đã có:** `stats.integration`, `stats-overview.test`, unit `stats`, E2E.
 - **Test cần thêm:** integration ranh giới 0 giờ Việt Nam.
+
+## UC-L12. Âm thanh khi trả lời đúng
+
+- **Việc:** 5.24. **Người dùng:** mọi người, kể cả khách học thử. **Trạng thái:** Đủ, chưa nghe thử bằng tai trên điện thoại.
+- **Phải có:** một tiếng chuông ngắn (hai nốt đi lên, dưới 0,3 giây, âm lượng nhỏ) ngay khi đáp án được chấm đúng ở Flashcard (bấm "Đã nhớ"), Học kỹ, Viết, Nghe viết, Điền từ, Trắc nghiệm, Ghép cặp (mỗi cặp đúng) và Luyện nói. Trả lời sai không phát âm thanh để không làm nản. Bật tắt ở Tài khoản, mục "Giọng đọc và âm thanh", lưu trên thiết bị, mặc định bật; bật lên thì phát thử một lần.
+- **Quy tắc:** Kiểm tra không phát âm thanh trong lúc làm vì sẽ lộ đáp án. Âm thanh tạo bằng Web Audio, không tải file. Âm thanh chỉ là phản hồi phụ, màu, icon và chữ "Chính xác" vẫn giữ nguyên.
+- **Ngoại lệ:** trình duyệt không có Web Audio thì ẩn nút bật tắt và không phát; localStorage bị chặn thì coi như bật; lỗi phát âm thanh không làm hỏng phiên học.
+- **Test đã có:** `sound.test`, `mcq-mode.test`.
+- **Test thủ công:** Chrome Android, Safari iOS (chế độ im lặng), Chrome máy tính.

@@ -4,6 +4,7 @@ import { Volume2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   DEFAULT_SPEECH_SETTINGS,
   hasExactVoice,
@@ -15,6 +16,12 @@ import {
   type SpeechRate,
   type SpeechSettings as Settings,
 } from '@/lib/speech';
+import {
+  isSoundSupported,
+  loadSoundEnabled,
+  playCorrectSound,
+  saveSoundEnabled,
+} from '@/lib/sound';
 
 const SAMPLE = 'Practice makes perfect.';
 
@@ -22,11 +29,15 @@ const SAMPLE = 'Practice makes perfect.';
 export function SpeechSettings() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SPEECH_SETTINGS);
   const [exact, setExact] = useState(true);
+  const [sound, setSound] = useState(true);
+  const [soundSupported, setSoundSupported] = useState(false);
 
   useEffect(() => {
     // Đọc lựa chọn đã lưu sau khi hiện để HTML từ máy chủ và trình duyệt giống nhau.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- chỉ đọc localStorage một lần
     setSettings(loadSpeechSettings());
+    setSound(loadSoundEnabled());
+    setSoundSupported(isSoundSupported());
   }, []);
 
   useEffect(() => {
@@ -50,7 +61,7 @@ export function SpeechSettings() {
       className="flex w-full flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5"
     >
       <h2 id="speech-title" className="text-h3">
-        Giọng đọc
+        Giọng đọc và âm thanh
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-small font-medium">
@@ -86,6 +97,47 @@ export function SpeechSettings() {
           Nghe thử
         </Button>
       </div>
+      {soundSupported ? (
+        <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
+          <span className="flex min-w-0 flex-col">
+            <span id="sound-label" className="font-medium">
+              Âm thanh khi trả lời đúng
+            </span>
+            <span id="sound-hint" className="text-small text-text-muted">
+              Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra.
+            </span>
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={sound}
+            aria-labelledby="sound-label"
+            aria-describedby="sound-hint"
+            onClick={() => {
+              const enabled = !sound;
+              setSound(enabled);
+              saveSoundEnabled(enabled);
+              if (enabled) playCorrectSound();
+            }}
+            className="group flex size-11 shrink-0 items-center justify-center rounded-full"
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'flex h-6 w-10 items-center rounded-full border-2 p-0.5 transition-colors duration-fast ease-standard',
+                sound ? 'border-primary bg-primary' : 'border-border-strong bg-surface',
+              )}
+            >
+              <span
+                className={cn(
+                  'size-4 rounded-full transition-transform duration-fast ease-standard motion-reduce:transition-none',
+                  sound ? 'translate-x-4 bg-primary-fg' : 'bg-text-muted',
+                )}
+              />
+            </span>
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

@@ -19,6 +19,9 @@ Phân tích từ góp ý ngày 2026-11-20 sau khi dùng thử bằng tài khoả
 | GAP-24 | Thẻ bộ từ cao tối thiểu 160 px, màn hình rộng chỉ thấy 6 bộ                                                               | Đã tái hiện | Thấp | 5.6            |
 | GAP-25 | Tên hoặc mô tả dài không có dấu cách tràn khỏi thẻ và hàng                                                                | Đọc code    | Vừa  | 5.5            |
 | GAP-26 | Một số danh sách tải hết một lần (bài đã giao, bài cần làm, lớp đã tham gia, kết quả của học sinh, thẻ trong trang bộ từ) | Đọc code    | Vừa  | 5.7            |
+| GAP-27 | Modal giao bài có thêm một ô "Tìm bộ từ" tách khỏi ô chọn bộ; ô chọn ngôn ngữ dài không tìm được                          | Đã tái hiện | Vừa  | 5.25           |
+| GAP-29 | Giao bài chỉ chọn được tối đa 5 chế độ; Ôn hôm nay chỉ ôn bằng một chế độ mỗi lần                                         | Góp ý       | Vừa  | 5.27, 5.28     |
+| GAP-28 | Modal hẹp (512 px); ở 360 px form chỉ một ô vẫn chiếm cả màn hình, cao hơn nhiều so với nội dung                          | Đã tái hiện | Vừa  | 5.26           |
 
 Nguyên nhân GAP-14: `AccountMenu` giữ state `leaving` sau khi bấm Đăng xuất và không đặt lại. Header của app không bị huỷ khi chuyển trang (Next 16 giữ cây component của route cũ), nên lần đăng nhập sau vẫn thấy state cũ. Sửa bằng cách đặt lại `leaving` khi người dùng trong store đổi, hoặc gắn `key` theo `user.id`.
 
@@ -52,7 +55,7 @@ Vì vậy bộ từ giao cho lớp **không cần công khai**. Quy tắc mới 
 
 ### Bài giao nhiều chế độ
 
-- Giáo viên chọn 1 đến 5 chế độ, theo thứ tự. Mặc định là lộ trình đề xuất giống "Bắt đầu học": Xem thẻ, Trắc nghiệm, Ghép cặp, Luyện viết. Giáo viên kéo hoặc dùng nút lên, xuống để đổi thứ tự.
+- Giáo viên chọn từ 1 chế độ đến tất cả chế độ dùng được với bộ, theo thứ tự, có nút "Chọn tất cả" và "Bỏ chọn" (5.27; trước đây giới hạn 5). Mặc định là lộ trình đề xuất giống "Bắt đầu học": Xem thẻ, Trắc nghiệm, Ghép cặp, Luyện viết. Giáo viên kéo hoặc dùng nút lên, xuống để đổi thứ tự.
 - Luyện nói được chọn nhưng có cảnh báo "Cần micro và trình duyệt hỗ trợ. Học sinh không nói được có thể bỏ qua từng câu."
 - Chế độ không dùng được với bộ (ví dụ Ghép cặp cần ít nhất 2 thẻ) thì không chọn được, có lý do.
 - Bài giao cũ có một chế độ được chuyển thành danh sách một phần tử (`modes = [mode]`).
@@ -233,14 +236,18 @@ Tiếng Anh 10A1 · 32 học sinh · Mã YQMZ4L ⧉  [Mời học sinh]
 └─────────────────────────────────────────────────────┘
 ```
 
-- Ô chọn bộ có tìm kiếm, hiện số thẻ và phạm vi. Hạn nộp tuỳ chọn, phải sau hiện tại.
-- Ở 360 px modal chiếm toàn màn hình, nút dính ở đáy.
+- Ô chọn bộ là `Combobox`: gõ để lọc ngay trong ô, không có ô tìm kiếm riêng; mỗi mục hiện số thẻ và phạm vi. Hạn nộp tuỳ chọn, phải sau hiện tại.
+- Modal cỡ `lg`. Ở 360 px modal cao theo nội dung, nút dính ở đáy khi form dài hơn màn hình.
 
 ## 5. Quy tắc giao diện toàn site
 
 Đưa vào `docs/05-ui-tokens.md` khi làm việc tương ứng.
 
-**Form trong modal (5.3, 5.8).** Form ngắn (dưới khoảng 6 trường) mở trong `FormDialog`, không chèn vào trang và không mở trang riêng. Ngoại lệ là trình soạn dài: tạo, sửa bộ từ và nhập từ file giữ trang riêng vì cần nhiều chỗ và có cảnh báo chưa lưu. `FormDialog` dùng chung nền với `ConfirmDialog`: `dialog` gốc, khoá focus, Esc đóng (hỏi lại nếu đã nhập), focus vào ô đầu tiên, lỗi máy chủ hiện trong modal, nút gửi có vòng quay, 360 px thì toàn màn hình.
+**Form trong modal (5.3, 5.8).** Form ngắn (dưới khoảng 6 trường) mở trong `FormDialog`, không chèn vào trang và không mở trang riêng. Ngoại lệ là trình soạn dài: tạo, sửa bộ từ và nhập từ file giữ trang riêng vì cần nhiều chỗ và có cảnh báo chưa lưu. `FormDialog` dùng chung nền với `ConfirmDialog`: `dialog` gốc, khoá focus, Esc đóng (hỏi lại nếu đã nhập), focus vào ô đầu tiên, lỗi máy chủ hiện trong modal, nút gửi có vòng quay. Kích thước theo mục "Kích thước modal" (5.26).
+
+**Ô chọn có tìm kiếm (5.25).** Ô chọn nào có thể quá 8 lựa chọn (bộ từ, lớp, ngôn ngữ) dùng `Combobox` dùng chung (`components/common/combobox.tsx`): ô nhập là chính ô chọn, gõ để lọc không phân biệt dấu và hoa thường, danh sách thả xuống tối đa khoảng 6 mục rồi cuộn, phím lên xuống để chọn, Enter chọn, Esc đóng và giữ giá trị cũ, không có kết quả thì ghi "Không có kết quả". Theo mẫu ARIA combobox (`role="combobox"`, `aria-expanded`, `aria-activedescendant`, `role="listbox"`). Không thêm một ô "Tìm…" riêng cạnh ô chọn. Ô chọn ngắn, cố định (giọng đọc, tốc độ, dấu phân cách, cột) giữ `Select`.
+
+**Kích thước modal (5.26).** `FormDialog` có cỡ `md` (mặc định, 560 px) và `lg` (720 px, cho form nhiều cột hoặc danh sách như giao bài). Chiều cao luôn theo nội dung, tối đa `100dvh - 4rem`, phần thân cuộn khi dài hơn. Ở 360 px modal là tấm đáy (bottom sheet) rộng hết màn hình, bo hai góc trên, cao theo nội dung; chỉ chạm đỉnh màn hình khi form thật sự dài. Không đặt chiều cao cố định.
 
 **Phân trang (5.7).** Danh sách có thể dài hơn 20 mục thì phân trang bằng `Pagination`, số trang trong URL (`?page=`). Không tải hết rồi cuộn. Ngoại lệ: danh sách thẻ trong trình soạn bộ từ (đã có khung cuộn riêng ở 2.32). Danh sách thẻ trên trang bộ từ phân trang 50 thẻ. Mọi endpoint danh sách giữ `limit` tối đa 100.
 

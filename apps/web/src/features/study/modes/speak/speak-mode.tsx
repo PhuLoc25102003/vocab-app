@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { isRecognitionSupported, ListenError, listenOnce } from '@/lib/speech-recognition';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
+import { playCorrectSound } from '@/lib/sound';
 
 const FAILURE_MESSAGES = {
   unsupported: 'Trình duyệt này chưa nhận được giọng nói. Hãy dùng Chrome hoặc Edge, hoặc bỏ qua.',
@@ -54,7 +55,9 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
         '';
       const answer = { questionId: question.id, value, timeMs: Date.now() - shownAt.current };
       setHeard(value);
-      setResult(getMode(question.mode).grade(question, answer));
+      const graded = getMode(question.mode).grade(question, answer);
+      if (graded.isCorrect) playCorrectSound();
+      setResult(graded);
       if (!first.current) {
         first.current = answer;
         onChecked?.(answer);
