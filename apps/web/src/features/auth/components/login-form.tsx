@@ -11,20 +11,20 @@ import { FormField } from '@/components/common/form-field';
 import { PasswordField } from '@/components/common/password-field';
 import { Button } from '@/components/ui/button';
 import { login } from '../api';
-import { applyFormError } from '@/lib/form-errors';
+import { applyFormError, formErrorMessage } from '@/lib/form-errors';
 import { safeNextPath } from '../next-path';
 import { startSession } from '../session';
 import { FormError, FormNotice } from '@/components/common/form-message';
 import { useTranslation } from 'react-i18next';
+import { toLocale } from '@/lib/i18n/config';
 
 const FIELDS = ['email', 'password'] as const;
 
 export function LoginForm() {
-  const { t } = useTranslation('auth');
+  const { t, i18n } = useTranslation('auth');
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
-  const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -35,9 +35,12 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+  const [rawError, setRawError] = useState<unknown | null>(null);
+  // Giữ lỗi gốc để thông báo dịch lại khi đổi ngôn ngữ; lỗi theo trường chỉ gán một lần trong catch.
+  const formError = rawError ? formErrorMessage(rawError, toLocale(i18n.language)) : null;
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
+    setRawError(null);
     try {
       startSession(await login(values));
       // Next giữ trang cũ ẩn trong DOM, không để mật khẩu nằm lại trong form.
@@ -46,7 +49,8 @@ export function LoginForm() {
       router.refresh();
       router.replace(safeNextPath(next) as Route);
     } catch (error) {
-      setFormError(applyFormError(error, FIELDS, setError));
+      const message = applyFormError(error, FIELDS, setError, toLocale(i18n.language));
+      setRawError(message === null ? null : error);
     }
   });
 

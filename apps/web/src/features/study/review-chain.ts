@@ -15,6 +15,7 @@ export const REVIEW_MODES: readonly StudyMode[] = [
 
 const MODES_KEY = 'vocab.review-modes';
 const cardsKey = (setId: string) => `vocab.review-cards:${setId}`;
+const chainKey = (setId: string) => `vocab.review-chain:${setId}`;
 const slug = (mode: StudyMode) => mode.toLowerCase();
 
 /** Danh sách chế độ trong tham số `next`, bỏ giá trị lạ và trùng. */
@@ -87,5 +88,46 @@ export function loadReviewCards(setId: string): string[] | null {
       : null;
   } catch {
     return null;
+  }
+}
+
+export function saveReviewChain(setId: string, modes: StudyMode[]): void {
+  try {
+    window.sessionStorage.setItem(chainKey(setId), JSON.stringify(modes));
+  } catch {
+    // Bỏ qua.
+  }
+}
+
+/** Chuỗi JSON đã lưu, dùng làm snapshot ổn định cho `useSyncExternalStore`. */
+export function readReviewChainRaw(setId: string): string | null {
+  try {
+    return window.sessionStorage.getItem(chainKey(setId));
+  } catch {
+    return null;
+  }
+}
+
+/** Đọc chuỗi chế độ đã lưu, bỏ giá trị lạ; rỗng thì trả `null`. */
+export function parseReviewChain(raw: string | null): StudyMode[] | null {
+  try {
+    const parsed: unknown = JSON.parse(raw ?? 'null');
+    if (!Array.isArray(parsed)) return null;
+    const modes = parsed.filter((m): m is StudyMode => REVIEW_MODES.includes(m as StudyMode));
+    return modes.length ? modes : null;
+  } catch {
+    return null;
+  }
+}
+
+export function loadReviewChain(setId: string): StudyMode[] | null {
+  return parseReviewChain(readReviewChainRaw(setId));
+}
+
+export function clearReviewChain(setId: string): void {
+  try {
+    window.sessionStorage.removeItem(chainKey(setId));
+  } catch {
+    // Bỏ qua.
   }
 }

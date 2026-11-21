@@ -2,7 +2,16 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { AdminStats } from '@vocab/shared';
-import { Lock, EyeOff, ListChecks } from 'lucide-react';
+import {
+  Activity,
+  BookMarked,
+  EyeOff,
+  Library,
+  ListChecks,
+  Lock,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useId, useState, type ReactNode } from 'react';
@@ -10,6 +19,7 @@ import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { getAdminStats } from '../api';
 import { ADMIN_STATS_QUERY_KEY, HideSetButton } from './hide-set-button';
 import { useTranslation } from 'react-i18next';
@@ -27,13 +37,41 @@ const formatShortDate = (day: string, locale: string) =>
 const formatNum = (value: number, locale: string) =>
   new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN').format(value);
 
-function Tile({ label, value, note }: { label: string; value: number; note?: string }) {
+function Tile({
+  label,
+  value,
+  note,
+  icon: Icon,
+  iconColor,
+  iconBg,
+}: {
+  label: string;
+  value: number;
+  note?: string;
+  icon?: LucideIcon;
+  iconColor?: string;
+  iconBg?: string;
+}) {
   const { i18n } = useTranslation();
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-border-strong bg-surface p-4">
-      <dd className="text-h2 tabular-nums">{formatNum(value, i18n.language)}</dd>
-      <dt className="font-medium">{label}</dt>
-      {note ? <dd className="text-small text-text-muted">{note}</dd> : null}
+    <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5">
+      <dt className="col-span-2 row-start-2 font-medium text-text">{label}</dt>
+      <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">
+        {formatNum(value, i18n.language)}
+      </dd>
+      {note ? <dd className="col-span-2 row-start-3 text-small text-text-muted">{note}</dd> : null}
+      {Icon ? (
+        <span
+          aria-hidden
+          className={cn(
+            'col-start-2 row-start-1 flex size-8 items-center justify-center rounded-md',
+            iconBg,
+            iconColor,
+          )}
+        >
+          <Icon className="size-4" />
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -196,14 +234,33 @@ export function AdminOverview() {
           label={t('tiles.users')}
           value={data.users}
           note={t('tiles.newUsers', { count: data.newUsers })}
+          icon={Users}
+          iconColor="text-primary"
+          iconBg="bg-primary-soft"
         />
-        <Tile label={t('tiles.active')} value={data.activeUsers} note={t('tiles.activeNote')} />
+        <Tile
+          label={t('tiles.active')}
+          value={data.activeUsers}
+          note={t('tiles.activeNote')}
+          icon={Activity}
+          iconColor="text-success"
+          iconBg="bg-success-soft"
+        />
         <Tile
           label={t('tiles.sets')}
           value={data.sets}
           note={t('tiles.publicSets', { count: formatNum(data.publicSets, i18n.language) })}
+          icon={Library}
+          iconColor="text-text-muted"
+          iconBg="bg-bg"
         />
-        <Tile label={t('tiles.sessions')} value={data.sessions} />
+        <Tile
+          label={t('tiles.sessions')}
+          value={data.sessions}
+          icon={BookMarked}
+          iconColor="text-highlight-fg"
+          iconBg="bg-highlight"
+        />
       </dl>
       <Panel title={t('panels.last30')}>
         <div className="grid gap-6 md:grid-cols-2">
@@ -226,7 +283,7 @@ export function AdminOverview() {
               icon={<Lock className="size-4" />}
               text={t('todo.locked', { count: data.lockedUsers })}
               href="/admin/users"
-              action="Xem"
+              action={t('todo.view')}
             />
             <TodoRow
               icon={<EyeOff className="size-4" />}

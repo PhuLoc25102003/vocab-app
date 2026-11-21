@@ -45,7 +45,8 @@
   "todo": {
     "locked": "{{count}} locked accounts",
     "hidden": "{{count}} hidden sets",
-    "newPublic": "{{count}} new public sets to review"
+    "newPublic": "{{count}} new public sets to review",
+    "view": "View"
   },
   "noUsers": "No accounts yet.",
   "noNewPublic": "No new public sets in 7 days.",

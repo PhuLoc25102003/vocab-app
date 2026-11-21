@@ -1,8 +1,8 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-21
+Cập nhật lần cuối: 2026-11-22
 
-**Đang ở:** Giai đoạn 2, 3, 4, 5, 6 đã xong toàn bộ mã nguồn trong repo. Giai đoạn 6 (Đa ngôn ngữ bằng i18next) đã hoàn thiện 100% tất cả các màn hình, schema validation, dialogs, auth, app shell, study, classes, admin, format ngày giờ/số động theo locale và tích hợp linter kiểm tra chuỗi hardcoded. Đã hoàn thành sửa lỗi layout mobile 360 px và chống nhảy layout ôn tập (5.36), sửa đăng nhập Google kẹt màn hình trắng trên mobile (5.37). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2 đến 6 đã xong toàn bộ mã nguồn trong repo. Đã sửa layout mobile 360 px và chống nhảy layout ôn tập (5.36), đăng nhập Google kẹt màn hình trắng trên mobile (5.37). Việc 6.8 và 6.9 (#415) gom các chỉnh sửa UX xác thực, đa ngôn ngữ, thẻ thống kê 3 vai trò, ôn nối tiếp nhiều chế độ và vùng bấm 44 px ở Ôn hôm nay vào một PR. Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -23,8 +23,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       9 |       9 | Xong       |
-| **Toàn dự án**          |                                            | **173** | **177** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      11 |      11 | Xong       |
+| **Toàn dự án**          |                                            | **175** | **179** | **98%**    |
 
 ## Cách cập nhật
 
@@ -339,6 +339,8 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **6.5** Dịch các chế độ học, lộ trình, Ôn hôm nay, thống kê, offline. Cần 6.1.
 - [x] **6.6** Dịch lớp học, bài tập, Tài khoản, quản trị. Cần 6.1.
 - [x] **6.7** Ngày giờ và số theo ngôn ngữ, script báo chữ tiếng Việt viết cứng trong `.tsx` chạy cùng `npm run lint`, E2E đổi ngôn ngữ và audit ở cả hai ngôn ngữ. Cần 6.2 đến 6.6.
+- [x] **6.8** Tinh chỉnh UX xác thực, đa ngôn ngữ, thẻ thống kê 3 vai trò và ôn nối tiếp nhiều chế độ (GAP-36, UC-I5, UC-L10). Một PR gồm: header trang xác thực gom nút ngôn ngữ và theme về bên phải; lỗi xác thực và Google Sign-in giữ lỗi gốc rồi dịch lại theo ngôn ngữ đang chọn, kể cả khi đổi ngôn ngữ sau khi lỗi hiện ra; `toLocale` nhận cả `en-US`, `vi-VN`; `html lang` cập nhật theo sự kiện `languageChanged`; `translate="no"` chặn Google Dịch sửa DOM làm React lỗi; bỏ `<script>` trong `LocaleRoot` (cảnh báo Turbopack); dịch chữ "Xem" viết cứng ở việc cần làm của admin; thẻ thống kê 3 vai trò theo mục "Thẻ thống kê" ở `docs/05-ui-tokens.md`, màu icon chỉ dùng token; gọn khối Ôn hôm nay; ôn nhiều chế độ có thanh bước `ReviewSteps`, lưu tập thẻ và chuỗi chế độ trong `sessionStorage`, đọc chuỗi sau hydrate để không lệch HTML, mỗi chế độ là một phiên mới nhờ `key`, chế độ cuối báo hoàn thành và xoá dữ liệu đã lưu. (#415)
+- [x] **6.9** Chip chọn chế độ ở Ôn hôm nay (`ReviewModePicker`) và các nút tương tự đạt vùng bấm 44 px mà khối tóm tắt vẫn gọn ở 360 px: chip giữ 36 px, lớp `::after` nới vùng bấm; nút "Ôn bộ đầu tiên" và "Chọn tất cả" cao 44 px; bỏ chữ đậm khi chọn để chip không đổi bề rộng. Phát hiện khi review 6.8. (#415)
 
 ## Quyết định cần chốt
 

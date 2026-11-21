@@ -28,6 +28,7 @@ export default async function StudyPage({
   }
   return (
     <AccountStudy
+      key={`${id}-${mode}`}
       setId={id}
       mode={mode}
       dueOnly={due === '1'}

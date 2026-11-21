@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { Award, BookOpen, Flame, TrendingUp } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { EmptyState } from '@/components/common/empty-state';
@@ -8,9 +9,33 @@ import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { getStatsOverview } from '../api';
 import { ActivityChart, MasteryBar } from './overview-charts';
 import { Trans, useTranslation } from 'react-i18next';
+
+const STAT_STYLES = {
+  'stats.streak': {
+    icon: Flame,
+    color: 'text-highlight-fg',
+    bg: 'bg-highlight',
+  },
+  'stats.masteredWords': {
+    icon: Award,
+    color: 'text-primary',
+    bg: 'bg-primary-soft',
+  },
+  'stats.learningWords': {
+    icon: BookOpen,
+    color: 'text-text-muted',
+    bg: 'bg-bg',
+  },
+  'stats.answersToday': {
+    icon: TrendingUp,
+    color: 'text-success',
+    bg: 'bg-success-soft',
+  },
+} as const;
 
 export function StatsOverview() {
   const { t } = useTranslation('study');
@@ -71,15 +96,15 @@ export function StatsOverview() {
       <h2 id="stats-heading" className="sr-only">
         {t('stats.title')}
       </h2>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-l-4 border-primary bg-primary-soft px-4 py-3">
-        <p>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary-soft/60 px-4 py-3 sm:px-5 sm:py-3.5">
+        <p className="font-medium text-text">
           {dueCards > 0 ? (
             <>
               <Trans
                 t={t}
                 i18nKey="stats.dueBanner"
                 values={{ count: dueCards }}
-                components={[<span key="c" className="font-semibold tabular-nums" />]}
+                components={[<span key="c" className="font-semibold tabular-nums text-primary" />]}
               />
             </>
           ) : (
@@ -95,20 +120,36 @@ export function StatsOverview() {
         </Button>
       </div>
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {items.map(({ label, value }) => (
-          <div
-            key={label}
-            className="flex flex-col-reverse gap-1 rounded-md border border-border bg-surface p-4"
-          >
-            <dt className="text-small text-text-muted">
-              {t(label)}
+        {items.map(({ label, value }) => {
+          const style = STAT_STYLES[label];
+          const Icon = style.icon;
+          return (
+            <div
+              key={label}
+              className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5"
+            >
+              <dt className="col-span-2 row-start-2 font-medium text-text">{t(label)}</dt>
+              <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">
+                {value}
+              </dd>
               {label === 'stats.masteredWords' ? (
-                <span className="block text-tiny">{t('stats.masteredRule')}</span>
+                <dd className="col-span-2 row-start-3 text-small text-text-muted">
+                  {t('stats.masteredRule')}
+                </dd>
               ) : null}
-            </dt>
-            <dd className="text-h1 tabular-nums">{value}</dd>
-          </div>
-        ))}
+              <span
+                aria-hidden
+                className={cn(
+                  'col-start-2 row-start-1 flex size-8 items-center justify-center rounded-md',
+                  style.bg,
+                  style.color,
+                )}
+              >
+                <Icon className="size-4" />
+              </span>
+            </div>
+          );
+        })}
       </dl>
       <div className="grid gap-6 lg:grid-cols-2">
         <ActivityChart activity={activity} />
