@@ -75,9 +75,11 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   await createDialog.getByRole('button', { name: 'Tạo lớp' }).click();
   await teacher.waitForURL('**/classes/*');
   await expect(teacher.getByRole('heading', { name: className })).toBeVisible();
-  const joinCode = (
-    await teacher.getByRole('region', { name: 'Mã lớp' }).locator('p').first().innerText()
-  ).trim();
+  // Mã lớp nằm trong nhãn của nút sao chép cạnh chip mã.
+  const copyLabel = await teacher
+    .getByRole('button', { name: /^Sao chép mã lớp / })
+    .getAttribute('aria-label');
+  const joinCode = (copyLabel ?? '').replace('Sao chép mã lớp ', '').trim();
   expect(joinCode).toMatch(/^[A-Z2-9]{6}$/);
   const classPath = new URL(teacher.url()).pathname;
 
