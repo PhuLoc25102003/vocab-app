@@ -121,6 +121,32 @@ describe('học sinh xem bài cần làm', () => {
     ]);
   });
 
+  it('lọc theo nhóm, lớp, tên bộ và sắp mới giao trước, kèm số từng nhóm (việc 5.30)', async () => {
+    const now = Date.now();
+    const old = await assign({ mode: 'MCQ', at: new Date(now - 3 * DAY) });
+    const recent = await assign({ mode: 'WRITE', at: new Date(now - DAY) });
+    await prisma.assignmentSubmission.create({
+      data: { assignmentId: old.id, userId: student.id, score: 90, late: false },
+    });
+
+    const todo = await list(student.token, '?group=todo').expect(200);
+    expect(todo.body.data.map((item: { id: string }) => item.id)).toEqual([recent.id]);
+    expect(todo.body.counts).toEqual({ todo: 1, done: 1, all: 2 });
+
+    const done = await list(student.token, '?group=done').expect(200);
+    expect(done.body.data.map((item: { id: string }) => item.id)).toEqual([old.id]);
+
+    const newest = await list(student.token, '?sort=-createdAt').expect(200);
+    expect(newest.body.data.map((item: { id: string }) => item.id)).toEqual([recent.id, old.id]);
+
+    const otherClass = await list(student.token, '?classId=khac').expect(200);
+    expect(otherClass.body).toMatchObject({ data: [], counts: { all: 0 } });
+    const byName = await list(student.token, '?q=UNIT').expect(200);
+    expect(byName.body.meta.total).toBe(2);
+    const noMatch = await list(student.token, '?q=khong-co').expect(200);
+    expect(noMatch.body.meta.total).toBe(0);
+  });
+
   it('chỉ tính phiên học xong đúng chế độ và sau lúc giao', async () => {
     const assignedAt = new Date(Date.now() - DAY);
     await assign({ mode: 'WRITE', at: assignedAt });

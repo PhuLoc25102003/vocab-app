@@ -40,7 +40,11 @@ const assignment = (overrides: Partial<MyAssignment>): MyAssignment => ({
   doneModes: 0,
   ...overrides,
 });
-const page = <T,>(data: T[]) => ({ data, meta: { page: 1, limit: 100, total: data.length } });
+const page = <T,>(data: T[]) => ({
+  data,
+  meta: { page: 1, limit: 100, total: data.length },
+  counts: { todo: 0, done: 0, all: data.length },
+});
 
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

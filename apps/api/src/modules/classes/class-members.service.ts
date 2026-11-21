@@ -3,8 +3,8 @@ import {
   ERROR_CODES,
   type ClassMemberListQuery,
   type JoinClassInput,
+  type JoinedClassListQuery,
   type MemberStats,
-  type Pagination,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -83,7 +83,7 @@ export class ClassMembersService {
     return ok(await this.members.join(found.id, userId));
   }
 
-  async listJoined(userId: string, query: Pagination) {
+  async listJoined(userId: string, query: JoinedClassListQuery) {
     const { items, total } = await this.members.findJoined(userId, query);
     return paginated(items, total, query);
   }

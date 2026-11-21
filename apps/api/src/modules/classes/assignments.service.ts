@@ -5,6 +5,7 @@ import {
   type AssignmentStatus,
   type CreateAssignmentDto,
   type Pagination,
+  type MyAssignmentListQuery,
   type ProgressStatus,
   type StudyMode,
   type Submission,
@@ -136,7 +137,7 @@ export class AssignmentsService {
   }
 
   /** Bỏ lỡ lên đầu, rồi bài chưa nộp theo hạn gần nhất, bài đã nộp xuống cuối. */
-  async listForMember(userId: string, query: Pagination, now = new Date()) {
+  async listForMember(userId: string, query: MyAssignmentListQuery, now = new Date()) {
     const items = await this.assignments.findForMember(userId);
     const rank: Record<ProgressStatus, number> = {
       missed: 0,
@@ -160,8 +161,27 @@ export class AssignmentsService {
         (a, b) => rank[a.item.progressStatus] - rank[b.item.progressStatus] || a.index - b.index,
       )
       .map(({ item }) => item);
+    const needle = query.q?.toLocaleLowerCase('vi');
+    const scoped = withStatus.filter(
+      (item) =>
+        (!query.classId || item.classId === query.classId) &&
+        (!needle || item.setTitle.toLocaleLowerCase('vi').includes(needle)),
+    );
+    const isDone = (item: { progressStatus: ProgressStatus }) =>
+      item.progressStatus === 'submitted' || item.progressStatus === 'late';
+    const grouped = scoped.filter((item) =>
+      query.group === 'all' ? true : query.group === 'done' ? isDone(item) : !isDone(item),
+    );
+    const sorted =
+      query.sort === '-createdAt'
+        ? [...grouped].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+        : grouped;
     const start = (query.page - 1) * query.limit;
-    return paginated(withStatus.slice(start, start + query.limit), withStatus.length, query);
+    const done = scoped.filter(isDone).length;
+    return {
+      ...paginated(sorted.slice(start, start + query.limit), sorted.length, query),
+      counts: { todo: scoped.length - done, done, all: scoped.length },
+    };
   }
 }
 

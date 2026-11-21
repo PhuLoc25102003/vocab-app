@@ -14,8 +14,9 @@ import {
   joinClassSchema,
   joinedClassListQuerySchema,
   myAssignmentListQuerySchema,
+  type JoinedClassListQuery,
+  type MyAssignmentListQuery,
   type JoinClassInput,
-  type Pagination,
 } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -49,7 +50,7 @@ export class ClassMembershipController {
   @ApiOperation({ summary: 'Lớp tôi đã tham gia, không gồm lớp đã lưu trữ' })
   listJoined(
     @CurrentUser() user: CurrentUserData,
-    @Query(new ZodValidationPipe(joinedClassListQuerySchema)) query: Pagination,
+    @Query(new ZodValidationPipe(joinedClassListQuerySchema)) query: JoinedClassListQuery,
   ) {
     return this.members.listJoined(user.id, query);
   }
@@ -60,7 +61,7 @@ export class ClassMembershipController {
   })
   listMyAssignments(
     @CurrentUser() user: CurrentUserData,
-    @Query(new ZodValidationPipe(myAssignmentListQuerySchema)) query: Pagination,
+    @Query(new ZodValidationPipe(myAssignmentListQuerySchema)) query: MyAssignmentListQuery,
   ) {
     return this.assignments.listForMember(user.id, query);
   }

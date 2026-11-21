@@ -99,6 +99,10 @@ describe('thành viên lớp', () => {
 
     expect(response.body.meta.total).toBe(1);
     expect(response.body.data).toMatchObject([{ id: classId }]);
+
+    // Tìm theo tên lớp (việc 5.30).
+    const found = await call('get', '/classes/joined?q=khong-co', student.token).expect(200);
+    expect(found.body.meta.total).toBe(0);
   });
 
   it('học sinh rời lớp, rời lần nữa trả 404', async () => {

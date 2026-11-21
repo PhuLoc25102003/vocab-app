@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ClassMemberListQuery, Pagination } from '@vocab/shared';
+import type { ClassMemberListQuery, JoinedClassListQuery } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -45,8 +45,14 @@ export class ClassMembersRepository extends BaseRepository {
     return toJoinedClass(row);
   }
 
-  async findJoined(userId: string, query: Pagination) {
-    const where = { userId, class: { archivedAt: null } };
+  async findJoined(userId: string, query: JoinedClassListQuery) {
+    const where = {
+      userId,
+      class: {
+        archivedAt: null,
+        ...(query.q ? { name: { contains: query.q, mode: 'insensitive' as const } } : {}),
+      },
+    };
     const [rows, total] = await Promise.all([
       this.prisma.classMember.findMany({
         where,

@@ -26,7 +26,11 @@ const item = (overrides: Partial<MyAssignment>): MyAssignment => ({
   completedAt: null,
   ...overrides,
 });
-const page = (data: MyAssignment[]) => ({ data, meta: { page: 1, limit: 20, total: data.length } });
+const page = (data: MyAssignment[]) => ({
+  data,
+  meta: { page: 1, limit: 20, total: data.length },
+  counts: { todo: 0, done: 0, all: data.length },
+});
 
 function renderWork() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
