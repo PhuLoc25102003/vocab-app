@@ -13,9 +13,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { DateTimeField } from '@/components/common/date-time-field';
 import { FormDialog } from '@/components/common/form-dialog';
-import { SelectField } from '@/components/common/form-field';
+import { Combobox } from '@/components/common/combobox';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, createAssignment, listMySetsForAssigning } from '../api';
@@ -49,7 +48,6 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
   const assign = useMutation({
     mutationFn: (dto: Parameters<typeof createAssignment>[1]) => createAssignment(classId, dto),
   });
-  const [query, setQuery] = useState('');
   const [setId, setSetId] = useState('');
   const [modes, setModes] = useState<StudyMode[]>(DEFAULT_MODES);
   const [due, setDue] = useState('');
@@ -58,14 +56,10 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
 
   const selected = sets.data?.find((set) => set.id === setId);
   const isPrivate = selected?.visibility === 'PRIVATE';
-  const filtered = (sets.data ?? []).filter((set) =>
-    set.title.toLocaleLowerCase('vi').includes(query.trim().toLocaleLowerCase('vi')),
-  );
   const dirty = setId !== '' || due !== '' || modes.join() !== DEFAULT_MODES.join();
 
   const close = (next: boolean) => {
     if (!next) {
-      setQuery('');
       setSetId('');
       setModes(DEFAULT_MODES);
       setDue('');
@@ -149,33 +143,22 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
         </p>
       ) : (
         <div className="flex flex-col gap-2">
-          {sets.data.length > 6 ? (
-            <Input
-              type="search"
-              aria-label="Tìm bộ từ"
-              placeholder="Tìm bộ từ"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          ) : null}
-          <SelectField
+          <Combobox
             label="Bộ từ"
+            placeholder="Chọn hoặc gõ tên bộ từ"
+            emptyText="Không có bộ từ nào khớp"
             value={setId}
-            onChange={(event) => {
-              setSetId(event.target.value);
+            onChange={(next) => {
+              setSetId(next);
               setShare(false);
             }}
             error={errors.setId}
-          >
-            <option value="" disabled>
-              Chọn bộ từ
-            </option>
-            {filtered.map((set) => (
-              <option key={set.id} value={set.id}>
-                {set.title} ({set.cardCount} thẻ){set.visibility === 'PRIVATE' ? ', riêng tư' : ''}
-              </option>
-            ))}
-          </SelectField>
+            options={sets.data.map((set) => ({
+              value: set.id,
+              label: set.title,
+              description: `${set.cardCount} thẻ${set.visibility === 'PRIVATE' ? ' · Riêng tư' : ''}`,
+            }))}
+          />
           {isPrivate ? (
             <div className="flex flex-col gap-1 rounded-md border border-border-strong bg-primary-soft p-3 text-small">
               <p>

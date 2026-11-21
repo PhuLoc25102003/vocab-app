@@ -10,9 +10,10 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5: 5.25 (ô chọn có tìm kiếm) và 5.27, 5.28 (chọn nhiều chế độ) trước, vì 5.16 và 5.20 dùng lại `Combobox`; rồi 5.15 đến 5.17, dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
-2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Giai đoạn 5: 5.27, 5.28 (chọn nhiều chế độ) trước; rồi 5.15 đến 5.17, dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
+2. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): 6.1 làm nền trước, các việc dịch 6.3 đến 6.6 làm sau giai đoạn 5 để không dịch hai lần màn đang sửa.
+3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -25,8 +26,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      16 |      28 | Đang làm   |
-| **Toàn dự án**          |                                            | **141** | **157** | **90%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      17 |      28 | Đang làm   |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       0 |       7 | Chưa làm   |
+| **Toàn dự án**          |                                            | **142** | **164** | **87%**    |
 
 ## Cách cập nhật
 
@@ -305,10 +307,22 @@ Không tính vào tổng số việc.
 ### 5G. Trải nghiệm học và độ gọn của form
 
 - [x] **5.24** Âm thanh khi trả lời đúng ở mọi chế độ học trừ Kiểm tra, tạo bằng Web Audio, bật tắt ở Tài khoản (mặc định bật); use case UC-L12 trong `docs/use-cases/03-hoc-tap.md`. (#348).
-- [ ] **5.25** `Combobox` dùng chung có tìm kiếm ngay trong ô chọn (mẫu ARIA combobox, lọc không dấu); thay ô chọn bộ và bỏ ô "Tìm bộ từ" riêng ở modal giao bài, thay hai ô ngôn ngữ ở form bộ từ; dùng cho ô chọn lớp ở 5.20; ghi quy tắc vào `docs/05-ui-tokens.md` (GAP-27).
+- [x] **5.25** `Combobox` dùng chung có tìm kiếm ngay trong ô chọn (mẫu ARIA combobox, lọc không dấu); thay ô chọn bộ và bỏ ô "Tìm bộ từ" riêng ở modal giao bài, thay hai ô ngôn ngữ ở form bộ từ; dùng cho ô chọn lớp ở 5.20; ghi quy tắc vào `docs/05-ui-tokens.md` (GAP-27, #352).
 - [x] **5.26** `FormDialog` rộng hơn (cỡ `md` 560 px, `lg` 720 px cho giao bài), cao theo nội dung ở mọi kích thước; ở 360 px là tấm đáy cao theo nội dung thay vì toàn màn hình; cập nhật `docs/05-ui-tokens.md` (GAP-28, #350).
 - [ ] **5.27** Giao bài chọn được từ 1 đến tất cả chế độ dùng được với bộ (bỏ `MAX_ASSIGNMENT_MODES = 5`), nút "Chọn tất cả" và "Bỏ chọn" trong modal; cập nhật `docs/03-api.md` (GAP-29).
 - [ ] **5.28** Ôn hôm nay chọn một, nhiều hoặc tất cả chế độ, các phiên chạy nối tiếp như lộ trình, bỏ qua chế độ không dùng được, lưu lựa chọn trên thiết bị; UC-L10 trong `docs/use-cases/03-hoc-tap.md` (GAP-29).
+
+## Giai đoạn 6: Đa ngôn ngữ
+
+**Xong khi:** mọi màn đổi được giữa tiếng Việt và tiếng Anh, lựa chọn được nhớ, không còn chữ viết cứng. Thiết kế ở `docs/adr/0003-da-ngon-ngu-bang-i18next.md`, use case ở `docs/use-cases/07-da-ngon-ngu.md`.
+
+- [ ] **6.1** Nền i18next: `i18next`, `react-i18next`, file `locales/vi` và `locales/en`, cookie `vocab.locale`, `getT` cho server và `I18nProvider` cho client, `<html lang>`, nút đổi ngôn ngữ ở header và Tài khoản, khoá có kiểu, test hai bộ khoá giống nhau; quy tắc "không viết cứng chuỗi giao diện" trong `docs/06-conventions.md` (GAP-30).
+- [ ] **6.2** Lỗi và form: thông báo theo `ERROR_CODES` ở namespace `errors`, Zod schema trong shared dùng khoá dịch, toast và hộp xác nhận. Cần 6.1.
+- [ ] **6.3** Dịch trang giới thiệu, đăng nhập, đăng ký, quên mật khẩu, trang công khai, Khám phá và metadata. Cần 6.1.
+- [ ] **6.4** Dịch khung app, Tổng quan, Bộ từ, thư mục, trình soạn, nhập từ. Cần 6.1.
+- [ ] **6.5** Dịch các chế độ học, lộ trình, Ôn hôm nay, thống kê, offline. Cần 6.1.
+- [ ] **6.6** Dịch lớp học, bài tập, Tài khoản, quản trị. Cần 6.1.
+- [ ] **6.7** Ngày giờ và số theo ngôn ngữ, script báo chữ tiếng Việt viết cứng trong `.tsx` chạy cùng `npm run lint`, E2E đổi ngôn ngữ và audit ở cả hai ngôn ngữ. Cần 6.2 đến 6.6.
 
 ## Quyết định cần chốt
 
