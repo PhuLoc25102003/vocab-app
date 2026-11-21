@@ -12,6 +12,14 @@ vi.mock('../api', async (importOriginal) => ({
 describe('AdminOverview', () => {
   it('hiện bốn số liệu và lối vào quản lý người dùng', async () => {
     vi.mocked(getAdminStats).mockResolvedValue({
+      newUsers: 0,
+      activeUsers: 0,
+      sessions: 0,
+      publicSets: 0,
+      roles: { STUDENT: 0, TEACHER: 0, ADMIN: 0 },
+      daily: [],
+      recentUsers: [],
+      newPublicSets: [],
       users: 120,
       lockedUsers: 2,
       sets: 340,

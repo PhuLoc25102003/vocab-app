@@ -304,7 +304,7 @@ Không tính vào tổng số việc.
 - [x] **5.18** Tổng quan học sinh: khối "Bài tập lớp" đầu trang (bỏ lỡ, hạn gần nhất, tối đa 3), ẩn khi chưa vào lớp. Cần 5.12 (GAP-16, #373).
 - [ ] **5.19** API `GET /teacher/overview`: ô số liệu, cần chú ý, sắp đến hạn, bài vừa nộp. Cần 5.15.
 - [ ] **5.20** Tổng quan giáo viên theo thiết kế: nút chính Giao bài (modal có chọn lớp), trạng thái trống 3 bước, phần học cá nhân thu gọn. Cần 5.13, 5.19 (GAP-16).
-- [ ] **5.21** API thống kê ADMIN mở rộng: người hoạt động 7 ngày, đăng ký mới, phiên học, phân bố vai trò, chuỗi 30 ngày, bộ công khai mới để rà (GAP-16).
+- [x] **5.21** API thống kê ADMIN mở rộng: người hoạt động 7 ngày, đăng ký mới, phiên học, phân bố vai trò, chuỗi 30 ngày, bộ công khai mới để rà (GAP-16, #377).
 - [ ] **5.22** Tổng quan ADMIN theo thiết kế: 4 ô số liệu, biểu đồ 30 ngày, Cần xử lý, Vai trò, Người dùng mới, Bộ công khai mới có nút Ẩn. Cần 5.21 (GAP-16).
 - [ ] **5.23** E2E: giáo viên giao bài 3 chế độ từ bộ riêng tư, học sinh làm và nộp, giáo viên thấy ở Tổng quan và modal hồ sơ; audit accessibility các trang mới ở light, dark, 360 px.
 
