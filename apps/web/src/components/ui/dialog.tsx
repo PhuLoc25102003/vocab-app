@@ -12,8 +12,13 @@ interface DialogProps {
   describedBy?: string;
   /** Phần tử nhận focus khi mở. Không có thì trình duyệt chọn phần tử đầu tiên bấm được. */
   initialFocus?: RefObject<HTMLElement | null> | (() => HTMLElement | null);
-  /** `sheet`: ở màn hình dưới 640 px chiếm toàn màn hình, hợp với form nhiều trường. */
+  /**
+   * `sheet`: dưới 640 px là tấm đáy rộng hết màn hình, cao theo nội dung; từ 640 px căn giữa
+   * theo `size`. Hợp với form.
+   */
   layout?: 'centered' | 'sheet';
+  /** Bề rộng của `sheet` từ 640 px: `md` 560 px, `lg` 720 px cho form có danh sách hoặc hai cột. */
+  size?: 'md' | 'lg';
   className?: string;
   children: ReactNode;
 }
@@ -32,6 +37,7 @@ export function Dialog({
   describedBy,
   initialFocus,
   layout = 'centered',
+  size = 'md',
   className,
   children,
 }: DialogProps) {
@@ -80,7 +86,12 @@ export function Dialog({
       className={cn(
         'm-auto rounded-lg border border-border bg-surface p-0 text-text shadow-raised backdrop:bg-overlay',
         layout === 'sheet'
-          ? 'h-dvh max-h-dvh w-full max-w-full rounded-none border-0 sm:h-auto sm:max-h-[min(40rem,calc(100dvh-4rem))] sm:w-[calc(100%-2rem)] sm:max-w-lg sm:rounded-lg sm:border'
+          ? cn(
+              // Tấm đáy: chỉ cao bằng nội dung, chạm gần đỉnh khi form thật sự dài.
+              'mx-0 mt-auto mb-0 max-h-[calc(100dvh-2rem)] w-full max-w-full rounded-b-none border-x-0 border-b-0',
+              'sm:m-auto sm:max-h-[calc(100dvh-4rem)] sm:w-[calc(100%-2rem)] sm:rounded-lg sm:border',
+              size === 'lg' ? 'sm:max-w-[720px]' : 'sm:max-w-[560px]',
+            )
           : 'w-[calc(100%-2rem)] max-w-md',
         className,
       )}

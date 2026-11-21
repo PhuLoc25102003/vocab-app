@@ -22,6 +22,8 @@ interface FormDialogProps {
   dirty?: boolean;
   /** Ví dụ `handleSubmit(save)` của react-hook-form. */
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  /** `lg` cho form có danh sách hoặc hai cột, ví dụ giao bài. */
+  size?: 'md' | 'lg';
   children: ReactNode;
 }
 
@@ -30,7 +32,7 @@ const FIRST_FIELD =
 
 /**
  * Form ngắn trong hộp thoại: tạo lớp, đổi tên, giao bài. Thay cho việc chèn form vào trang làm
- * xô lệch bố cục. Dưới 640 px chiếm toàn màn hình, nút gửi luôn ở chân.
+ * xô lệch bố cục. Cao theo nội dung; dưới 640 px là tấm đáy, nút gửi luôn ở chân.
  */
 export function FormDialog({
   open,
@@ -43,6 +45,7 @@ export function FormDialog({
   error,
   dirty = false,
   onSubmit,
+  size = 'md',
   children,
 }: FormDialogProps) {
   const titleId = useId();
@@ -76,13 +79,9 @@ export function FormDialog({
         describedBy={description ? descriptionId : undefined}
         initialFocus={() => formRef.current?.querySelector<HTMLElement>(FIRST_FIELD) ?? null}
         layout="sheet"
+        size={size}
       >
-        <form
-          ref={formRef}
-          onSubmit={submit}
-          noValidate
-          className="flex h-full max-h-[inherit] flex-col"
-        >
+        <form ref={formRef} onSubmit={submit} noValidate className="flex max-h-[inherit] flex-col">
           <div className="flex items-start gap-3 border-b border-border px-6 pt-5 pb-4">
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <h2 id={titleId} className="text-h3 wrap-anywhere">
@@ -109,7 +108,7 @@ export function FormDialog({
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-6 py-5">
             {children}
           </div>
-          <div className="flex flex-col gap-3 border-t border-border px-6 py-4">
+          <div className="flex flex-col gap-3 border-t border-border px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             {error ? <FormError>{error}</FormError> : null}
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <Button type="button" variant="secondary" disabled={pending} onClick={requestClose}>

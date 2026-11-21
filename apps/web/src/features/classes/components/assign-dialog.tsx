@@ -128,6 +128,7 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
       pending={assign.isPending}
       error={assign.error ? formErrorMessage(assign.error) : null}
       dirty={dirty}
+      size="lg"
       onSubmit={(event) => {
         event.preventDefault();
         submit();

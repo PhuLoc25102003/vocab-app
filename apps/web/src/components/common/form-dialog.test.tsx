@@ -9,7 +9,9 @@ function Harness({
   error = null,
   onSubmit = vi.fn(),
   onPageSubmit = vi.fn(),
+  size,
 }: {
+  size?: 'md' | 'lg';
   pending?: boolean;
   error?: string | null;
   onSubmit?: () => void;
@@ -36,6 +38,7 @@ function Harness({
         pending={pending}
         error={error}
         dirty={name !== ''}
+        size={size}
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
@@ -53,6 +56,19 @@ function Harness({
 const openDialog = () => userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
 
 describe('FormDialog', () => {
+  it('cao theo nội dung, mặc định rộng 560 px, cỡ lg rộng 720 px', async () => {
+    const { unmount } = render(<Harness />);
+    await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.className).toContain('sm:max-w-[560px]');
+    expect(dialog.className).not.toMatch(/(^|\s)h-dvh/);
+    unmount();
+
+    render(<Harness size="lg" />);
+    await userEvent.click(screen.getByRole('button', { name: 'Tạo lớp' }));
+    expect(screen.getByRole('dialog').className).toContain('sm:max-w-[720px]');
+  });
+
   it('mở thì focus ô đầu tiên, có tiêu đề và mô tả', async () => {
     render(<Harness />);
     await openDialog();
