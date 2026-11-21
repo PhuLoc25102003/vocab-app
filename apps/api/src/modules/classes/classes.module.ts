@@ -9,9 +9,12 @@ import { ClassResultsService } from './class-results.service';
 import { ClassesController } from './classes.controller';
 import { ClassesRepository } from './classes.repository';
 import { ClassesService } from './classes.service';
+import { TeacherOverviewController } from './teacher-overview.controller';
+import { TeacherOverviewRepository } from './teacher-overview.repository';
+import { TeacherOverviewService } from './teacher-overview.service';
 
 @Module({
-  controllers: [ClassMembershipController, ClassesController],
+  controllers: [ClassMembershipController, ClassesController, TeacherOverviewController],
   providers: [
     ClassesService,
     ClassesRepository,
@@ -21,6 +24,8 @@ import { ClassesService } from './classes.service';
     AssignmentsRepository,
     ClassResultsService,
     ClassResultsRepository,
+    TeacherOverviewService,
+    TeacherOverviewRepository,
   ],
 })
 export class ClassesModule {}

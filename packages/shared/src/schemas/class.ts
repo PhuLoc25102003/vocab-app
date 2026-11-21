@@ -338,3 +338,59 @@ export const myAssignmentDetailSchema = z.object({
 export type MyAssignmentDetail = z.infer<typeof myAssignmentDetailSchema>;
 export const myAssignmentDetailResponseSchema = z.object({ data: myAssignmentDetailSchema });
 export const submissionResponseSchema = z.object({ data: submissionSchema });
+
+/** Một bài giao trong Tổng quan giáo viên: số đã nộp trên số học sinh phải làm (việc 5.19). */
+export const overviewAssignmentSchema = z.object({
+  assignmentId: z.string(),
+  classId: z.string(),
+  className: z.string(),
+  setTitle: z.string(),
+  dueAt: z.string().nullable(),
+  submitted: z.number().int(),
+  memberCount: z.number().int(),
+});
+export type OverviewAssignment = z.infer<typeof overviewAssignmentSchema>;
+
+export const teacherOverviewSchema = z.object({
+  classCount: z.number().int(),
+  studentCount: z.number().int(),
+  /** Học sinh vào lớp trong 7 ngày qua. */
+  newStudents: z.number().int(),
+  openAssignmentCount: z.number().int(),
+  /** Bài chưa hết hạn, hạn trong 48 giờ tới. */
+  dueSoonCount: z.number().int(),
+  /** Phần trăm nộp đúng hạn 30 ngày qua, `null` khi chưa có bài nào hết hạn. */
+  onTimeRate: z.number().int().nullable(),
+  attention: z.object({
+    /** Bài còn dưới 48 giờ mà dưới một nửa lớp đã nộp. */
+    lowSubmissions: z.array(overviewAssignmentSchema),
+    /** Học sinh bỏ lỡ từ 2 bài liên tiếp gần nhất trong 30 ngày. */
+    missedStreaks: z.array(
+      z.object({
+        userId: z.string(),
+        displayName: z.string(),
+        classId: z.string(),
+        className: z.string(),
+        missed: z.number().int(),
+      }),
+    ),
+  }),
+  /** Tối đa 5 bài chưa hết hạn, hạn gần nhất trước. */
+  upcoming: z.array(overviewAssignmentSchema),
+  /** 10 bài nộp mới nhất của mọi lớp. */
+  recentSubmissions: z.array(
+    z.object({
+      userId: z.string(),
+      displayName: z.string(),
+      classId: z.string(),
+      className: z.string(),
+      assignmentId: z.string(),
+      setTitle: z.string(),
+      score: z.number().int().nullable(),
+      late: z.boolean(),
+      submittedAt: z.string(),
+    }),
+  ),
+});
+export type TeacherOverview = z.infer<typeof teacherOverviewSchema>;
+export const teacherOverviewResponseSchema = z.object({ data: teacherOverviewSchema });

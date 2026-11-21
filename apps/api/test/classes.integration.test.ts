@@ -166,4 +166,20 @@ describe('classes', () => {
     expect(await prisma.class.findUnique({ where: { joinCode: created.joinCode } })).toBeNull();
     await call('post', `/classes/${created.id}/join-code`, otherTeacher.token).expect(403);
   });
+  it('Tổng quan giáo viên chỉ cho giáo viên và ADMIN, chỉ tính lớp của mình', async () => {
+    await createClass({ name: 'Lớp 1' });
+    await createClass({ name: 'Của người khác' }, otherTeacher.token);
+
+    const response = await call('get', '/teacher/overview', teacher.token).expect(200);
+    expect(response.body.data).toMatchObject({
+      classCount: 1,
+      studentCount: 0,
+      openAssignmentCount: 0,
+      onTimeRate: null,
+      upcoming: [],
+      recentSubmissions: [],
+    });
+    await call('get', '/teacher/overview', admin.token).expect(200);
+    await call('get', '/teacher/overview', student.token).expect(403);
+  });
 });
