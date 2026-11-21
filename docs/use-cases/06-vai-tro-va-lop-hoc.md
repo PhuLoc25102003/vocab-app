@@ -21,6 +21,10 @@ Phân tích từ góp ý ngày 2026-11-20 sau khi dùng thử bằng tài khoả
 | GAP-26 | Một số danh sách tải hết một lần (bài đã giao, bài cần làm, lớp đã tham gia, kết quả của học sinh, thẻ trong trang bộ từ) | Đọc code    | Vừa  | 5.7            |
 | GAP-27 | Modal giao bài có thêm một ô "Tìm bộ từ" tách khỏi ô chọn bộ; ô chọn ngôn ngữ dài không tìm được                          | Đã tái hiện | Vừa  | 5.25           |
 | GAP-29 | Giao bài chỉ chọn được tối đa 5 chế độ; Ôn hôm nay chỉ ôn bằng một chế độ mỗi lần                                         | Góp ý       | Vừa  | 5.27, 5.28     |
+| GAP-31 | Danh sách (bài cần làm, lớp đã tham gia, bài đã giao, học sinh, lớp đang dạy) không có khung, khó tách khỏi phần khác     | Góp ý       | Vừa  | 5.29           |
+| GAP-32 | Bài cần làm và bài đã giao không lọc, không tìm được; nhiều bài thì khó tìm lại bài đã làm; hai bên khác style            | Góp ý       | Cao  | 5.30 đến 5.32  |
+| GAP-33 | Danh sách lớp của giáo viên không tìm, không sắp xếp; ô tìm ở tab Học sinh co thành ô vuông, ô sắp xếp giãn hết hàng      | Đã tái hiện | Vừa  | 5.29, 5.33     |
+| GAP-34 | Thư mục trên mobile là hàng chip cuộn ngang bị cắt chữ; kéo thả bộ vào thư mục không dùng được trên màn hình cảm ứng      | Đã tái hiện | Cao  | 5.34           |
 | GAP-28 | Modal hẹp (512 px); ở 360 px form chỉ một ô vẫn chiếm cả màn hình, cao hơn nhiều so với nội dung                          | Đã tái hiện | Vừa  | 5.26           |
 
 Nguyên nhân GAP-14: `AccountMenu` giữ state `leaving` sau khi bấm Đăng xuất và không đặt lại. Header của app không bị huỷ khi chuyển trang (Next 16 giữ cây component của route cũ), nên lần đăng nhập sau vẫn thấy state cũ. Sửa bằng cách đặt lại `leaving` khi người dùng trong store đổi, hoặc gắn `key` theo `user.id`.
@@ -238,6 +242,54 @@ Tiếng Anh 10A1 · 32 học sinh · Mã YQMZ4L ⧉  [Mời học sinh]
 
 - Ô chọn bộ là `Combobox`: gõ để lọc ngay trong ô, không có ô tìm kiếm riêng; mỗi mục hiện số thẻ và phạm vi. Hạn nộp tuỳ chọn, phải sau hiện tại.
 - Modal cỡ `lg`. Ở 360 px modal cao theo nội dung, nút dính ở đáy khi form dài hơn màn hình.
+
+## 5a. Danh sách lớn (góp ý ngày 2026-11-21)
+
+Người dùng: học sinh dùng điện thoại, giáo viên dùng máy tính. Việc chính: tìm lại đúng bài hoặc lớp khi danh sách có hàng trăm mục. Mọi danh sách dùng chung một khung và một hàng công cụ.
+
+### Khung danh sách `ListPanel`
+
+```text
+┌ Bài tập · 128 ─────────────────────────────────────────────┐
+│ [ Cần làm (6) ][ Đã nộp (120) ][ Tất cả ]                  │
+│ [🔍 Tìm theo tên bộ        ] [Lớp: Tất cả ▾] [Hạn gần nhất ▾]│
+├────────────────────────────────────────────────────────────┤
+│ ! Unit 3 · Fa1 · Quá hạn 1 ngày · 2/4 chế độ     [Làm bài]  │
+│ ○ Unit 4 · Fa2 · Hạn mai 23:59                  [Làm bài]  │
+├────────────────────────────────────────────────────────────┤
+│ 1–20 trên 128                          ‹ Trang 1/7 ›        │
+└────────────────────────────────────────────────────────────┘
+```
+
+- Khung: viền `border-strong`, nền `surface`, bo `lg`. Đầu khung: tiêu đề `text-h3` kèm tổng số, nút hành động bên phải. Hàng công cụ: tab trạng thái (link trong URL), ô tìm co giãn chiếm phần còn lại, các ô lọc và sắp xếp cỡ cố định; ở 360 px ô tìm một hàng, lọc và sắp xếp chung hàng dưới. Thân: các hàng ngăn bằng viền. Chân: "1–20 trên 128" và `Pagination`.
+- Bốn trạng thái nằm trong khung. Đang lọc mà không có kết quả: "Không có bài nào khớp" kèm nút "Xoá bộ lọc".
+- Mọi bộ lọc, ô tìm và trang nằm trong URL. Ô tìm gửi khi bấm Enter hoặc sau 300 ms ngừng gõ.
+
+### Bài tập: một kiểu hàng cho cả học sinh và giáo viên
+
+`AssignmentRow` dùng chung: icon trạng thái (5 loại theo bài nộp ở bên học sinh; Đang mở, Đã hết hạn ở bên giáo viên), tên bộ, lớp, hạn dạng tương đối, chip chế độ (quá 2 thì "+2"), cột phải là thanh tiến độ (học sinh: x/y chế độ; giáo viên: đã nộp x/y học sinh) và nút hoặc mũi tên.
+
+- **Học sinh** `/classes`: tab Cần làm (chưa làm, đang làm, bỏ lỡ), Đã nộp (đã nộp, nộp trễ), Tất cả; lọc lớp; tìm theo tên bộ; sắp hạn gần nhất hoặc mới giao. Mặc định Cần làm.
+- **Giáo viên** tab Bài tập: tab Đang mở, Đã hết hạn, Tất cả; tìm theo tên bộ; sắp hạn gần nhất hoặc mới giao. Mặc định Đang mở.
+- "Lớp đã tham gia" là khung riêng có tìm theo tên lớp và phân trang.
+
+### Lớp đang dạy
+
+Khung danh sách với tab Đang dạy, Đã lưu trữ, ô tìm theo tên lớp, sắp xếp (mới tạo, tên A đến Z, nhiều học sinh), phân trang 20. Hàng lớp giữ thiết kế 5.16a.
+
+### Thư mục trên mobile
+
+```text
+Bộ từ                                   [Nhập] [+ Tạo]
+[📁 Lớp 6 (3) ▾]  [🔍 Tìm bộ từ      ] [⇅]
+┌ Unit 5 ─────────────────────── ⋯ ┐
+│ Riêng tư · 1 thẻ · 21/11/2026    │
+└──────────────────────────────────┘
+```
+
+- Dưới 1024 px bỏ hàng chip cuộn ngang. Nút "Thư mục: <tên> ▾" mở tấm đáy liệt kê Tất cả bộ từ, Chưa xếp thư mục và các thư mục (số bộ), có ô tìm khi nhiều hơn 8 thư mục và nút "Thư mục mới". Chọn xong tấm đáy đóng và danh sách lọc theo thư mục.
+- Chuyển bộ vào thư mục bằng menu "⋯" của thẻ, chọn "Chuyển vào thư mục" rồi chọn trong tấm đáy. Bỏ tay nắm kéo thả trên màn hình cảm ứng (`pointer: coarse`); máy tính vẫn kéo thả được như 2.30.
+- Ô tìm và nút sắp xếp chung một hàng; sắp xếp là nút icon mở menu. Vùng bấm tối thiểu 44 px.
 
 ## 5. Quy tắc giao diện toàn site
 
