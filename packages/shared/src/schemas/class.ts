@@ -187,7 +187,19 @@ export const createAssignmentSchema = z
 export type CreateAssignmentInput = z.input<typeof createAssignmentSchema>;
 export type CreateAssignmentDto = z.output<typeof createAssignmentSchema>;
 
-export const assignmentListQuerySchema = paginationSchema;
+/** `open`: chưa có hạn hoặc chưa tới hạn; `closed`: đã quá hạn (việc 5.32). */
+export const ASSIGNMENT_WINDOWS = ['open', 'closed', 'all'] as const;
+export const assignmentWindowSchema = z.enum(ASSIGNMENT_WINDOWS);
+export type AssignmentWindow = z.infer<typeof assignmentWindowSchema>;
+
+export const assignmentListQuerySchema = paginationSchema.extend({
+  status: assignmentWindowSchema.catch('all').default('all'),
+  /** Tìm theo tên bộ từ. */
+  q: z.string().trim().max(LIST_SEARCH_MAX_LENGTH).optional(),
+  /** `due`: hạn gần nhất trước, không hạn xếp cuối (mặc định); `-createdAt`: mới giao trước. */
+  sort: z.enum(['due', '-createdAt']).catch('due').default('due'),
+});
+export type AssignmentListQuery = z.infer<typeof assignmentListQuerySchema>;
 
 export const assignmentSchema = z.object({
   id: z.string(),
@@ -204,9 +216,18 @@ export type Assignment = z.infer<typeof assignmentSchema>;
 
 export const assignmentResponseSchema = z.object({ data: assignmentSchema });
 
+/** Bài trong danh sách của giáo viên kèm số học sinh hiện trong lớp đã nộp (việc 5.32). */
+export const classAssignmentSchema = assignmentSchema.extend({
+  submittedCount: z.number().int(),
+  memberCount: z.number().int(),
+});
+export type ClassAssignment = z.infer<typeof classAssignmentSchema>;
+
 export const assignmentListSchema = z.object({
-  data: z.array(assignmentSchema),
+  data: z.array(classAssignmentSchema),
   meta: paginationMetaSchema,
+  /** Số bài từng tab sau khi tìm. */
+  counts: z.object({ open: z.number().int(), closed: z.number().int(), all: z.number().int() }),
 });
 export type AssignmentList = z.infer<typeof assignmentListSchema>;
 

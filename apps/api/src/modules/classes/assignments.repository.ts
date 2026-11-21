@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import type { Pagination, StudyMode } from '@vocab/shared';
+import type { AssignmentListQuery, StudyMode } from '@vocab/shared';
+import type { Prisma } from '../../generated/prisma/client';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -79,19 +80,52 @@ export class AssignmentsRepository extends BaseRepository {
     return toAssignment(row);
   }
 
-  /** Hạn gần nhất lên trước, bài không có hạn xếp cuối. */
-  async findByClass(classId: string, query: Pagination) {
-    const where = { classId, set: { deletedAt: null } };
-    const [rows, total] = await Promise.all([
+  /**
+   * Bài đã giao của lớp (việc 5.32): lọc còn hạn hoặc đã hết hạn, tìm theo tên bộ, kèm số học
+   * sinh hiện trong lớp đã nộp và số bài từng tab sau khi tìm.
+   */
+  async findByClass(classId: string, query: AssignmentListQuery, now: Date) {
+    const base: Prisma.AssignmentWhereInput = {
+      classId,
+      set: {
+        deletedAt: null,
+        ...(query.q ? { title: { contains: query.q, mode: 'insensitive' } } : {}),
+      },
+    };
+    const open: Prisma.AssignmentWhereInput = { OR: [{ dueAt: null }, { dueAt: { gte: now } }] };
+    const closed: Prisma.AssignmentWhereInput = { dueAt: { lt: now } };
+    const where =
+      query.status === 'all' ? base : { AND: [base, query.status === 'open' ? open : closed] };
+    const orderBy: Prisma.AssignmentOrderByWithRelationInput[] =
+      query.sort === '-createdAt'
+        ? [{ createdAt: 'desc' }, { id: 'asc' }]
+        : [{ dueAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }];
+    const [rows, total, openCount, closedCount, memberCount] = await Promise.all([
       this.prisma.assignment.findMany({
         where,
-        select: ASSIGNMENT_SELECT,
-        orderBy: [{ dueAt: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }],
+        select: {
+          ...ASSIGNMENT_SELECT,
+          _count: {
+            select: { submissions: { where: { user: { classMembers: { some: { classId } } } } } },
+          },
+        },
+        orderBy,
         ...toSkipTake(query),
       }),
       this.prisma.assignment.count({ where }),
+      this.prisma.assignment.count({ where: { AND: [base, open] } }),
+      this.prisma.assignment.count({ where: { AND: [base, closed] } }),
+      this.prisma.classMember.count({ where: { classId } }),
     ]);
-    return { items: rows.map(toAssignment), total };
+    return {
+      items: rows.map(({ _count, ...row }) => ({
+        ...toAssignment(row),
+        submittedCount: _count.submissions,
+        memberCount,
+      })),
+      total,
+      counts: { open: openCount, closed: closedCount, all: openCount + closedCount },
+    };
   }
 
   /** Trả `false` nếu bài giao không thuộc lớp này. */

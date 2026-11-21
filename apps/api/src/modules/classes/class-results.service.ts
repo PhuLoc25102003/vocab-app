@@ -202,7 +202,13 @@ export class ClassResultsService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const { items, total } = await this.assignments.findByClass(classId, query);
+    const found = await this.assignments.findByClass(
+      classId,
+      { ...query, status: 'all', sort: 'due' },
+      now,
+    );
+    const { total } = found;
+    const items = found.items.map(({ submittedCount: _s, memberCount: _m, ...item }) => item);
     const targets = items.map(toTarget);
     const sessions = await this.results.findFinishedSessions([userId], targets);
     const data = items.map((item, index) => ({

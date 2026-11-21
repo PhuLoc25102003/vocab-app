@@ -71,6 +71,7 @@ describe('ClassDetail', () => {
     vi.mocked(listAssignments).mockResolvedValue({
       data: [],
       meta: { page: 1, limit: 100, total: 0 },
+      counts: { open: 0, closed: 0, all: 0 },
     });
   });
 
@@ -86,7 +87,7 @@ describe('ClassDetail', () => {
       'href',
       '/classes/c1?tab=students',
     );
-    expect(await screen.findByRole('region', { name: 'Bài đã giao' })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: /^Bài đã giao/ })).toBeInTheDocument();
     expect(listMembers).not.toHaveBeenCalled();
   });
 
@@ -233,15 +234,22 @@ describe('ClassDetail', () => {
           modes: ['MCQ'],
           dueAt: null,
           createdAt: '2026-11-01T00:00:00.000Z',
+          submittedCount: 0,
+          memberCount: 0,
         },
       ],
       meta: { page: 3, limit: 20, total: 45 },
+      counts: { open: 45, closed: 0, all: 45 },
     });
     renderDetail();
 
-    const assignments = await screen.findByRole('region', { name: 'Bài đã giao' });
+    const assignments = await screen.findByRole('region', { name: /^Bài đã giao/ });
     expect(await within(assignments).findByText('Trang 3/3')).toBeInTheDocument();
-    expect(listAssignments).toHaveBeenCalledWith('c1', 3);
+    expect(listAssignments).toHaveBeenCalledWith('c1', 3, {
+      status: 'all',
+      q: undefined,
+      sort: 'due',
+    });
     expect(within(assignments).getByRole('link', { name: 'Trang trước' })).toHaveAttribute(
       'href',
       '/classes/c1?apage=2',

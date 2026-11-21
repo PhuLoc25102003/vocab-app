@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { Assignment, SetSummary } from '@vocab/shared';
+import type { ClassAssignment, SetSummary } from '@vocab/shared';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { Route } from 'next';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
 import {
@@ -10,7 +11,10 @@ import {
   listMySetsForAssigning,
   removeAssignment,
 } from '../api';
-import { ClassAssignments } from './class-assignments';
+import { type AssignmentsView, ClassAssignments } from './class-assignments';
+
+const navigation = vi.hoisted(() => ({ push: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: navigation.push }) }));
 
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
@@ -20,7 +24,7 @@ vi.mock('../api', async (importOriginal) => ({
   removeAssignment: vi.fn(),
 }));
 
-const assignment = (overrides: Partial<Assignment> = {}): Assignment => ({
+const assignment = (overrides: Partial<ClassAssignment> = {}): ClassAssignment => ({
   id: 'a1',
   classId: 'c1',
   setId: 's1',
@@ -28,6 +32,8 @@ const assignment = (overrides: Partial<Assignment> = {}): Assignment => ({
   mode: 'MCQ',
   dueAt: null,
   createdAt: '2026-11-01T00:00:00.000Z',
+  submittedCount: 0,
+  memberCount: 0,
   ...overrides,
 });
 const set = (overrides: Partial<SetSummary>): SetSummary => ({
@@ -43,7 +49,11 @@ const set = (overrides: Partial<SetSummary>): SetSummary => ({
   updatedAt: '2026-11-01T00:00:00.000Z',
   ...overrides,
 });
-const list = (data: Assignment[]) => ({ data, meta: { page: 1, limit: 100, total: data.length } });
+const list = (data: ClassAssignment[]) => ({
+  data,
+  meta: { page: 1, limit: 100, total: data.length },
+  counts: { open: data.length, closed: 0, all: data.length },
+});
 
 function renderSection(archived = false) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -63,11 +73,12 @@ describe('ClassAssignments', () => {
     ]);
   });
 
-  it('liệt kê bài đã giao với chế độ, hạn nộp và báo quá hạn', async () => {
+  it('liệt kê bài đã giao với trạng thái hạn, chế độ, số đã nộp x/y', async () => {
     vi.mocked(listAssignments).mockResolvedValue(
       list([
-        assignment({ dueAt: '2020-01-01T16:59:00.000Z' }),
-        assignment({ id: 'a2', setTitle: 'Unit 2', mode: 'WRITE' }),
+        assignment({ dueAt: '2020-01-01T16:59:00.000Z', submittedCount: 3, memberCount: 25 }),
+        assignment({ id: 'a2', setTitle: 'Unit 2', mode: 'WRITE', modes: ['WRITE', 'MCQ'] }),
+        assignment({ id: 'a3', setTitle: 'Unit 3', dueAt: '2099-01-01T00:00:00.000Z' }),
       ]),
     );
     renderSection();
@@ -75,10 +86,79 @@ describe('ClassAssignments', () => {
     const rows = within(await screen.findByRole('list', { name: 'Bài đã giao' })).getAllByRole(
       'listitem',
     );
+    expect(rows[0]).toHaveTextContent('Hết hạn');
     expect(rows[0]).toHaveTextContent('Trắc nghiệm');
-    expect(rows[0]).toHaveTextContent('Đã quá hạn');
-    expect(rows[1]).toHaveTextContent('Luyện viết');
+    expect(rows[0]).toHaveTextContent('3/25 đã nộp');
+    expect(within(rows[0]!).getByRole('link')).toHaveAttribute(
+      'href',
+      '/classes/c1/assignments/a1',
+    );
+    expect(rows[1]).toHaveTextContent('Không hạn');
+    expect(rows[1]).toHaveTextContent('Luyện viết +1');
     expect(rows[1]).toHaveTextContent('Không có hạn');
+    expect(rows[2]).toHaveTextContent('Còn hạn');
+  });
+
+  it('tab còn hạn, hết hạn có số bài; tìm và sắp xếp đưa vào URL', async () => {
+    vi.mocked(listAssignments).mockResolvedValue({
+      ...list([assignment({})]),
+      counts: { open: 2, closed: 5, all: 7 },
+    });
+    const hrefFor = ({ status, q, sort, page }: AssignmentsView) =>
+      `/x?s=${status}&q=${q}&o=${sort}&p=${page}` as Route;
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <ClassAssignments
+          classId="c1"
+          archived={false}
+          view={{ status: 'closed', q: '', sort: 'due', page: 2 }}
+          hrefFor={hrefFor}
+        />
+      </QueryClientProvider>,
+    );
+
+    await screen.findByRole('list', { name: 'Bài đã giao' });
+    expect(listAssignments).toHaveBeenCalledWith('c1', 2, {
+      status: 'closed',
+      q: undefined,
+      sort: 'due',
+    });
+    const tabs = screen.getByRole('navigation', { name: 'Lọc theo trạng thái' });
+    expect(within(tabs).getByRole('link', { name: 'Còn hạn (2)' })).toHaveAttribute(
+      'href',
+      '/x?s=open&q=&o=due&p=1',
+    );
+    expect(within(tabs).getByRole('link', { name: 'Hết hạn (5)' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Tìm theo tên bộ từ' }),
+      'unit{Enter}',
+    );
+    expect(navigation.push).toHaveBeenLastCalledWith('/x?s=closed&q=unit&o=due&p=1');
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Sắp xếp bài đã giao' }),
+      '-createdAt',
+    );
+    expect(navigation.push).toHaveBeenLastCalledWith('/x?s=closed&q=&o=-createdAt&p=1');
+  });
+
+  it('tìm không ra bài thì cho xoá bộ lọc', async () => {
+    vi.mocked(listAssignments).mockResolvedValue(list([]));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <ClassAssignments
+          classId="c1"
+          archived={false}
+          view={{ status: 'all', q: 'zzz', sort: 'due', page: 1 }}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText('Không có bài nào khớp "zzz".')).toBeInTheDocument();
   });
 
   it('giao bài: bắt chọn bộ, chọn và sắp thứ tự chế độ, gửi hạn theo ISO', async () => {

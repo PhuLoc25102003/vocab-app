@@ -66,8 +66,9 @@ describe('AssignmentResults', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(listAssignments).mockResolvedValue({
-      data: [assignment],
+      data: [{ ...assignment, submittedCount: 0, memberCount: 0 }],
       meta: { page: 1, limit: 100, total: 1 },
+      counts: { open: 1, closed: 0, all: 1 },
     });
     vi.mocked(getAssignmentSummary).mockResolvedValue(summary);
     vi.mocked(listAssignmentResults).mockResolvedValue({
