@@ -4,6 +4,7 @@ import { Volume2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   DEFAULT_SPEECH_SETTINGS,
   hasExactVoice,
@@ -97,25 +98,45 @@ export function SpeechSettings() {
         </Button>
       </div>
       {soundSupported ? (
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 border-t border-border pt-4">
-          <input
-            type="checkbox"
-            checked={sound}
-            onChange={(event) => {
-              const enabled = event.target.checked;
+        <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
+          <span className="flex min-w-0 flex-col">
+            <span id="sound-label" className="font-medium">
+              Âm thanh khi trả lời đúng
+            </span>
+            <span id="sound-hint" className="text-small text-text-muted">
+              Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra.
+            </span>
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={sound}
+            aria-labelledby="sound-label"
+            aria-describedby="sound-hint"
+            onClick={() => {
+              const enabled = !sound;
               setSound(enabled);
               saveSoundEnabled(enabled);
               if (enabled) playCorrectSound();
             }}
-            className="size-5 shrink-0 accent-primary"
-          />
-          <span className="flex flex-col">
-            <span className="font-medium">Âm thanh khi trả lời đúng</span>
-            <span className="text-small text-text-muted">
-              Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra.
+            className="group flex size-11 shrink-0 items-center justify-center rounded-full"
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'flex h-6 w-10 items-center rounded-full border-2 p-0.5 transition-colors duration-fast ease-standard',
+                sound ? 'border-primary bg-primary' : 'border-border-strong bg-surface',
+              )}
+            >
+              <span
+                className={cn(
+                  'size-4 rounded-full transition-transform duration-fast ease-standard motion-reduce:transition-none',
+                  sound ? 'translate-x-4 bg-primary-fg' : 'bg-text-muted',
+                )}
+              />
             </span>
-          </span>
-        </label>
+          </button>
+        </div>
       ) : null}
     </section>
   );

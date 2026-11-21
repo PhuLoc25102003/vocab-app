@@ -20,6 +20,7 @@ Phân tích từ góp ý ngày 2026-11-20 sau khi dùng thử bằng tài khoả
 | GAP-25 | Tên hoặc mô tả dài không có dấu cách tràn khỏi thẻ và hàng                                                                | Đọc code    | Vừa  | 5.5            |
 | GAP-26 | Một số danh sách tải hết một lần (bài đã giao, bài cần làm, lớp đã tham gia, kết quả của học sinh, thẻ trong trang bộ từ) | Đọc code    | Vừa  | 5.7            |
 | GAP-27 | Modal giao bài có thêm một ô "Tìm bộ từ" tách khỏi ô chọn bộ; ô chọn ngôn ngữ dài không tìm được                          | Đã tái hiện | Vừa  | 5.25           |
+| GAP-29 | Giao bài chỉ chọn được tối đa 5 chế độ; Ôn hôm nay chỉ ôn bằng một chế độ mỗi lần                                         | Góp ý       | Vừa  | 5.27, 5.28     |
 | GAP-28 | Modal hẹp (512 px); ở 360 px form chỉ một ô vẫn chiếm cả màn hình, cao hơn nhiều so với nội dung                          | Đã tái hiện | Vừa  | 5.26           |
 
 Nguyên nhân GAP-14: `AccountMenu` giữ state `leaving` sau khi bấm Đăng xuất và không đặt lại. Header của app không bị huỷ khi chuyển trang (Next 16 giữ cây component của route cũ), nên lần đăng nhập sau vẫn thấy state cũ. Sửa bằng cách đặt lại `leaving` khi người dùng trong store đổi, hoặc gắn `key` theo `user.id`.
@@ -54,7 +55,7 @@ Vì vậy bộ từ giao cho lớp **không cần công khai**. Quy tắc mới 
 
 ### Bài giao nhiều chế độ
 
-- Giáo viên chọn 1 đến 5 chế độ, theo thứ tự. Mặc định là lộ trình đề xuất giống "Bắt đầu học": Xem thẻ, Trắc nghiệm, Ghép cặp, Luyện viết. Giáo viên kéo hoặc dùng nút lên, xuống để đổi thứ tự.
+- Giáo viên chọn từ 1 chế độ đến tất cả chế độ dùng được với bộ, theo thứ tự, có nút "Chọn tất cả" và "Bỏ chọn" (5.27; trước đây giới hạn 5). Mặc định là lộ trình đề xuất giống "Bắt đầu học": Xem thẻ, Trắc nghiệm, Ghép cặp, Luyện viết. Giáo viên kéo hoặc dùng nút lên, xuống để đổi thứ tự.
 - Luyện nói được chọn nhưng có cảnh báo "Cần micro và trình duyệt hỗ trợ. Học sinh không nói được có thể bỏ qua từng câu."
 - Chế độ không dùng được với bộ (ví dụ Ghép cặp cần ít nhất 2 thẻ) thì không chọn được, có lý do.
 - Bài giao cũ có một chế độ được chuyển thành danh sách một phần tử (`modes = [mode]`).

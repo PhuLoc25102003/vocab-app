@@ -90,6 +90,7 @@
 - **Việc:** 1.13, 1.27, 1.45. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tổng số thẻ đến hạn, danh sách bộ có thẻ đến hạn, phân trang, chọn chế độ ôn, phiên chỉ gồm thẻ đến hạn.
 - **Luồng chính:** mở trang, chọn bộ và chế độ, ôn xong thì số thẻ giảm.
+- **Nhiều chế độ (5.28):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard như hiện nay). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình: thanh bước ở đầu, xong chế độ này sang chế độ kế, màn kết quả cuối có nút về Ôn hôm nay. Chế độ không dùng được với bộ thì tự bỏ qua và báo một dòng. Lựa chọn lưu trên thiết bị.
 - **Ngoại lệ:** không có thẻ đến hạn thì mời học thêm; ôn xong hết thì báo đã xong; bộ đã xoá không xuất hiện; thẻ sai sẽ quay lại sau 10 phút.
 - **Test đã có:** `review-due.integration`, `due-sets.test`.
 - **Test cần thêm:** E2E đặt thẻ đến hạn trong database test, ôn xong danh sách cập nhật.
