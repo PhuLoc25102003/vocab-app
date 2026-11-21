@@ -135,8 +135,9 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   await teacher.waitForURL('**/assignments/*');
   await expect(teacher.getByText('1/1', { exact: true })).toBeVisible();
   const results = teacher.getByRole('list', { name: 'Kết quả từng học sinh' });
-  await expect(results).toContainText('Đã làm');
-  await expect(results).toContainText('3/3 (100%)');
+  // Trạng thái theo bài nộp và điểm từng chế độ (việc 5.17).
+  await expect(results).toContainText('Đã nộp');
+  await expect(results).toContainText('Trắc nghiệm 100%');
   await results.getByRole('link', { name: 'An' }).click();
   await teacher.waitForURL('**/members/*');
   await expect(teacher.getByText('Đã làm 1/1 bài.')).toBeVisible();

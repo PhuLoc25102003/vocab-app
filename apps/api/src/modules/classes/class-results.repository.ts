@@ -37,6 +37,29 @@ export class ClassResultsRepository extends BaseRepository {
     });
   }
 
+  /** Chế độ của bài, bài nộp và phiên gắn bài của các học sinh (việc 5.17). */
+  async findSubmissionData(assignmentId: string, userIds: string[]) {
+    const [assignment, submissions, sessions] = await Promise.all([
+      this.prisma.assignment.findUniqueOrThrow({
+        where: { id: assignmentId },
+        select: { mode: true, modes: true },
+      }),
+      this.prisma.assignmentSubmission.findMany({
+        where: { assignmentId, userId: { in: userIds } },
+        select: { userId: true, submittedAt: true, score: true, late: true },
+      }),
+      this.prisma.studySession.findMany({
+        where: { assignmentId, userId: { in: userIds }, finishedAt: { not: null } },
+        select: { userId: true, mode: true, correct: true, total: true },
+      }),
+    ]);
+    return {
+      modes: assignment.modes.length ? assignment.modes : [assignment.mode],
+      submissions,
+      sessions,
+    };
+  }
+
   isMember(classId: string, userId: string) {
     return this.prisma.classMember.count({ where: { classId, userId } }).then((count) => count > 0);
   }

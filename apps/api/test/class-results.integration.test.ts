@@ -137,6 +137,10 @@ describe('kết quả lớp', () => {
       memberCount: 3,
       doneCount: 2,
       overdueCount: 1,
+      // Chưa ai nộp bài và đã quá hạn nên theo bài nộp cả 3 em đều bỏ lỡ.
+      submittedCount: 0,
+      lateCount: 0,
+      missedCount: 3,
       averageScore: 50,
       hardCards: [
         {
@@ -179,23 +183,35 @@ describe('kết quả lớp', () => {
 
     expect(response.body.meta).toMatchObject({ total: 3, limit: 2 });
     expect(response.body.data).toEqual([
-      {
+      expect.objectContaining({
         userId: an.id,
         displayName: 'An',
         status: 'done',
         completedAt: first.toISOString(),
         correct: 2,
         total: 2,
-      },
-      {
+        progressStatus: 'missed',
+        submission: null,
+      }),
+      expect.objectContaining({
         userId: binh.id,
         displayName: 'Bình',
         status: 'overdue',
         completedAt: null,
         correct: null,
         total: null,
-      },
+        progressStatus: 'missed',
+        submission: null,
+      }),
     ]);
+    expect(response.body.data[0].modeScores.length).toBeGreaterThan(0);
+
+    // Lọc theo trạng thái bài nộp (việc 5.17).
+    const missed = await get(`${resultsUrl()}?status=missed`).expect(200);
+    expect(missed.body.meta.total).toBe(3);
+    const submitted = await get(`${resultsUrl()}?status=submitted`).expect(200);
+    expect(submitted.body).toMatchObject({ data: [], meta: { total: 0 } });
+    await get(`${resultsUrl()}?status=abc`).expect(400);
   });
 
   it('học sinh đã rời lớp không còn trong kết quả', async () => {

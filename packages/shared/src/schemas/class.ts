@@ -237,6 +237,22 @@ export const myAssignmentListSchema = z.object({
 });
 export type MyAssignmentList = z.infer<typeof myAssignmentListSchema>;
 
+/** Tiến độ một chế độ của bài giao: đã xong một phiên chưa, điểm phiên tốt nhất (Flashcard không chấm). */
+export const assignmentModeProgressSchema = z.object({
+  mode: studyModeSchema,
+  done: z.boolean(),
+  score: z.number().int().nullable(),
+});
+export type AssignmentModeProgress = z.infer<typeof assignmentModeProgressSchema>;
+
+export const submissionSchema = z.object({
+  submittedAt: z.string(),
+  /** Phần trăm chốt lúc nộp, `null` khi bài không có chế độ chấm điểm. */
+  score: z.number().int().nullable(),
+  late: z.boolean(),
+});
+export type Submission = z.infer<typeof submissionSchema>;
+
 /** Điểm của lần học tốt nhất sau khi giao, `null` khi chưa làm. */
 const resultScoreShape = {
   status: assignmentStatusSchema,
@@ -245,12 +261,21 @@ const resultScoreShape = {
   total: z.number().int().nullable(),
 };
 
-export const assignmentResultListQuerySchema = paginationSchema;
+export const assignmentResultListQuerySchema = paginationSchema.extend({
+  /** Lọc theo trạng thái bài nộp (việc 5.17). */
+  status: progressStatusSchema.optional(),
+});
+export type AssignmentResultListQuery = z.infer<typeof assignmentResultListQuerySchema>;
 
 export const assignmentResultSchema = z.object({
   userId: z.string(),
   displayName: z.string(),
   ...resultScoreShape,
+  /** Trạng thái theo bài nộp (việc 5.17); `status` cũ giữ cho code cũ. */
+  progressStatus: progressStatusSchema,
+  submission: submissionSchema.nullable(),
+  /** Điểm tốt nhất từng chế độ theo thứ tự của bài, chỉ phiên gắn bài. */
+  modeScores: z.array(assignmentModeProgressSchema),
 });
 export type AssignmentResult = z.infer<typeof assignmentResultSchema>;
 
@@ -273,6 +298,10 @@ export const assignmentSummarySchema = z.object({
   memberCount: z.number().int(),
   doneCount: z.number().int(),
   overdueCount: z.number().int(),
+  /** Đếm theo bài nộp (việc 5.17). */
+  submittedCount: z.number().int(),
+  lateCount: z.number().int(),
+  missedCount: z.number().int(),
   /** Điểm trung bình theo phần trăm của học sinh đã làm, `null` khi chưa ai làm. */
   averageScore: z.number().nullable(),
   /** Tối đa 5 thẻ cả lớp sai nhiều nhất, thẻ chưa ai sai không có ở đây. */
@@ -292,22 +321,6 @@ export const memberResultListSchema = z.object({
   meta: paginationMetaSchema,
 });
 export type MemberResultList = z.infer<typeof memberResultListSchema>;
-
-/** Tiến độ một chế độ của bài giao: đã xong một phiên chưa, điểm phiên tốt nhất (Flashcard không chấm). */
-export const assignmentModeProgressSchema = z.object({
-  mode: studyModeSchema,
-  done: z.boolean(),
-  score: z.number().int().nullable(),
-});
-export type AssignmentModeProgress = z.infer<typeof assignmentModeProgressSchema>;
-
-export const submissionSchema = z.object({
-  submittedAt: z.string(),
-  /** Phần trăm chốt lúc nộp, `null` khi bài không có chế độ chấm điểm. */
-  score: z.number().int().nullable(),
-  late: z.boolean(),
-});
-export type Submission = z.infer<typeof submissionSchema>;
 
 export const myAssignmentDetailSchema = z.object({
   id: z.string(),
