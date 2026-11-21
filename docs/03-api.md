@@ -134,7 +134,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /folders` nhận `{ name }` (1 đến 60 ký tự), trả 201. `PATCH /folders/:id` nhận `{ name }`, trả 200. Tên trùng với thư mục khác của cùng người, không phân biệt hoa thường, trả 409 `FOLDER_NAME_TAKEN`.
 - `DELETE /folders/:id` trả 204, bộ từ bên trong được giữ lại với `folderId` là `null`.
 - Lớp trả về dạng `{ id, name, description, joinCode, archivedAt, createdAt, memberCount }`. STUDENT gọi `/classes` nhận 403. Lớp không tồn tại trả 404 `CLASS_NOT_FOUND`, lớp của giáo viên khác trả 403.
-- `GET /classes` nhận `page`, `limit`, `archived` (`false` mặc định, `true` chỉ lấy lớp đã lưu trữ), xếp lớp mới tạo trước.
+- `GET /classes` nhận `page`, `limit`, `archived` (`false` mặc định, `true` chỉ lấy lớp đã lưu trữ), xếp lớp mới tạo trước. Mỗi lớp có thêm `openAssignmentCount` (bài chưa tới hạn hoặc không hạn) và `onTimeRate` (việc 5.16a): phần trăm bài nộp đúng hạn trong 30 ngày qua trên số cặp bài hết hạn và học sinh đang trong lớp vào trước hạn, `null` khi chưa có bài hết hạn.
 - `POST /classes` nhận `{ name, description? }` (tên 1 đến 80 ký tự, mô tả tối đa 500), trả 201. Server sinh `joinCode` 6 ký tự từ bảng chữ không có I, O, 0, 1. `teacherId` luôn là người gọi.
 - `PATCH /classes/:id` nhận ít nhất một trong `{ name, description, archived }`. Mô tả rỗng là xoá mô tả. `archived: true` đặt `archivedAt`, `false` mở lại lớp. Body rỗng trả 400.
 - `POST /classes/:id/join-code` trả 200 với mã mới, mã cũ hết hiệu lực ngay, thành viên đã có vẫn ở trong lớp.

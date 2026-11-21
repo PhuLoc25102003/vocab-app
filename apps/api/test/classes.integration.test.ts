@@ -112,7 +112,9 @@ describe('classes', () => {
 
     const active = await call('get', '/classes?limit=1', teacher.token).expect(200);
     expect(active.body.meta).toEqual({ page: 1, limit: 1, total: 2 });
-    expect(active.body.data).toMatchObject([{ id: second.id, memberCount: 1 }]);
+    expect(active.body.data).toMatchObject([
+      { id: second.id, memberCount: 1, openAssignmentCount: 0, onTimeRate: null },
+    ]);
 
     const old = await call('get', '/classes?archived=true', teacher.token).expect(200);
     expect(old.body.data.map(({ id }: ClassBody) => id)).toEqual([archived.id]);

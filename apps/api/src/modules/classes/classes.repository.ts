@@ -60,6 +60,30 @@ export class ClassesRepository extends BaseRepository {
     return { items: rows.map(toClass), total };
   }
 
+  /** Bài giao, học sinh và bài nộp đúng hạn từ `since` để tính số liệu nhanh của các lớp. */
+  async findListStatsInput(classIds: string[], since: Date, now: Date) {
+    if (classIds.length === 0) return { assignments: [], members: [], onTime: [] };
+    const classId = { in: classIds };
+    const [assignments, members, onTime] = await Promise.all([
+      this.prisma.assignment.findMany({
+        where: { classId, set: { deletedAt: null } },
+        select: { id: true, classId: true, dueAt: true },
+      }),
+      this.prisma.classMember.findMany({
+        where: { classId, user: { deletedAt: null } },
+        select: { classId: true, userId: true, joinedAt: true },
+      }),
+      this.prisma.assignmentSubmission.findMany({
+        where: {
+          late: false,
+          assignment: { classId, set: { deletedAt: null }, dueAt: { gte: since, lte: now } },
+        },
+        select: { assignmentId: true, userId: true },
+      }),
+    ]);
+    return { assignments, members, onTime };
+  }
+
   async findById(id: string) {
     const row = await this.prisma.class.findUnique({ where: { id }, select: CLASS_SELECT });
     return row ? toClass(row) : null;

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { Class } from '@vocab/shared';
+import type { ClassListItem } from '@vocab/shared';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -18,7 +18,7 @@ vi.mock('../api', async (importOriginal) => ({
   createClass: vi.fn(),
 }));
 
-const klass = (overrides: Partial<Class> = {}): Class => ({
+const klass = (overrides: Partial<ClassListItem> = {}): ClassListItem => ({
   id: 'c1',
   name: '10A1',
   description: 'Tiếng Anh cơ bản',
@@ -26,9 +26,14 @@ const klass = (overrides: Partial<Class> = {}): Class => ({
   archivedAt: null,
   createdAt: '2026-11-01T00:00:00.000Z',
   memberCount: 12,
+  openAssignmentCount: 2,
+  onTimeRate: 78,
   ...overrides,
 });
-const page = (data: Class[]) => ({ data, meta: { page: 1, limit: 20, total: data.length } });
+const page = (data: ClassListItem[]) => ({
+  data,
+  meta: { page: 1, limit: 20, total: data.length },
+});
 
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -49,10 +54,14 @@ describe('TeacherClasses', () => {
     vi.mocked(listClasses).mockResolvedValue(page([klass()]));
     renderPage();
 
-    const link = await screen.findByRole('link', { name: /10A1/ });
+    const link = await screen.findByRole('link', { name: '10A1' });
     expect(link).toHaveAttribute('href', '/classes/c1');
-    expect(link).toHaveTextContent('12 học sinh');
-    expect(link).toHaveTextContent('ABC234');
+    const row = link.closest('li') as HTMLElement;
+    expect(row).toHaveTextContent('12 HS');
+    expect(row).toHaveTextContent('2 bài mở');
+    expect(row).toHaveTextContent('78% đúng hạn');
+    expect(row).toHaveTextContent('ABC234');
+    expect(screen.getByRole('button', { name: 'Sao chép mã lớp ABC234' })).toBeInTheDocument();
     expect(listClasses).toHaveBeenCalledWith(false, 1);
     expect(screen.getByRole('link', { name: 'Đang dạy' })).toHaveAttribute('aria-current', 'page');
   });
