@@ -11,8 +11,8 @@ Phân tích từ góp ý ngày 2026-11-20 sau khi dùng thử bằng tài khoả
 | GAP-16 | Tổng quan của giáo viên giống hệt học sinh, không có số liệu lớp; tổng quan ADMIN chỉ có 4 con số                         | Đã tái hiện | Cao  | 5.18 đến 5.22  |
 | GAP-17 | Giao bài chỉ được một chế độ; học sinh học xong bị đưa về trang bộ từ, không có nút nộp bài                               | Đã tái hiện | Cao  | 5.10 đến 5.14  |
 | GAP-18 | Chỉ giao được bộ Công khai, trong khi bộ công khai học sinh đã tự tìm được ở Khám phá; schema có `CLASS` nhưng form chặn  | Đọc code    | Cao  | 5.11, 5.13     |
-| GAP-19 | Giáo viên không có số liệu từng học sinh: đúng hạn, trễ, bỏ lỡ                                                            | Đã tái hiện | Cao  | 5.15, 5.16     |
-| GAP-20 | Danh sách lớp nhạt, các hàng không tách bạch; trang lớp có khối mã lớp chiếm gần nửa màn hình đầu                         | Đã tái hiện | Vừa  | 5.16           |
+| GAP-19 | Giáo viên không có số liệu từng học sinh: đúng hạn, trễ, bỏ lỡ                                                            | Đã tái hiện | Cao  | 5.15, 5.16c    |
+| GAP-20 | Danh sách lớp nhạt, các hàng không tách bạch; trang lớp có khối mã lớp chiếm gần nửa màn hình đầu                         | Đã tái hiện | Vừa  | 5.16a, 5.16b   |
 | GAP-21 | Form tạo lớp, giao bài, thư mục, khoá tài khoản, ẩn bộ hiện ngay trong trang, đẩy nội dung xuống và làm vỡ bố cục         | Đã tái hiện | Vừa  | 5.3, 5.8, 5.13 |
 | GAP-22 | Ô hạn nộp là `datetime-local` mặc định: `mm/dd/yyyy`, AM/PM, màu xanh của trình duyệt, không theo token                   | Đã tái hiện | Vừa  | 5.4            |
 | GAP-23 | Trang Tài khoản lệch trái, ô nhập hẹp, các mục xếp một cột dài, nhiều nút viền giống nhau                                 | Đã tái hiện | Vừa  | 5.9            |
