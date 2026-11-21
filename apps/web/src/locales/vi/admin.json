@@ -1,0 +1,107 @@
+{
+  "overviewRoles": {
+    "STUDENT": "Học sinh",
+    "TEACHER": "Giáo viên",
+    "ADMIN": "ADMIN"
+  },
+  "roles": {
+    "STUDENT": "Học sinh",
+    "TEACHER": "Giáo viên",
+    "ADMIN": "Quản trị"
+  },
+  "chart": {
+    "total": "Tổng 30 ngày: {{total}}",
+    "today": "Hôm nay",
+    "caption": "{{title}} theo ngày",
+    "day": "Ngày"
+  },
+  "loading": "Đang tải số liệu quản trị",
+  "failed": "Không tải được số liệu quản trị",
+  "checkNetwork": "Hãy kiểm tra mạng rồi thử lại.",
+  "title": "Quản trị",
+  "manageUsers": "Quản lý người dùng",
+  "tiles": {
+    "users": "Người dùng",
+    "newUsers": "+{{count}} trong 7 ngày",
+    "active": "Hoạt động 7 ngày",
+    "activeNote": "Có ít nhất một phiên học",
+    "sets": "Bộ từ",
+    "publicSets": "{{count}} công khai",
+    "sessions": "Phiên học 7 ngày"
+  },
+  "panels": {
+    "last30": "30 ngày qua",
+    "todo": "Cần xử lý",
+    "roles": "Vai trò",
+    "newUsers": "Người dùng mới",
+    "newPublic": "Bộ công khai mới"
+  },
+  "charts": {
+    "signups": "Đăng ký mới",
+    "accounts": "tài khoản",
+    "active": "Người hoạt động",
+    "people": "người"
+  },
+  "todo": {
+    "locked": "{{count}} tài khoản đang khoá",
+    "hidden": "{{count}} bộ từ đang ẩn",
+    "newPublic": "{{count}} bộ công khai mới cần rà"
+  },
+  "noUsers": "Chưa có tài khoản nào.",
+  "noNewPublic": "Không có bộ công khai mới trong 7 ngày.",
+  "setMeta": "{{owner}} · {{count}} thẻ",
+  "lock": {
+    "done": "Đã khoá tài khoản {{email}}",
+    "title": "Khoá tài khoản {{email}}?",
+    "description": "Người này không đăng nhập được cho tới khi mở khoá. Lý do hiện trong danh sách người dùng.",
+    "submit": "Khoá tài khoản",
+    "reason": "Lý do khoá",
+    "button": "Khoá"
+  },
+  "unlocked": "Đã mở khoá tài khoản {{email}}",
+  "roleChanged": "Đã đổi {{email}} thành {{role}}",
+  "lockedReason": "Đã khoá: {{reason}}",
+  "active": "Đang hoạt động",
+  "role": "Vai trò",
+  "roleOf": "Vai trò của {{email}}",
+  "unlockLabel": "Mở khoá {{email}}",
+  "unlock": "Mở khoá",
+  "lockLabel": "Khoá {{email}}",
+  "users": {
+    "loading": "Đang tải người dùng",
+    "search": "Tìm theo email hoặc tên",
+    "forbidden": "Bạn không có quyền xem trang này",
+    "forbiddenHint": "Chỉ quản trị viên mới quản lý được người dùng.",
+    "failed": "Không tải được danh sách người dùng",
+    "notFound": "Không tìm thấy người dùng",
+    "noMatch": "Không có ai khớp với “{{q}}”.",
+    "empty": "Chưa có người dùng nào.",
+    "list": "Người dùng",
+    "noFilterMatch": "Không có ai khớp với bộ lọc này.",
+    "roleFilter": "Lọc theo vai trò",
+    "allRoles": "Mọi vai trò",
+    "sort": "Sắp xếp",
+    "sorts": {
+      "-createdAt": "Mới nhất",
+      "createdAt": "Cũ nhất",
+      "displayName": "Tên A–Z",
+      "email": "Email A–Z"
+    },
+    "status": {
+      "all": "Tất cả",
+      "active": "Đang hoạt động",
+      "locked": "Đã khoá"
+    }
+  },
+  "hide": {
+    "unhidden": "Đã bỏ ẩn bộ từ",
+    "unhide": "Bỏ ẩn bộ từ",
+    "hidden": "Đã ẩn bộ từ khỏi người khác",
+    "hide": "Ẩn bộ từ",
+    "title": "Ẩn bộ từ vi phạm?",
+    "description": "Người khác không xem, học hay sao chép được bộ này. Chủ bộ thấy lý do bạn ghi.",
+    "submit": "Ẩn khỏi người khác",
+    "reason": "Lý do ẩn"
+  },
+  "locked": "Đã khoá"
+}

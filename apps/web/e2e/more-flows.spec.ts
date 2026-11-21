@@ -1,0 +1,648 @@
+import { spawnSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { expect, test, type Page } from '@playwright/test';
+import { buildXlsx } from '../src/lib/xlsx';
+import { AUDIT_VIEWS, auditFocus, auditPage, applyAuditView } from './audit';
+
+const stamp = Date.now();
+const password = 'mat-khau-e2e-123';
+const cards = [
+  { term: 'cat', definition: 'con mèo' },
+  { term: 'dog', definition: 'con chó' },
+  { term: 'fish', definition: 'con cá' },
+];
+const firstTitle = `Động vật ${stamp}`;
+const title = `Con vật ${stamp}`;
+
+const visibleField = (page: Page, label: string) =>
+  page.getByLabel(label, { exact: true }).filter({ visible: true });
+const progress = (page: Page, done: number) =>
+  expect(page.getByText(`${done}/${cards.length}`, { exact: true })).toBeVisible();
+const expectScore = (page: Page, correct: number) =>
+  expect(page.getByText(/^Bạn nhớ/)).toHaveText(`Bạn nhớ ${correct} trên ${cards.length} thẻ.`);
+
+async function signUp(page: Page, name: string, email: string) {
+  await page.goto('/register');
+  await page.getByLabel('Tên hiển thị').fill(name);
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Mật khẩu', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Tạo tài khoản' }).click();
+  await page.waitForURL('**/login?registered=1');
+  await visibleField(page, 'Email').fill(email);
+  await visibleField(page, 'Mật khẩu').fill(password);
+  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await page.waitForURL('**/dashboard');
+  await expect(page.getByRole('heading', { name: 'Tổng quan' })).toBeVisible();
+}
+
+async function answerChoices(page: Page) {
+  for (let done = 0; done < cards.length; done += 1) {
+    await progress(page, done);
+    const term = await page
+      .getByRole('heading', { level: 1 })
+      .filter({ visible: true })
+      .innerText();
+    const card = cards.find((item) => item.term === term);
+    await page.getByRole('button', { name: new RegExp(card?.definition ?? '') }).click();
+    await expect(page.getByRole('status').getByText('Chính xác')).toBeVisible();
+    await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+  }
+}
+
+function makeCardsDue(setId: string) {
+  const sql = `UPDATE "CardProgress" SET "dueAt" = now() - interval '1 minute'
+    WHERE "cardId" IN (SELECT id FROM "Card" WHERE "setId" = '${setId}');`;
+  const result = spawnSync('node', ['e2e/run-sql.mjs'], { input: sql, encoding: 'utf8' });
+  expect(result.status, result.stderr).toBe(0);
+}
+
+test.describe.serial('quản lý bộ từ và các chế độ học', () => {
+  let page: Page;
+  let setPath: string;
+
+  test.beforeAll(async ({ browser, baseURL }) => {
+    page = await (await browser.newContext({ baseURL })).newPage();
+    // Máy CI không có giọng đọc, nên ghi lại từ được yêu cầu đọc.
+    await page.addInitScript(() => {
+      const spoken: string[] = [];
+      Object.assign(window, { spokenWords: spoken });
+      Object.defineProperty(window, 'speechSynthesis', {
+        configurable: true,
+        value: {
+          cancel: () => undefined,
+          getVoices: () => [],
+          addEventListener: () => undefined,
+          removeEventListener: () => undefined,
+          speak: ({ text }: SpeechSynthesisUtterance) => spoken.push(text),
+        },
+      });
+      // Bộ nhận dạng giả: "nghe" đúng từ đang hiện trên trang.
+      class FakeRecognition {
+        lang = '';
+        maxAlternatives = 1;
+        interimResults = false;
+        onresult: ((event: { results: { transcript: string }[][] }) => void) | null = null;
+        onerror: ((event: { error: string }) => void) | null = null;
+        onend: (() => void) | null = null;
+        start() {
+          const transcript = document.querySelector('h1')?.textContent ?? '';
+          setTimeout(() => this.onresult?.({ results: [[{ transcript }]] }), 50);
+        }
+        abort() {}
+      }
+      Object.assign(window, {
+        SpeechRecognition: FakeRecognition,
+        webkitSpeechRecognition: FakeRecognition,
+      });
+    });
+    await signUp(page, 'Chủ bộ từ', `e2e-owner-${stamp}@example.com`);
+  });
+
+  test.afterAll(async () => {
+    await page.context().close();
+  });
+
+  test('tạo, sửa rồi tìm thấy bộ từ trong danh sách', async () => {
+    await page.goto('/sets/new');
+    // Trang form căn giữa ở màn hình rộng, tiêu đề thẳng hàng với form.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const heading = await page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' }).boundingBox();
+    const form = await page.locator('main form').first().boundingBox();
+    expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
+    expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
+    await visibleField(page, 'Tên bộ từ').fill(firstTitle);
+    // Radio gốc ẩn đi, người dùng bấm vào cả thẻ lựa chọn.
+    await page.getByText('Công khai', { exact: true }).click();
+    await expect(page.getByRole('radio', { name: 'Công khai' })).toBeChecked();
+    await page.getByRole('button', { name: 'Thêm thẻ' }).click();
+    for (const [index, { term, definition }] of cards.entries()) {
+      await visibleField(page, 'Từ').nth(index).fill(term);
+      await visibleField(page, 'Nghĩa').nth(index).fill(definition);
+    }
+    await page.getByRole('button', { name: 'Lưu bộ từ' }).click();
+    await expect(page.getByRole('heading', { name: firstTitle })).toBeVisible();
+    setPath = new URL(page.url()).pathname;
+
+    await page.getByRole('link', { name: 'Sửa bộ từ' }).click();
+    await page.waitForURL('**/edit');
+    await visibleField(page, 'Tên bộ từ').fill(title);
+    await page.getByRole('button', { name: 'Lưu bộ từ' }).filter({ visible: true }).click();
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+
+    await page.goto('/sets');
+    await page.getByRole('searchbox').fill('khong-co-bo-tu-nay');
+    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await expect(page.getByText('Không tìm thấy bộ từ phù hợp')).toBeVisible();
+    await page.getByRole('searchbox').fill(title);
+    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await expect(page.getByRole('link', { name: title })).toBeVisible();
+  });
+
+  test('học Flashcard bằng bàn phím', async () => {
+    await page.goto(`${setPath}/study/flashcard`);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      await page.keyboard.press('Space');
+      await expect(page.getByRole('button', { name: /^Đã nhớ/ })).toBeVisible();
+      await page.keyboard.press('2');
+    }
+    await expectScore(page, cards.length);
+  });
+
+  test('Bắt đầu học chạy lộ trình: xem thẻ rồi sang trắc nghiệm', async () => {
+    await page.goto(setPath);
+    await page.getByRole('link', { name: 'Bắt đầu học' }).click();
+    await page.waitForURL('**/study/path');
+    const steps = page.getByRole('list', { name: 'Các bước của lộ trình' });
+    await expect(steps.locator('[aria-current="step"]')).toHaveText(/Xem thẻ/);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      await page.keyboard.press('Space');
+      await page.keyboard.press('2');
+    }
+    await expectScore(page, cards.length);
+
+    await page.getByRole('link', { name: 'Bước tiếp: Trắc nghiệm' }).click();
+    await page.waitForURL('**/study/path?step=2');
+    await expect(steps.locator('[aria-current="step"]')).toHaveText(/Trắc nghiệm/);
+    await answerChoices(page);
+    await expectScore(page, cards.length);
+    await expect(page.getByRole('link', { name: 'Bước tiếp: Ghép cặp' })).toBeVisible();
+  });
+
+  test('học Nghe viết theo từ được đọc', async () => {
+    await page.goto(`${setPath}/study/dictation`);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      const word = await page.evaluate(
+        () => (window as unknown as { spokenWords: string[] }).spokenWords.at(-1) ?? '',
+      );
+      await page.getByLabel('Nhập từ bạn nghe được').fill(word);
+      await page.getByRole('button', { name: 'Kiểm tra' }).click();
+      await expect(page.getByRole('status').getByText('Chính xác')).toBeVisible();
+      await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+    }
+    await expectScore(page, cards.length);
+  });
+
+  test('học Trắc nghiệm', async () => {
+    await page.goto(`${setPath}/study/mcq`);
+    await answerChoices(page);
+    await expectScore(page, cards.length);
+  });
+
+  test('học kỹ: trả lời sai thì được hỏi lại trong vòng, học đến hết', async () => {
+    await page.goto(`${setPath}/study/learn`);
+    const result = page.getByText(/^Bạn nhớ/);
+    const answerBox = page.getByLabel('Nhập từ');
+    let answered = 0;
+    let sawRetry = false;
+    while (answered < 20 && !(await result.isVisible())) {
+      await expect(
+        answerBox
+          .or(page.getByRole('heading', { level: 1 }))
+          .or(result)
+          .first(),
+      ).toBeVisible();
+      if (await result.isVisible()) break;
+      sawRetry ||= await page.getByText('Hỏi lại câu trả lời sai').isVisible();
+      // Câu đầu tiên cố ý trả lời sai để câu đó được hỏi lại.
+      const correct = answered > 0;
+      if (await answerBox.isVisible()) {
+        const prompt = await page.locator('p[lang="vi"]').first().innerText();
+        const card = cards.find(({ definition }) => definition === prompt);
+        await answerBox.fill(correct ? (card?.term ?? '') : 'sai');
+        await page.getByRole('button', { name: 'Kiểm tra' }).click();
+      } else {
+        const term = await page.getByRole('heading', { level: 1 }).innerText();
+        const card = cards.find((item) => item.term === term);
+        const other = cards.find((item) => item !== card);
+        const pick = correct ? card?.definition : other?.definition;
+        await page.getByRole('button', { name: new RegExp(pick ?? '') }).click();
+      }
+      await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+      answered += 1;
+    }
+    expect(sawRetry).toBe(true);
+    await expect(result).toHaveText(`Bạn nhớ ${cards.length - 1} trên ${cards.length} thẻ.`);
+  });
+
+  test('làm bài kiểm tra, nộp một lần rồi xem kết quả', async () => {
+    await page.goto(`${setPath}/study/test`);
+    await expect(page.getByRole('button', { name: 'Nộp bài' })).toBeVisible();
+    for (const [index, { term, definition }] of cards.entries()) {
+      const item = page.locator('form ol > li').nth(index);
+      const typed = item.getByLabel(`Nhập từ cho câu ${index + 1}`);
+      if (await typed.isVisible()) {
+        await typed.fill(term);
+      } else {
+        await item.getByRole('radio', { name: definition, exact: true }).check();
+      }
+    }
+    await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
+    await page.getByRole('button', { name: 'Nộp bài' }).click();
+    await expectScore(page, cards.length);
+  });
+
+  test('luyện nói từng từ với bộ nhận dạng giả', async () => {
+    await page.goto(`${setPath}/study/speak`);
+    for (let done = 0; done < cards.length; done += 1) {
+      await progress(page, done);
+      await page.getByRole('button', { name: 'Bấm để nói' }).click();
+      await expect(page.getByRole('status').getByText(/Chính xác/)).toBeVisible();
+      await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
+    }
+    await expectScore(page, cards.length);
+  });
+
+  test('tải bộ về máy, học khi mất mạng, có mạng lại thì gửi lên máy chủ', async () => {
+    await page.goto(setPath);
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+    await page.reload();
+    await expect
+      .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+      .toBe(true);
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Tải về máy' }).click();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Xoá bản offline' })).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await page.context().setOffline(true);
+    await page.goto('/offline').catch(() => undefined);
+    await page.getByText(title).click();
+    await page.getByRole('button', { name: 'Học offline' }).click();
+    for (let done = 0; done < cards.length; done += 1) {
+      await page.getByRole('button', { name: /^Xem nghĩa/ }).click();
+      await page.getByRole('button', { name: /^Đã nhớ/ }).click();
+    }
+    await expect(page.getByText('Kết quả đã lưu trên máy')).toBeVisible();
+
+    await page.context().setOffline(false);
+    await page.goto('/dashboard');
+    await expect(page.getByText('Đã gửi 1 phiên học offline lên máy chủ')).toBeVisible();
+  });
+
+  test('ghép cặp từ với nghĩa', async () => {
+    await page.goto(`${setPath}/study/match`);
+    const terms = page.getByRole('list', { name: 'Từ' });
+    const meanings = page.getByRole('list', { name: 'Nghĩa' });
+    for (const { term, definition } of cards) {
+      await terms.getByRole('button', { name: term, exact: true }).click();
+      await meanings.getByRole('button', { name: definition, exact: true }).click();
+    }
+    await page.getByRole('button', { name: 'Tiếp tục' }).click();
+    await expectScore(page, cards.length);
+  });
+
+  test('ôn thẻ đến hạn bằng chế độ đã chọn', async () => {
+    makeCardsDue(setPath.split('/').at(-1) ?? '');
+
+    await page.goto('/dashboard');
+    await page.getByRole('link', { name: 'Ôn ngay' }).click();
+    await page.waitForURL('**/review');
+    // Chọn Trắc nghiệm rồi bỏ Flashcard: chỉ ôn bằng Trắc nghiệm.
+    await page.getByRole('button', { name: /Trắc nghiệm/ }).click();
+    await page.getByRole('button', { name: /Flashcard/, pressed: true }).click();
+    await page.getByRole('link', { name: `Ôn bộ từ ${title}` }).click();
+    await page.waitForURL('**/study/mcq?due=1');
+    await answerChoices(page);
+    await expectScore(page, cards.length);
+
+    await page.goto('/review');
+    await expect(page.getByText('Hôm nay chưa có từ cần ôn')).toBeVisible();
+  });
+
+  test('nhập CSV, sửa dòng lỗi, lưu rồi nhập thêm vào bộ có sẵn', async () => {
+    const importTitle = `Nhập CSV ${stamp}`;
+    await page.goto('/sets');
+    await page.getByRole('link', { name: 'Nhập từ file' }).click();
+    await page.waitForURL('**/sets/import');
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'tu-vung.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from('\uFEFFTừ,Nghĩa\nbird,"con chim, chim"\nlion,\n', 'utf8'),
+    });
+    await expect(page.getByText('Đã đọc tu-vung.csv')).toBeVisible();
+    await page.getByRole('button', { name: 'Đổi cách đọc' }).click();
+    await page.getByLabel('Dòng đầu là tiêu đề, bỏ qua khi nhập').check();
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+
+    const errorRow = page.getByRole('listitem', { name: 'Dòng 3' });
+    await expect(errorRow.getByText('Hãy nhập định nghĩa')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lưu 2 thẻ' })).toBeDisabled();
+    await errorRow.getByLabel('Nghĩa').fill('sư tử');
+    await page.getByLabel('Tên bộ từ mới').fill(importTitle);
+    await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
+
+    await expect(page.getByRole('heading', { name: importTitle })).toBeVisible();
+    await expect(page.getByText('con chim, chim')).toBeVisible();
+    const importPath = new URL(page.url()).pathname;
+
+    // File Excel đi qua worker `blob:`, nên bước này kiểm tra luôn CSP của bản production.
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Nhập thêm thẻ' }).click();
+    await expect(page.getByText(/bộ đang có 2 thẻ/)).toBeVisible();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'tu-them.xlsx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer: Buffer.from(buildXlsx([[['tiger', 'con hổ', '/ˈtaɪ.ɡər/']]])),
+    });
+    await expect(page.getByText('Đã đọc tu-them.xlsx')).toBeVisible();
+    await expect(page.getByText('Cách nhau bằng phím Tab.', { exact: false })).toBeVisible();
+    await page.getByRole('button', { name: 'Đổi cách đọc' }).click();
+    await expect(page.getByLabel('Từ và nghĩa cách nhau bằng')).toHaveValue('tab');
+    await page.getByLabel('Cột phiên âm (không bắt buộc)').selectOption('3');
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+    await expect(page.getByLabel('Phiên âm')).toHaveValue('/ˈtaɪ.ɡər/');
+    await page.getByRole('button', { name: 'Lưu 1 thẻ' }).click();
+    await page.waitForURL(`**${importPath}`);
+    await expect(page.getByText('con hổ')).toBeVisible();
+
+    // Tải file mẫu rồi chọn lại chính file đó: trang nhận ra tiêu đề và chọn sẵn 4 cột.
+    await page.goto('/sets/import');
+    const [template] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'Tải file mẫu Excel (.xlsx)' }).click(),
+    ]);
+    expect(template.suggestedFilename()).toBe('mau-nhap-tu-vung.xlsx');
+    await page.locator('input[type="file"]').setInputFiles({
+      name: template.suggestedFilename(),
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      buffer: await readFile(await template.path()),
+    });
+    await expect(page.getByText('Đã nhận ra tiêu đề file mẫu')).toBeVisible();
+    await page.getByRole('button', { name: 'Xem trước' }).click();
+    await expect(page.getByRole('heading', { name: 'Xem trước (7 thẻ)' })).toBeVisible();
+    await expect(page.getByLabel('Phiên âm').first()).toHaveValue('/ˈæp.əl/');
+    await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
+  });
+
+  test('tạo thư mục trên cột thư mục, chuyển và gỡ bộ từ, mở, đổi tên rồi xoá thư mục', async () => {
+    const folderName = `Lớp 10 ${stamp}`;
+    const folders = page.getByRole('navigation', { name: 'Thư mục' });
+    // Cột thư mục và kéo thả chỉ có từ 1024 px; màn hẹp dùng tấm đáy (việc 5.34).
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/sets');
+    await folders.getByRole('button', { name: 'Tạo thư mục mới' }).click();
+    const createFolder = page.getByRole('dialog', { name: 'Tạo thư mục' });
+    await createFolder.getByLabel('Tên thư mục mới').fill(folderName);
+    await createFolder.getByRole('button', { name: 'Tạo', exact: true }).click();
+    // Thư mục mới được mở ngay, đang trống.
+    await page.waitForURL('**/sets?folder=*');
+    await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
+    await page.getByRole('link', { name: 'Đóng thư mục' }).click();
+    await page.waitForURL(/\/sets$/);
+
+    // Kéo tay nắm của thẻ bộ từ thả vào thư mục trên cột thư mục.
+    const card = page
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('link', { name: title }) });
+    const handle = await card.locator('[data-drag-handle]').boundingBox();
+    const target = await folders.getByRole('link', { name: new RegExp(folderName) }).boundingBox();
+    if (!handle || !target) throw new Error('Không thấy tay nắm hoặc thư mục');
+    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(target.x + 20, target.y + target.height / 2, { steps: 12 });
+    await page.mouse.up();
+    await expect(page.getByText(`Đã chuyển "${title}" vào thư mục`)).toBeVisible();
+
+    await folders.getByRole('link', { name: new RegExp(folderName) }).click();
+    await page.waitForURL('**/sets?folder=*');
+    await expect(page.getByRole('link', { name: title })).toBeVisible();
+    await expect(page.getByRole('link', { name: `Nhập CSV ${stamp}` })).toHaveCount(0);
+
+    await page.getByRole('button', { name: `Thao tác với thư mục ${folderName}` }).click();
+    await page.getByRole('menuitem', { name: 'Đổi tên thư mục' }).click();
+    await page.getByLabel('Tên thư mục', { exact: true }).fill(`${folderName} A`);
+    await page.getByRole('button', { name: 'Lưu' }).click();
+    await expect(page.getByText('Đã đổi tên thư mục')).toBeVisible();
+
+    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
+    await page.getByRole('menuitem', { name: `Gỡ khỏi thư mục ${folderName} A` }).click();
+    await expect(page.getByText('Đã gỡ khỏi thư mục')).toBeVisible();
+    await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
+
+    await page.getByRole('button', { name: `Thao tác với thư mục ${folderName} A` }).click();
+    await page.getByRole('menuitem', { name: 'Xoá thư mục' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Xoá thư mục' }).click();
+    await expect(page.getByText('Đã xoá thư mục, bộ từ vẫn được giữ')).toBeVisible();
+    await page.waitForURL(/\/sets$/);
+    await expect(page.getByRole('link', { name: title })).toBeVisible();
+  });
+
+  test('mọi màn hình đạt accessibility ở light và dark 360 px', async ({ browser, baseURL }) => {
+    // Audit mọi màn hình ở bốn kiểu xem, danh sách màn hình tăng theo số chế độ học.
+    test.setTimeout(600_000);
+    const guest = await (await browser.newContext({ baseURL })).newPage();
+    const memberPaths = [
+      '/dashboard',
+      '/sets',
+      '/sets/new',
+      '/sets/import',
+      setPath,
+      `${setPath}/edit`,
+      '/explore',
+      '/review',
+      '/account',
+      `${setPath}/study/flashcard`,
+      `${setPath}/study/path`,
+      `${setPath}/study/learn`,
+      `${setPath}/study/write`,
+      `${setPath}/study/test`,
+      `${setPath}/study/speak`,
+      `${setPath}/study/dictation`,
+      `${setPath}/study/mcq`,
+      `${setPath}/study/cloze`,
+      `${setPath}/study/match`,
+    ];
+    const guestPaths = [
+      '/',
+      '/login',
+      '/register',
+      '/public/explore',
+      `/public${setPath}`,
+      `/public${setPath}/study/flashcard`,
+      '/khong-co-trang-nay',
+    ];
+    const issues: string[] = [];
+
+    for (const view of AUDIT_VIEWS) {
+      await applyAuditView(page, view);
+      await applyAuditView(guest, view);
+      for (const [viewer, paths] of [
+        [page, memberPaths],
+        [guest, guestPaths],
+      ] as const) {
+        for (const path of paths) {
+          await viewer.goto(path);
+          const label = `${view.name} ${path.replace(setPath, '/sets/:id')}`;
+          issues.push(...(await auditPage(viewer, label)));
+          if (view.colorScheme === 'light') {
+            issues.push(...(await auditFocus(viewer, label)));
+          }
+        }
+      }
+
+      await page.goto(`${setPath}/study/flashcard`);
+      const flip = page.getByRole('button', { name: /^Xem nghĩa/ });
+      await flip.click();
+      issues.push(...(await auditPage(page, `${view.name} mặt sau thẻ`)));
+      const known = page.getByRole('button', { name: /^Đã nhớ/ });
+      await known.click();
+      const result = page.getByRole('heading', { name: 'Đã xong phiên học' });
+      while (!(await result.isVisible())) {
+        if (await flip.isVisible()) await flip.click();
+        if (await known.isVisible()) await known.click();
+      }
+      issues.push(...(await auditPage(page, `${view.name} kết quả`)));
+    }
+
+    await guest.context().close();
+
+    // Đang ở 360 px: từ rất dài không được làm tràn bố cục.
+    const longTitle = 't'.repeat(200);
+    await page.goto('/sets/new');
+    await visibleField(page, 'Tên bộ từ').fill(longTitle);
+    for (const index of [0, 1]) {
+      await visibleField(page, 'Từ')
+        .nth(index)
+        .fill(`${'w'.repeat(199)}${index}`);
+      await visibleField(page, 'Nghĩa').nth(index).fill('n'.repeat(1000));
+    }
+    await page.getByRole('button', { name: 'Lưu bộ từ' }).click();
+    await expect(page.getByRole('heading', { name: longTitle })).toBeVisible();
+    const longPath = new URL(page.url()).pathname;
+    for (const path of [
+      longPath,
+      '/sets',
+      `${longPath}/edit`,
+      `${longPath}/study/flashcard`,
+      `${longPath}/study/write`,
+      `${longPath}/study/mcq`,
+    ]) {
+      await page.goto(path);
+      issues.push(...(await auditPage(page, `từ dài ${path.replace(longPath, '/sets/:id')}`)));
+    }
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(`${setPath}/study/flashcard`);
+    await page.getByRole('button', { name: /^Xem nghĩa/ }).click();
+    const animated = await page.evaluate(() =>
+      [...document.querySelectorAll('*')]
+        .filter((element) => {
+          const style = getComputedStyle(element);
+          return [style.transitionDuration, style.animationDuration].some((value) =>
+            value.split(',').some((part) => parseFloat(part) > 0.01),
+          );
+        })
+        .map((element) => element.tagName.toLowerCase()),
+    );
+    issues.push(...animated.map((tag) => `giảm chuyển động: ${tag} vẫn chạy hiệu ứng`));
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await applyAuditView(page, AUDIT_VIEWS[0]);
+    expect([...new Set(issues)]).toEqual([]);
+  });
+
+  test('người khác sao chép được, chủ xoá bộ gốc thì bản sao vẫn còn', async ({
+    browser,
+    baseURL,
+  }) => {
+    const other = await browser.newPage({ baseURL });
+    await signUp(other, 'Người học khác', `e2e-other-${stamp}@example.com`);
+    await other.goto('/explore');
+    await other.getByRole('searchbox').fill(title);
+    await other.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await other.getByRole('link', { name: title }).click();
+    await other.getByRole('button', { name: 'Sao chép bộ từ' }).click();
+    const copyTitle = `${title} (bản sao)`;
+    await expect(other.getByRole('heading', { name: copyTitle })).toBeVisible();
+
+    await page.goto(setPath);
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Xoá bộ từ' }).click();
+    // Hộp thoại xác nhận không đẩy bố cục, huỷ được bằng Esc.
+    const confirmDelete = page.getByRole('dialog', { name: `Xoá bộ từ "${title}"?` });
+    await expect(confirmDelete.getByRole('button', { name: 'Huỷ' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(confirmDelete).toBeHidden();
+    await page.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Xoá bộ từ' }).click();
+    await confirmDelete.getByRole('button', { name: 'Xoá bộ từ' }).click();
+    await page.waitForURL('**/sets');
+    await page.goto(setPath);
+    await expect(page.getByText('Không tìm thấy bộ từ')).toBeVisible();
+
+    await other.reload();
+    await expect(other.getByRole('heading', { name: copyTitle })).toBeVisible();
+    await other.close();
+  });
+});
+
+test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá không đăng nhập được', async ({
+  browser,
+  baseURL,
+}) => {
+  // Luồng dài: hai lần đăng ký, khoá, mở khoá rồi ẩn bộ từ, máy CI cần hơn 30 giây.
+  test.setTimeout(90_000);
+  const target = `e2e-target-${stamp}@example.com`;
+  const adminEmail = `e2e-admin-${stamp}@example.com`;
+  const targetPage = await (await browser.newContext({ baseURL })).newPage();
+  await signUp(targetPage, 'Người bị khoá', target);
+
+  const admin = await (await browser.newContext({ baseURL })).newPage();
+  await signUp(admin, 'Quản trị E2E', adminEmail);
+  const promoted = spawnSync('node', ['e2e/run-sql.mjs'], {
+    input: `UPDATE "User" SET role = 'ADMIN' WHERE email = '${adminEmail}';`,
+    encoding: 'utf8',
+  });
+  expect(promoted.status, promoted.stderr).toBe(0);
+
+  // Vai trò đổi bằng SQL sau khi đăng nhập nên vào thẳng trang quản lý (trang đọc vai trò từ API).
+  await admin.goto('/admin/users');
+  await admin.getByRole('searchbox', { name: 'Tìm theo email hoặc tên' }).fill(target);
+  await admin.getByRole('searchbox', { name: 'Tìm theo email hoặc tên' }).press('Enter');
+  await admin.getByRole('button', { name: `Khoá ${target}` }).click();
+  await admin.getByLabel('Lý do khoá').fill('Kiểm thử khoá tài khoản');
+  await admin.getByRole('button', { name: 'Khoá tài khoản' }).click();
+  await expect(admin.getByText('Đã khoá: Kiểm thử khoá tài khoản')).toBeVisible();
+
+  await targetPage.reload();
+  await targetPage.waitForURL('**/login**');
+  await visibleField(targetPage, 'Email').fill(target);
+  await visibleField(targetPage, 'Mật khẩu').fill(password);
+  await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await expect(
+    targetPage.getByText('Tài khoản đã bị khoá. Hãy liên hệ quản trị viên.'),
+  ).toBeVisible();
+
+  await admin.getByRole('button', { name: `Mở khoá ${target}` }).click();
+  await expect(admin.getByRole('button', { name: `Khoá ${target}` })).toBeVisible();
+  // Form có thể được làm mới sau lần bị từ chối, nên điền lại trước khi đăng nhập.
+  await visibleField(targetPage, 'Email').fill(target);
+  await visibleField(targetPage, 'Mật khẩu').fill(password);
+  await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await targetPage.waitForURL('**/dashboard');
+
+  // ADMIN ẩn bộ công khai của người khác, khách không còn xem được.
+  const setId = `e2e-hidden-${stamp}`;
+  const inserted = spawnSync('node', ['e2e/run-sql.mjs'], {
+    input: `INSERT INTO "StudySet" (id, "ownerId", title, visibility, "updatedAt")
+      SELECT '${setId}', id, 'Bộ vi phạm ${stamp}', 'PUBLIC', now() FROM "User" WHERE email = '${target}';`,
+    encoding: 'utf8',
+  });
+  expect(inserted.status, inserted.stderr).toBe(0);
+  await admin.goto(`/sets/${setId}`);
+  await admin.getByRole('button', { name: 'Ẩn bộ từ' }).click();
+  await admin.getByLabel('Lý do ẩn').fill('Nội dung vi phạm');
+  await admin.getByRole('button', { name: 'Ẩn khỏi người khác' }).click();
+  await expect(admin.getByText('Lý do: Nội dung vi phạm', { exact: false })).toBeVisible();
+  const guest = await (await browser.newContext({ baseURL })).newPage();
+  await guest.goto(`/public/sets/${setId}`);
+  await expect(guest.getByRole('heading', { name: `Bộ vi phạm ${stamp}` })).toHaveCount(0);
+  await expect(guest.getByText(/Không tìm thấy/).first()).toBeVisible();
+
+  await guest.context().close();
+  await admin.context().close();
+  await targetPage.context().close();
+});

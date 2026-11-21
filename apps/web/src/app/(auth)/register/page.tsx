@@ -1,0 +1,25 @@
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { PageHeader } from '@/components/common/page-header';
+import { AuthFormSkeleton } from '@/features/auth/components/auth-form-skeleton';
+import { GoogleSignIn } from '@/features/auth/components/google-sign-in';
+import { RegisterForm } from '@/features/auth/components/register-form';
+import { getT } from '@/lib/i18n/server';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('auth');
+  return { title: t('pages.registerTitle') };
+}
+
+export default async function RegisterPage() {
+  const t = await getT('auth');
+  return (
+    <>
+      <PageHeader title={t('pages.registerTitle')} description={t('pages.registerDesc')} />
+      <Suspense fallback={<AuthFormSkeleton />}>
+        <GoogleSignIn text="signup_with" />
+        <RegisterForm />
+      </Suspense>
+    </>
+  );
+}

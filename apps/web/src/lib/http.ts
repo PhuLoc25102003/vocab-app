@@ -1,6 +1,12 @@
 import { apiErrorSchema } from '@vocab/shared';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+/**
+ * Trình duyệt gọi `NEXT_PUBLIC_API_URL`, có thể là đường dẫn tương đối `/api/v1` được chuyển tiếp.
+ * Server của web không gọi được đường dẫn tương đối, nên dùng `API_INTERNAL_URL` nếu có.
+ * Biến không có tiền tố `NEXT_PUBLIC_` luôn rỗng ở trình duyệt.
+ */
+const API_URL =
+  process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
 
 export class HttpError extends Error {
   constructor(
@@ -15,10 +21,31 @@ export class HttpError extends Error {
   }
 }
 
-export async function http<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
+export interface HttpAuth {
+  getAccessToken: () => string | null;
+  /** Trả token mới, hoặc `null` nếu không làm mới được. */
+  refreshAccessToken: () => Promise<string | null>;
+}
+
+export interface HttpOptions extends RequestInit {
+  /** Không gửi access token và không tự refresh, dùng cho các route của phiên đăng nhập. */
+  skipAuth?: boolean;
+}
+
+let auth: HttpAuth | null = null;
+
+/** `lib` không được phụ thuộc feature, nên feature auth tự đăng ký vào đây. */
+export function configureHttpAuth(next: HttpAuth | null): void {
+  auth = next;
+}
+
+async function send<T>(path: string, init: RequestInit, token: string | null): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
+  }
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
   }
 
   const response = await fetch(`${API_URL}${path}`, {
@@ -43,4 +70,24 @@ export async function http<T = unknown>(path: string, init: RequestInit = {}): P
   }
 
   return body as T;
+}
+
+export async function http<T = unknown>(
+  path: string,
+  { skipAuth = false, ...init }: HttpOptions = {},
+): Promise<T> {
+  const token = skipAuth ? null : (auth?.getAccessToken() ?? null);
+
+  try {
+    return await send<T>(path, init, token);
+  } catch (error) {
+    if (!auth || !token || !(error instanceof HttpError) || error.status !== 401) {
+      throw error;
+    }
+    const freshToken = await auth.refreshAccessToken();
+    if (!freshToken) {
+      throw error;
+    }
+    return send<T>(path, init, freshToken);
+  }
 }

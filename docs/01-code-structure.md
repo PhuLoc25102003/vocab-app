@@ -31,26 +31,32 @@ Quy tắc phụ thuộc: `apps/*` được import `packages/*`; `packages/*` kh�
 src/
 ├── app/                          # chỉ routing + layout, rất mỏng
 │   ├── (marketing)/page.tsx      # landing
-│   ├── (auth)/login, register
+│   ├── (auth)/login, register, forgot-password, reset-password
+│   ├── (public)/public/explore   # khách tìm bộ từ công khai
+│   ├── (public)/public/sets/[id]/page.tsx  # trang công khai cho khách
+│   ├── (public)/public/sets/[id]/study/[mode]/page.tsx  # khách học thử, không lưu tiến độ
 │   ├── (app)/dashboard
+│   ├── (app)/explore             # tìm bộ từ công khai
 │   ├── (app)/sets/[id]/page.tsx
 │   ├── (app)/sets/[id]/study/[mode]/page.tsx
 │   └── (app)/sets/new, import
 ├── features/                     # mỗi tính năng tự chứa
+│   ├── marketing/   { components/landing-page.tsx }
 │   ├── auth/        { api.ts, hooks/, components/, store.ts }
 │   ├── sets/        { api.ts, hooks/use-sets.ts, components/set-card.tsx ... }
-│   ├── import/      { parsers/, components/import-preview.tsx }
+│   ├── import/      { api.ts, read-file.ts, components/import-wizard.tsx }
+│   ├── folders/     { api.ts, hooks.ts, components/folder-manager.tsx }
 │   ├── study/
 │   │   ├── modes/   { flashcard/, write/, dictation/, mcq/, match/ }
 │   │   ├── session.store.ts      # Zustand: thẻ hiện tại, điểm, hàng đợi
 │   │   └── components/study-shell.tsx
 │   └── stats/
 ├── components/ui/                # shadcn/ui đã áp token (Button, Input, Dialog...)
-├── components/common/            # audio-button, empty-state, error-state, page-header
+├── components/common/            # app-nav, page-header, empty-state, error-state, loading-state, audio-button
 ├── lib/
 │   ├── http.ts                   # một HTTP client duy nhất, tự refresh token
 │   ├── query-client.ts
-│   └── speech.ts                 # bọc Web Speech API sau interface ISpeechService
+│   └── speech.ts                 # bọc Web Speech API
 └── proxy.ts                      # chặn route (app) khi chưa đăng nhập
 ```
 
@@ -80,20 +86,21 @@ src/
 │   └── base/         base.repository.ts, pagination.ts
 ├── infrastructure/
 │   ├── prisma/       prisma.service.ts
-│   ├── storage/      storage.interface.ts, r2.storage.ts
+│   ├── storage/      object-storage.ts (R2), sigv4.ts, storage.module.ts
 │   ├── tts/          tts.interface.ts, web-tts.provider.ts
-│   └── mail/
+│   ├── mail/         mailer.ts (Brevo, bộ gửi trong bộ nhớ), mail.module.ts
+│   └── redis/        redis-client.ts (Upstash REST), shared-throttler.storage.ts
 ├── generated/prisma/               # Prisma Client sinh ra (gitignore)
 └── modules/
     ├── auth/         controller, service, strategies/, dto/
     ├── users/
     ├── sets/         sets.controller.ts, sets.service.ts, sets.repository.ts, dto/
     ├── cards/
-    ├── import/       import.service.ts, parsers/ (text, csv, xlsx)
-    ├── study/        study.service.ts, srs.service.ts
+    ├── import/       import.service.ts, đọc text và CSV bằng parseImport của shared
+    ├── study/        controller, service, repository (SRS nằm ở shared)
     ├── progress/
     ├── health/
-    └── classes/      (giai đoạn 3)
+    └── classes/      lớp (3.3) và thành viên lớp (3.9), mỗi phần có controller, service, repository
 ```
 
 Luồng trong một module: **Controller → Service → Repository → Prisma**. Controller không gọi Prisma; Service không biết HTTP (không dùng `req`, `res`).
@@ -112,16 +119,19 @@ Luồng trong một module: **Controller → Service → Repository → Prisma**
 
 ## Hiện trạng
 
-| Thành phần trong tài liệu                                                                         | Hiện trạng                                                    |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `common/guards/auth.guard.ts`                                                                     | Có. Từ chối mọi route không có `@Public()`, chưa xác thực JWT |
-| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                            |
-| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Chưa có, tạo khi làm module auth                              |
-| `AppError`, `packages/shared/src/errors.ts`                                                       | Chưa có, tạo theo mẫu trong skill `api-endpoint`              |
-| `paginationSchema`, `common/base/pagination.ts`                                                   | Chưa có, tạo theo mẫu trong skill `api-endpoint`              |
-| `packages/shared/src/study`                                                                       | Chưa có, tạo theo mẫu trong skill `study-mode`                |
-| `apps/web/src/proxy.ts`, shadcn/ui, `EmptyState`, `ErrorState`, `PageHeader`, `AudioButton`       | Chưa có                                                       |
-| Module nghiệp vụ trong `apps/api/src/modules`                                                     | Chỉ `health` có code, các module khác là `@Module({})` rỗng   |
+| Thành phần trong tài liệu                                                                         | Hiện trạng                                                           |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `common/guards/auth.guard.ts`                                                                     | Có. Xác thực JWT, từ chối route không có `@Public()` nếu thiếu token |
+| `@Public()`, `ZodValidationPipe`, `AllExceptionsFilter`, `RequestIdInterceptor`, `BaseRepository` | Có                                                                   |
+| `@Roles()`, `@CurrentUser()`, `@CheckOwnership()`, `RolesGuard`, `OwnershipGuard`                 | Có                                                                   |
+| `AppError`, `packages/shared/src/errors.ts`                                                       | Có                                                                   |
+| `paginationSchema`, `common/base/pagination.ts`                                                   | Có                                                                   |
+| `packages/shared/src/study`                                                                       | Có type, registry, chấm điểm, SRS và strategy của 4 chế độ MVP       |
+| shadcn/ui, `AppNav`, `PageHeader`, `EmptyState`, `ErrorState`, `LoadingState`                     | Có                                                                   |
+| `apps/web/src/proxy.ts`                                                                           | Có. Điều hướng theo cookie đánh dấu `vocab_session`                  |
+| `AudioButton`                                                                                     | Có, dùng Web Speech API                                              |
+| `infrastructure/mail`, `infrastructure/redis`, `infrastructure/storage`                           | Có. Thiếu khoá dịch vụ thì dùng bản trong bộ nhớ                     |
+| Module nghiệp vụ trong `apps/api/src/modules`                                                     | `health`, `auth`, `users`, `sets`, `study`, `progress` có code       |
 
 ## Đã điều chỉnh so với spec gốc
 

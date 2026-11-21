@@ -13,14 +13,16 @@ Nguồn: tách từ `spec-source.md` (bản 2026-11-18), đã đối chiếu v�
 | Giáo viên (TEACHER)    | Mọi quyền của học sinh, thêm tạo lớp, giao bộ từ, xem kết quả của lớp |
 | Quản trị (ADMIN)       | Quản lý người dùng, ẩn nội dung vi phạm                               |
 
+Mỗi vai trò có Tổng quan riêng (giai đoạn 5, `docs/use-cases/06-vai-tro-va-lop-hoc.md`): học sinh thấy bài tập lớp và việc ôn, giáo viên thấy lớp cần chú ý, ADMIN thấy tăng trưởng và việc cần xử lý.
+
 **Phạm vi MVP:**
 
 - Đăng ký, đăng nhập (email + mật khẩu, Google OAuth).
-- Tạo, sửa, xoá bộ từ và thẻ từ; import từ text, CSV, Excel.
+- Tạo, sửa, xoá bộ từ và thẻ từ; import từ text, CSV, Excel, kèm phiên âm và câu ví dụ nếu có, có file mẫu để tải về.
 - Chế độ Flashcard, Viết, Nghe – viết, Trắc nghiệm; nghe phát âm.
 - Lưu tiến độ từng thẻ; trang "Ôn hôm nay".
 
-**Để sau MVP:** chế độ Learn, Điền từ, Ghép cặp, Kiểm tra, lớp học, luyện nói, PWA offline.
+**Để sau MVP:** lớp học, luyện nói, PWA offline. Chế độ Learn (2.7, 2.13), Kiểm tra (2.10), Điền từ (2.8) và Ghép cặp (2.9) đã có.
 
 ## Kiến trúc hệ thống
 
@@ -82,7 +84,7 @@ Mỗi tính năng là một module độc lập; thêm chế độ học mới c
 ```ts
 export interface StudyModeStrategy {
   readonly mode: StudyMode; // 'FLASHCARD' | 'WRITE' | 'DICTATION' | 'MCQ' | ...
-  buildQuestions(cards: Card[], opts: StudyOptions): Question[];
+  buildQuestions(cards: StudyCard[], options: StudyOptions): Question[];
   grade(question: Question, answer: UserAnswer): GradeResult;
 }
 
@@ -99,12 +101,12 @@ Thêm chế độ mới = viết một class mới + `registerMode(...)` + một
 
 ## Trạng thái triển khai
 
-Dự án mới có khung. Bảng tech stack ở trên là đích đến, trạng thái thực tế như sau.
+Dự án đang làm MVP, tiến độ từng việc nằm ở `07-progress.md`. Bảng tech stack ở trên là đích đến, trạng thái thực tế như sau.
 
-| Trạng thái | Thành phần                                                                                                                                                                                                                   |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Đã có      | npm workspaces, Turborepo, Next.js 16, React 19, Tailwind v4, TanStack Query, Zustand, React Hook Form, NestJS 11 + Fastify, Prisma 7, PostgreSQL 17 trong Docker, Zod 4, helmet, Prettier, ESLint 9, CI bằng GitHub Actions |
-| Chưa có    | shadcn/ui, Swagger, JWT, Redis, R2, Vitest, Testing Library, Supertest, Playwright test, Sentry, log Pino có cấu hình, cấu hình deploy                                                                                       |
+| Trạng thái | Thành phần                                                                                                                                                                                                                                                                                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Đã có      | npm workspaces, Turborepo, Next.js 16, React 19, Tailwind v4, TanStack Query, Zustand, React Hook Form, NestJS 11 + Fastify, Prisma 7, PostgreSQL 17 trong Docker, Zod 4, JWT, helmet, Swagger, Vitest, Playwright, Testing Library, Supertest, log JSON bằng Pino, shadcn/ui, Prettier, ESLint 9, CI bằng GitHub Actions |
+| Chưa có    | Redis, R2, Sentry, cấu hình deploy                                                                                                                                                                                                                                                                                        |
 
 Runtime: Node 24 LTS (`^24.11.0`, bản dùng khi phát triển ghi trong `.nvmrc`), npm 11. Môi trường deploy cũng phải đặt Node 24.
 

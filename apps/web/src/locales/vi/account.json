@@ -1,0 +1,50 @@
+{
+  "title": "Tài khoản",
+  "menuLabel": "Tài khoản: ",
+  "manageUsers": "Quản lý người dùng",
+  "loggingOut": "Đang đăng xuất",
+  "logout": "Đăng xuất",
+  "name": {
+    "saved": "Đã lưu tên hiển thị",
+    "title": "Đổi tên hiển thị",
+    "description": "Tên này hiện cho giáo viên, bạn cùng lớp và trên bộ từ công khai của bạn.",
+    "save": "Lưu tên",
+    "label": "Tên hiển thị"
+  },
+  "password": {
+    "changed": "Đã đổi mật khẩu. Các thiết bị khác đã được đăng xuất.",
+    "wrongCurrent": "Mật khẩu hiện tại không đúng",
+    "title": "Đổi mật khẩu",
+    "description": "Sau khi đổi, các thiết bị khác sẽ bị đăng xuất.",
+    "current": "Mật khẩu hiện tại",
+    "new": "Mật khẩu mới"
+  },
+  "logoutAll": {
+    "button": "Đăng xuất mọi thiết bị",
+    "title": "Đăng xuất mọi thiết bị?",
+    "description": "Bạn sẽ phải đăng nhập lại trên mọi thiết bị, kể cả thiết bị này.",
+    "confirm": "Đăng xuất tất cả",
+    "cancel": "Giữ đăng nhập"
+  },
+  "delete": {
+    "done": "Đã xoá tài khoản",
+    "wrongPassword": "Mật khẩu không đúng",
+    "button": "Xoá tài khoản",
+    "title": "Xoá tài khoản?",
+    "description": "Mọi bộ từ, tiến độ học và phiên đăng nhập của bạn sẽ bị xoá. Việc này không thể hoàn tác.",
+    "confirm": "Xoá vĩnh viễn",
+    "cancel": "Giữ tài khoản",
+    "passwordLabel": "Nhập mật khẩu để xác nhận",
+    "sectionDescription": "Tài khoản, bộ từ và tiến độ học của bạn sẽ bị xoá hẳn. Tiến độ của người khác trên các bộ từ này cũng mất."
+  },
+  "loading": "Đang tải tài khoản",
+  "failed": "Không tải được tài khoản",
+  "checkNetwork": "Hãy kiểm tra mạng rồi thử lại.",
+  "profile": "Hồ sơ",
+  "editName": "Sửa tên",
+  "security": "Bảo mật",
+  "passwordRow": "Mật khẩu",
+  "googleOnly": "Đăng nhập bằng Google",
+  "sessions": "Phiên đăng nhập",
+  "sessionsHint": "Đăng xuất khỏi mọi thiết bị, dùng khi bạn quên đăng xuất ở máy khác."
+}

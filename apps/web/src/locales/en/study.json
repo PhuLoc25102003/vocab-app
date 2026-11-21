@@ -1,0 +1,220 @@
+{
+  "correct": "Correct",
+  "wrong": "Not quite",
+  "nextQuestion": "Next question",
+  "check": "Check",
+  "expected": "Correct answer",
+  "listenTerm": "Listen",
+  "listenDefinition": "Listen to the meaning",
+  "typeTerm": "Type the term",
+  "cloze": {
+    "blank": "blank",
+    "input": "Fill in the missing word",
+    "hint": "Hint: {{hint}}"
+  },
+  "dictation": {
+    "unsupported": "This browser cannot read words aloud",
+    "unsupportedHint": "Open it in Chrome, Edge or Safari to use Dictation.",
+    "skip": "Skip this one",
+    "input": "Type what you hear",
+    "replay": "Listen again",
+    "slow": "Listen slowly"
+  },
+  "flashcard": {
+    "imageAlt": "Illustration for {{term}}",
+    "flipBack": "Flip to the front",
+    "flip": "Flip card",
+    "notYet": "Not yet",
+    "remembered": "Got it",
+    "showMeaning": "Show meaning"
+  },
+  "learn": {
+    "round": "Mastered this round: <0>{{mastered}}</0>/<1>{{total}}</1>",
+    "retryWrong": "Asking missed questions again"
+  },
+  "match": {
+    "pickTermFirst": "Pick a term first.",
+    "wrongPair": "Not quite, \"{{meaning}}\" is not the meaning of \"{{term}}\".",
+    "rightPair": "Right: {{term}} means {{meaning}}.",
+    "title": "Match terms with meanings",
+    "time": "Time ",
+    "terms": "Terms",
+    "matched": "Matched",
+    "meanings": "Meanings",
+    "done": "Round finished in {{time}}.",
+    "continue": "Continue"
+  },
+  "mcq": {
+    "yourChoice": "Your choice"
+  },
+  "speak": {
+    "unsupported": "This browser cannot recognize speech. Use Chrome or Edge, or skip.",
+    "denied": "Microphone access is blocked. Allow the microphone for this page and try again.",
+    "noSpeech": "Nothing was heard. Speak more clearly and try again.",
+    "failed": "Could not recognize your speech. Try again.",
+    "sample": "Listen to the example",
+    "youSaid": "You said:",
+    "stop": "Stop listening",
+    "start": "Tap to speak",
+    "retry": "Try again",
+    "listening": "Listening… say the term out loud",
+    "tapMic": "Tap the mic and say the term",
+    "tapMicAgain": "Tap the mic to try again",
+    "skip": "Skip"
+  },
+  "test": {
+    "intro": "Answer everything, then submit. It is graded only after you submit.",
+    "question": "Question {{number}}.",
+    "chooseFor": "Choose the meaning for question {{number}}",
+    "typeFor": "Type the term for question {{number}}",
+    "blank": "{{count}} questions are unanswered. They count as wrong if you submit anyway.",
+    "submitAnyway": "Submit anyway",
+    "submit": "Submit"
+  },
+  "write": {
+    "imageAlt": "Illustration for the meaning"
+  },
+  "result": {
+    "great": "Excellent! You remembered almost everything.",
+    "good": "Well done! Review a few more cards and you have them all.",
+    "ok": "Not bad. Study the missed cards again to lock them in.",
+    "start": "Every start takes time. Study the missed cards again.",
+    "backToSet": "Back to the set",
+    "done": "Session complete",
+    "rate": "Recall rate",
+    "score": "You remembered <0>{{correct}}</0> of <1>{{total}}</1> cards.",
+    "reviewMore": "Needs more review",
+    "retryWrong": "Study missed cards",
+    "restart": "Start over"
+  },
+  "shell": {
+    "exit": "Leave the session",
+    "progress": "Session progress",
+    "allReviewed": "All due cards reviewed",
+    "allReviewedHint": "This set has no cards due right now.",
+    "back": "Go back",
+    "noCloze": "No suitable cards yet",
+    "noClozeHint": "Fill in the blank needs cards whose example contains the term. Add examples when editing the set or choose another mode.",
+    "noCards": "The set has no cards",
+    "notFound": "Set not found",
+    "noCardsHint": "Add cards before studying.",
+    "notFoundHint": "This set was deleted or you do not have access.",
+    "startFailed": "Could not start the session",
+    "checkNetwork": "Check your connection and try again.",
+    "preparing": "Preparing the session",
+    "saveFailed": "Results not saved yet",
+    "saveFailedHint": "Your answers are kept. Check your connection and try again.",
+    "saving": "Saving results"
+  },
+  "chain": {
+    "remaining": "<0>{{count}}</0> more review modes with these cards.",
+    "mode": "Next mode: {{mode}}",
+    "skipped": "Skipped {{mode}}: it is not available for this set.",
+    "backToReview": "Back to Review today"
+  },
+  "assignment": {
+    "progress": "Class assignment <0>{{className}}</0>: <1>{{done}}/{{total}}</1> modes done.",
+    "back": "Back to the assignment",
+    "backToSubmit": "Back to the assignment to submit"
+  },
+  "path": {
+    "steps": "Path steps",
+    "next": "Next step: {{step}}",
+    "finished": "You finished the path: cards, multiple choice, match and write.",
+    "FLASHCARD": "Cards",
+    "MCQ": "Multiple choice",
+    "MATCH": "Match",
+    "WRITE": "Write",
+    "done": " (done)"
+  },
+  "guest": {
+    "note": "This is a trial session, so progress is not saved.",
+    "login": "Sign in to save progress"
+  },
+  "offline": {
+    "study": "Study offline",
+    "note": "Results are saved on this device and sent when you are back online.",
+    "synced": "Sent {{count}} offline sessions to the server",
+    "notDownloaded": "Vocabulary set has not been downloaded"
+  },
+  "review": {
+    "loading": "Loading cards to review",
+    "loadingSets": "Loading sets with due cards",
+    "schedule": {
+      "wrong": {
+        "when": "Wrong answer",
+        "then": "The card comes back in 10 minutes."
+      },
+      "first": {
+        "when": "First correct",
+        "then": "Review again in 1 day."
+      },
+      "second": {
+        "when": "Correct again when due",
+        "then": "Spaced to 6 days, and the word counts as mastered."
+      },
+      "later": {
+        "when": "Later",
+        "then": "The gap keeps growing. Studying early does not move a card ahead faster."
+      }
+    },
+    "whenDue": "When is a card due?",
+    "howItWorks": "How it works",
+    "modesLegend": "Review with modes (pick several to chain them)",
+    "onlyFlashcard": "Flashcards only",
+    "selectAll": "Select all",
+    "dueToday": "Due today",
+    "cards": "cards",
+    "inSets": "in <0>{{count}}</0> sets. Reviewing on time helps you remember longer.",
+    "startFirst": "Review the first set",
+    "loadFailed": "Could not load cards to review",
+    "nothing": "Nothing to review today",
+    "nextDue": "The next card is due at {{time}}.",
+    "nothingHint": "Study another set and due words will show up here.",
+    "seeSets": "See sets",
+    "setsWithDue": "Sets with due cards",
+    "due": "Due",
+    "dueCount": "{{count}} cards due",
+    "reviewSet": "Review the set {{title}}",
+    "now": "Review now"
+  },
+  "stats": {
+    "new": "New",
+    "learning": "Learning",
+    "mastered": "Mastered",
+    "notStarted": "Not started",
+    "dueNow": "Due for review",
+    "reviewOn": "Review on {{date}}",
+    "activity": "Answers in the last 7 days",
+    "dayAnswers": "{{day}}: {{count}} answers",
+    "byDay": "Answers per day",
+    "day": "Day",
+    "answers": "Answers",
+    "masteryTitle": "How well you know the words",
+    "noWords": "No words studied yet.",
+    "masteryRule": "A word counts as mastered once you answer it right on two different days.",
+    "loadingProgress": "Loading progress",
+    "progressFailed": "Could not load progress",
+    "noCardsStudied": "You have not studied any card in this set yet.",
+    "yourProgress": "Your progress",
+    "progressRule": "A card answered right the first time comes back in 1 day. Right again when due spaces it to 6 days and counts as mastered, so it needs to be right on two different days. Studying again the same day does not move it ahead.",
+    "reviewDue": "Review {{count}} due cards",
+    "loading": "Loading stats",
+    "failed": "Could not load stats",
+    "empty": "No study data yet",
+    "emptyHint": "Study a set to start your streak.",
+    "findSets": "Find a set to study",
+    "streak": "Day streak",
+    "masteredWords": "Words mastered",
+    "learningWords": "Words learning",
+    "answersToday": "Answers today",
+    "title": "Stats",
+    "dueBanner": "You have <0>{{count}}</0> cards due. Review now so you do not forget.",
+    "noDue": "No cards due today. Study another set to keep your streak.",
+    "reviewNow": "Review now",
+    "keepStudying": "Keep studying",
+    "masteredRule": "Right on two different days",
+    "hardWords": "Often missed",
+    "wrongCount": "Missed {{count}} times"
+  }
+}

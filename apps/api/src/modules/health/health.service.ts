@@ -1,5 +1,5 @@
 import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
-import type { HealthResponse } from '@vocab/shared';
+import { ERROR_CODES, type HealthResponse } from '@vocab/shared';
 import { HealthRepository } from './health.repository';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class HealthService {
     } catch (error) {
       this.logger.error('Không truy vấn được database', error);
       throw new ServiceUnavailableException({
-        code: 'DB_UNAVAILABLE',
+        code: ERROR_CODES.DB_UNAVAILABLE,
         message: 'Không kết nối được database',
       });
     }

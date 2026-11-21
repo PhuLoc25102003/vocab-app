@@ -7,16 +7,6 @@ description: Dùng khi tạo hoặc sửa component, trang, form, trạng thái 
 
 Đọc trước: `docs/05-ui-tokens.md`. Đây là nguồn chuẩn duy nhất cho token.
 
-## Điều kiện nền
-
-Kiểm tra token mới đã vào code chưa:
-
-```bash
-grep -c "border-strong" apps/web/src/app/globals.css
-```
-
-Kết quả `0` nghĩa là `globals.css` còn bộ cũ. Làm mục "Áp dụng vào code" trong `docs/05-ui-tokens.md` thành một commit riêng trước, hoặc báo người dùng nếu nhiệm vụ không cho sửa code.
-
 ## Đặt file ở đâu
 
 | Loại                                  | Vị trí                                          |
@@ -27,6 +17,23 @@ Kết quả `0` nghĩa là `globals.css` còn bộ cũ. Làm mục "Áp dụng v
 | Route                                 | `apps/web/src/app`, chỉ gọi component           |
 
 Tên file kebab-case, tên component PascalCase. Chỉ thêm `'use client'` khi cần state, effect hoặc API trình duyệt. Component không gọi `fetch`, dữ liệu đi qua hook của feature.
+
+## Thành phần có sẵn
+
+Dùng lại trước khi viết mới:
+
+| Cần                    | Dùng                                                       |
+| ---------------------- | ---------------------------------------------------------- |
+| Gộp class              | `cn()` trong `@/lib/utils`                                 |
+| Nút, liên kết dạng nút | `Button`: `variant`, `size="icon"`, `loading`, `asChild`   |
+| Ô nhập có nhãn và lỗi  | `FormField`, ô trần dùng `Input`                           |
+| Giữ chỗ khi tải        | `LoadingState` bọc `Skeleton`                              |
+| Tiêu đề trang          | `PageHeader`                                               |
+| Không có dữ liệu, lỗi  | `EmptyState`, `ErrorState`                                 |
+| Thông báo ngắn         | `toast()` của `sonner`, `Toaster` đã gắn trong `Providers` |
+| Đọc hoặc đổi giao diện | `useTheme()` trong `@/lib/use-theme`                       |
+
+Thêm component shadcn bằng `npx shadcn@latest add <tên>` trong `apps/web`, rồi đổi toàn bộ class sang token của dự án. Không để lệnh này sửa `globals.css`.
 
 ## Quy tắc thiết kế
 

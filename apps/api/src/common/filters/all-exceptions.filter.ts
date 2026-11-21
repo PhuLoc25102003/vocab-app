@@ -1,19 +1,19 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
-import type { ApiError } from '@vocab/shared';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import { ERROR_CODES, type ApiError, type ErrorCode } from '@vocab/shared';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-const CODE_BY_STATUS: Record<number, string> = {
-  400: 'BAD_REQUEST',
-  401: 'UNAUTHORIZED',
-  403: 'FORBIDDEN',
-  404: 'NOT_FOUND',
-  405: 'METHOD_NOT_ALLOWED',
-  409: 'CONFLICT',
-  413: 'PAYLOAD_TOO_LARGE',
-  415: 'UNSUPPORTED_MEDIA_TYPE',
-  422: 'UNPROCESSABLE_ENTITY',
-  429: 'TOO_MANY_REQUESTS',
-  503: 'SERVICE_UNAVAILABLE',
+const CODE_BY_STATUS: Record<number, ErrorCode> = {
+  400: ERROR_CODES.BAD_REQUEST,
+  401: ERROR_CODES.UNAUTHORIZED,
+  403: ERROR_CODES.FORBIDDEN,
+  404: ERROR_CODES.NOT_FOUND,
+  405: ERROR_CODES.METHOD_NOT_ALLOWED,
+  409: ERROR_CODES.CONFLICT,
+  413: ERROR_CODES.PAYLOAD_TOO_LARGE,
+  415: ERROR_CODES.UNSUPPORTED_MEDIA_TYPE,
+  422: ERROR_CODES.UNPROCESSABLE_ENTITY,
+  429: ERROR_CODES.TOO_MANY_REQUESTS,
+  503: ERROR_CODES.SERVICE_UNAVAILABLE,
 };
 
 interface NormalizedError {
@@ -23,8 +23,11 @@ interface NormalizedError {
   details?: unknown;
 }
 
-function codeForStatus(status: number): string {
-  return CODE_BY_STATUS[status] ?? (status >= 500 ? 'INTERNAL_ERROR' : 'REQUEST_ERROR');
+function codeForStatus(status: number): ErrorCode {
+  return (
+    CODE_BY_STATUS[status] ??
+    (status >= 500 ? ERROR_CODES.INTERNAL_ERROR : ERROR_CODES.REQUEST_ERROR)
+  );
 }
 
 function normalize(exception: unknown): NormalizedError {
@@ -52,13 +55,11 @@ function normalize(exception: unknown): NormalizedError {
     };
   }
 
-  return { status: 500, code: 'INTERNAL_ERROR', message: 'Đã có lỗi xảy ra' };
+  return { status: 500, code: ERROR_CODES.INTERNAL_ERROR, message: 'Đã có lỗi xảy ra' };
 }
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name);
-
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const request = http.getRequest<FastifyRequest>();
@@ -66,10 +67,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { status, code, message, details } = normalize(exception);
 
     if (status >= 500) {
-      this.logger.error(
-        `${request.method} ${request.url} [${request.id}]`,
-        exception instanceof Error ? exception.stack : String(exception),
-      );
+      // Logger của request đã gắn sẵn requestId.
+      const err = exception instanceof Error ? exception : new Error(String(exception));
+      request.log.error({ err }, 'Lỗi không xử lý được');
     }
 
     const body: ApiError = {

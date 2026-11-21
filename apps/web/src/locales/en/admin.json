@@ -1,0 +1,107 @@
+{
+  "overviewRoles": {
+    "STUDENT": "Students",
+    "TEACHER": "Teachers",
+    "ADMIN": "Admins"
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "TEACHER": "Teacher",
+    "ADMIN": "Admin"
+  },
+  "chart": {
+    "total": "30-day total: {{total}}",
+    "today": "Today",
+    "caption": "{{title}} per day",
+    "day": "Day"
+  },
+  "loading": "Loading admin stats",
+  "failed": "Could not load admin stats",
+  "checkNetwork": "Check your connection and try again.",
+  "title": "Admin",
+  "manageUsers": "Manage users",
+  "tiles": {
+    "users": "Users",
+    "newUsers": "+{{count}} in 7 days",
+    "active": "Active in 7 days",
+    "activeNote": "At least one study session",
+    "sets": "Sets",
+    "publicSets": "{{count}} public",
+    "sessions": "Sessions in 7 days"
+  },
+  "panels": {
+    "last30": "Last 30 days",
+    "todo": "To review",
+    "roles": "Roles",
+    "newUsers": "New users",
+    "newPublic": "New public sets"
+  },
+  "charts": {
+    "signups": "New sign-ups",
+    "accounts": "accounts",
+    "active": "Active users",
+    "people": "people"
+  },
+  "todo": {
+    "locked": "{{count}} locked accounts",
+    "hidden": "{{count}} hidden sets",
+    "newPublic": "{{count}} new public sets to review"
+  },
+  "noUsers": "No accounts yet.",
+  "noNewPublic": "No new public sets in 7 days.",
+  "setMeta": "{{owner}} · {{count}} cards",
+  "lock": {
+    "done": "Locked {{email}}",
+    "title": "Lock {{email}}?",
+    "description": "This person cannot sign in until unlocked. The reason shows in the user list.",
+    "submit": "Lock account",
+    "reason": "Reason for locking",
+    "button": "Lock"
+  },
+  "unlocked": "Unlocked {{email}}",
+  "roleChanged": "Changed {{email}} to {{role}}",
+  "lockedReason": "Locked: {{reason}}",
+  "active": "Active",
+  "role": "Role",
+  "roleOf": "Role of {{email}}",
+  "unlockLabel": "Unlock {{email}}",
+  "unlock": "Unlock",
+  "lockLabel": "Lock {{email}}",
+  "users": {
+    "loading": "Loading users",
+    "search": "Search by email or name",
+    "forbidden": "You do not have access to this page",
+    "forbiddenHint": "Only administrators can manage users.",
+    "failed": "Could not load users",
+    "notFound": "No users found",
+    "noMatch": "No one matches “{{q}}”.",
+    "empty": "No users yet.",
+    "list": "Users",
+    "noFilterMatch": "No one matches these filters.",
+    "roleFilter": "Filter by role",
+    "allRoles": "All roles",
+    "sort": "Sort",
+    "sorts": {
+      "-createdAt": "Newest",
+      "createdAt": "Oldest",
+      "displayName": "Name A–Z",
+      "email": "Email A–Z"
+    },
+    "status": {
+      "all": "All",
+      "active": "Active",
+      "locked": "Locked"
+    }
+  },
+  "hide": {
+    "unhidden": "Set unhidden",
+    "unhide": "Unhide set",
+    "hidden": "Set hidden from others",
+    "hide": "Hide set",
+    "title": "Hide this set?",
+    "description": "Others cannot view, study or copy this set. The owner sees your reason.",
+    "submit": "Hide from others",
+    "reason": "Reason for hiding"
+  },
+  "locked": "Locked"
+}

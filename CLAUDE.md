@@ -10,7 +10,8 @@ Chỉ dùng npm. Chạy ở gốc repo, dùng Node 24 (`.nvmrc`, `nvm use 24.22.
 ```bash
 npm run dev          # web :3000, api :4000, shared watch
 npm run build
-npm test             # chưa có package nào khai báo test
+npm test             # unit và integration, cần Postgres đang chạy
+npm run test:e2e     # Playwright, dùng database vocab_e2e và cổng 3100, 4100
 npm run lint
 npm run typecheck
 npm run format
@@ -31,7 +32,7 @@ Nếu cổng 5432 đã bận, đặt `POSTGRES_PORT` trong `.env` ở gốc và 
 ```text
 apps/web/src
   app/                 Routing, layout: (marketing), (auth), (app)
-  features/<tên>/      api.ts, hooks/, components/, store: auth, sets, import, study, stats
+  features/<tên>/      api.ts, hooks/, components/, store: marketing, auth, sets, import, study, stats
   components/ui/       Thành phần cơ bản
   components/common/   Thành phần dùng chung
   lib/                 http.ts, query-client.ts, speech.ts
@@ -39,7 +40,7 @@ apps/api
   prisma/              schema.prisma, migrations
   src/config/          Kiểm tra env bằng Zod
   src/common/          guards, decorators, pipes, filters, interceptors, base
-  src/infrastructure/  prisma, storage
+  src/infrastructure/  prisma, storage, mail, redis
   src/modules/         auth, users, sets, cards, import, study, progress, health
   src/generated/       Prisma Client sinh tự động, không sửa, không commit
 packages/shared/src    Zod schema, type, mã lỗi, logic học dùng chung
@@ -48,7 +49,7 @@ docs/                  Tài liệu kỹ thuật và ADR
 .claude/skills/        Quy trình làm việc của dự án
 ```
 
-Dự án mới có khung. Trước khi dùng một thành phần được nhắc trong docs, xem mục Hiện trạng ở `docs/01-code-structure.md`.
+Dự án đang làm MVP, nhiều phần chưa có. Trước khi dùng một thành phần được nhắc trong docs, xem mục Hiện trạng ở `docs/01-code-structure.md`.
 
 ## Quy tắc bắt buộc
 
@@ -68,8 +69,6 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 14. Không commit `.env`. Biến mới phải có trong `.env.example`, biến của API phải có trong `apps/api/src/config/env.ts`.
 15. Commit theo Conventional Commits. Đổi API, database hoặc token thì cập nhật `docs/` cùng commit, xong một việc thì đánh dấu trong `docs/07-progress.md`.
 
-**Lưu ý:** `docs/05-ui-tokens.md` đã có bộ token mới nhưng `globals.css` chưa được cập nhật. Làm mục "Áp dụng vào code" trong tài liệu đó trước khi xây giao diện thật.
-
 ## Khi làm việc gì
 
 | Khi làm                             | Đọc                                             | Dùng skill     |
@@ -81,8 +80,10 @@ Dự án mới có khung. Trước khi dùng một thành phần được nhắc
 | Đổi Prisma schema                   | `docs/02-database.md`                           | `db-migration` |
 | Auth, phân quyền, dữ liệu nhạy cảm  | `docs/04-security.md`                           | `api-endpoint` |
 | Đặt tên, test, Git, CI, env         | `docs/06-conventions.md`                        | Không có       |
+| Deploy Neon, Render, Vercel         | `docs/08-deploy.md`                             | Không có       |
 | Sắp xếp thư mục, tái sử dụng code   | `docs/01-code-structure.md`                     | Không có       |
 | Quyết định kiến trúc mới            | `docs/adr/`, thêm ADR `NNNN-ten.md`             | Không có       |
+| Người dùng ra lệnh làm một task     | `docs/07-progress.md`, `docs/use-cases/`        | `ship-task`    |
 | Xem tiến độ, chọn việc tiếp theo    | `docs/07-progress.md`                           | `git-workflow` |
 | Tạo issue, nhánh, commit, PR, merge | `docs/06-conventions.md`                        | `git-workflow` |
 | Trước khi commit hoặc mở PR         | `docs/06-conventions.md`, `docs/04-security.md` | `code-review`  |

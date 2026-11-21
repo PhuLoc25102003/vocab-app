@@ -4,6 +4,8 @@ dist
 .turbo
 out
 coverage
+test-results
+playwright-report
 *.tsbuildinfo
 next-env.d.ts
 
@@ -19,3 +21,5 @@ apps/api/src/generated
 .DS_Store
 Thumbs.db
 *.log
+
+.claude/settings.local.json
