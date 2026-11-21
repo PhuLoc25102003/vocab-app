@@ -78,25 +78,27 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
   return (
     <>
       {hasTools ? (
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-0 flex-1 basis-72">
+        <div className="flex items-end gap-2 sm:gap-3">
+          <div className="min-w-0 flex-1">
             <SetSearchForm
               id="my-sets-search"
               value={q}
               onSearch={(value) => router.push(listHref({ ...state, q: value }))}
             />
           </div>
-          <SelectField
-            label="Sắp xếp"
-            value={sort}
-            onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
-          >
-            {SORT_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </SelectField>
+          <div className="w-36 shrink-0 sm:w-48">
+            <SelectField
+              label="Sắp xếp"
+              value={sort}
+              onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
+            >
+              {SORT_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </SelectField>
+          </div>
         </div>
       ) : null}
       <MySetsResults sets={sets} state={state} renderCardActions={renderCardActions} />

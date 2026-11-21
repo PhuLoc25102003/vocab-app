@@ -87,6 +87,33 @@ describe('FolderPanel', () => {
     expect(screen.getByRole('link', { name: /Lớp 6/ })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Thư mục 2/ })).not.toBeInTheDocument();
   });
+
+  it('màn hẹp: nút Thư mục mở tấm đáy có tìm, chọn thư mục và tạo mới', async () => {
+    navigation.params = new URLSearchParams('folder=f1&sort=title');
+    renderWithQuery(<FolderPanel />);
+
+    const trigger = await screen.findByRole('button', { name: 'Thư mục: Lớp 6' });
+    await userEvent.click(trigger);
+    const sheet = await screen.findByRole('dialog', { name: 'Chọn thư mục' });
+    const list = within(sheet).getByRole('list', { name: 'Danh sách thư mục' });
+    expect(within(list).getByRole('link', { name: /Lớp 6/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(list).getByRole('link', { name: 'Chưa xếp thư mục' })).toBeInTheDocument();
+
+    await userEvent.type(within(sheet).getByRole('searchbox', { name: 'Tìm thư mục' }), 'mục 2');
+    expect(within(list).queryByRole('link', { name: /Lớp 6/ })).not.toBeInTheDocument();
+    expect(within(list).queryByRole('link', { name: 'Tất cả bộ từ' })).not.toBeInTheDocument();
+    expect(within(list).getByRole('link', { name: /Thư mục 2/ })).toHaveAttribute(
+      'href',
+      '/sets?sort=title&folder=f2',
+    );
+
+    await userEvent.click(within(sheet).getByRole('button', { name: 'Tạo thư mục' }));
+    expect(await screen.findByRole('dialog', { name: 'Tạo thư mục' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Chọn thư mục' })).not.toBeInTheDocument();
+  });
 });
 
 describe('FolderHeader', () => {
