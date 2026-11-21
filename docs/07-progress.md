@@ -293,7 +293,7 @@ Không tính vào tổng số việc.
 
 ### 5E. Giáo viên theo dõi lớp
 
-- [ ] **5.15** API số liệu học sinh trong lớp: đúng hạn, trễ, bỏ lỡ, đang chờ, điểm trung bình, hoạt động gần nhất; sắp xếp và tìm theo tên; số liệu tóm tắt ở API để trang kết quả một học sinh phân trang được. Cần 5.12 (GAP-19).
+- [x] **5.15** API số liệu học sinh trong lớp: đúng hạn, trễ, bỏ lỡ, đang chờ, điểm trung bình, hoạt động gần nhất; sắp xếp và tìm theo tên; số liệu tóm tắt ở API để trang kết quả một học sinh phân trang được. Cần 5.12 (GAP-19, #360).
 - [ ] **5.16** Web lớp học: danh sách lớp dạng thẻ hàng có số liệu, trang lớp gọn (mã lớp thành chip, modal "Mời học sinh", tab Bài tập và Học sinh trong URL, bảng có phân trang), modal hồ sơ học sinh. Cần 5.8, 5.15 (GAP-19, GAP-20).
 - [ ] **5.17** Trang kết quả bài giao theo bài nộp: trạng thái 5 loại, điểm theo từng chế độ, lọc theo trạng thái. Cần 5.12.
 

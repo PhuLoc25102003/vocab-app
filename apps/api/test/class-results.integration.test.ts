@@ -256,13 +256,14 @@ describe('kết quả lớp', () => {
     await get(`${resultsUrl()}?page=0`).expect(400);
   });
 
-  it('xem một học sinh trong lớp: tên và ngày vào lớp, không lộ email', async () => {
+  it('xem một học sinh trong lớp: tên, ngày vào lớp và số liệu, không lộ email', async () => {
     const response = await get(`/classes/${classId}/members/${an.id}`).expect(200);
 
     expect(response.body.data).toEqual({
       userId: an.id,
       displayName: 'An',
       joinedAt: expect.any(String),
+      stats: expect.objectContaining({ onTime: expect.any(Number), missed: expect.any(Number) }),
     });
     await get(`/classes/${classId}/members/${an.id}`, otherTeacher.token).expect(403);
     await get(`/classes/${classId}/members/${teacher.id}`).expect(404);

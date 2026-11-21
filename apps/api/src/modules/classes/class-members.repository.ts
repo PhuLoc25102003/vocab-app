@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { Pagination } from '@vocab/shared';
+import type { ClassMemberListQuery, Pagination } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -74,13 +74,23 @@ export class ClassMembersRepository extends BaseRepository {
       : null;
   }
 
-  async findMembers(classId: string, query: Pagination) {
-    const where = { classId, user: { deletedAt: null } };
+  async findMembers(classId: string, query: ClassMemberListQuery) {
+    const where = {
+      classId,
+      user: {
+        deletedAt: null,
+        ...(query.q ? { displayName: { contains: query.q, mode: 'insensitive' as const } } : {}),
+      },
+    };
+    const direction = query.sort.startsWith('-') ? ('desc' as const) : ('asc' as const);
+    const orderBy = query.sort.endsWith('name')
+      ? [{ user: { displayName: direction } }, { userId: 'asc' as const }]
+      : [{ joinedAt: direction }, { userId: 'asc' as const }];
     const [rows, total] = await Promise.all([
       this.prisma.classMember.findMany({
         where,
         select: { userId: true, joinedAt: true, user: { select: { displayName: true } } },
-        orderBy: [{ joinedAt: 'asc' }, { userId: 'asc' }],
+        orderBy,
         ...toSkipTake(query),
       }),
       this.prisma.classMember.count({ where }),
@@ -91,6 +101,34 @@ export class ClassMembersRepository extends BaseRepository {
       joinedAt: joinedAt.toISOString(),
     }));
     return { items, total };
+  }
+
+  /**
+   * Dữ liệu để tính số liệu của các học sinh: bài giao của lớp (bộ chưa xoá), bài nộp của các em
+   * và lần gần nhất bắt đầu một phiên gắn bài của lớp.
+   */
+  async findStatsInput(classId: string, userIds: string[]) {
+    if (userIds.length === 0) {
+      return { assignments: [], submissions: [], lastActive: [] };
+    }
+    const assignment = { classId, set: { deletedAt: null } };
+    const [assignments, submissions, lastActive] = await Promise.all([
+      this.prisma.assignment.findMany({ where: assignment, select: { id: true, dueAt: true } }),
+      this.prisma.assignmentSubmission.findMany({
+        where: { userId: { in: userIds }, assignment },
+        select: { assignmentId: true, userId: true, late: true, score: true },
+      }),
+      this.prisma.studySession.groupBy({
+        by: ['userId'],
+        where: { userId: { in: userIds }, assignment },
+        _max: { startedAt: true },
+      }),
+    ]);
+    return {
+      assignments,
+      submissions,
+      lastActive: lastActive.map(({ userId, _max }) => ({ userId, at: _max.startedAt })),
+    };
   }
 
   /** Trả `false` nếu người này không ở trong lớp. */

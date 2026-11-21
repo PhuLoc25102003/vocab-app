@@ -128,7 +128,26 @@ describe('thành viên lớp', () => {
     expect(Object.keys(response.body.data[0]).sort()).toEqual([
       'displayName',
       'joinedAt',
+      'stats',
       'userId',
+    ]);
+    expect(response.body.data[0].stats).toEqual({
+      onTime: 0,
+      late: 0,
+      missed: 0,
+      pending: 0,
+      averageScore: null,
+      lastActiveAt: null,
+    });
+
+    // Tìm theo tên không phân biệt hoa thường, sắp theo tên.
+    const byName = await call(
+      'get',
+      `/classes/${classId}/members?sort=name&q=HS2%40EXAMPLE`,
+      teacher.token,
+    ).expect(200);
+    expect(byName.body.data.map(({ userId }: { userId: string }) => userId)).toEqual([
+      classmate.id,
     ]);
   });
 

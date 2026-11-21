@@ -78,13 +78,39 @@ export const joinClassSchema = z.object({
 });
 export type JoinClassInput = z.infer<typeof joinClassSchema>;
 
-export const classMemberListQuerySchema = paginationSchema;
+/** `joinedAt` theo thứ tự vào lớp, `name` theo tên A đến Z, dấu `-` để đảo chiều. */
+export const CLASS_MEMBER_SORTS = ['joinedAt', '-joinedAt', 'name', '-name'] as const;
+export const CLASS_MEMBER_SEARCH_MAX_LENGTH = 100;
+
+export const classMemberListQuerySchema = paginationSchema.extend({
+  sort: z.enum(CLASS_MEMBER_SORTS).catch('joinedAt').default('joinedAt'),
+  /** Tìm theo tên hiển thị, không phân biệt hoa thường. */
+  q: z.string().trim().max(CLASS_MEMBER_SEARCH_MAX_LENGTH).optional(),
+});
+export type ClassMemberListQuery = z.infer<typeof classMemberListQuerySchema>;
+
+/**
+ * Số liệu một học sinh qua các bài giao của lớp (việc 5.15). Chỉ tính bài có hạn từ lúc em vào
+ * lớp trở đi; `pending` là bài chưa tới hạn (hoặc không hạn) và chưa nộp.
+ */
+export const memberStatsSchema = z.object({
+  onTime: z.number().int(),
+  late: z.number().int(),
+  missed: z.number().int(),
+  pending: z.number().int(),
+  /** Phần trăm trung bình của các bài nộp có điểm, một chữ số thập phân, `null` khi chưa có. */
+  averageScore: z.number().nullable(),
+  /** Lần gần nhất bắt đầu một phiên học gắn bài của lớp, `null` khi chưa học. */
+  lastActiveAt: z.string().nullable(),
+});
+export type MemberStats = z.infer<typeof memberStatsSchema>;
 
 /** Giáo viên chỉ cần tên hiển thị để nhận ra học sinh, không lộ email. */
 export const classMemberSchema = z.object({
   userId: z.string(),
   displayName: z.string(),
   joinedAt: z.string(),
+  stats: memberStatsSchema,
 });
 export type ClassMember = z.infer<typeof classMemberSchema>;
 

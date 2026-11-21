@@ -23,6 +23,7 @@ import {
   updateClassSchema,
   type ClassListQuery,
   type CreateClassInput,
+  type ClassMemberListQuery,
   type Pagination,
   type UpdateClassInput,
 } from '@vocab/shared';
@@ -96,17 +97,17 @@ export class ClassesController {
 
   @Get(':id/members')
   @CheckOwnership('class')
-  @ApiOperation({ summary: 'Thành viên của lớp, ai vào trước đứng trước' })
+  @ApiOperation({ summary: 'Thành viên của lớp kèm số liệu bài giao, sắp theo ngày vào hoặc tên' })
   listMembers(
     @Param('id') id: string,
-    @Query(new ZodValidationPipe(classMemberListQuerySchema)) query: Pagination,
+    @Query(new ZodValidationPipe(classMemberListQuerySchema)) query: ClassMemberListQuery,
   ) {
     return this.members.listMembers(id, query);
   }
 
   @Get(':id/members/:userId')
   @CheckOwnership('class')
-  @ApiOperation({ summary: 'Một học sinh trong lớp: tên và ngày vào lớp' })
+  @ApiOperation({ summary: 'Một học sinh trong lớp: tên, ngày vào lớp và số liệu bài giao' })
   getMember(@Param('id') id: string, @Param('userId') userId: string) {
     return this.members.getMember(id, userId);
   }
