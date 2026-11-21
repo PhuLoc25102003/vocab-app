@@ -42,9 +42,11 @@ export class AdminUsersRepository extends BaseRepository {
   }
 
   findMany(query: AdminUserQuery): Promise<[AdminUser[], number]> {
-    const { q } = query;
+    const { q, role, status } = query;
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
+      ...(role ? { role } : {}),
+      ...(status ? { lockedAt: status === 'locked' ? { not: null } : null } : {}),
       ...(q
         ? {
             OR: [

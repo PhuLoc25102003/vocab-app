@@ -600,8 +600,8 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
 
   // Vai trò đổi bằng SQL sau khi đăng nhập nên vào thẳng trang quản lý (trang đọc vai trò từ API).
   await admin.goto('/admin/users');
-  await admin.getByLabel('Tìm theo email hoặc tên').fill(target);
-  await admin.getByRole('button', { name: 'Tìm', exact: true }).click();
+  await admin.getByRole('searchbox', { name: 'Tìm theo email hoặc tên' }).fill(target);
+  await admin.getByRole('searchbox', { name: 'Tìm theo email hoặc tên' }).press('Enter');
   await admin.getByRole('button', { name: `Khoá ${target}` }).click();
   await admin.getByLabel('Lý do khoá').fill('Kiểm thử khoá tài khoản');
   await admin.getByRole('button', { name: 'Khoá tài khoản' }).click();
@@ -617,7 +617,7 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   ).toBeVisible();
 
   await admin.getByRole('button', { name: `Mở khoá ${target}` }).click();
-  await expect(admin.getByText('Đang hoạt động', { exact: false })).toBeVisible();
+  await expect(admin.getByRole('button', { name: `Khoá ${target}` })).toBeVisible();
   // Form có thể được làm mới sau lần bị từ chối, nên điền lại trước khi đăng nhập.
   await visibleField(targetPage, 'Email').fill(target);
   await visibleField(targetPage, 'Mật khẩu').fill(password);

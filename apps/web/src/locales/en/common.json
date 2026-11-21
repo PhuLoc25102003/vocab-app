@@ -178,7 +178,9 @@
     "notFoundDesc": "This link does not exist or has been moved.",
     "offlineTitle": "Offline",
     "globalErrorTitle": "An error occurred",
-    "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes."
+    "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes.",
+    "backToDashboard": "Back to Dashboard",
+    "adminUsersDescription": "Find accounts, change roles, lock or unlock them."
   },
   "session": {
     "login": "Sign in",

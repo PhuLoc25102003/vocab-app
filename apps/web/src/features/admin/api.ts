@@ -6,6 +6,8 @@ import {
   type AdminStats,
   type AdminUser,
   type AdminUserList,
+  type AdminUserSort,
+  type AdminUserStatus,
   type HiddenSet,
   type Role,
 } from '@vocab/shared';
@@ -13,16 +15,30 @@ import { http } from '@/lib/http';
 
 export const ADMIN_USERS_PAGE_SIZE = 20;
 
+/** Bộ lọc danh sách người dùng, nằm trong URL. */
+export interface AdminUsersView {
+  q: string;
+  role?: Role;
+  status?: AdminUserStatus;
+  sort: AdminUserSort;
+  page: number;
+}
+
 export const adminKeys = {
   users: ['admin', 'users'] as const,
-  userList: (page: number, q: string) => ['admin', 'users', page, q] as const,
+  userList: (view: AdminUsersView) =>
+    ['admin', 'users', view.page, view.q, view.role, view.status, view.sort] as const,
 };
 
-export async function listAdminUsers(page: number, q: string): Promise<AdminUserList> {
-  const params = new URLSearchParams({ page: String(page), limit: String(ADMIN_USERS_PAGE_SIZE) });
-  if (q) {
-    params.set('q', q);
-  }
+export async function listAdminUsers(view: AdminUsersView): Promise<AdminUserList> {
+  const params = new URLSearchParams({
+    page: String(view.page),
+    limit: String(ADMIN_USERS_PAGE_SIZE),
+    sort: view.sort,
+  });
+  if (view.q) params.set('q', view.q);
+  if (view.role) params.set('role', view.role);
+  if (view.status) params.set('status', view.status);
   return adminUserListResponseSchema.parse(await http(`/admin/users?${params.toString()}`));
 }
 
