@@ -76,6 +76,20 @@ describe('admin users', () => {
     await list(admin.token, '?limit=101').expect(400);
   });
 
+  it('lọc theo vai trò và trạng thái khoá', async () => {
+    const admins = await list(admin.token, '?role=ADMIN').expect(200);
+    expect(admins.body.data.map((item: { id: string }) => item.id)).toEqual([admin.id]);
+
+    await patch(admin.token, `${studentId}/lock`, { reason: 'Spam' }).expect(200);
+    const locked = await list(admin.token, '?status=locked').expect(200);
+    expect(locked.body.data.map((item: { id: string }) => item.id)).toEqual([studentId]);
+    const active = await list(admin.token, '?status=active&role=STUDENT').expect(200);
+    expect(active.body.meta.total).toBe(0);
+
+    await list(admin.token, '?role=OWNER').expect(400);
+    await list(admin.token, '?status=deleted').expect(400);
+  });
+
   it('khoá tài khoản: lưu lý do, huỷ mọi phiên, chặn đăng nhập rồi mở khoá', async () => {
     await patch(admin.token, `${studentId}/lock`, { reason: '  ' }).expect(400);
 

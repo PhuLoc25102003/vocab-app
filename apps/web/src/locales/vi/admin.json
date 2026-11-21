@@ -70,15 +70,28 @@
   "users": {
     "loading": "Đang tải người dùng",
     "search": "Tìm theo email hoặc tên",
-    "searchSubmit": "Tìm",
     "forbidden": "Bạn không có quyền xem trang này",
     "forbiddenHint": "Chỉ quản trị viên mới quản lý được người dùng.",
     "failed": "Không tải được danh sách người dùng",
     "notFound": "Không tìm thấy người dùng",
     "noMatch": "Không có ai khớp với “{{q}}”.",
     "empty": "Chưa có người dùng nào.",
-    "seeAll": "Xem tất cả",
-    "count": "{{count}} người dùng"
+    "list": "Người dùng",
+    "noFilterMatch": "Không có ai khớp với bộ lọc này.",
+    "roleFilter": "Lọc theo vai trò",
+    "allRoles": "Mọi vai trò",
+    "sort": "Sắp xếp",
+    "sorts": {
+      "-createdAt": "Mới đăng ký",
+      "createdAt": "Đăng ký lâu nhất",
+      "displayName": "Tên A–Z",
+      "email": "Email A–Z"
+    },
+    "status": {
+      "all": "Tất cả",
+      "active": "Đang hoạt động",
+      "locked": "Đã khoá"
+    }
   },
   "hide": {
     "unhidden": "Đã bỏ ẩn bộ từ",
@@ -89,5 +102,6 @@
     "description": "Người khác không xem, học hay sao chép được bộ này. Chủ bộ thấy lý do bạn ghi.",
     "submit": "Ẩn khỏi người khác",
     "reason": "Lý do ẩn"
-  }
+  },
+  "locked": "Đã khoá"
 }

@@ -5,7 +5,14 @@ import { paginationMetaSchema, paginationSchema } from './pagination';
 
 export const LOCK_REASON_MAX_LENGTH = 500;
 
-/** Tìm theo email hoặc tên hiển thị. */
+/** Lọc theo trạng thái tài khoản ở trang Quản lý người dùng. */
+export const adminUserStatusSchema = z.enum(['active', 'locked']);
+export type AdminUserStatus = z.infer<typeof adminUserStatusSchema>;
+
+export const ADMIN_USER_SORTS = ['-createdAt', 'createdAt', 'displayName', 'email'] as const;
+export type AdminUserSort = (typeof ADMIN_USER_SORTS)[number];
+
+/** Tìm theo email hoặc tên hiển thị, lọc theo vai trò và trạng thái. */
 export const adminUserQuerySchema = paginationSchema.extend({
   sort: z.string().max(50).default('-createdAt'),
   q: z
@@ -13,6 +20,8 @@ export const adminUserQuerySchema = paginationSchema.extend({
     .trim()
     .max(100, vm('keywordTooLong', { max: 100 }))
     .optional(),
+  role: roleSchema.optional(),
+  status: adminUserStatusSchema.optional(),
 });
 export type AdminUserQuery = z.infer<typeof adminUserQuerySchema>;
 

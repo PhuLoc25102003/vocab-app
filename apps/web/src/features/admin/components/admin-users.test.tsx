@@ -83,15 +83,56 @@ describe('AdminUsers', () => {
     await waitFor(() => expect(unlockUser).toHaveBeenCalledWith('u1'));
   });
 
-  it('tìm kiếm đưa từ khoá lên URL, không có kết quả thì cho xem tất cả', async () => {
-    navigation.params = new URLSearchParams('q=xyz');
+  it('tìm kiếm đưa từ khoá lên URL, không có kết quả thì cho xoá bộ lọc', async () => {
+    navigation.params = new URLSearchParams('q=xyz&role=TEACHER');
     vi.mocked(listAdminUsers).mockResolvedValue(page([]));
     renderPage();
 
     expect(await screen.findByText('Không có ai khớp với “xyz”.')).toBeInTheDocument();
-    expect(listAdminUsers).toHaveBeenCalledWith(1, 'xyz');
-    await userEvent.click(screen.getByRole('button', { name: 'Xem tất cả' }));
-    expect(navigation.push).toHaveBeenCalledWith('/admin/users');
+    expect(listAdminUsers).toHaveBeenCalledWith({
+      q: 'xyz',
+      role: 'TEACHER',
+      status: undefined,
+      sort: '-createdAt',
+      page: 1,
+    });
+    expect(screen.getByRole('link', { name: 'Xoá bộ lọc' })).toHaveAttribute(
+      'href',
+      '/admin/users',
+    );
+
+    const search = screen.getByRole('searchbox', { name: 'Tìm theo email hoặc tên' });
+    await userEvent.clear(search);
+    await userEvent.type(search, 'lan{Enter}');
+    expect(navigation.push).toHaveBeenCalledWith('/admin/users?q=lan&role=TEACHER');
+  });
+
+  it('lọc theo trạng thái và vai trò, bỏ qua giá trị sai trên URL', async () => {
+    navigation.params = new URLSearchParams('status=locked&role=OWNER&sort=x&page=2');
+    vi.mocked(listAdminUsers).mockResolvedValue({
+      data: [user({ lockedAt: new Date(), lockReason: 'Spam' })],
+      meta: { page: 2, limit: 20, total: 41 },
+    });
+    renderPage();
+
+    expect(await screen.findByText('21–40 trên 41')).toBeInTheDocument();
+    expect(listAdminUsers).toHaveBeenCalledWith({
+      q: '',
+      role: undefined,
+      status: 'locked',
+      sort: '-createdAt',
+      page: 2,
+    });
+    expect(screen.getByRole('link', { name: 'Đã khoá' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Tất cả' })).toHaveAttribute('href', '/admin/users');
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Lọc theo vai trò' }),
+      'TEACHER',
+    );
+    expect(navigation.push).toHaveBeenCalledWith('/admin/users?role=TEACHER&status=locked');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp' }), 'displayName');
+    expect(navigation.push).toHaveBeenCalledWith('/admin/users?status=locked&sort=displayName');
   });
 
   it('báo không có quyền khi API trả 403', async () => {

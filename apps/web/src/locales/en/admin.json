@@ -70,15 +70,28 @@
   "users": {
     "loading": "Loading users",
     "search": "Search by email or name",
-    "searchSubmit": "Search",
     "forbidden": "You do not have access to this page",
     "forbiddenHint": "Only administrators can manage users.",
     "failed": "Could not load users",
     "notFound": "No users found",
     "noMatch": "No one matches “{{q}}”.",
     "empty": "No users yet.",
-    "seeAll": "See all",
-    "count": "{{count}} users"
+    "list": "Users",
+    "noFilterMatch": "No one matches these filters.",
+    "roleFilter": "Filter by role",
+    "allRoles": "All roles",
+    "sort": "Sort",
+    "sorts": {
+      "-createdAt": "Newest sign-ups",
+      "createdAt": "Oldest sign-ups",
+      "displayName": "Name A–Z",
+      "email": "Email A–Z"
+    },
+    "status": {
+      "all": "All",
+      "active": "Active",
+      "locked": "Locked"
+    }
   },
   "hide": {
     "unhidden": "Set unhidden",
@@ -89,5 +102,6 @@
     "description": "Others cannot view, study or copy this set. The owner sees your reason.",
     "submit": "Hide from others",
     "reason": "Reason for hiding"
-  }
+  },
+  "locked": "Locked"
 }
