@@ -1,12 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  ASSIGNMENT_WINDOWS,
-  type AssignmentWindow,
-  type ClassAssignment,
-  STUDY_MODE_LABELS,
-} from '@vocab/shared';
+import { ASSIGNMENT_WINDOWS, type AssignmentWindow, type ClassAssignment } from '@vocab/shared';
 import {
   CalendarClock,
   CircleCheck,
@@ -45,6 +40,7 @@ import {
 import { formatDateTime } from '../format';
 import { AssignDialog } from './assign-dialog';
 import { AssignmentRow } from './assignment-row';
+import { useTranslation } from 'react-i18next';
 
 type AssignmentSort = NonNullable<AssignmentFilter['sort']>;
 
@@ -63,22 +59,16 @@ export const DEFAULT_ASSIGNMENTS_VIEW: AssignmentsView = {
   page: 1,
 };
 
-const WINDOW_LABELS: Record<AssignmentWindow, string> = {
-  open: 'Còn hạn',
-  closed: 'Hết hạn',
-  all: 'Tất cả',
-};
-
-const SORT_LABELS: Record<AssignmentSort, string> = {
-  due: 'Hạn gần nhất',
-  '-createdAt': 'Mới giao trước',
-};
+const SORT_LABELS = {
+  due: 'sort.due',
+  '-createdAt': 'sort.created',
+} as const satisfies Record<AssignmentSort, string>;
 
 const ROW_STATUS = {
-  none: { label: 'Không hạn', icon: CircleDashed, className: 'text-text-muted' },
-  open: { label: 'Còn hạn', icon: Clock, className: 'text-primary' },
-  closed: { label: 'Hết hạn', icon: CircleCheck, className: 'text-text-muted' },
-};
+  none: { label: 'assignments.noDue', icon: CircleDashed, className: 'text-text-muted' },
+  open: { label: 'assignments.open', icon: Clock, className: 'text-primary' },
+  closed: { label: 'assignments.closed', icon: CircleCheck, className: 'text-text-muted' },
+} as const;
 
 function TeacherAssignmentRow({
   classId,
@@ -89,25 +79,26 @@ function TeacherAssignmentRow({
   item: ClassAssignment;
   now: number;
 }) {
+  const { t } = useTranslation(['classes', 'common']);
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
   const remove = useMutation({ mutationFn: () => removeAssignment(classId, item.id) });
   const modes = item.modes ?? [item.mode];
-  let status = ROW_STATUS.none;
+  let status: (typeof ROW_STATUS)[keyof typeof ROW_STATUS] = ROW_STATUS.none;
   if (item.dueAt)
     status = new Date(item.dueAt).getTime() < now ? ROW_STATUS.closed : ROW_STATUS.open;
 
   return (
     <AssignmentRow
       href={`/classes/${classId}/assignments/${item.id}` as Route}
-      status={status}
+      status={{ ...status, label: t(status.label) }}
       title={item.setTitle}
       action={
         <>
           <Button
             variant="ghost"
             size="icon"
-            aria-label={`Huỷ bài giao ${item.setTitle}`}
+            aria-label={t('assignments.cancelLabel', { title: item.setTitle })}
             onClick={() => setConfirming(true)}
           >
             <Trash2 aria-hidden className="size-5" />
@@ -115,10 +106,10 @@ function TeacherAssignmentRow({
           <ConfirmDialog
             open={confirming}
             onOpenChange={setConfirming}
-            title={`Huỷ bài giao ${item.setTitle}?`}
-            description="Học sinh không còn thấy bài này trong danh sách bài cần làm. Kết quả các em đã học vẫn được giữ."
-            confirmLabel="Huỷ bài giao"
-            cancelLabel="Giữ lại"
+            title={t('assignments.cancelTitle', { title: item.setTitle })}
+            description={t('assignments.cancelDescription')}
+            confirmLabel={t('assignments.cancel')}
+            cancelLabel={t('assignments.keep')}
             pending={remove.isPending}
             error={remove.error ? formErrorMessage(remove.error) : null}
             onConfirm={() =>
@@ -126,7 +117,7 @@ function TeacherAssignmentRow({
                 onSuccess: async () => {
                   await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
                   setConfirming(false);
-                  toast.success('Đã huỷ bài giao');
+                  toast.success(t('assignments.cancelled'));
                 },
               })
             }
@@ -135,16 +126,19 @@ function TeacherAssignmentRow({
       }
     >
       <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-        {STUDY_MODE_LABELS[modes[0] ?? item.mode]}
+        {t(`common:modes.${modes[0] ?? item.mode}`)}
         {modes.length > 1 ? ` +${modes.length - 1}` : ''}
       </span>
       <span className="flex items-center gap-1">
         <CalendarClock aria-hidden className="size-4" />
-        {item.dueAt ? `Hạn ${formatDateTime(item.dueAt)}` : 'Không có hạn'}
+        {item.dueAt ? t('dueAt', { date: formatDateTime(item.dueAt) }) : t('due.none')}
       </span>
       <span className="flex items-center gap-1 tabular-nums">
         <Users aria-hidden className="size-4" />
-        {item.submittedCount}/{item.memberCount} đã nộp
+        {t('assignments.submittedCount', {
+          submitted: item.submittedCount,
+          total: item.memberCount,
+        })}
       </span>
     </AssignmentRow>
   );
@@ -164,6 +158,7 @@ export function ClassAssignments({
   view = DEFAULT_ASSIGNMENTS_VIEW,
   hrefFor = ({ page }) => `/classes/${classId}?apage=${page}` as Route,
 }: ClassAssignmentsProps) {
+  const { t } = useTranslation('classes');
   const router = useRouter();
   const [assigning, setAssigning] = useState(false);
   const [now] = useState(() => Date.now());
@@ -182,15 +177,15 @@ export function ClassAssignments({
   let body;
   if (assignments.isPending) {
     body = (
-      <LoadingState label="Đang tải bài đã giao">
+      <LoadingState label={t('assignments.loading')}>
         <Skeleton className="h-16 w-full" />
       </LoadingState>
     );
   } else if (assignments.isError) {
     body = (
       <ErrorState
-        title="Không tải được bài đã giao"
-        description="Kiểm tra kết nối mạng rồi thử lại."
+        title={t('assignments.failed')}
+        description={t('checkNetwork')}
         onRetry={() => void assignments.refetch()}
       />
     );
@@ -198,27 +193,22 @@ export function ClassAssignments({
     if (view.q) {
       body = (
         <ListNoMatch
-          text={`Không có bài nào khớp "${view.q}".`}
+          text={t('assignments.noMatch', { q: view.q })}
           clearHref={hrefFor({ ...view, q: '', page: 1 })}
         />
       );
     } else if (view.status === 'all') {
-      body = (
-        <EmptyState
-          title="Chưa giao bài nào"
-          description="Giao một bộ từ để học sinh bắt đầu học."
-        />
-      );
+      body = <EmptyState title={t('assignments.empty')} description={t('assignments.emptyHint')} />;
     } else {
       body = (
         <p className="py-6 text-text-muted">
-          {view.status === 'open' ? 'Không có bài nào còn hạn.' : 'Chưa có bài nào hết hạn.'}
+          {t(view.status === 'open' ? 'assignments.noOpen' : 'assignments.noClosed')}
         </p>
       );
     }
   } else {
     body = (
-      <ul aria-label="Bài đã giao" className="flex flex-col">
+      <ul aria-label={t('assignments.title')} className="flex flex-col">
         {assignments.data.data.map((item) => (
           <TeacherAssignmentRow key={item.id} classId={classId} item={item} now={now} />
         ))}
@@ -228,13 +218,13 @@ export function ClassAssignments({
 
   return (
     <ListPanel
-      title="Bài đã giao"
+      title={t('assignments.title')}
       count={assignments.data?.meta.total}
       actions={
         archived ? null : (
           <Button onClick={() => setAssigning(true)}>
             <ClipboardList aria-hidden className="size-4" />
-            Giao bài
+            {t('assign.title')}
           </Button>
         )
       }
@@ -242,22 +232,22 @@ export function ClassAssignments({
         <ListToolbar
           key={view.q}
           tabs={ASSIGNMENT_WINDOWS.map((status) => ({
-            label: WINDOW_LABELS[status],
+            label: t(`assignments.${status}`),
             href: hrefFor({ ...view, status, page: 1 }),
             current: view.status === status,
             count: assignments.data?.counts[status],
           }))}
-          search={{ label: 'Tìm theo tên bộ từ', value: view.q, onSearch: (q) => go({ q }) }}
+          search={{ label: t('searchSet'), value: view.q, onSearch: (q) => go({ q }) }}
           filters={
             <ListFilter>
               <Select
-                aria-label="Sắp xếp bài đã giao"
+                aria-label={t('assignments.sort')}
                 value={view.sort}
                 onChange={(event) => go({ sort: event.target.value as AssignmentSort })}
               >
                 {Object.entries(SORT_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
-                    {label}
+                    {t(label)}
                   </option>
                 ))}
               </Select>

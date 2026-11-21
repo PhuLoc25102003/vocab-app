@@ -2,13 +2,18 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
 import { AdminUsers, AdminUsersLoading } from '@/features/admin/components/admin-users';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Quản lý người dùng' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.adminUsers') };
+}
 
-export default function AdminUsersPage() {
+export default async function AdminUsersPage() {
+  const t = await getT('common');
   return (
     <>
-      <PageHeader title="Quản lý người dùng" />
+      <PageHeader title={t('pages.adminUsers')} />
       <Suspense fallback={<AdminUsersLoading />}>
         <AdminUsers />
       </Suspense>

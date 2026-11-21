@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
 import { PageContainer } from '@/components/common/page-container';
 import { AssignmentWork } from '@/features/classes/components/assignment-work';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Bài tập' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.assignment') };
+}
 
 export default async function AssignmentWorkPage({
   params,

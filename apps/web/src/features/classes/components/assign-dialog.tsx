@@ -1,12 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createAssignmentSchema,
-  STUDY_MODE_LABELS,
-  studyModeSchema,
-  type StudyMode,
-} from '@vocab/shared';
+import { createAssignmentSchema, studyModeSchema, type StudyMode } from '@vocab/shared';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -17,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, createAssignment, listMySetsForAssigning } from '../api';
+import { translateValidation } from '@/lib/validation-message';
+import { useTranslation } from 'react-i18next';
 
 type FieldErrors = Partial<
   Record<'classId' | 'setId' | 'modes' | 'dueAt' | 'shareToClass', string>
@@ -47,6 +44,7 @@ export function AssignDialog({
   open,
   onOpenChange,
 }: AssignDialogProps) {
+  const { t } = useTranslation(['classes', 'common']);
   const queryClient = useQueryClient();
   const sets = useQuery({
     queryKey: classKeys.mySets,
@@ -101,21 +99,22 @@ export function AssignDialog({
       shareToClass: isPrivate ? share : undefined,
     });
     const next: FieldErrors = {};
-    if (!classId) next.classId = 'Hãy chọn lớp';
+    if (!classId) next.classId = t('assign.chooseClass');
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
         const key = issue.path[0];
-        if (key === 'setId' || key === 'modes' || key === 'dueAt') next[key] ??= issue.message;
+        if (key === 'setId' || key === 'modes' || key === 'dueAt')
+          next[key] ??= translateValidation(issue.message);
       }
     }
-    if (isPrivate && !share) next.shareToClass = 'Hãy đồng ý cho học sinh trong lớp xem bộ này';
+    if (isPrivate && !share) next.shareToClass = t('assign.agreeShare');
     setErrors(next);
     if (!parsed.success || Object.keys(next).length) return;
     assign.mutate(parsed.data, {
       onSuccess: async (created) => {
         await queryClient.invalidateQueries({ queryKey: classKeys.all });
         if (isPrivate) await queryClient.invalidateQueries({ queryKey: classKeys.mySets });
-        toast.success(`Đã giao ${created.setTitle}`);
+        toast.success(t('assign.done', { title: created.setTitle }));
         close(false);
       },
     });
@@ -128,9 +127,9 @@ export function AssignDialog({
     <FormDialog
       open={open}
       onOpenChange={close}
-      title="Giao bài"
-      description="Học sinh làm lần lượt các chế độ rồi bấm Nộp bài."
-      submitLabel="Giao bài"
+      title={t('assign.title')}
+      description={t('assign.description')}
+      submitLabel={t('assign.title')}
       pending={assign.isPending}
       error={assign.error ? formErrorMessage(assign.error) : null}
       dirty={dirty}
@@ -142,8 +141,8 @@ export function AssignDialog({
     >
       {fixedClassId ? null : (
         <Combobox
-          label="Lớp"
-          placeholder="Chọn lớp"
+          label={t('assign.class')}
+          placeholder={t('assign.classPlaceholder')}
           value={pickedClassId}
           onChange={setPickedClassId}
           error={errors.classId}
@@ -154,21 +153,19 @@ export function AssignDialog({
         <Skeleton className="h-11 w-full" />
       ) : sets.isError ? (
         <p role="alert" className="text-small text-danger">
-          Không tải được bộ từ của bạn.{' '}
+          {t('assign.setsFailed')}{' '}
           <button type="button" className="underline" onClick={() => void sets.refetch()}>
-            Thử lại
+            {t('common:actions.retry')}
           </button>
         </p>
       ) : sets.data.length === 0 ? (
-        <p className="text-text-muted">
-          Bạn chưa có bộ từ nào. Tạo bộ từ ở mục Bộ từ rồi quay lại.
-        </p>
+        <p className="text-text-muted">{t('assign.noSets')}</p>
       ) : (
         <div className="flex flex-col gap-2">
           <Combobox
-            label="Bộ từ"
-            placeholder="Chọn hoặc gõ tên bộ từ"
-            emptyText="Không có bộ từ nào khớp"
+            label={t('assign.set')}
+            placeholder={t('assign.setPlaceholder')}
+            emptyText={t('assign.noSetMatch')}
             value={setId}
             onChange={(next) => {
               setSetId(next);
@@ -178,15 +175,12 @@ export function AssignDialog({
             options={sets.data.map((set) => ({
               value: set.id,
               label: set.title,
-              description: `${set.cardCount} thẻ${set.visibility === 'PRIVATE' ? ' · Riêng tư' : ''}`,
+              description: `${t('assign.setCards', { count: set.cardCount })}${set.visibility === 'PRIVATE' ? t('assign.private') : ''}`,
             }))}
           />
           {isPrivate ? (
             <div className="flex flex-col gap-1 rounded-md border border-border-strong bg-primary-soft p-3 text-small">
-              <p>
-                Bộ này đang Riêng tư. Khi giao, học sinh của lớp sẽ xem được bộ này, người ngoài lớp
-                vẫn không thấy.
-              </p>
+              <p>{t('assign.privateNote')}</p>
               <label className="flex min-h-11 items-center gap-2 font-medium">
                 <input
                   type="checkbox"
@@ -194,7 +188,7 @@ export function AssignDialog({
                   checked={share}
                   onChange={(event) => setShare(event.target.checked)}
                 />
-                Cho học sinh trong lớp xem bộ này
+                {t('assign.share')}
               </label>
               {errors.shareToClass ? <p className="text-danger">{errors.shareToClass}</p> : null}
             </div>
@@ -203,7 +197,7 @@ export function AssignDialog({
       )}
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-small font-medium">Chế độ học (theo thứ tự)</legend>
+        <legend className="text-small font-medium">{t('assign.modes')}</legend>
         <div className="-mt-1 flex flex-wrap gap-1">
           <div className="contents">
             <Button
@@ -212,7 +206,7 @@ export function AssignDialog({
               disabled={others.every((mode) => tooFewCards(mode))}
               onClick={() => setModes([...modes, ...others.filter((mode) => !tooFewCards(mode))])}
             >
-              Chọn tất cả
+              {t('assign.selectAll')}
             </Button>
             <Button
               type="button"
@@ -220,7 +214,7 @@ export function AssignDialog({
               disabled={modes.length === 0}
               onClick={() => setModes([])}
             >
-              Bỏ chọn
+              {t('assign.clear')}
             </Button>
           </div>
         </div>
@@ -238,13 +232,13 @@ export function AssignDialog({
                   onChange={() => toggle(mode)}
                 />
                 <span className="tabular-nums text-text-muted">{index + 1}.</span>
-                {STUDY_MODE_LABELS[mode]}
+                {t(`common:modes.${mode}`)}
               </label>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Đưa ${STUDY_MODE_LABELS[mode]} lên`}
+                aria-label={t('assign.moveUp', { mode: t(`common:modes.${mode}`) })}
                 disabled={index === 0}
                 onClick={() => move(index, -1)}
               >
@@ -254,7 +248,7 @@ export function AssignDialog({
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label={`Đưa ${STUDY_MODE_LABELS[mode]} xuống`}
+                aria-label={t('assign.moveDown', { mode: t(`common:modes.${mode}`) })}
                 disabled={index === modes.length - 1}
                 onClick={() => move(index, 1)}
               >
@@ -274,25 +268,22 @@ export function AssignDialog({
                   disabled={tooFewCards(mode)}
                   onChange={() => toggle(mode)}
                 />
-                {STUDY_MODE_LABELS[mode]}
+                {t(`common:modes.${mode}`)}
               </label>
             </li>
           ))}
         </ul>
         {modes.includes('SPEAK') ? (
-          <p className="text-small text-text-muted">
-            Luyện nói cần micro và trình duyệt hỗ trợ. Học sinh không nói được có thể bỏ qua từng
-            câu.
-          </p>
+          <p className="text-small text-text-muted">{t('assign.speakNote')}</p>
         ) : null}
         {errors.modes ? <p className="text-small text-danger">{errors.modes}</p> : null}
       </fieldset>
 
       <DateTimeField
-        label="Hạn nộp (không bắt buộc)"
+        label={t('assign.due')}
         disablePast
         onValueChange={setDue}
-        hint="Bỏ trống nếu bài không có hạn. Giờ mặc định là 23:59."
+        hint={t('assign.dueHint')}
         error={errors.dueAt}
       />
     </FormDialog>

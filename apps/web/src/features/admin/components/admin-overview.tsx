@@ -12,20 +12,26 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAdminStats } from '../api';
 import { ADMIN_STATS_QUERY_KEY, HideSetButton } from './hide-set-button';
+import { useTranslation } from 'react-i18next';
 
-const ROLE_LABELS: Record<keyof AdminStats['roles'], string> = {
-  STUDENT: 'Học sinh',
-  TEACHER: 'Giáo viên',
-  ADMIN: 'ADMIN',
-};
+const ROLES = [
+  'STUDENT',
+  'TEACHER',
+  'ADMIN',
+] as const satisfies readonly (keyof AdminStats['roles'])[];
 const CHART_HEIGHT_PX = 120;
-const number = new Intl.NumberFormat('vi-VN');
-const shortDate = (day: string) => `${day.slice(8, 10)}/${day.slice(5, 7)}`;
+const formatShortDate = (day: string, locale: string) =>
+  locale === 'en'
+    ? `${day.slice(5, 7)}/${day.slice(8, 10)}`
+    : `${day.slice(8, 10)}/${day.slice(5, 7)}`;
+const formatNum = (value: number, locale: string) =>
+  new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN').format(value);
 
 function Tile({ label, value, note }: { label: string; value: number; note?: string }) {
+  const { i18n } = useTranslation();
   return (
     <div className="flex flex-col gap-1 rounded-lg border border-border-strong bg-surface p-4">
-      <dd className="text-h2 tabular-nums">{number.format(value)}</dd>
+      <dd className="text-h2 tabular-nums">{formatNum(value, i18n.language)}</dd>
       <dt className="font-medium">{label}</dt>
       {note ? <dd className="text-small text-text-muted">{note}</dd> : null}
     </div>
@@ -57,6 +63,7 @@ function DailyBars({
   unit: string;
   points: { day: string; value: number }[];
 }) {
+  const { t, i18n } = useTranslation('admin');
   const tableId = useId();
   const [active, setActive] = useState<number | null>(null);
   const max = Math.max(1, ...points.map(({ value }) => value));
@@ -68,8 +75,8 @@ function DailyBars({
         <span className="font-semibold">{title}</span>
         <span className="text-small text-text-muted tabular-nums">
           {shown
-            ? `${shortDate(shown.day)}: ${number.format(shown.value)} ${unit}`
-            : `Tổng 30 ngày: ${number.format(total)}`}
+            ? `${formatShortDate(shown.day, i18n.language)}: ${formatNum(shown.value, i18n.language)} ${unit}`
+            : t('chart.total', { total: formatNum(total, i18n.language) })}
         </span>
       </figcaption>
       <div
@@ -82,7 +89,7 @@ function DailyBars({
             key={day}
             type="button"
             aria-describedby={tableId}
-            aria-label={`${shortDate(day)}: ${value} ${unit}`}
+            aria-label={`${formatShortDate(day, i18n.language)}: ${value} ${unit}`}
             onMouseEnter={() => setActive(index)}
             onFocus={() => setActive(index)}
             onBlur={() => setActive(null)}
@@ -98,14 +105,14 @@ function DailyBars({
         ))}
       </div>
       <div className="flex justify-between text-tiny text-text-muted">
-        <span>{points[0] ? shortDate(points[0].day) : ''}</span>
-        <span>Hôm nay</span>
+        <span>{points[0] ? formatShortDate(points[0].day, i18n.language) : ''}</span>
+        <span>{t('chart.today')}</span>
       </div>
       <table id={tableId} className="sr-only">
-        <caption>{title} theo ngày</caption>
+        <caption>{t('chart.caption', { title })}</caption>
         <thead>
           <tr>
-            <th scope="col">Ngày</th>
+            <th scope="col">{t('chart.day')}</th>
             <th scope="col">{unit}</th>
           </tr>
         </thead>
@@ -150,11 +157,12 @@ function TodoRow({
 
 /** Tổng quan ADMIN (việc 5.22): "Hệ thống có tăng trưởng không, có gì cần xử lý?". */
 export function AdminOverview() {
+  const { t, i18n } = useTranslation('admin');
   const stats = useQuery({ queryKey: ADMIN_STATS_QUERY_KEY, queryFn: getAdminStats });
 
   if (stats.isPending) {
     return (
-      <LoadingState label="Đang tải số liệu quản trị">
+      <LoadingState label={t('loading')}>
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-40 w-full" />
       </LoadingState>
@@ -163,8 +171,8 @@ export function AdminOverview() {
   if (stats.isError) {
     return (
       <ErrorState
-        title="Không tải được số liệu quản trị"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('failed')}
+        description={t('checkNetwork')}
         onRetry={() => void stats.refetch()}
       />
     );
@@ -177,61 +185,67 @@ export function AdminOverview() {
     <section aria-labelledby="admin-overview-title" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="admin-overview-title" className="text-h2">
-          Quản trị
+          {t('title')}
         </h2>
         <Button asChild variant="secondary">
-          <Link href="/admin/users">Quản lý người dùng</Link>
+          <Link href="/admin/users">{t('manageUsers')}</Link>
         </Button>
       </div>
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Tile label="Người dùng" value={data.users} note={`+${data.newUsers} trong 7 ngày`} />
-        <Tile label="Hoạt động 7 ngày" value={data.activeUsers} note="Có ít nhất một phiên học" />
         <Tile
-          label="Bộ từ"
-          value={data.sets}
-          note={`${number.format(data.publicSets)} công khai`}
+          label={t('tiles.users')}
+          value={data.users}
+          note={t('tiles.newUsers', { count: data.newUsers })}
         />
-        <Tile label="Phiên học 7 ngày" value={data.sessions} />
+        <Tile label={t('tiles.active')} value={data.activeUsers} note={t('tiles.activeNote')} />
+        <Tile
+          label={t('tiles.sets')}
+          value={data.sets}
+          note={t('tiles.publicSets', { count: formatNum(data.publicSets, i18n.language) })}
+        />
+        <Tile label={t('tiles.sessions')} value={data.sessions} />
       </dl>
-      <Panel title="30 ngày qua">
+      <Panel title={t('panels.last30')}>
         <div className="grid gap-6 md:grid-cols-2">
           <DailyBars
-            title="Đăng ký mới"
-            unit="tài khoản"
+            title={t('charts.signups')}
+            unit={t('charts.accounts')}
             points={data.daily.map(({ day, signups }) => ({ day, value: signups }))}
           />
           <DailyBars
-            title="Người hoạt động"
-            unit="người"
+            title={t('charts.active')}
+            unit={t('charts.people')}
             points={data.daily.map(({ day, active }) => ({ day, value: active }))}
           />
         </div>
       </Panel>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Cần xử lý">
+        <Panel title={t('panels.todo')}>
           <ul className="flex flex-col">
             <TodoRow
               icon={<Lock className="size-4" />}
-              text={`${data.lockedUsers} tài khoản đang khoá`}
+              text={t('todo.locked', { count: data.lockedUsers })}
               href="/admin/users"
               action="Xem"
             />
             <TodoRow
               icon={<EyeOff className="size-4" />}
-              text={`${data.hiddenSets} bộ từ đang ẩn`}
+              text={t('todo.hidden', { count: data.hiddenSets })}
             />
             <TodoRow
               icon={<ListChecks className="size-4" />}
-              text={`${data.newPublicSets.length} bộ công khai mới cần rà`}
+              text={t('todo.newPublic', { count: data.newPublicSets.length })}
             />
           </ul>
         </Panel>
-        <Panel title="Vai trò">
+        <Panel title={t('panels.roles')}>
           <ul className="flex flex-col gap-2">
-            {(Object.keys(ROLE_LABELS) as (keyof AdminStats['roles'])[]).map((role) => (
+            {ROLES.map((role) => (
               <li key={role} className="grid grid-cols-[6rem_4rem_1fr] items-center gap-3">
-                <span>{ROLE_LABELS[role]}</span>
-                <span className="text-right tabular-nums">{number.format(data.roles[role])}</span>
+                <span>{t(`overviewRoles.${role}`)}</span>
+                <span className="text-right tabular-nums">
+                  {formatNum(data.roles[role], i18n.language)}
+                </span>
                 <span aria-hidden className="h-2 overflow-hidden rounded-full bg-border">
                   <span
                     className="block h-full rounded-full bg-primary"
@@ -244,9 +258,9 @@ export function AdminOverview() {
         </Panel>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Người dùng mới">
+        <Panel title={t('panels.newUsers')}>
           {data.recentUsers.length === 0 ? (
-            <p className="text-text-muted">Chưa có tài khoản nào.</p>
+            <p className="text-text-muted">{t('noUsers')}</p>
           ) : (
             <ul className="flex flex-col">
               {data.recentUsers.map((user) => (
@@ -259,16 +273,16 @@ export function AdminOverview() {
                     {user.email}
                   </span>
                   <span className="ml-auto rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-                    {ROLE_LABELS[user.role]}
+                    {t(`overviewRoles.${user.role}`)}
                   </span>
                 </li>
               ))}
             </ul>
           )}
         </Panel>
-        <Panel title="Bộ công khai mới">
+        <Panel title={t('panels.newPublic')}>
           {data.newPublicSets.length === 0 ? (
-            <p className="text-text-muted">Không có bộ công khai mới trong 7 ngày.</p>
+            <p className="text-text-muted">{t('noNewPublic')}</p>
           ) : (
             <ul className="flex flex-col">
               {data.newPublicSets.map((set) => (
@@ -284,7 +298,7 @@ export function AdminOverview() {
                       {set.title}
                     </Link>
                     <span className="text-text-muted">
-                      {set.ownerName} · {set.cardCount} thẻ
+                      {t('setMeta', { owner: set.ownerName, count: set.cardCount })}
                     </span>
                   </span>
                   <HideSetButton setId={set.id} hidden={false} />

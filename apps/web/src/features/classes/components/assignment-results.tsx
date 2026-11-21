@@ -5,7 +5,6 @@ import {
   paginationSchema,
   PROGRESS_STATUSES,
   progressStatusSchema,
-  STUDY_MODE_LABELS,
   type AssignmentResult,
   type AssignmentSummary,
   type ProgressStatus,
@@ -31,6 +30,7 @@ import {
 import { cn } from '@/lib/utils';
 import { percent, PROGRESS_STATUS } from './status-label';
 import { formatDateTime } from '../format';
+import { useTranslation } from 'react-i18next';
 
 function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
@@ -43,32 +43,35 @@ function Stat({ label, value, note }: { label: string; value: string; note?: str
 }
 
 function SummaryView({ summary }: { summary: AssignmentSummary }) {
+  const { t } = useTranslation('classes');
   const { memberCount, submittedCount, lateCount, missedCount, averageScore, hardCards } = summary;
   const handedIn = submittedCount + lateCount;
   return (
     <>
       <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
-          label="Đã nộp"
+          label={t('results.handedIn')}
           value={`${handedIn}/${memberCount}`}
           note={
-            memberCount ? `${percent(handedIn, memberCount)}% học sinh` : 'Lớp chưa có học sinh'
+            memberCount
+              ? t('results.percentStudents', { percent: percent(handedIn, memberCount) })
+              : t('results.noStudents')
           }
         />
-        <Stat label="Nộp trễ" value={String(lateCount)} />
-        <Stat label="Bỏ lỡ" value={String(missedCount)} />
+        <Stat label={t('results.late')} value={String(lateCount)} />
+        <Stat label={t('results.missed')} value={String(missedCount)} />
         <Stat
-          label="Điểm trung bình"
-          value={averageScore === null ? 'Chưa có' : `${averageScore}%`}
-          note="Tính lần làm tốt nhất của học sinh đã làm"
+          label={t('results.average')}
+          value={averageScore === null ? t('results.none') : `${averageScore}%`}
+          note={t('results.averageNote')}
         />
       </dl>
       <section aria-labelledby="hard-cards-title" className="flex flex-col gap-2">
         <h2 id="hard-cards-title" className="text-h3">
-          Từ cả lớp hay sai
+          {t('results.hardWords')}
         </h2>
         {hardCards.length === 0 ? (
-          <p className="text-text-muted">Chưa có từ nào bị trả lời sai.</p>
+          <p className="text-text-muted">{t('results.noWrong')}</p>
         ) : (
           <ol className="flex flex-col">
             {hardCards.map((card) => (
@@ -81,7 +84,7 @@ function SummaryView({ summary }: { summary: AssignmentSummary }) {
                   <span className="text-text-muted"> · {card.definition}</span>
                 </span>
                 <span className="text-small text-danger tabular-nums">
-                  Sai {card.wrongCount}/{card.attemptCount} lần
+                  {t('results.wrongRatio', { wrong: card.wrongCount, attempts: card.attemptCount })}
                 </span>
               </li>
             ))}
@@ -93,6 +96,7 @@ function SummaryView({ summary }: { summary: AssignmentSummary }) {
 }
 
 function ResultRow({ classId, row }: { classId: string; row: AssignmentResult }) {
+  const { t } = useTranslation(['classes', 'common']);
   const { label, icon: Icon, className } = PROGRESS_STATUS[row.progressStatus];
   return (
     <li className="grid min-h-14 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b border-border py-2 last:border-b-0 sm:grid-cols-[2fr_1fr_2fr_auto]">
@@ -104,9 +108,12 @@ function ResultRow({ classId, row }: { classId: string; row: AssignmentResult })
       </Link>
       <span className={cn('flex items-center gap-1 font-medium', className)}>
         <Icon aria-hidden className="size-4 shrink-0" />
-        {label}
+        {t(label)}
       </span>
-      <ul aria-label="Điểm từng chế độ" className="col-span-2 flex flex-wrap gap-1 sm:col-span-1">
+      <ul
+        aria-label={t('results.modeScores')}
+        className="col-span-2 flex flex-wrap gap-1 sm:col-span-1"
+      >
         {row.modeScores.map(({ mode, done, score }) => (
           <li
             key={mode}
@@ -115,15 +122,15 @@ function ResultRow({ classId, row }: { classId: string; row: AssignmentResult })
               done ? 'bg-primary-soft text-primary' : 'border border-border text-text-muted',
             )}
           >
-            {STUDY_MODE_LABELS[mode]}
+            {t(`common:modes.${mode}`)}
             {done ? (score === null ? ' ✓' : ` ${score}%`) : ' –'}
           </li>
         ))}
       </ul>
       <span className="text-right text-small tabular-nums sm:text-body">
         {row.submission
-          ? `${row.submission.score === null ? 'Đã nộp' : `${row.submission.score}%`} · ${formatDateTime(row.submission.submittedAt)}`
-          : 'Chưa nộp'}
+          ? `${row.submission.score === null ? t('results.handedIn') : `${row.submission.score}%`} · ${formatDateTime(row.submission.submittedAt)}`
+          : t('results.notSubmitted')}
       </span>
     </li>
   );
@@ -132,6 +139,7 @@ function ResultRow({ classId, row }: { classId: string; row: AssignmentResult })
 const STATUS_FILTERS: (ProgressStatus | undefined)[] = [undefined, ...PROGRESS_STATUSES];
 
 function ResultsList({ classId, assignmentId }: { classId: string; assignmentId: string }) {
+  const { t } = useTranslation(['classes', 'common']);
   const searchParams = useSearchParams();
   const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('page') ?? undefined);
   const parsedStatus = progressStatusSchema.safeParse(searchParams.get('status'));
@@ -150,7 +158,7 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
   });
 
   const filters = (
-    <nav aria-label="Lọc theo trạng thái" className="flex flex-wrap gap-1">
+    <nav aria-label={t('common:list.statusFilter')} className="flex flex-wrap gap-1">
       {STATUS_FILTERS.map((value) => (
         <Link
           key={value ?? 'all'}
@@ -158,7 +166,7 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
           aria-current={value === status ? 'page' : undefined}
           className="inline-flex min-h-11 items-center rounded-md px-3 text-small font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
         >
-          {value ? PROGRESS_STATUS[value].label : 'Tất cả'}
+          {value ? t(PROGRESS_STATUS[value].label) : t('results.all')}
         </Link>
       ))}
     </nav>
@@ -167,32 +175,32 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
   let body;
   if (results.isPending) {
     body = (
-      <LoadingState label="Đang tải kết quả học sinh">
+      <LoadingState label={t('results.loadingStudents')}>
         <Skeleton className="h-40 w-full" />
       </LoadingState>
     );
   } else if (results.isError) {
     body = (
       <ErrorState
-        title="Không tải được kết quả học sinh"
-        description="Kiểm tra kết nối mạng rồi thử lại."
+        title={t('results.studentsFailed')}
+        description={t('checkNetwork')}
         onRetry={() => void results.refetch()}
       />
     );
   } else if (results.data.data.length === 0) {
     body = status ? (
       <EmptyState
-        title="Không có học sinh nào"
-        description={`Chưa có học sinh ở trạng thái "${PROGRESS_STATUS[status].label}".`}
+        title={t('results.noneInStatus')}
+        description={t('results.noneInStatusHint', { status: t(PROGRESS_STATUS[status].label) })}
       />
     ) : (
-      <EmptyState title="Lớp chưa có học sinh" description="Gửi mã lớp để học sinh tham gia." />
+      <EmptyState title={t('results.noStudents')} description={t('results.sendCode')} />
     );
   } else {
     const { data, meta } = results.data;
     body = (
       <>
-        <ul aria-label="Kết quả từng học sinh" className="flex flex-col">
+        <ul aria-label={t('results.perStudentList')} className="flex flex-col">
           {data.map((row) => (
             <ResultRow key={row.userId} classId={classId} row={row} />
           ))}
@@ -220,6 +228,7 @@ export function AssignmentResults({
   classId: string;
   assignmentId: string;
 }) {
+  const { t } = useTranslation(['classes', 'common']);
   const backHref = `/classes/${classId}` as Route;
   const assignments = useQuery({
     queryKey: classKeys.assignments(classId),
@@ -232,7 +241,7 @@ export function AssignmentResults({
 
   if (assignments.isPending || summary.isPending) {
     return (
-      <LoadingState label="Đang tải kết quả">
+      <LoadingState label={t('results.loading')}>
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-28 w-full" />
       </LoadingState>
@@ -245,21 +254,18 @@ export function AssignmentResults({
   if (missing) {
     return (
       <>
-        <BackLink href={backHref} label="Quay lại lớp" />
-        <EmptyState
-          title="Không tìm thấy bài giao"
-          description="Bài đã bị huỷ, bộ từ đã bị xoá hoặc đây không phải lớp bạn dạy."
-        />
+        <BackLink href={backHref} label={t('backToClass')} />
+        <EmptyState title={t('results.notFound')} description={t('results.notFoundHint')} />
       </>
     );
   }
   if (assignments.isError || summary.isError || !assignment) {
     return (
       <>
-        <BackLink href={backHref} label="Quay lại lớp" />
+        <BackLink href={backHref} label={t('backToClass')} />
         <ErrorState
-          title="Không tải được kết quả"
-          description="Kiểm tra kết nối mạng rồi thử lại."
+          title={t('results.failed')}
+          description={t('checkNetwork')}
           onRetry={() => {
             void assignments.refetch();
             void summary.refetch();
@@ -269,18 +275,20 @@ export function AssignmentResults({
     );
   }
 
-  const due = assignment.dueAt ? `hạn ${formatDateTime(assignment.dueAt)}` : 'không có hạn';
+  const due = assignment.dueAt
+    ? t('results.dueLower', { date: formatDateTime(assignment.dueAt) })
+    : t('results.noDueLower');
   return (
     <>
-      <BackLink href={backHref} label="Quay lại lớp" />
+      <BackLink href={backHref} label={t('backToClass')} />
       <PageHeader
         title={assignment.setTitle}
-        description={`${(assignment.modes?.length ? assignment.modes : [assignment.mode]).map((mode) => STUDY_MODE_LABELS[mode]).join(', ')} · ${due}`}
+        description={`${(assignment.modes?.length ? assignment.modes : [assignment.mode]).map((mode) => t(`common:modes.${mode}`)).join(', ')} · ${due}`}
       />
       <SummaryView summary={summary.data} />
       <section aria-labelledby="results-title" className="flex flex-col gap-2">
         <h2 id="results-title" className="text-h2">
-          Từng học sinh
+          {t('results.perStudent')}
         </h2>
         <ResultsList classId={classId} assignmentId={assignmentId} />
       </section>

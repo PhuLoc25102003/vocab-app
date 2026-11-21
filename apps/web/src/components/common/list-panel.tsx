@@ -8,8 +8,10 @@ import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
-const number = new Intl.NumberFormat('vi-VN');
+const formatNum = (count: number, locale = 'vi') =>
+  new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'vi-VN').format(count);
 
 interface ListPanelProps {
   title: string;
@@ -24,11 +26,8 @@ interface ListPanelProps {
   children: ReactNode;
 }
 
-/**
- * Khung dùng chung cho mọi danh sách có thể dài (việc 5.29): viền, tiêu đề kèm tổng số, hàng
- * công cụ, thân và chân phân trang. Bốn trạng thái của danh sách nằm trong thân khung.
- */
 export function ListPanel({ title, count, actions, toolbar, footer, children }: ListPanelProps) {
+  const { i18n } = useTranslation();
   const titleId = useId();
   return (
     <section
@@ -41,7 +40,7 @@ export function ListPanel({ title, count, actions, toolbar, footer, children }: 
             {title}
             {count !== undefined ? (
               <span className="ml-2 text-body font-normal text-text-muted tabular-nums">
-                {number.format(count)}
+                {formatNum(count, i18n.language)}
               </span>
             ) : null}
           </h2>
@@ -75,6 +74,7 @@ interface ListToolbarProps {
 }
 
 export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
+  const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState(search?.value ?? '');
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -83,7 +83,7 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
   return (
     <div className="flex flex-col gap-3">
       {tabs ? (
-        <nav aria-label="Lọc theo trạng thái" className="flex flex-wrap gap-1">
+        <nav aria-label={t('list.statusFilter')} className="flex flex-wrap gap-1">
           {tabs.map((tab) => (
             <Link
               key={tab.href}
@@ -94,7 +94,7 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
               {tab.label}
               {tab.count !== undefined ? ' ' : null}
               {tab.count !== undefined ? (
-                <span className="tabular-nums">({number.format(tab.count)})</span>
+                <span className="tabular-nums">({formatNum(tab.count, i18n.language)})</span>
               ) : null}
             </Link>
           ))}
@@ -146,13 +146,14 @@ export function ListPager({
   total: number;
   hrefFor: (page: number) => Route;
 }) {
+  const { t, i18n } = useTranslation();
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(total, page * pageSize);
   const pageCount = Math.ceil(total / pageSize);
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <p className="text-small text-text-muted tabular-nums">
-        {from}–{to} trên {number.format(total)}
+        {t('list.range', { from, to, total: formatNum(total, i18n.language) })}
       </p>
       {pageCount > 1 ? <Pagination page={page} pageCount={pageCount} hrefFor={hrefFor} /> : null}
     </div>
@@ -161,11 +162,12 @@ export function ListPager({
 
 /** Đang lọc mà không có kết quả: nói rõ và cho xoá bộ lọc. */
 export function ListNoMatch({ text, clearHref }: { text: string; clearHref: Route }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-start gap-3 py-8">
       <p className="text-text-muted">{text}</p>
       <Button asChild variant="secondary">
-        <Link href={clearHref}>Xoá bộ lọc</Link>
+        <Link href={clearHref}>{t('actions.clearFilters')}</Link>
       </Button>
     </div>
   );

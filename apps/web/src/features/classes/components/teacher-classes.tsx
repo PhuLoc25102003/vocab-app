@@ -36,6 +36,7 @@ import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, createClass, listClasses, CLASSES_PAGE_SIZE } from '../api';
+import { useTranslation } from 'react-i18next';
 
 type CreateClassForm = { name: string; description?: string };
 
@@ -47,11 +48,11 @@ interface ClassesView {
   page: number;
 }
 
-const SORT_LABELS: Record<ClassSort, string> = {
-  '-createdAt': 'Mới tạo trước',
-  name: 'Tên A–Z',
-  '-memberCount': 'Sĩ số lớn trước',
-};
+const SORT_LABELS = {
+  '-createdAt': 'teacher.sortCreated',
+  name: 'teacher.sortName',
+  '-memberCount': 'teacher.sortMembers',
+} as const;
 
 function classesHref(view: ClassesView): Route {
   const params = new URLSearchParams();
@@ -70,6 +71,7 @@ export function CreateClassDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation('classes');
   const router = useRouter();
   const queryClient = useQueryClient();
   const create = useMutation({ mutationFn: createClass });
@@ -92,7 +94,7 @@ export function CreateClassDialog({
       // Mô tả trống thành `null` sau khi qua schema, API tạo lớp chỉ nhận chuỗi nên bỏ hẳn trường.
       const created = await create.mutateAsync(dto.description ? dto : { name: dto.name });
       await queryClient.invalidateQueries({ queryKey: classKeys.all });
-      toast.success(`Đã tạo lớp ${created.name}`);
+      toast.success(t('teacher.created', { name: created.name }));
       close(false);
       router.push(`/classes/${created.id}` as Route);
     } catch {
@@ -104,22 +106,22 @@ export function CreateClassDialog({
     <FormDialog
       open={open}
       onOpenChange={close}
-      title="Tạo lớp"
-      description="Tạo xong bạn sẽ có mã lớp để gửi cho học sinh."
-      submitLabel="Tạo lớp"
+      title={t('teacher.createTitle')}
+      description={t('teacher.createDescription')}
+      submitLabel={t('teacher.createTitle')}
       pending={create.isPending}
       error={create.error ? formErrorMessage(create.error) : null}
       dirty={isDirty}
       onSubmit={(event) => void submit(event)}
     >
       <FormField
-        label="Tên lớp"
-        placeholder="Ví dụ: 10A1 - Tiếng Anh"
+        label={t('teacher.name')}
+        placeholder={t('teacher.namePlaceholder')}
         error={errors.name?.message}
         {...form.register('name')}
       />
       <TextareaField
-        label="Mô tả (không bắt buộc)"
+        label={t('teacher.description')}
         rows={2}
         error={errors.description?.message}
         {...form.register('description')}
@@ -129,12 +131,13 @@ export function CreateClassDialog({
 }
 
 function CopyCodeButton({ code }: { code: string }) {
+  const { t } = useTranslation('classes');
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(code);
-      toast.success(`Đã sao chép mã ${code}`);
+      toast.success(t('copy.done', { code }));
     } catch {
-      toast.error('Không sao chép được, hãy chép mã bằng tay');
+      toast.error(t('copy.failedManual'));
     }
   };
   return (
@@ -142,7 +145,7 @@ function CopyCodeButton({ code }: { code: string }) {
       type="button"
       variant="ghost"
       size="icon"
-      aria-label={`Sao chép mã lớp ${code}`}
+      aria-label={t('copy.label', { code })}
       onClick={() => void copy()}
       className="relative z-10"
     >
@@ -153,6 +156,7 @@ function CopyCodeButton({ code }: { code: string }) {
 
 /** Thẻ hàng: cả thẻ mở trang lớp, riêng nút sao chép mã nằm trên lớp link. */
 function ClassRow({ item }: { item: ClassListItem }) {
+  const { t } = useTranslation('classes');
   const initial = item.name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
   return (
     <li className="relative flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border py-3 transition-colors duration-fast ease-standard last:border-b-0 hover:bg-primary-soft sm:px-2">
@@ -176,17 +180,19 @@ function ClassRow({ item }: { item: ClassListItem }) {
       <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-small text-text-muted sm:w-auto">
         <span className="flex items-center gap-1 tabular-nums">
           <Users aria-hidden className="size-4" />
-          {item.memberCount} HS
+          {t('teacher.members', { count: item.memberCount })}
         </span>
-        <span className="tabular-nums">{item.openAssignmentCount} bài mở</span>
+        <span className="tabular-nums">
+          {t('teacher.openCount', { count: item.openAssignmentCount })}
+        </span>
         <span className="flex min-w-32 items-center gap-2">
           {item.onTimeRate === null ? (
-            <span>Chưa có bài hết hạn</span>
+            <span>{t('teacher.noClosed')}</span>
           ) : (
             <>
               <span
                 role="meter"
-                aria-label="Tỉ lệ nộp đúng hạn 30 ngày"
+                aria-label={t('teacher.onTimeMeter')}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={item.onTimeRate}
@@ -197,13 +203,13 @@ function ClassRow({ item }: { item: ClassListItem }) {
                   style={{ width: `${item.onTimeRate}%` }}
                 />
               </span>
-              <span className="tabular-nums">{item.onTimeRate}% đúng hạn</span>
+              <span className="tabular-nums">{t('teacher.onTime', { rate: item.onTimeRate })}</span>
             </>
           )}
         </span>
         <span className="flex items-center">
           <span className="rounded-sm bg-primary-soft px-2 font-mono tracking-wider text-primary">
-            <span className="sr-only">Mã lớp </span>
+            <span className="sr-only">{t('codeLabel')}</span>
             {item.joinCode}
           </span>
           <CopyCodeButton code={item.joinCode} />
@@ -215,8 +221,9 @@ function ClassRow({ item }: { item: ClassListItem }) {
 }
 
 function ClassesLoading() {
+  const { t } = useTranslation('classes');
   return (
-    <LoadingState label="Đang tải lớp học">
+    <LoadingState label={t('teacher.loading')}>
       {Array.from({ length: 3 }, (_, index) => (
         <Skeleton key={index} className="h-16 w-full" />
       ))}
@@ -225,6 +232,7 @@ function ClassesLoading() {
 }
 
 function ClassList({ view }: { view: ClassesView }) {
+  const { t } = useTranslation('classes');
   const router = useRouter();
   const go = (patch: Partial<ClassesView>) =>
     router.push(classesHref({ ...view, page: 1, ...patch }));
@@ -241,8 +249,8 @@ function ClassList({ view }: { view: ClassesView }) {
   } else if (classes.isError) {
     body = (
       <ErrorState
-        title="Không tải được lớp học"
-        description="Kiểm tra kết nối mạng rồi thử lại."
+        title={t('teacher.failed')}
+        description={t('checkNetwork')}
         onRetry={() => void classes.refetch()}
       />
     );
@@ -250,28 +258,23 @@ function ClassList({ view }: { view: ClassesView }) {
     if (view.q) {
       body = (
         <ListNoMatch
-          text={`Không có lớp nào khớp "${view.q}".`}
+          text={t('teacher.noMatch', { q: view.q })}
           clearHref={classesHref({ ...view, q: '', page: 1 })}
         />
       );
     } else if (view.archived) {
       body = (
-        <EmptyState
-          title="Chưa có lớp nào đã lưu trữ"
-          description="Lớp bạn lưu trữ sẽ nằm ở đây."
-        />
+        <EmptyState title={t('teacher.noArchived')} description={t('teacher.noArchivedHint')} />
       );
     } else {
-      body = (
-        <EmptyState
-          title="Bạn chưa có lớp nào"
-          description="Tạo lớp rồi gửi mã lớp cho học sinh để các em tham gia."
-        />
-      );
+      body = <EmptyState title={t('teacher.empty')} description={t('teacher.emptyHint')} />;
     }
   } else {
     body = (
-      <ul aria-label={view.archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'} className="flex flex-col">
+      <ul
+        aria-label={t(view.archived ? 'teacher.archived' : 'teacher.active')}
+        className="flex flex-col"
+      >
         {classes.data.data.map((item) => (
           <ClassRow key={item.id} item={item} />
         ))}
@@ -281,27 +284,27 @@ function ClassList({ view }: { view: ClassesView }) {
 
   return (
     <ListPanel
-      title={view.archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'}
+      title={t(view.archived ? 'teacher.archived' : 'teacher.active')}
       count={total}
       toolbar={
         <ListToolbar
           key={view.q}
           tabs={[false, true].map((archived) => ({
-            label: archived ? 'Đã lưu trữ' : 'Đang dạy',
+            label: t(archived ? 'teacher.archivedTab' : 'teacher.activeTab'),
             href: classesHref({ ...view, archived, page: 1 }),
             current: view.archived === archived,
           }))}
-          search={{ label: 'Tìm lớp theo tên', value: view.q, onSearch: (q) => go({ q }) }}
+          search={{ label: t('teacher.search'), value: view.q, onSearch: (q) => go({ q }) }}
           filters={
             <ListFilter>
               <Select
-                aria-label="Sắp xếp lớp"
+                aria-label={t('teacher.sort')}
                 value={view.sort}
                 onChange={(event) => go({ sort: event.target.value as ClassSort })}
               >
                 {Object.entries(SORT_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
-                    {label}
+                    {t(label)}
                   </option>
                 ))}
               </Select>
@@ -326,6 +329,7 @@ function ClassList({ view }: { view: ClassesView }) {
 }
 
 export function TeacherClasses() {
+  const { t } = useTranslation('classes');
   const searchParams = useSearchParams();
   const view: ClassesView = {
     archived: searchParams.get('archived') === '1',
@@ -338,12 +342,12 @@ export function TeacherClasses() {
   return (
     <>
       <PageHeader
-        title="Lớp học"
-        description="Lớp bạn đang dạy. Học sinh tham gia bằng mã lớp."
+        title={t('page.title')}
+        description={t('teacher.pageDescription')}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden className="size-4" />
-            Tạo lớp
+            {t('teacher.createTitle')}
           </Button>
         }
       />
