@@ -17,6 +17,8 @@ import {
   setListSchema,
   type Assignment,
   type AssignmentGroup,
+  type AssignmentListQuery,
+  type AssignmentWindow,
   type AssignmentList,
   type AssignmentResultList,
   type AssignmentSummary,
@@ -52,7 +54,8 @@ export const classKeys = {
   membersQuery: (id: string, page: number, q: string, sort: string) =>
     ['classes', 'members', id, page, q, sort] as const,
   assignments: (id: string) => ['classes', 'assignments', id] as const,
-  assignmentsPage: (id: string, page: number) => ['classes', 'assignments', id, page] as const,
+  assignmentsPage: (id: string, page: number, filter: AssignmentFilter = {}) =>
+    ['classes', 'assignments', id, page, filter] as const,
   mySets: ['classes', 'my-sets'] as const,
   joined: ['classes', 'joined'] as const,
   joinedPage: (page: number) => ['classes', 'joined', page] as const,
@@ -118,9 +121,22 @@ export async function removeMember(id: string, userId: string): Promise<void> {
 
 export const ASSIGNMENTS_PAGE_SIZE = 20;
 
-/** Bài đã giao của lớp, hạn gần nhất trước. */
-export async function listAssignments(id: string, page = 1): Promise<AssignmentList> {
+export interface AssignmentFilter {
+  status?: AssignmentWindow;
+  q?: string;
+  sort?: AssignmentListQuery['sort'];
+}
+
+/** Bài đã giao của lớp, mặc định hạn gần nhất trước (việc 5.32 thêm lọc, tìm, sắp xếp). */
+export async function listAssignments(
+  id: string,
+  page = 1,
+  filter: AssignmentFilter = {},
+): Promise<AssignmentList> {
   const params = new URLSearchParams({ page: String(page), limit: String(ASSIGNMENTS_PAGE_SIZE) });
+  if (filter.status) params.set('status', filter.status);
+  if (filter.q) params.set('q', filter.q);
+  if (filter.sort) params.set('sort', filter.sort);
   return assignmentListSchema.parse(
     await http(`${classPath(id)}/assignments?${params.toString()}`),
   );

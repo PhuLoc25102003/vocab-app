@@ -1,100 +1,182 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { STUDY_MODE_LABELS, type Assignment } from '@vocab/shared';
-import { CalendarClock, ClipboardList, Trash2 } from 'lucide-react';
+import {
+  ASSIGNMENT_WINDOWS,
+  type AssignmentWindow,
+  type ClassAssignment,
+  STUDY_MODE_LABELS,
+} from '@vocab/shared';
+import {
+  CalendarClock,
+  CircleCheck,
+  CircleDashed,
+  ClipboardList,
+  Clock,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import type { Route } from 'next';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
+import {
+  ListFilter,
+  ListNoMatch,
+  ListPager,
+  ListPanel,
+  ListToolbar,
+} from '@/components/common/list-panel';
 import { LoadingState } from '@/components/common/loading-state';
-import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
-import { ASSIGNMENTS_PAGE_SIZE, classKeys, listAssignments, removeAssignment } from '../api';
+import {
+  type AssignmentFilter,
+  ASSIGNMENTS_PAGE_SIZE,
+  classKeys,
+  listAssignments,
+  removeAssignment,
+} from '../api';
 import { formatDateTime } from '../format';
 import { AssignDialog } from './assign-dialog';
+import { AssignmentRow } from './assignment-row';
 
-function AssignmentRow({ classId, item, now }: { classId: string; item: Assignment; now: number }) {
+type AssignmentSort = NonNullable<AssignmentFilter['sort']>;
+
+/** Bộ lọc tab Bài tập của lớp, nằm trong URL (việc 5.32). */
+export interface AssignmentsView {
+  status: AssignmentWindow;
+  q: string;
+  sort: AssignmentSort;
+  page: number;
+}
+
+export const DEFAULT_ASSIGNMENTS_VIEW: AssignmentsView = {
+  status: 'all',
+  q: '',
+  sort: 'due',
+  page: 1,
+};
+
+const WINDOW_LABELS: Record<AssignmentWindow, string> = {
+  open: 'Còn hạn',
+  closed: 'Hết hạn',
+  all: 'Tất cả',
+};
+
+const SORT_LABELS: Record<AssignmentSort, string> = {
+  due: 'Hạn gần nhất',
+  '-createdAt': 'Mới giao trước',
+};
+
+const ROW_STATUS = {
+  none: { label: 'Không hạn', icon: CircleDashed, className: 'text-text-muted' },
+  open: { label: 'Còn hạn', icon: Clock, className: 'text-primary' },
+  closed: { label: 'Hết hạn', icon: CircleCheck, className: 'text-text-muted' },
+};
+
+function TeacherAssignmentRow({
+  classId,
+  item,
+  now,
+}: {
+  classId: string;
+  item: ClassAssignment;
+  now: number;
+}) {
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
   const remove = useMutation({ mutationFn: () => removeAssignment(classId, item.id) });
-  const overdue = item.dueAt !== null && new Date(item.dueAt).getTime() < now;
+  const modes = item.modes ?? [item.mode];
+  let status = ROW_STATUS.none;
+  if (item.dueAt)
+    status = new Date(item.dueAt).getTime() < now ? ROW_STATUS.closed : ROW_STATUS.open;
 
   return (
-    <li className="flex min-h-16 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
-      <span className="flex min-w-0 flex-col gap-1">
-        <Link
-          href={`/classes/${classId}/assignments/${item.id}` as Route}
-          className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
-        >
-          {item.setTitle}
-          <span className="sr-only">, xem kết quả</span>
-        </Link>
-        <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-text-muted">
-          <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-            {STUDY_MODE_LABELS[item.mode]}
-          </span>
-          <span className="flex items-center gap-1">
-            <CalendarClock aria-hidden className="size-4" />
-            {item.dueAt ? `Hạn ${formatDateTime(item.dueAt)}` : 'Không có hạn'}
-          </span>
-          {overdue ? <span className="font-medium text-danger">Đã quá hạn</span> : null}
-        </span>
+    <AssignmentRow
+      href={`/classes/${classId}/assignments/${item.id}` as Route}
+      status={status}
+      title={item.setTitle}
+      action={
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Huỷ bài giao ${item.setTitle}`}
+            onClick={() => setConfirming(true)}
+          >
+            <Trash2 aria-hidden className="size-5" />
+          </Button>
+          <ConfirmDialog
+            open={confirming}
+            onOpenChange={setConfirming}
+            title={`Huỷ bài giao ${item.setTitle}?`}
+            description="Học sinh không còn thấy bài này trong danh sách bài cần làm. Kết quả các em đã học vẫn được giữ."
+            confirmLabel="Huỷ bài giao"
+            cancelLabel="Giữ lại"
+            pending={remove.isPending}
+            error={remove.error ? formErrorMessage(remove.error) : null}
+            onConfirm={() =>
+              remove.mutate(undefined, {
+                onSuccess: async () => {
+                  await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
+                  setConfirming(false);
+                  toast.success('Đã huỷ bài giao');
+                },
+              })
+            }
+          />
+        </>
+      }
+    >
+      <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
+        {STUDY_MODE_LABELS[modes[0] ?? item.mode]}
+        {modes.length > 1 ? ` +${modes.length - 1}` : ''}
       </span>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Huỷ bài giao ${item.setTitle}`}
-        onClick={() => setConfirming(true)}
-      >
-        <Trash2 aria-hidden className="size-5" />
-      </Button>
-      <ConfirmDialog
-        open={confirming}
-        onOpenChange={setConfirming}
-        title={`Huỷ bài giao ${item.setTitle}?`}
-        description="Học sinh không còn thấy bài này trong danh sách bài cần làm. Kết quả các em đã học vẫn được giữ."
-        confirmLabel="Huỷ bài giao"
-        cancelLabel="Giữ lại"
-        pending={remove.isPending}
-        error={remove.error ? formErrorMessage(remove.error) : null}
-        onConfirm={() =>
-          remove.mutate(undefined, {
-            onSuccess: async () => {
-              await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
-              setConfirming(false);
-              toast.success('Đã huỷ bài giao');
-            },
-          })
-        }
-      />
-    </li>
+      <span className="flex items-center gap-1">
+        <CalendarClock aria-hidden className="size-4" />
+        {item.dueAt ? `Hạn ${formatDateTime(item.dueAt)}` : 'Không có hạn'}
+      </span>
+      <span className="flex items-center gap-1 tabular-nums">
+        <Users aria-hidden className="size-4" />
+        {item.submittedCount}/{item.memberCount} đã nộp
+      </span>
+    </AssignmentRow>
   );
 }
 
 interface ClassAssignmentsProps {
   classId: string;
   archived: boolean;
-  page?: number;
-  /** Đường dẫn của trang `page`, giữ các tham số khác của trang lớp. */
-  hrefFor?: (page: number) => Route;
+  view?: AssignmentsView;
+  /** Đường dẫn của một bộ lọc, giữ các tham số khác của trang lớp. */
+  hrefFor?: (view: AssignmentsView) => Route;
 }
 
 export function ClassAssignments({
   classId,
   archived,
-  page = 1,
-  hrefFor = (next) => `/classes/${classId}?apage=${next}` as Route,
+  view = DEFAULT_ASSIGNMENTS_VIEW,
+  hrefFor = ({ page }) => `/classes/${classId}?apage=${page}` as Route,
 }: ClassAssignmentsProps) {
+  const router = useRouter();
   const [assigning, setAssigning] = useState(false);
   const [now] = useState(() => Date.now());
+  const go = (patch: Partial<AssignmentsView>) =>
+    router.push(hrefFor({ ...view, page: 1, ...patch }));
+  const filter: AssignmentFilter = {
+    status: view.status,
+    q: view.q || undefined,
+    sort: view.sort,
+  };
   const assignments = useQuery({
-    queryKey: classKeys.assignmentsPage(classId, page),
-    queryFn: () => listAssignments(classId, page),
+    queryKey: classKeys.assignmentsPage(classId, view.page, filter),
+    queryFn: () => listAssignments(classId, view.page, filter),
   });
 
   let body;
@@ -113,42 +195,89 @@ export function ClassAssignments({
       />
     );
   } else if (assignments.data.data.length === 0) {
-    body = (
-      <p className="text-text-muted">Chưa giao bài nào. Giao một bộ từ để học sinh bắt đầu học.</p>
-    );
-  } else {
-    const { meta } = assignments.data;
-    body = (
-      <>
-        <ul aria-label="Bài đã giao" className="flex flex-col">
-          {assignments.data.data.map((item) => (
-            <AssignmentRow key={item.id} classId={classId} item={item} now={now} />
-          ))}
-        </ul>
-        <Pagination
-          page={meta.page}
-          pageCount={Math.ceil(meta.total / ASSIGNMENTS_PAGE_SIZE)}
-          hrefFor={hrefFor}
+    if (view.q) {
+      body = (
+        <ListNoMatch
+          text={`Không có bài nào khớp "${view.q}".`}
+          clearHref={hrefFor({ ...view, q: '', page: 1 })}
         />
-      </>
+      );
+    } else if (view.status === 'all') {
+      body = (
+        <EmptyState
+          title="Chưa giao bài nào"
+          description="Giao một bộ từ để học sinh bắt đầu học."
+        />
+      );
+    } else {
+      body = (
+        <p className="py-6 text-text-muted">
+          {view.status === 'open' ? 'Không có bài nào còn hạn.' : 'Chưa có bài nào hết hạn.'}
+        </p>
+      );
+    }
+  } else {
+    body = (
+      <ul aria-label="Bài đã giao" className="flex flex-col">
+        {assignments.data.data.map((item) => (
+          <TeacherAssignmentRow key={item.id} classId={classId} item={item} now={now} />
+        ))}
+      </ul>
     );
   }
 
   return (
-    <section aria-labelledby="assignments-title" className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="assignments-title" className="text-h2">
-          Bài đã giao
-        </h2>
-        {archived ? null : (
+    <ListPanel
+      title="Bài đã giao"
+      count={assignments.data?.meta.total}
+      actions={
+        archived ? null : (
           <Button onClick={() => setAssigning(true)}>
             <ClipboardList aria-hidden className="size-4" />
             Giao bài
           </Button>
-        )}
-      </div>
+        )
+      }
+      toolbar={
+        <ListToolbar
+          key={view.q}
+          tabs={ASSIGNMENT_WINDOWS.map((status) => ({
+            label: WINDOW_LABELS[status],
+            href: hrefFor({ ...view, status, page: 1 }),
+            current: view.status === status,
+            count: assignments.data?.counts[status],
+          }))}
+          search={{ label: 'Tìm theo tên bộ từ', value: view.q, onSearch: (q) => go({ q }) }}
+          filters={
+            <ListFilter>
+              <Select
+                aria-label="Sắp xếp bài đã giao"
+                value={view.sort}
+                onChange={(event) => go({ sort: event.target.value as AssignmentSort })}
+              >
+                {Object.entries(SORT_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </ListFilter>
+          }
+        />
+      }
+      footer={
+        assignments.data && assignments.data.meta.total > 0 ? (
+          <ListPager
+            page={assignments.data.meta.page}
+            pageSize={ASSIGNMENTS_PAGE_SIZE}
+            total={assignments.data.meta.total}
+            hrefFor={(page) => hrefFor({ ...view, page })}
+          />
+        ) : null
+      }
+    >
       <AssignDialog classId={classId} open={assigning} onOpenChange={setAssigning} />
       {body}
-    </section>
+    </ListPanel>
   );
 }

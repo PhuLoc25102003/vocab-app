@@ -13,19 +13,22 @@ export function AssignmentRow({
   status,
   title,
   children,
+  action,
 }: {
   href: Route;
   status: { label: string; icon: LucideIcon; className: string };
   title: string;
   /** Dòng phụ: lớp, chế độ, hạn, số đã nộp. */
   children?: ReactNode;
+  /** Nút cạnh link, ví dụ huỷ bài giao; nằm ngoài link để bấm riêng được. */
+  action?: ReactNode;
 }) {
   const { label, icon: Icon, className } = status;
   return (
-    <li className="border-b border-border last:border-b-0">
+    <li className="flex items-center gap-1 border-b border-border last:border-b-0">
       <Link
         href={href}
-        className="flex min-h-16 items-center gap-3 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:px-2"
+        className="flex min-h-16 min-w-0 flex-1 items-center gap-3 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:px-2"
       >
         <span
           className={cn('flex w-24 shrink-0 items-center gap-1 text-small font-medium', className)}
@@ -43,6 +46,7 @@ export function AssignmentRow({
         </span>
         <ChevronRight aria-hidden className="size-5 shrink-0 text-text-muted" />
       </Link>
+      {action}
     </li>
   );
 }

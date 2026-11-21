@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
+  type AssignmentListQuery,
   type AssignmentModeProgress,
   type AssignmentStatus,
   type CreateAssignmentDto,
-  type Pagination,
   type MyAssignmentListQuery,
   type ProgressStatus,
   type StudyMode,
@@ -57,9 +57,9 @@ export class AssignmentsService {
     return ok(assignment);
   }
 
-  async list(classId: string, query: Pagination) {
-    const { items, total } = await this.assignments.findByClass(classId, query);
-    return paginated(items, total, query);
+  async list(classId: string, query: AssignmentListQuery, now = new Date()) {
+    const { items, total, counts } = await this.assignments.findByClass(classId, query, now);
+    return { ...paginated(items, total, query), counts };
   }
 
   async remove(classId: string, id: string): Promise<void> {

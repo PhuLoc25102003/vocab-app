@@ -3,8 +3,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  assignmentListQuerySchema,
   CLASS_MEMBER_SEARCH_MAX_LENGTH,
   classMemberListQuerySchema,
+  LIST_SEARCH_MAX_LENGTH,
   createClassSchema,
   paginationSchema,
   type Class,
@@ -42,7 +44,7 @@ import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { classKeys, getClass, regenerateJoinCode, updateClass } from '../api';
 import { formatDate } from '../format';
-import { ClassAssignments } from './class-assignments';
+import { type AssignmentsView, ClassAssignments } from './class-assignments';
 import { ClassMembers } from './class-members';
 
 function useClassMutation<T>(mutationFn: (value: T) => Promise<unknown>) {
@@ -340,7 +342,12 @@ export function ClassDetail({ id }: { id: string }) {
   const readPage = (key: string) =>
     paginationSchema.shape.page.catch(1).parse(searchParams.get(key) ?? undefined);
   const page = readPage('page');
-  const assignmentsPage = readPage('apage');
+  const assignmentsView: AssignmentsView = {
+    status: assignmentListQuerySchema.shape.status.parse(searchParams.get('astatus') ?? undefined),
+    q: (searchParams.get('aq') ?? '').slice(0, LIST_SEARCH_MAX_LENGTH),
+    sort: assignmentListQuerySchema.shape.sort.parse(searchParams.get('asort') ?? undefined),
+    page: readPage('apage'),
+  };
   const tab: ClassTab = searchParams.get('tab') === 'students' ? 'students' : 'assignments';
   const memberQuery = (searchParams.get('q') ?? '').slice(0, CLASS_MEMBER_SEARCH_MAX_LENGTH);
   const memberSort = classMemberListQuerySchema.shape.sort.parse(
@@ -351,9 +358,9 @@ export function ClassDetail({ id }: { id: string }) {
   const classHref = (next: {
     tab?: ClassTab;
     page?: number;
-    apage?: number;
     q?: string;
     sort?: string;
+    assignments?: AssignmentsView;
   }) => {
     const params = new URLSearchParams();
     const nextTab = next.tab ?? tab;
@@ -361,7 +368,11 @@ export function ClassDetail({ id }: { id: string }) {
     if (next.q) params.set('q', next.q);
     if (next.sort && next.sort !== 'joinedAt') params.set('sort', next.sort);
     if ((next.page ?? 1) > 1) params.set('page', String(next.page));
-    if ((next.apage ?? 1) > 1) params.set('apage', String(next.apage));
+    const view = next.assignments;
+    if (view && view.status !== 'all') params.set('astatus', view.status);
+    if (view?.q) params.set('aq', view.q);
+    if (view && view.sort !== 'due') params.set('asort', view.sort);
+    if (view && view.page > 1) params.set('apage', String(view.page));
     const query = params.toString();
     return `/classes/${id}${query ? `?${query}` : ''}` as Route;
   };
@@ -412,8 +423,8 @@ export function ClassDetail({ id }: { id: string }) {
         <ClassAssignments
           classId={klass.data.id}
           archived={klass.data.archivedAt !== null}
-          page={assignmentsPage}
-          hrefFor={(next) => classHref({ tab: 'assignments', apage: next })}
+          view={assignmentsView}
+          hrefFor={(assignments) => classHref({ tab: 'assignments', assignments })}
         />
       ) : (
         <ClassMembers

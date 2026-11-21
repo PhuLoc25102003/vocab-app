@@ -13,6 +13,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   assignmentListQuerySchema,
+  type AssignmentListQuery,
   assignmentResultListQuerySchema,
   memberResultListQuerySchema,
   createAssignmentSchema,
@@ -123,10 +124,10 @@ export class ClassesController {
 
   @Get(':id/assignments')
   @CheckOwnership('class')
-  @ApiOperation({ summary: 'Bài đã giao cho lớp, hạn gần nhất lên trước' })
+  @ApiOperation({ summary: 'Bài đã giao cho lớp: lọc còn hạn, đã hết hạn, tìm, sắp xếp' })
   listAssignments(
     @Param('id') id: string,
-    @Query(new ZodValidationPipe(assignmentListQuerySchema)) query: Pagination,
+    @Query(new ZodValidationPipe(assignmentListQuerySchema)) query: AssignmentListQuery,
   ) {
     return this.assignments.list(id, query);
   }

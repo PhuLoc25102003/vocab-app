@@ -95,6 +95,63 @@ describe('giao bài cho lớp', () => {
     expect(response.body.data[2].dueAt).toBeNull();
   });
 
+  it('lọc còn hạn, hết hạn, tìm theo tên bộ, sắp xếp, kèm số đã nộp x/y', async () => {
+    const day = 24 * 60 * 60 * 1000;
+    const set = async (title: string) =>
+      (await prisma.studySet.create({ data: { ownerId: teacher.id, title, visibility: 'CLASS' } }))
+        .id;
+    const create = async (title: string, dueAt: Date | null, createdAt: Date) =>
+      (
+        await prisma.assignment.create({
+          data: { classId, setId: await set(title), mode: 'MCQ', modes: ['MCQ'], dueAt, createdAt },
+        })
+      ).id;
+    const past = await create(
+      'Unit 1 cũ',
+      new Date(Date.now() - day),
+      new Date(Date.now() - 3 * day),
+    );
+    const soon = await create('Unit 2', new Date(Date.now() + day), new Date(Date.now() - 2 * day));
+    await create('Ôn tập', null, new Date(Date.now() - day));
+    const left = await createUser('roi@example.com');
+    await prisma.classMember.createMany({
+      data: [
+        { classId, userId: student.id },
+        { classId, userId: admin.id },
+      ],
+    });
+    // Học sinh đã rời lớp vẫn còn bài nộp nhưng không tính vào x/y.
+    await prisma.assignmentSubmission.createMany({
+      data: [
+        { assignmentId: soon, userId: student.id },
+        { assignmentId: soon, userId: left.id },
+      ],
+    });
+    const list = async (query: string) =>
+      (await call('get', `/classes/${classId}/assignments?${query}`, teacher.token).expect(200))
+        .body;
+    const titles = (body: { data: { setTitle: string }[] }) => body.data.map((a) => a.setTitle);
+
+    const all = await list('');
+    expect(titles(all)).toEqual(['Unit 1 cũ', 'Unit 2', 'Ôn tập']);
+    expect(all.counts).toEqual({ open: 2, closed: 1, all: 3 });
+    expect(all.data[1]).toMatchObject({ id: soon, submittedCount: 1, memberCount: 2 });
+
+    expect(titles(await list('status=open'))).toEqual(['Unit 2', 'Ôn tập']);
+    const closed = await list('status=closed');
+    expect(closed.data.map((a: { id: string }) => a.id)).toEqual([past]);
+    expect(closed.meta.total).toBe(1);
+
+    const searched = await list('q=unit&sort=-createdAt');
+    expect(titles(searched)).toEqual(['Unit 2', 'Unit 1 cũ']);
+    expect(searched.counts).toEqual({ open: 1, closed: 1, all: 2 });
+    expect(titles(await list('status=bogus&sort=bogus'))).toEqual([
+      'Unit 1 cũ',
+      'Unit 2',
+      'Ôn tập',
+    ]);
+  });
+
   it('bộ riêng tư cần đồng ý chia sẻ cho lớp, đồng ý thì bộ chuyển sang CLASS', async () => {
     const privateSet = await createSet(teacher.id, 'PRIVATE');
 
