@@ -1,0 +1,45 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+import { BaseRepository } from '../base/base.repository';
+
+export type OwnedResource = 'set' | 'session' | 'folder' | 'class';
+
+@Injectable()
+export class OwnershipRepository extends BaseRepository {
+  constructor(prisma: PrismaService) {
+    super(prisma);
+  }
+
+  /** Trả id chủ sở hữu, hoặc `null` nếu tài nguyên không tồn tại hay đã xoá mềm. */
+  async findOwnerId(resource: OwnedResource, id: string): Promise<string | null> {
+    if (resource === 'set') {
+      const set = await this.prisma.studySet.findFirst({
+        where: { id, deletedAt: null },
+        select: { ownerId: true },
+      });
+      return set?.ownerId ?? null;
+    }
+
+    if (resource === 'folder') {
+      const folder = await this.prisma.folder.findUnique({
+        where: { id },
+        select: { ownerId: true },
+      });
+      return folder?.ownerId ?? null;
+    }
+
+    if (resource === 'class') {
+      const klass = await this.prisma.class.findUnique({
+        where: { id },
+        select: { teacherId: true },
+      });
+      return klass?.teacherId ?? null;
+    }
+
+    const session = await this.prisma.studySession.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+    return session?.userId ?? null;
+  }
+}

@@ -2,7 +2,7 @@
 
 Nguồn chuẩn là `apps/api/prisma/schema.prisma`. Khối schema dưới đây được chép nguyên từ file đó. Nếu tài liệu và code lệch nhau, code đúng.
 
-8 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration: `20261118030153_init`, `20261118040948_cascade_deletes`.
+11 bảng nghiệp vụ trên PostgreSQL, quản lý bằng Prisma migration. Migration nằm trong `apps/api/prisma/migrations`, mới nhất là `20261120021045_add_classes`.
 
 Prisma 7: URL kết nối đặt trong `apps/api/prisma.config.ts`; generator `prisma-client`, output `../src/generated/prisma`, `moduleFormat = "cjs"`; `PrismaService` kế thừa `PrismaClient` và dùng adapter `PrismaPg`.
 
@@ -40,6 +40,7 @@ enum StudyMode {
   MCQ
   MATCH
   TEST
+  SPEAK
 }
 
 model User {
@@ -53,12 +54,19 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
+  /// ADMIN khoá tài khoản: không đăng nhập, không gọi API được cho tới khi mở khoá.
+  lockedAt     DateTime?
+  lockReason   String?
+  lockedById   String?
 
   refreshSessions RefreshSession[]
+  passwordResetTokens PasswordResetToken[]
   folders         Folder[]
   studySets       StudySet[]
   cardProgress    CardProgress[]
   studySessions   StudySession[]
+  teachingClasses Class[]
+  classMembers    ClassMember[]
 }
 
 model RefreshSession {
@@ -76,6 +84,19 @@ model RefreshSession {
   @@index([userId])
 }
 
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model Folder {
   id      String @id @default(cuid())
   ownerId String
@@ -84,27 +105,33 @@ model Folder {
   owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   sets  StudySet[]
 
+  @@unique([ownerId, name])
   @@index([ownerId])
 }
 
 model StudySet {
-  id          String     @id @default(cuid())
-  ownerId     String
-  folderId    String?
-  title       String
-  description String?
-  termLang    String     @default("en")
-  defLang     String     @default("vi")
-  visibility  Visibility @default(PRIVATE)
-  cardCount   Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
+  id           String     @id @default(cuid())
+  ownerId      String
+  folderId     String?
+  title        String
+  description  String?
+  termLang     String     @default("en")
+  defLang      String     @default("vi")
+  visibility   Visibility @default(PRIVATE)
+  cardCount    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  /// ADMIN ẩn bộ vi phạm: người khác không thấy, chủ bộ và ADMIN vẫn thấy.
+  hiddenAt     DateTime?
+  hiddenReason String?
+  hiddenById   String?
 
   owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   folder        Folder?        @relation(fields: [folderId], references: [id])
   cards         Card[]
   studySessions StudySession[]
+  assignments   Assignment[]
 
   @@index([ownerId, updatedAt])
   @@index([visibility])
@@ -157,12 +184,16 @@ model StudySession {
   finishedAt DateTime?
   correct    Int       @default(0)
   total      Int       @default(0)
+  /// Phiên học làm cho một bài giao; xoá bài giao thì phiên vẫn còn, chỉ bỏ liên kết.
+  assignmentId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  set      StudySet  @relation(fields: [setId], references: [id], onDelete: Cascade)
-  attempts Attempt[]
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  set        StudySet    @relation(fields: [setId], references: [id], onDelete: Cascade)
+  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  attempts   Attempt[]
 
   @@index([userId, startedAt])
+  @@index([assignmentId, userId])
 }
 
 model Attempt {
@@ -179,14 +210,86 @@ model Attempt {
 
   @@index([cardId])
 }
+
+/// Lớp do một giáo viên quản lý. Học sinh tham gia bằng `joinCode`, giáo viên đổi được mã.
+model Class {
+  id          String    @id @default(cuid())
+  teacherId   String
+  name        String
+  description String?
+  joinCode    String    @unique
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  teacher     User          @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  members     ClassMember[]
+  assignments Assignment[]
+
+  @@index([teacherId])
+}
+
+model ClassMember {
+  classId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([classId, userId])
+  @@index([userId])
+}
+
+/// Bộ từ giao cho cả lớp với một chế độ học. `dueAt` null là không có hạn nộp.
+model Assignment {
+  id        String    @id @default(cuid())
+  classId   String
+  setId     String
+  mode      StudyMode
+  /// Các chế độ phải làm, theo thứ tự. Thay cho `mode` (giữ lại đến lần deploy sau rồi mới xoá).
+  modes     StudyMode[] @default([])
+  dueAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  class       Class                  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  set         StudySet               @relation(fields: [setId], references: [id], onDelete: Cascade)
+  sessions    StudySession[]
+  submissions AssignmentSubmission[]
+
+  @@index([classId, dueAt])
+  @@index([setId])
+}
+
+/// Bài nộp của một học sinh cho một bài giao. Nộp một lần; điểm (phần trăm) chốt lúc nộp, null khi
+/// bài chỉ có chế độ không chấm điểm. `late`: nộp sau `dueAt`.
+model AssignmentSubmission {
+  assignmentId String
+  userId       String
+  submittedAt  DateTime @default(now())
+  score        Int?
+  late         Boolean  @default(false)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([assignmentId, userId])
+  @@index([userId])
+}
 ```
 
 ## Ghi chú thiết kế
 
 - `cardCount` lưu sẵn để trang danh sách không phải đếm; cập nhật trong cùng transaction khi thêm/xoá thẻ.
-- Xoá bộ từ là soft delete (`deletedAt`); một cron xoá hẳn sau 30 ngày.
+- `User.lockedAt`, `lockReason`, `lockedById` lưu việc ADMIN khoá tài khoản (việc 2.11). `lockedById` là id ADMIN, không đặt khoá ngoại để giữ lịch sử khi tài khoản ADMIN bị xoá. Tài khoản có `lockedAt` không đăng nhập, không refresh được và bị `AuthGuard` từ chối.
+- `StudySet.hiddenAt`, `hiddenReason`, `hiddenById` lưu việc ADMIN ẩn bộ vi phạm (việc 2.12). Bộ bị ẩn không còn trong Khám phá và với người khác (`visibleTo()` chỉ cho xem bộ `PUBLIC` có `hiddenAt` null), chủ bộ và ADMIN vẫn thấy.
+- Xoá bộ từ là soft delete (`deletedAt`). `SetsPurgeService` xoá hẳn bộ có `deletedAt` quá 30 ngày, kèm thẻ, phiên học, câu trả lời và tiến độ theo cascade. Job chạy khoảng 1 phút sau khi API khởi động và mỗi 24 giờ (Render gói Free ngủ khi rảnh nên không dùng giờ cố định), xoá theo lô 200 bộ, giữ `pg_try_advisory_xact_lock` để nhiều instance không chạy trùng, ghi log số bộ đã xoá. MVP không có thùng rác, bộ đã xoá không khôi phục được.
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
-- `Class`, `ClassMember`, `Assignment` thêm ở giai đoạn 3, không ảnh hưởng bảng cũ.
+- `Class`, `ClassMember`, `Assignment` (việc 3.1) là nền cho lớp học, chưa có API. `Class.joinCode` duy nhất toàn hệ thống, giáo viên đổi mã bằng cách ghi mã mới. Lớp lưu trữ có `archivedAt`, không xoá. `ClassMember` có khoá chính `(classId, userId)` nên một học sinh không vào một lớp hai lần. `Assignment.dueAt` lưu UTC, `null` là không có hạn. Xoá giáo viên hoặc lớp thì xoá theo thành viên và bài giao; xoá học sinh chỉ xoá tư cách thành viên; bộ từ bị xoá hẳn (sau 30 ngày soft delete) thì bài giao của bộ đó bị xoá theo.
+- Việc 5.10: `Assignment.modes` là danh sách chế độ phải làm theo thứ tự, thay cho `mode` (cột `mode` giữ đến lần deploy sau rồi mới xoá; bài cũ được backfill `[mode]`, bài mới ghi cả hai). `StudySession.assignmentId` (null được) gắn phiên học với bài giao, xoá bài giao thì `SET NULL`. `AssignmentSubmission` khoá chính `(assignmentId, userId)` nên mỗi học sinh nộp một lần; `score` là phần trăm chốt lúc nộp (null khi chỉ có Flashcard), `late` khi nộp sau `dueAt`; xoá bài giao hoặc người dùng thì xoá theo bài nộp. Migration backfill bài nộp từ phiên đã xong cùng bộ, cùng chế độ sau lúc giao của thành viên lớp: thời điểm là lần xong đầu, điểm là phiên tốt nhất.
+
+- `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường
 
@@ -199,6 +302,8 @@ model Attempt {
 | `StudySet.termLang`, `StudySet.defLang` | Mã BCP-47, dùng cho phát âm           |
 | `CardProgress`                          | Dữ liệu SRS theo từng người, từng thẻ |
 | `CardProgress.interval`                 | Đơn vị ngày                           |
+| `CardProgress.lapses`                   | Số lần quên thẻ đã từng nhớ           |
+| `CardProgress.dueAt`                    | Tính bằng `applyReview` trong shared  |
 
 ## Lệch giữa spec gốc và code
 

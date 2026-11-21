@@ -17,7 +17,7 @@ develop → PR phát hành vào main → Merge commit → Deploy
 
 - Không commit hoặc push thẳng lên `main` hay `develop`. Mọi thay đổi đi qua PR.
 - Chỉ tạo issue, push, mở PR khi người dùng yêu cầu làm bước đó hoặc yêu cầu chạy cả flow.
-- **Chỉ merge khi người dùng xác nhận rõ PR đó.**
+- **Chỉ merge khi người dùng xác nhận rõ PR đó.** Ngoại lệ duy nhất: skill `ship-task` được tự squash merge vào `develop` khi đủ điều kiện của skill đó. Merge vào `main` luôn cần xác nhận.
 - Không force push lên `main` hay `develop`, không xoá hai nhánh này. Trên nhánh của mình chỉ dùng `--force-with-lease`.
 - Không commit `.env`, secret hoặc `apps/api/src/generated`.
 
@@ -139,7 +139,7 @@ npm test
 npm run build
 ```
 
-`npm test` chưa có test nào cho đến khi dự án cài bộ test, phải nói rõ điều này trong PR. Sau đó chạy skill `code-review`.
+`npm test` cần Postgres đang chạy (`npm run db:up`). Sau đó chạy skill `code-review`.
 
 Commit theo Conventional Commits, tiêu đề tiếng Anh, thể mệnh lệnh, chữ thường, không dấu chấm cuối, tối đa 72 ký tự:
 
@@ -168,7 +168,7 @@ Nếu `develop` có migration mới, rebase rồi kiểm tra thứ tự migratio
 - Tiêu đề PR là commit sẽ vào `develop`, nên phải đúng định dạng commit ở trên.
 - Một PR giải quyết một việc, khoảng dưới 400 dòng, không tính lockfile và migration sinh tự động.
 - Chưa xong thì mở Draft.
-- Trong PR, cập nhật `docs/07-progress.md` theo mục "Cách cập nhật" của file đó.
+- Trong PR, cập nhật `docs/07-progress.md` theo mục "Cách cập nhật" của file đó: dòng của việc (`[x]` và số PR), `npm run progress`, "Đang ở" và "Việc tiếp theo" nằm luôn trong commit của việc, không mở PR docs riêng.
 - `Closes #12` chỉ tự đóng issue khi PR vào nhánh mặc định của repo. Nếu nhánh mặc định không phải `develop`, đóng issue thủ công sau khi merge.
 
 ```markdown
@@ -207,7 +207,7 @@ gh pr create --base develop --title "feat(study): add dictation mode" --body-fil
 - [ ] `code-review` không còn mục "Chưa đạt"
 - [ ] CI xanh khi repo đã có CI, nếu chưa có thì đã chạy đủ lệnh ở bước 4
 - [ ] Không còn xung đột với `develop`
-- [ ] Người dùng xác nhận merge
+- [ ] Người dùng xác nhận merge, hoặc đang chạy `ship-task` và PR vào `develop` đủ điều kiện tự merge
 
 PR vào `develop` luôn dùng squash merge:
 

@@ -1,0 +1,113 @@
+'use client';
+
+import { ChevronDown, Folder, FolderInput, FolderMinus } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  Menu,
+  MenuContent,
+  MenuLabel,
+  MenuRadioGroup,
+  MenuItem,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuTrigger,
+} from '@/components/ui/menu';
+import { formErrorMessage } from '@/lib/form-errors';
+import { useFolders, useMoveSet } from '../hooks';
+import { useTranslation } from 'react-i18next';
+
+interface SetFolderPickerProps {
+  setId: string;
+  folderId: string | null;
+  /** `chip` trên dòng thông tin trang bộ từ, `icon` trên thẻ bộ từ trong danh sách. */
+  variant?: 'chip' | 'icon';
+  /** Tên bộ từ, để nút biểu tượng có nhãn rõ ràng. */
+  setTitle?: string;
+}
+
+const NO_FOLDER = '';
+
+/** Chip thư mục trên dòng thông tin bộ từ, bấm để chuyển. Chưa có thư mục nào thì không hiện. */
+export function SetFolderPicker({
+  setId,
+  folderId,
+  variant = 'chip',
+  setTitle,
+}: SetFolderPickerProps) {
+  const { t } = useTranslation('sets');
+  const folders = useFolders();
+  const move = useMoveSet(setId);
+  const list = folders.data?.data ?? [];
+  if (list.length === 0) {
+    return null;
+  }
+
+  const current = list.find(({ id }) => id === folderId);
+  const choose = (value: string) => {
+    const next = value === NO_FOLDER ? null : value;
+    if (next === folderId) {
+      return;
+    }
+    // Dùng promise thay vì callback của `mutate`: gỡ bộ khỏi thư mục đang xem làm nút này
+    // unmount trước khi request xong, khi đó TanStack Query bỏ qua callback và mất thông báo.
+    move.mutateAsync(next).then(
+      () => toast.success(t(next ? 'folders.movedShort' : 'folders.unfiled')),
+      (error: unknown) => toast.error(formErrorMessage(error)),
+    );
+  };
+
+  return (
+    <Menu>
+      {variant === 'icon' ? (
+        <MenuTrigger
+          disabled={move.isPending}
+          aria-label={t('folders.moveSet', {
+            title: setTitle ?? '',
+            current: current?.name ?? t('folders.unfiledShort'),
+          })}
+          className="inline-flex size-11 items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary disabled:opacity-50"
+        >
+          <FolderInput aria-hidden className="size-5" />
+        </MenuTrigger>
+      ) : (
+        <MenuTrigger
+          disabled={move.isPending}
+          aria-label={t('folders.changeChip', {
+            name: current?.name ?? t('folders.unfiledShort'),
+          })}
+          className="inline-flex min-h-11 max-w-60 items-center gap-1.5 rounded-sm px-2 text-text transition-colors duration-fast ease-standard hover:bg-primary-soft disabled:opacity-50"
+        >
+          {current ? (
+            <Folder aria-hidden className="size-4 shrink-0 text-primary" />
+          ) : (
+            <FolderMinus aria-hidden className="size-4 shrink-0 text-text-muted" />
+          )}
+          <span className="truncate">{current?.name ?? t('folders.noFolder')}</span>
+          <ChevronDown aria-hidden className="size-4 shrink-0 text-text-muted" />
+        </MenuTrigger>
+      )}
+      <MenuContent align="start" className="max-w-80">
+        <MenuLabel>{t('folders.moveTo')}</MenuLabel>
+        <MenuRadioGroup value={folderId ?? NO_FOLDER} onValueChange={choose}>
+          <MenuRadioItem value={NO_FOLDER}>{t('folders.none')}</MenuRadioItem>
+          {list.map(({ id, name }) => (
+            <MenuRadioItem key={id} value={id}>
+              {name}
+            </MenuRadioItem>
+          ))}
+        </MenuRadioGroup>
+        {current ? (
+          <>
+            <MenuSeparator />
+            <MenuItem onSelect={() => choose(NO_FOLDER)}>
+              <FolderMinus aria-hidden className="size-4" />
+              <span className="min-w-0 truncate">
+                {t('folders.removeFrom', { name: current.name })}
+              </span>
+            </MenuItem>
+          </>
+        ) : null}
+      </MenuContent>
+    </Menu>
+  );
+}

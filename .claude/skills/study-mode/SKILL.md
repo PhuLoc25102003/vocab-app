@@ -9,72 +9,9 @@ description: Dùng khi thêm hoặc sửa một chế độ học trong vocab-ap
 
 ## Điều kiện nền
 
-`packages/shared/src/study` có thể chưa tồn tại. Nếu thiếu, tạo `types.ts`, `registry.ts`, `index.ts` theo mẫu và export từ `packages/shared/src/index.ts`. Package này không được import React hay NestJS.
+`packages/shared/src/study` đã có `types.ts`, `registry.ts`, `grading.ts` (`gradeText`) và `srs.ts` (`applyReview`). Package này không được import React hay NestJS.
 
-`packages/shared` chưa có test. Lần đầu chạy `npm i -D vitest -w @vocab/shared` và thêm script `"test": "vitest run"`.
-
-```ts
-// types.ts
-import { z } from 'zod';
-
-export const studyModeSchema = z.enum([
-  'FLASHCARD',
-  'LEARN',
-  'WRITE',
-  'DICTATION',
-  'CLOZE',
-  'MCQ',
-  'MATCH',
-  'TEST',
-]);
-export type StudyMode = z.infer<typeof studyModeSchema>;
-
-export interface StudyCard {
-  id: string;
-  term: string;
-  definition: string;
-}
-export interface StudyOptions {
-  limit?: number;
-}
-export interface Question {
-  id: string;
-  cardId: string;
-  mode: StudyMode;
-  prompt: string;
-  expected: string;
-  choices?: string[];
-}
-export interface UserAnswer {
-  questionId: string;
-  value: string;
-  timeMs: number;
-}
-export interface GradeResult {
-  isCorrect: boolean;
-  expected: string;
-}
-export interface StudyModeStrategy {
-  readonly mode: StudyMode;
-  buildQuestions(cards: StudyCard[], opts: StudyOptions): Question[];
-  grade(question: Question, answer: UserAnswer): GradeResult;
-}
-```
-
-```ts
-// registry.ts
-import type { StudyMode, StudyModeStrategy } from './types';
-
-const registry = new Map<StudyMode, StudyModeStrategy>();
-
-export const registerMode = (strategy: StudyModeStrategy) => registry.set(strategy.mode, strategy);
-
-export const getMode = (mode: StudyMode) => {
-  const strategy = registry.get(mode);
-  if (!strategy) throw new Error(`Unknown study mode: ${mode}`);
-  return strategy;
-};
-```
+Test của `packages/shared` đặt cạnh code và chạy bằng Vitest.
 
 ## Các bước
 
@@ -82,10 +19,9 @@ export const getMode = (mode: StudyMode) => {
 2. **Strategy.** Tạo `packages/shared/src/study/modes/<mode>.ts`. Hàm phải thuần, không gọi mạng và không đọc đồng hồ. Cần ngẫu nhiên thì nhận qua tham số để test được.
 
 ```ts
+import { gradeText } from '../grading';
 import { registerMode } from '../registry';
 import type { Question, StudyCard, StudyModeStrategy, StudyOptions, UserAnswer } from '../types';
-
-const normalize = (value: string) => value.trim().toLocaleLowerCase();
 
 export class WriteMode implements StudyModeStrategy {
   readonly mode = 'WRITE' as const;
@@ -101,10 +37,7 @@ export class WriteMode implements StudyModeStrategy {
   }
 
   grade(question: Question, answer: UserAnswer) {
-    return {
-      isCorrect: normalize(answer.value) === normalize(question.expected),
-      expected: question.expected,
-    };
+    return gradeText(question.expected, answer.value);
   }
 }
 

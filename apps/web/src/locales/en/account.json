@@ -1,0 +1,50 @@
+{
+  "title": "Account",
+  "menuLabel": "Account: ",
+  "manageUsers": "Manage users",
+  "loggingOut": "Signing out",
+  "logout": "Sign out",
+  "name": {
+    "saved": "Display name saved",
+    "title": "Change display name",
+    "description": "Teachers, classmates and your public sets show this name.",
+    "save": "Save name",
+    "label": "Display name"
+  },
+  "password": {
+    "changed": "Password changed. Other devices were signed out.",
+    "wrongCurrent": "The current password is incorrect",
+    "title": "Change password",
+    "description": "Other devices will be signed out after the change.",
+    "current": "Current password",
+    "new": "New password"
+  },
+  "logoutAll": {
+    "button": "Sign out everywhere",
+    "title": "Sign out of every device?",
+    "description": "You will need to sign in again on every device, including this one.",
+    "confirm": "Sign out all",
+    "cancel": "Stay signed in"
+  },
+  "delete": {
+    "done": "Account deleted",
+    "wrongPassword": "The password is incorrect",
+    "button": "Delete account",
+    "title": "Delete your account?",
+    "description": "All your sets, progress and sessions will be deleted. This cannot be undone.",
+    "confirm": "Delete forever",
+    "cancel": "Keep account",
+    "passwordLabel": "Enter your password to confirm",
+    "sectionDescription": "Your account, sets and progress will be deleted for good. Other people’s progress on these sets is lost too."
+  },
+  "loading": "Loading account",
+  "failed": "Could not load your account",
+  "checkNetwork": "Check your connection and try again.",
+  "profile": "Profile",
+  "editName": "Edit name",
+  "security": "Security",
+  "passwordRow": "Password",
+  "googleOnly": "Signed in with Google",
+  "sessions": "Sessions",
+  "sessionsHint": "Sign out of every device, useful if you forgot to sign out somewhere."
+}

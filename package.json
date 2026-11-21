@@ -7,11 +7,14 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "test:e2e": "turbo run build --filter=@vocab/api && npm run test:e2e -w @vocab/web",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
-    "db:migrate": "npm run prisma:migrate -w @vocab/api"
+    "db:migrate": "npm run prisma:migrate -w @vocab/api",
+    "progress": "node scripts/progress.mjs && prettier --write docs/07-progress.md",
+    "prepare": "node .husky/install.mjs"
   },
   "keywords": [],
   "author": "",
@@ -24,11 +27,16 @@
     "packages/*"
   ],
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.1",
     "prettier": "^3.10.1",
     "turbo": "^2.11.12",
     "typescript": "~5.9.3"
   },
   "engines": {
     "node": "^24.11.0"
+  },
+  "overrides": {
+    "effect": "3.22.4"
   }
 }

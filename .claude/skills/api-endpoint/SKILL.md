@@ -7,69 +7,19 @@ description: Dùng khi thêm hoặc sửa một endpoint REST trong apps/api c�
 
 Đọc trước: `docs/03-api.md`, `docs/04-security.md`. Không đổi ngầm hợp đồng `/api/v1`. Thay đổi phá vỡ tương thích phải đi qua `/api/v2`.
 
-## Điều kiện nền
+## Nền có sẵn
 
-Các phần sau có thể chưa tồn tại. Kiểm tra trước, thiếu thì tạo theo mẫu và giữ nguyên tên.
-
-`packages/shared/src/errors.ts`, export từ `index.ts`:
-
-```ts
-export const ERROR_CODES = {
-  SET_NOT_FOUND: 'SET_NOT_FOUND',
-  FORBIDDEN: 'FORBIDDEN',
-} as const;
-export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
-```
-
-`apps/api/src/common/errors/app-error.ts`. `AllExceptionsFilter` đã đọc sẵn `code`, `message`, `details`:
-
-```ts
-import { HttpException, HttpStatus } from '@nestjs/common';
-import type { ErrorCode } from '@vocab/shared';
-
-export class AppError extends HttpException {
-  constructor(code: ErrorCode, message: string, status: HttpStatus, details?: unknown) {
-    super({ code, message, details }, status);
-  }
-}
-```
-
-`packages/shared/src/schemas/pagination.ts`, export từ `index.ts`:
-
-```ts
-import { z } from 'zod';
-
-export const paginationSchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
-  sort: z.string().max(50).default('-updatedAt'),
-});
-export type Pagination = z.infer<typeof paginationSchema>;
-```
-
-`apps/api/src/common/base/pagination.ts`:
-
-```ts
-import type { Pagination } from '@vocab/shared';
-
-export const ok = <T>(data: T) => ({ data });
-
-export const paginated = <T>(data: T[], total: number, { page, limit }: Pagination) => ({
-  data,
-  meta: { page, limit, total },
-});
-
-export const toSkipTake = ({ page, limit }: Pagination) => ({
-  skip: (page - 1) * limit,
-  take: limit,
-});
-```
+| Cần                        | Dùng                                                                    |
+| -------------------------- | ----------------------------------------------------------------------- |
+| Mã lỗi                     | `ERROR_CODES` trong `packages/shared/src/errors.ts`                     |
+| Lỗi nghiệp vụ              | `AppError` trong `apps/api/src/common/errors/app-error.ts`              |
+| Tham số danh sách          | `paginationSchema`, type `Pagination` từ `@vocab/shared`                |
+| Dữ liệu trả về, phân trang | `ok()`, `paginated()`, `toSkipTake()` trong `common/base/pagination.ts` |
+| Tài liệu API               | Swagger tại `/api/docs`, cấu hình ở `src/config/swagger.ts`             |
 
 `sort` phải được đối chiếu với danh sách trường cho phép trong repository. Không đưa thẳng vào `orderBy`.
 
-`@Roles()`, `RolesGuard`, `@CheckOwnership()`, `OwnershipGuard`, `@CurrentUser()` thuộc phần auth, đặt trong `common/decorators` và `common/guards`. Nếu chưa có, làm chúng trước theo `docs/04-security.md`.
-
-Swagger chưa cài: `npm i @nestjs/swagger@^11 @fastify/static -w @vocab/api`, cấu hình trong `main.ts`, chỉ bật ngoài production tại `/api/docs`. Kiểm tra trang này còn chạy với Content-Security-Policy của helmet.
+`@Roles()`, `@CheckOwnership()`, `@CurrentUser()` nằm trong `common/decorators`, các guard nằm trong `common/guards` và đã chạy toàn cục. Tài nguyên mới cần kiểm tra sở hữu thì thêm vào `OwnershipRepository` và `RESOURCES` trong `ownership.guard.ts`.
 
 ## Các bước
 
@@ -78,12 +28,13 @@ Swagger chưa cài: `npm i @nestjs/swagger@^11 @fastify/static -w @vocab/api`, c
 3. Viết repository, service, controller.
 4. Chọn đúng một mức truy cập:
 
-| Ai được gọi      | Khai báo                              |
-| ---------------- | ------------------------------------- |
-| Ai cũng gọi được | `@Public()`                           |
-| Đã đăng nhập     | Không thêm gì, `AuthGuard` đã áp dụng |
-| Theo vai trò     | `@Roles('TEACHER', 'ADMIN')`          |
-| Chủ tài nguyên   | `@CheckOwnership('set')`              |
+| Ai được gọi         | Khai báo                                      |
+| ------------------- | --------------------------------------------- |
+| Ai cũng gọi được    | `@Public()`                                   |
+| Khách và người dùng | `@OptionalAuth()`, đọc bằng `@OptionalUser()` |
+| Đã đăng nhập        | Không thêm gì, `AuthGuard` đã áp dụng         |
+| Theo vai trò        | `@Roles('TEACHER', 'ADMIN')`                  |
+| Chủ tài nguyên      | `@CheckOwnership('set')`                      |
 
 5. Thêm Swagger decorator và test.
 6. Cập nhật bảng endpoint trong `docs/03-api.md`.
@@ -156,15 +107,23 @@ export class SetsRepository extends BaseRepository {
 
 ## Test
 
-Lần đầu cần cài: `npm i -D vitest supertest @types/supertest unplugin-swc @swc/core -w @vocab/api`, thêm script `"test": "vitest run"`. Cần SWC vì esbuild không sinh metadata cho decorator của NestJS. Dùng database test riêng, không chạy trên dữ liệu dev.
+Đặt trong `apps/api/test/<tên>.integration.test.ts`. Test chạy trên database `<tên>_test`, không đụng dữ liệu dev.
 
 ```ts
-const app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-app.setGlobalPrefix('api/v1');
-await app.init();
-await app.getHttpAdapter().getInstance().ready();
+let app: NestFastifyApplication;
+let prisma: PrismaService;
 
-await request(app.getHttpServer()).patch(`/api/v1/sets/${id}`).send({ title: 'A' }).expect(401);
+beforeAll(async () => {
+  app = await createTestApp();
+  prisma = app.get(PrismaService);
+});
+
+beforeEach(() => resetDatabase(prisma));
+afterAll(() => app.close());
+
+it('trả 401 khi chưa đăng nhập', async () => {
+  await request(app.getHttpServer()).patch(`/api/v1/sets/${id}`).send({ title: 'A' }).expect(401);
+});
 ```
 
 ## Checklist cuối
