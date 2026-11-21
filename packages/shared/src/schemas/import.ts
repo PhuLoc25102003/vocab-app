@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 import { cardInputSchema, MAX_CARDS_PER_SET, setSummarySchema } from './set';
 
 /** Giới hạn nội dung nhập, tương đương file 2 MB. */
@@ -13,8 +14,8 @@ export type DetectedDelimiter = Exclude<ImportDelimiter, 'auto'>;
 const columnSchema = z.coerce
   .number()
   .int()
-  .min(1, 'Cột bắt đầu từ 1')
-  .max(IMPORT_MAX_COLUMN, `Cột tối đa là ${IMPORT_MAX_COLUMN}`);
+  .min(1, vm('columnMin'))
+  .max(IMPORT_MAX_COLUMN, vm('columnMax', { max: IMPORT_MAX_COLUMN }));
 
 /** Cột không bắt buộc, giá trị rỗng từ form nghĩa là không chọn. */
 const optionalColumnSchema = z.preprocess(
@@ -25,9 +26,9 @@ const optionalColumnSchema = z.preprocess(
 /** Thứ tự kiểm tra trùng cột, lỗi báo ở cột đứng sau. */
 const DISTINCT_COLUMNS = [
   ['termColumn', ''],
-  ['definitionColumn', 'Cột nghĩa phải khác cột từ'],
-  ['phoneticColumn', 'Cột phiên âm phải khác cột từ và cột nghĩa'],
-  ['exampleColumn', 'Cột ví dụ phải khác các cột đã chọn'],
+  ['definitionColumn', vm('definitionColumnSame')],
+  ['phoneticColumn', vm('phoneticColumnSame')],
+  ['exampleColumn', vm('exampleColumnSame')],
 ] as const;
 
 export const importOptionsSchema = z
@@ -52,9 +53,9 @@ export type ImportOptions = z.infer<typeof importOptionsSchema>;
 
 export const importPreviewSchema = z.object({
   content: z
-    .string('Hãy dán nội dung hoặc chọn file')
-    .max(IMPORT_MAX_CHARS, 'Nội dung tối đa 2 MB')
-    .refine((value) => value.trim().length > 0, 'Hãy dán nội dung hoặc chọn file'),
+    .string(vm('importTextRequired'))
+    .max(IMPORT_MAX_CHARS, vm('importTextTooLong'))
+    .refine((value) => value.trim().length > 0, vm('importTextRequired')),
   options: importOptionsSchema.default({
     delimiter: 'auto',
     hasHeader: false,
@@ -91,8 +92,8 @@ export const importPreviewResponseSchema = z.object({ data: importPreviewResultS
 export const importCardsSchema = z.object({
   cards: z
     .array(cardInputSchema)
-    .min(1, 'Chưa có thẻ nào để nhập')
-    .max(MAX_CARDS_PER_SET, `Mỗi lần nhập tối đa ${MAX_CARDS_PER_SET} thẻ`),
+    .min(1, vm('importNoCards'))
+    .max(MAX_CARDS_PER_SET, vm('importTooManyCards', { max: MAX_CARDS_PER_SET })),
 });
 export type ImportCardsDto = z.infer<typeof importCardsSchema>;
 

@@ -1,14 +1,15 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 import { paginationMetaSchema, paginationSchema } from './pagination';
 
 export const FOLDER_NAME_MAX_LENGTH = 60;
 
 const folderNameSchema = z
-  .string('Hãy nhập tên thư mục')
+  .string(vm('required', { field: 'folderName' }))
   .trim()
-  .min(1, 'Hãy nhập tên thư mục')
-  .max(FOLDER_NAME_MAX_LENGTH, `Tên thư mục tối đa ${FOLDER_NAME_MAX_LENGTH} ký tự`)
-  .regex(/^\P{Cc}+$/u, 'Tên thư mục chứa ký tự không hợp lệ');
+  .min(1, vm('required', { field: 'folderName' }))
+  .max(FOLDER_NAME_MAX_LENGTH, vm('tooLong', { field: 'folderName', max: FOLDER_NAME_MAX_LENGTH }))
+  .regex(/^\P{Cc}+$/u, vm('badChars', { field: 'folderName' }));
 
 export const folderInputSchema = z.object({ name: folderNameSchema });
 export type FolderInput = z.infer<typeof folderInputSchema>;

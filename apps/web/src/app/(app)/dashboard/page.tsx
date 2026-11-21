@@ -6,17 +6,22 @@ import { ClassWork } from '@/features/classes/components/class-work';
 import { TeacherOverview } from '@/features/classes/components/teacher-overview';
 import { RecentSets } from '@/features/sets/components/recent-sets';
 import { StatsOverview } from '@/features/stats/components/stats-overview';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Tổng quan' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.dashboard') };
+}
 
 /** Mỗi vai trò một Tổng quan: học sinh thấy bài tập lớp và việc học, giáo viên thấy lớp. */
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const t = await getT('common');
   return (
     <Can
       action="manage-classes"
       fallback={
         <>
-          <PageHeader title="Tổng quan" />
+          <PageHeader title={t('pages.dashboard')} />
           <ClassWork />
           <StatsOverview />
           <RecentSets />
@@ -29,7 +34,7 @@ export default function DashboardPage() {
       </Can>
       <details className="group rounded-lg border border-border p-4">
         <summary className="flex min-h-11 cursor-pointer items-center font-medium">
-          Việc học của tôi
+          {t('pages.myLearning')}
         </summary>
         <div className="mt-4 flex flex-col gap-6">
           <StatsOverview />

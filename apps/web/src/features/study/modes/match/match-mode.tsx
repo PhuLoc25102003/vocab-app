@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 import { playCorrectSound } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 interface Tile {
   /** Câu hỏi sở hữu nghĩa này. Hai thẻ trùng nghĩa vẫn là hai ô riêng. */
@@ -41,6 +42,7 @@ const tileClass =
  * Đáp án được gửi theo thứ tự câu khi ghép xong cả vòng, để vị trí phiên học luôn khớp câu.
  */
 export function MatchModeView({ question, round, languages, onAnswer }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const [items] = useState<Question[]>(() => (round?.length ? round : [question]));
   const [tiles] = useState<Tile[]>(() =>
     shuffle(items.map(({ id, expected }) => ({ id, text: expected }))),
@@ -73,7 +75,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
   const pickTile = (tile: Tile) => {
     const item = items.find(({ id }) => id === selected);
     if (!item) {
-      setFeedback('Hãy chọn một từ trước.');
+      setFeedback(t('match.pickTermFirst'));
       return;
     }
     const timeMs = elapsedSince(startedAt.current);
@@ -86,7 +88,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
       timeMs,
     });
     if (!isCorrect) {
-      setFeedback(`Chưa đúng, "${tile.text}" không phải nghĩa của "${item.prompt}".`);
+      setFeedback(t('match.wrongPair', { meaning: tile.text, term: item.prompt }));
       return;
     }
     playCorrectSound();
@@ -97,7 +99,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
     requestAnimationFrame(() =>
       termList.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus(),
     );
-    setFeedback(`Đúng: ${item.prompt} là ${tile.text}.`);
+    setFeedback(t('match.rightPair', { term: item.prompt, meaning: tile.text }));
   };
 
   const finishRound = () => {
@@ -116,15 +118,15 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
   return (
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-h2">Ghép từ với nghĩa</h1>
+        <h1 className="text-h2">{t('match.title')}</h1>
         <p className="text-small text-text-muted tabular-nums">
-          <span className="sr-only">Thời gian </span>
+          <span className="sr-only">{t('match.time')}</span>
           {formatElapsed(elapsed)}
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <ul ref={termList} aria-label="Từ" className="flex flex-col gap-2">
+        <ul ref={termList} aria-label={t('match.terms')} className="flex flex-col gap-2">
           {items.map((item) => (
             <li key={item.id}>
               <button
@@ -140,13 +142,13 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
               >
                 <span className="min-w-0 flex-1 wrap-anywhere">{item.prompt}</span>
                 {matched.has(item.id) ? (
-                  <Check aria-label="Đã ghép" className="size-4 shrink-0" />
+                  <Check aria-label={t('match.matched')} className="size-4 shrink-0" />
                 ) : null}
               </button>
             </li>
           ))}
         </ul>
-        <ul aria-label="Nghĩa" className="flex flex-col gap-2">
+        <ul aria-label={t('match.meanings')} className="flex flex-col gap-2">
           {tiles.map((tile) => (
             <li key={tile.id}>
               <button
@@ -164,13 +166,13 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
       </div>
 
       <p role="status" className="min-h-6 text-small">
-        {done ? `Xong vòng trong ${formatElapsed(elapsed)}.` : feedback}
+        {done ? t('match.done', { time: formatElapsed(elapsed) }) : feedback}
       </p>
 
       {done ? (
         <div className="mt-auto flex flex-col">
           <Button autoFocus onClick={finishRound}>
-            Tiếp tục
+            {t('match.continue')}
           </Button>
         </div>
       ) : null}

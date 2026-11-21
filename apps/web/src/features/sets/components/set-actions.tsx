@@ -13,9 +13,11 @@ import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/compo
 import { formErrorMessage } from '@/lib/form-errors';
 import { useDeleteSet, useDuplicateSet } from '../hooks/use-set';
 import { useOfflineMenu } from './offline-toggle';
+import { useTranslation } from 'react-i18next';
 
 /** Một nút chính để sửa, các thao tác còn lại gom vào menu cho header gọn. */
 export function SetOwnerActions({ set }: { set: SetDetail }) {
+  const { t } = useTranslation('sets');
   const { id, title } = set;
   const router = useRouter();
   const deleteSet = useDeleteSet(id);
@@ -33,7 +35,7 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
     deleteSet.mutate(undefined, {
       onSuccess: () => {
         setConfirming(false);
-        toast.success('Đã xoá bộ từ');
+        toast.success(t('actions.deleted'));
         router.push('/sets');
       },
       onError: (reason) => setError(formErrorMessage(reason)),
@@ -45,12 +47,12 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
       <Button asChild variant="secondary">
         <Link href={`/sets/${id}/edit` as Route}>
           <Pencil aria-hidden className="size-4" />
-          Sửa bộ từ
+          {t('actions.edit')}
         </Link>
       </Button>
       <Menu>
         <MenuTrigger asChild>
-          <Button variant="secondary" aria-label="Thao tác khác" className="px-3">
+          <Button variant="secondary" aria-label={t('actions.more')} className="px-3">
             <MoreHorizontal aria-hidden className="size-5" />
           </Button>
         </MenuTrigger>
@@ -58,7 +60,7 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
           <MenuItem asChild>
             <Link href={`/sets/import?setId=${id}` as Route}>
               <FileUp aria-hidden className="size-4" />
-              Nhập thêm thẻ
+              {t('actions.importMore')}
             </Link>
           </MenuItem>
           {offline.item}
@@ -66,7 +68,7 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
           {/* Đợi menu đóng và trả focus về nút ba chấm, hộp thoại đóng sẽ trả focus về đó. */}
           <MenuItem danger onSelect={() => setTimeout(openConfirm)}>
             <Trash2 aria-hidden className="size-4" />
-            Xoá bộ từ
+            {t('actions.delete')}
           </MenuItem>
         </MenuContent>
       </Menu>
@@ -74,9 +76,9 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title={`Xoá bộ từ "${title}"?`}
-        description="Bộ từ, các thẻ và tiến độ học của bộ này sẽ bị xoá. Bạn không khôi phục được."
-        confirmLabel="Xoá bộ từ"
+        title={t('actions.deleteTitle', { title })}
+        description={t('actions.deleteDescription')}
+        confirmLabel={t('actions.delete')}
         pending={deleteSet.isPending}
         error={error}
         onConfirm={confirmDelete}
@@ -86,13 +88,14 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
 }
 
 export function DuplicateSetButton({ id }: { id: string }) {
+  const { t } = useTranslation('sets');
   const router = useRouter();
   const duplicateSet = useDuplicateSet(id);
 
   const duplicate = () => {
     duplicateSet.mutate(undefined, {
       onSuccess: (copy) => {
-        toast.success('Đã sao chép bộ từ');
+        toast.success(t('actions.copied'));
         router.push(`/sets/${copy.id}` as Route);
       },
       onError: (error) => toast.error(formErrorMessage(error)),
@@ -101,7 +104,7 @@ export function DuplicateSetButton({ id }: { id: string }) {
 
   return (
     <Button variant="secondary" loading={duplicateSet.isPending} onClick={duplicate}>
-      Sao chép bộ từ
+      {t('actions.copy')}
     </Button>
   );
 }

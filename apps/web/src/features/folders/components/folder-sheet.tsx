@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { folderHref } from './folder-links';
+import { useTranslation } from 'react-i18next';
 
 function SheetLink({
   href,
@@ -63,6 +64,7 @@ export function FolderSheet({
   sort: string | null;
   onCreate: () => void;
 }) {
+  const { t } = useTranslation(['sets', 'common']);
   const titleId = useId();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState('');
@@ -71,9 +73,10 @@ export function FolderSheet({
     setFilter('');
   };
 
-  let currentName = 'Tất cả bộ từ';
-  if (current === NO_FOLDER) currentName = 'Chưa xếp thư mục';
-  else if (current) currentName = folders.find(({ id }) => id === current)?.name ?? 'Thư mục';
+  let currentName = t('folders.all');
+  if (current === NO_FOLDER) currentName = t('folders.noFolder');
+  else if (current)
+    currentName = folders.find(({ id }) => id === current)?.name ?? t('folders.folder');
   const keyword = filter.trim().toLocaleLowerCase('vi');
   const shown = keyword
     ? folders.filter(({ name }) => name.toLocaleLowerCase('vi').includes(keyword))
@@ -89,7 +92,7 @@ export function FolderSheet({
       >
         <span className="flex min-w-0 items-center gap-2">
           <Folder aria-hidden className="size-4 shrink-0 text-primary" />
-          <span className="truncate">Thư mục: {currentName}</span>
+          <span className="truncate">{t('folders.current', { name: currentName })}</span>
         </span>
         <ChevronDown aria-hidden className="size-4 shrink-0 text-text-muted" />
       </Button>
@@ -97,35 +100,40 @@ export function FolderSheet({
         <div className="flex flex-col gap-3 p-4">
           <div className="flex items-center justify-between gap-2">
             <h2 id={titleId} className="text-h3">
-              Chọn thư mục
+              {t('folders.choose')}
             </h2>
-            <Button variant="ghost" size="icon" aria-label="Đóng" onClick={close}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('common:actions.close')}
+              onClick={close}
+            >
               <X aria-hidden className="size-5" />
             </Button>
           </div>
           <Input
             type="search"
-            aria-label="Tìm thư mục"
-            placeholder="Tìm thư mục"
+            aria-label={t('folders.search')}
+            placeholder={t('folders.search')}
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
           />
           <ul
-            aria-label="Danh sách thư mục"
+            aria-label={t('folders.list')}
             className="flex max-h-[50dvh] flex-col overflow-y-auto"
           >
             {keyword ? null : (
               <>
                 <SheetLink
                   href={folderHref('', sort)}
-                  label="Tất cả bộ từ"
+                  label={t('folders.all')}
                   active={current === ''}
                   icon={Library}
                   onPick={close}
                 />
                 <SheetLink
                   href={folderHref(NO_FOLDER, sort)}
-                  label="Chưa xếp thư mục"
+                  label={t('folders.noFolder')}
                   active={current === NO_FOLDER}
                   icon={FolderMinus}
                   onPick={close}
@@ -145,7 +153,7 @@ export function FolderSheet({
             ))}
           </ul>
           {keyword && shown.length === 0 ? (
-            <p className="text-small text-text-muted">Không có thư mục nào khớp.</p>
+            <p className="text-small text-text-muted">{t('folders.noMatch')}</p>
           ) : null}
           <Button
             variant="secondary"
@@ -155,7 +163,7 @@ export function FolderSheet({
             }}
           >
             <FolderPlus aria-hidden className="size-4" />
-            Tạo thư mục
+            {t('folders.create')}
           </Button>
         </div>
       </Dialog>

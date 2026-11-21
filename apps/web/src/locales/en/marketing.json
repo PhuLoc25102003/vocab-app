@@ -1,0 +1,118 @@
+{
+  "modes": {
+    "flashcard": {
+      "name": "Flashcards",
+      "description": "Flip cards and rate whether you remember."
+    },
+    "learn": {
+      "name": "Learn",
+      "description": "Multiple choice then typing, missed ones come back."
+    },
+    "write": {
+      "name": "Write",
+      "description": "Type terms from memory, mistakes marked in red."
+    },
+    "dictation": {
+      "name": "Dictation",
+      "description": "Listen and write down what you hear."
+    },
+    "mcq": {
+      "name": "Multiple choice",
+      "description": "Pick the right meaning for a quick review."
+    },
+    "cloze": {
+      "name": "Fill in the blank",
+      "description": "Fill the missing word into the example."
+    },
+    "match": {
+      "name": "Match",
+      "description": "Match terms with meanings quickly."
+    },
+    "test": {
+      "name": "Test",
+      "description": "Mixed questions, graded when you submit."
+    },
+    "speak": {
+      "name": "Speak",
+      "description": "Say the term out loud and get it checked."
+    }
+  },
+  "schedule": {
+    "today": {
+      "when": "Today",
+      "what": "Learn new cards"
+    },
+    "day1": {
+      "when": "After 1 day",
+      "what": "First review"
+    },
+    "day6": {
+      "when": "After 6 days",
+      "what": "Right again means mastered"
+    },
+    "later": {
+      "when": "Later",
+      "what": "Gaps grow, memory lasts"
+    }
+  },
+  "steps": {
+    "prepare": {
+      "title": "Prepare a set",
+      "description": "Create one, import from Excel or pick a public set."
+    },
+    "practice": {
+      "title": "Practise",
+      "description": "Pick the mode that suits you and switch any time."
+    },
+    "review": {
+      "title": "Review on time",
+      "description": "Review today gathers due cards, Overview shows your progress."
+    }
+  },
+  "highlights": {
+    "modes": "9 study modes",
+    "schedule": "Automatic review schedule",
+    "free": "Free"
+  },
+  "start": {
+    "guest": "Create account",
+    "member": "Continue studying"
+  },
+  "sample": {
+    "meaning": "to keep in mind",
+    "caption": "Sample card: the word remember, meaning to keep in mind."
+  },
+  "hero": {
+    "eyebrow": "Vocabulary practice with a review schedule for every card",
+    "title": "Review each word right before you forget it.",
+    "description": "{{brand}} helps you learn vocabulary with flashcards, writing, listening, speaking and quizzes, then schedules reviews so you remember for good without cramming.",
+    "explore": "Explore sets"
+  },
+  "modesSection": {
+    "title": "Nine ways to practise a set",
+    "description": "Switch it up so your brain stays engaged: see, write, listen and speak."
+  },
+  "scheduleSection": {
+    "title": "A review schedule that follows your memory",
+    "description": "Right answers push a card further out, wrong ones bring it back sooner. A word counts as mastered once you get it right on two different days.",
+    "milestone": "Step {{number}}"
+  },
+  "stepsSection": {
+    "title": "Study every day in three steps",
+    "step": "Step {{number}}:"
+  },
+  "cta": {
+    "title": "Start with your first set",
+    "description": "You can try public sets right away, no account needed."
+  },
+  "legal": {
+    "updatedAt": "Last updated: {{date}}",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "nav": "Legal"
+  },
+  "shell": {
+    "login": "Sign in",
+    "myPage": "My page"
+  }
+}

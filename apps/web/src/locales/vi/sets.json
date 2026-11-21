@@ -1,0 +1,320 @@
+{
+  "languages": {
+    "en": "Tiếng Anh",
+    "vi": "Tiếng Việt",
+    "ja": "Tiếng Nhật",
+    "ko": "Tiếng Hàn",
+    "zh": "Tiếng Trung",
+    "fr": "Tiếng Pháp",
+    "de": "Tiếng Đức",
+    "es": "Tiếng Tây Ban Nha"
+  },
+  "modes": {
+    "flashcard": {
+      "label": "Flashcard",
+      "hint": "Lật thẻ, tự đánh giá đã nhớ hay chưa"
+    },
+    "learn": {
+      "label": "Học kỹ",
+      "hint": "Trắc nghiệm rồi gõ từ, câu sai hỏi lại"
+    },
+    "write": {
+      "label": "Luyện viết",
+      "hint": "Nhìn nghĩa, gõ lại từ"
+    },
+    "dictation": {
+      "label": "Nghe viết",
+      "hint": "Nghe phát âm, gõ từ nghe được"
+    },
+    "mcq": {
+      "label": "Trắc nghiệm",
+      "hint": "Chọn nghĩa đúng trong bốn đáp án"
+    },
+    "cloze": {
+      "label": "Điền từ",
+      "hint": "Điền từ còn thiếu vào câu ví dụ"
+    },
+    "match": {
+      "label": "Ghép cặp",
+      "hint": "Ghép từ với nghĩa thật nhanh"
+    },
+    "test": {
+      "label": "Kiểm tra",
+      "hint": "Làm bài nhiều dạng, chấm khi nộp"
+    },
+    "speak": {
+      "label": "Luyện nói",
+      "hint": "Đọc to từ, máy nhận giọng nói"
+    }
+  },
+  "grid": {
+    "title": "Chọn cách học",
+    "guestLabel": "Học thử",
+    "guestHint": "Học thử không cần tài khoản. Đăng nhập để lưu tiến độ và học theo lộ trình.",
+    "pathLabel": "Bắt đầu học",
+    "pathHint": "Bắt đầu học: xem thẻ → trắc nghiệm → ghép cặp → luyện viết, nối tiếp nhau."
+  },
+  "cards": {
+    "title": "Thẻ",
+    "hint": "Dòng để trống sẽ được bỏ qua. Xoá thẻ đã có sẽ xoá cả tiến độ học của thẻ đó khi bạn lưu.",
+    "list": "Danh sách thẻ",
+    "card": "Thẻ {{number}}",
+    "moveUp": "Đưa thẻ {{number}} lên",
+    "moveDown": "Đưa thẻ {{number}} xuống",
+    "remove": "Xoá thẻ {{number}}",
+    "term": "Từ",
+    "definition": "Nghĩa",
+    "phonetic": "Phiên âm (không bắt buộc)",
+    "example": "Ví dụ (không bắt buộc)",
+    "add": "Thêm thẻ",
+    "limit": "Một bộ từ có tối đa {{max}} thẻ.",
+    "removeTitle": "Xoá thẻ {{number}}?",
+    "removeDescription": "Thẻ sẽ bị bỏ khỏi bộ từ khi bạn lưu, kèm tiến độ học của thẻ đó.",
+    "removeConfirm": "Xoá thẻ"
+  },
+  "image": {
+    "type": "Chỉ nhận ảnh PNG, JPEG hoặc WebP.",
+    "tooLarge": "Ảnh lớn hơn 1 MB. Hãy chọn ảnh nhỏ hơn hoặc giảm kích thước ảnh.",
+    "uploadFailed": "Không tải được ảnh lên. Hãy kiểm tra mạng rồi thử lại.",
+    "label": "Ảnh (không bắt buộc)",
+    "alt": "Ảnh của thẻ {{number}}",
+    "changeFor": "Đổi ảnh cho thẻ {{number}}",
+    "addFor": "Thêm ảnh cho thẻ {{number}}",
+    "uploading": "Đang tải ảnh",
+    "change": "Đổi ảnh",
+    "add": "Thêm ảnh",
+    "removeFor": "Gỡ ảnh khỏi thẻ {{number}}",
+    "remove": "Gỡ ảnh",
+    "rules": "PNG, JPEG hoặc WebP, tối đa 1 MB."
+  },
+  "list": {
+    "range": "Thẻ {{from}} đến {{to}} trên {{total}}",
+    "listen": "Nghe phát âm {{term}}",
+    "imageAlt": "Ảnh minh hoạ cho {{term}}"
+  },
+  "saved": "Đã lưu bộ từ",
+  "loading": "Đang tải bộ từ",
+  "loadFailed": "Không tải được bộ từ",
+  "checkNetwork": "Hãy kiểm tra mạng rồi thử lại.",
+  "noMatch": "Không tìm thấy bộ từ phù hợp",
+  "explore": {
+    "noMatch": "Chưa có bộ từ công khai nào khớp với \"{{q}}\".",
+    "empty": "Chưa có bộ từ công khai",
+    "emptyHint": "Bộ từ được đặt ở chế độ công khai sẽ hiện ở đây.",
+    "pageEmptyHint": "Danh sách ngắn hơn số trang này."
+  },
+  "seeAll": "Xem tất cả",
+  "pageEmpty": "Trang này không có bộ từ",
+  "firstPage": "Về trang đầu",
+  "mine": {
+    "sortUpdated": "Mới cập nhật",
+    "sortCreated": "Mới tạo",
+    "sortTitle": "Tên từ A đến Z",
+    "sort": "Sắp xếp",
+    "noMatch": "Bạn chưa có bộ từ nào khớp với \"{{q}}\".",
+    "allFiled": "Bộ từ nào cũng đã có thư mục",
+    "folderEmpty": "Thư mục này chưa có bộ từ",
+    "folderEmptyHint": "Bấm nút thư mục trên thẻ bộ từ để chuyển bộ vào đây.",
+    "seeAllSets": "Xem tất cả bộ từ",
+    "pageEmptyHint": "Danh sách của bạn ngắn hơn số trang này."
+  },
+  "empty": "Chưa có bộ từ nào",
+  "emptyHint": "Tạo bộ đầu tiên để bắt đầu học.",
+  "offline": {
+    "unsupported": "Trình duyệt này không lưu được bộ từ để dùng offline.",
+    "quota": "Máy đã hết dung lượng. Hãy xoá bớt bộ đã tải rồi thử lại.",
+    "failed": "Không tải được bộ từ về máy. Hãy thử lại.",
+    "missing": "Tải về máy",
+    "outdated": "Cập nhật bản offline",
+    "saved": "Xoá bản offline",
+    "savedToast": "Đã tải về máy, xem được cả khi mất mạng",
+    "removed": "Đã xoá bản offline",
+    "removeFailed": "Không xoá được bản offline. Hãy thử lại.",
+    "removeTitle": "Xoá bản offline?",
+    "removeDescription": "Bộ từ vẫn còn trên tài khoản, chỉ không xem được khi mất mạng cho tới khi bạn tải lại."
+  },
+  "public": {
+    "back": "Quay lại Khám phá",
+    "loginToCopy": "Đăng nhập để sao chép",
+    "openInAccount": "Mở trong tài khoản",
+    "ctaTitle": "Muốn nhớ lâu bộ từ này?",
+    "ctaText": "Tạo tài khoản miễn phí để sao chép bộ từ, lưu tiến độ và được nhắc ôn đúng lúc.",
+    "register": "Tạo tài khoản",
+    "login": "Đăng nhập",
+    "noCardsHint": "Hãy quay lại sau nhé."
+  },
+  "noCards": "Bộ từ này chưa có thẻ",
+  "recent": {
+    "failed": "Không tải được bộ từ gần đây",
+    "create": "Tạo bộ từ",
+    "title": "Bộ từ gần đây",
+    "seeAll": "Xem tất cả {{count}} bộ từ"
+  },
+  "actions": {
+    "deleted": "Đã xoá bộ từ",
+    "edit": "Sửa bộ từ",
+    "more": "Thao tác khác",
+    "importMore": "Nhập thêm thẻ",
+    "delete": "Xoá bộ từ",
+    "deleteTitle": "Xoá bộ từ \"{{title}}\"?",
+    "deleteDescription": "Bộ từ, các thẻ và tiến độ học của bộ này sẽ bị xoá. Bạn không khôi phục được.",
+    "copied": "Đã sao chép bộ từ",
+    "copy": "Sao chép bộ từ"
+  },
+  "cardCount": "{{count}} thẻ",
+  "summaryCount": "Bộ từ gồm {{count}} thẻ",
+  "notFound": "Không tìm thấy bộ từ",
+  "notFoundHint": "Bộ từ này không tồn tại hoặc không còn công khai.",
+  "updated": "Cập nhật",
+  "detail": {
+    "hidden": "Bộ từ đang bị quản trị viên ẩn khỏi người khác. Lý do: {{reason}}",
+    "noCardsHint": "Thẻ được thêm sẽ hiện ở đây."
+  },
+  "form": {
+    "title": "Tên bộ từ",
+    "description": "Mô tả (không bắt buộc)",
+    "termLang": "Ngôn ngữ của từ",
+    "swap": "Đảo ngôn ngữ của từ và nghĩa",
+    "defLang": "Ngôn ngữ của nghĩa",
+    "save": "Lưu bộ từ",
+    "cancel": "Huỷ"
+  },
+  "failure": {
+    "notFound": "Không tìm thấy bộ từ",
+    "notFoundHint": "Bộ từ này đã bị xoá hoặc bạn không có quyền xem.",
+    "backToList": "Về danh sách bộ từ"
+  },
+  "createdBy": "Tạo bởi {{name}}",
+  "search": {
+    "label": "Tìm bộ từ theo tên",
+    "placeholder": "Tìm theo tên bộ từ",
+    "submit": "Tìm"
+  },
+  "folders": {
+    "moved": "Đã chuyển \"{{title}}\" vào thư mục",
+    "unfiled": "Đã gỡ khỏi thư mục",
+    "dragHint": "Kéo vào một thư mục",
+    "noFolder": "Chưa xếp thư mục",
+    "breadcrumb": "Đường dẫn",
+    "sets": "Bộ từ",
+    "setCount": "{{count}} bộ",
+    "actionsFor": "Thao tác với thư mục {{name}}",
+    "rename": "Đổi tên thư mục",
+    "delete": "Xoá thư mục",
+    "close": "Đóng thư mục",
+    "deleteTitle": "Xoá thư mục \"{{name}}\"?",
+    "deleteDescription": "{{count}} bộ từ trong thư mục vẫn được giữ lại, chỉ không còn nằm trong thư mục này.",
+    "deleted": "Đã xoá thư mục, bộ từ vẫn được giữ",
+    "name": "Tên thư mục",
+    "save": "Lưu",
+    "renamed": "Đã đổi tên thư mục",
+    "create": "Tạo thư mục",
+    "newName": "Tên thư mục mới",
+    "createSubmit": "Tạo",
+    "created": "Đã tạo thư mục",
+    "title": "Thư mục",
+    "createNew": "Tạo thư mục mới",
+    "filter": "Lọc thư mục",
+    "all": "Tất cả bộ từ",
+    "loadFailed": "Không tải được thư mục.",
+    "noMatch": "Không có thư mục nào khớp.",
+    "folder": "Thư mục",
+    "current": "Thư mục: {{name}}",
+    "choose": "Chọn thư mục",
+    "search": "Tìm thư mục",
+    "list": "Danh sách thư mục",
+    "movedShort": "Đã chuyển vào thư mục",
+    "moveSet": "Chuyển \"{{title}}\" vào thư mục, đang ở: {{current}}",
+    "unfiledShort": "chưa xếp",
+    "changeChip": "Thư mục: {{name}}. Đổi thư mục",
+    "moveTo": "Chuyển vào thư mục",
+    "none": "Không có thư mục",
+    "removeFrom": "Gỡ khỏi thư mục {{name}}"
+  },
+  "import": {
+    "previewTitle": "Xem trước",
+    "previewCount": "({{count}} thẻ)",
+    "invalidRows": "{{count}} dòng cần sửa hoặc bỏ trước khi lưu.",
+    "allValid": "Mọi dòng đều hợp lệ.",
+    "onlyInvalid": "Chỉ hiện dòng lỗi",
+    "row": "Dòng {{line}}",
+    "term": "Từ",
+    "definition": "Nghĩa",
+    "phonetic": "Phiên âm",
+    "example": "Ví dụ",
+    "removeRow": "Bỏ dòng {{line}}",
+    "delimiters": {
+      "auto": "Tự nhận (nên dùng)",
+      "tab": "Phím Tab: dán từ Excel, Google Sheets",
+      "comma": "Dấu phẩy: apple, quả táo",
+      "semicolon": "Dấu chấm phẩy: apple; quả táo",
+      "dash": "Gạch ngang: apple - quả táo"
+    },
+    "detected": {
+      "tab": "phím Tab",
+      "comma": "dấu phẩy",
+      "semicolon": "dấu chấm phẩy",
+      "dash": "gạch ngang"
+    },
+    "delimiterField": "Từ và nghĩa cách nhau bằng",
+    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nMỗi dòng một thẻ, từ và nghĩa cách nhau bằng tab, dấu phẩy hoặc \" - \".",
+    "templateFailed": "Không tạo được file mẫu. Hãy thử lại.",
+    "readFailed": "Không đọc được file.",
+    "columnSample": "Cột {{column}}: {{sample}}",
+    "column": "Cột {{column}}",
+    "summary": {
+      "term": "từ ở cột {{column}}",
+      "definition": "nghĩa ở cột {{column}}",
+      "phonetic": "phiên âm ở cột {{column}}",
+      "example": "ví dụ ở cột {{column}}"
+    },
+    "autoDetectLater": "Trang tự nhận cách ngăn cách sau khi bạn dán hoặc chọn file.",
+    "separatedBy": "Cách nhau bằng {{name}}.",
+    "noColumn": "Không có",
+    "templateTitle": "Lấy file mẫu",
+    "optional": "(không bắt buộc)",
+    "templateText1": "File Excel có sẵn dòng ví dụ và sheet hướng dẫn, mở được bằng Excel hoặc Google Sheets.",
+    "templateText2": "Cột Từ và Nghĩa bắt buộc, cột Phiên âm và Ví dụ có thể để trống.",
+    "templateDownload": "Tải file mẫu Excel (.xlsx)",
+    "sourceTitle": "Đưa danh sách vào",
+    "paste": "Dán danh sách từ",
+    "chooseFile": "Chọn file .txt, .csv hoặc .xlsx",
+    "fileRead": "Đã đọc {{name}}",
+    "fileLimit": "Tối đa 2 MB. File Excel chỉ đọc sheet đầu tiên.",
+    "templateDetected": "Đã nhận ra tiêu đề file mẫu, các cột được chọn sẵn.",
+    "optionsTitle": "Kiểm tra cách đọc",
+    "singleColumn": "Chưa tách được từ và nghĩa. Hãy chọn đúng ký tự ngăn cách từ và nghĩa trong danh sách của bạn.",
+    "detectedHint": "Đã nhận: {{name}}.",
+    "takeColumns": "Lấy {{columns}}",
+    "skipHeader": ", bỏ dòng tiêu đề.",
+    "changeOptions": "Đổi cách đọc",
+    "step": "Bước {{step}}: ",
+    "optionsLegend": "Cách đọc danh sách",
+    "termColumn": "Cột từ",
+    "definitionColumn": "Cột nghĩa",
+    "phoneticColumn": "Cột phiên âm (không bắt buộc)",
+    "exampleColumn": "Cột ví dụ (không bắt buộc)",
+    "hasHeader": "Dòng đầu là tiêu đề, bỏ qua khi nhập",
+    "hasHeaderHint": "Bật nếu dòng đầu là tên cột như Từ, Nghĩa.",
+    "targetNotFound": "Bộ từ đã bị xoá hoặc bạn không có quyền.",
+    "targetNote": "Thẻ sẽ được thêm vào cuối bộ “{{title}}”, bộ đang có {{count}} thẻ.",
+    "imported": "Đã nhập {{count}} thẻ",
+    "noRows": "Không còn dòng nào để nhập",
+    "noRowsHint": "Hãy dán lại danh sách hoặc chọn file khác.",
+    "restart": "Nhập lại",
+    "saveTitle": "Lưu",
+    "newTitle": "Tên bộ từ mới",
+    "saveCount": "Lưu {{count}} thẻ",
+    "file": {
+      "empty": "File đang trống.",
+      "tooLarge": "File tối đa 2 MB. Hãy chia nhỏ rồi nhập từng phần.",
+      "notXlsx": "Nội dung file không phải Excel. Hãy chọn file .xlsx khác.",
+      "brokenXlsx": "File Excel bị hỏng hoặc không đọc được. Hãy lưu lại rồi thử lại.",
+      "emptySheet": "Sheet đầu tiên của file Excel đang trống.",
+      "oldXls": "Chưa đọc được file .xls cũ. Hãy lưu lại thành .xlsx hoặc CSV (UTF-8) trong Excel.",
+      "type": "Chỉ nhận file .txt, .csv hoặc .xlsx.",
+      "notText": "Nội dung file không phải văn bản. Hãy chọn file .txt hoặc .csv.",
+      "encoding": "File bị hỏng hoặc không phải văn bản UTF-8."
+    }
+  }
+}

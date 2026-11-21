@@ -26,17 +26,13 @@ import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, listMemberResults, listMembers, MEMBERS_PAGE_SIZE, removeMember } from '../api';
 import { formatDate, formatDateTime } from '../format';
 import { StatusLabel, percent } from './status-label';
+import { useTranslation } from 'react-i18next';
 
 type MemberSort = ClassMemberListQuery['sort'];
 
-const SORT_LABELS: Record<MemberSort, string> = {
-  joinedAt: 'Vào lớp sớm nhất',
-  '-joinedAt': 'Vào lớp gần đây',
-  name: 'Tên A đến Z',
-  '-name': 'Tên Z đến A',
-};
+const MEMBER_SORTS: readonly MemberSort[] = ['joinedAt', '-joinedAt', 'name', '-name'];
 
-const score = (value: number | null) => (value === null ? 'Chưa có' : `${value}%`);
+const score = (value: number | null, none: string) => (value === null ? none : `${value}%`);
 
 function StatTile({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
@@ -57,6 +53,7 @@ function MemberProfile({
   member: ClassMember;
   onClose: () => void;
 }) {
+  const { t } = useTranslation(['classes', 'common']);
   const titleId = useId();
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
@@ -81,14 +78,18 @@ function MemberProfile({
                 {member.displayName}
               </h2>
               <p className="text-small text-text-muted">
-                Vào lớp {formatDate(member.joinedAt)} · Hoạt động gần nhất:{' '}
-                {stats.lastActiveAt ? formatDateTime(stats.lastActiveAt) : 'chưa có'}
+                {t('members.joinedActive', {
+                  joined: formatDate(member.joinedAt),
+                  active: stats.lastActiveAt
+                    ? formatDateTime(stats.lastActiveAt)
+                    : t('members.never'),
+                })}
               </p>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Đóng"
+              aria-label={t('common:actions.close')}
               className="-mt-2 -mr-3 shrink-0"
               onClick={onClose}
             >
@@ -96,28 +97,35 @@ function MemberProfile({
             </Button>
           </div>
           <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <StatTile label="Đúng hạn" value={`${stats.onTime}/${graded}`} tone="text-success" />
-            <StatTile label="Nộp trễ" value={String(stats.late)} tone="text-warning" />
-            <StatTile label="Bỏ lỡ" value={String(stats.missed)} tone="text-danger" />
-            <StatTile label="Điểm TB" value={score(stats.averageScore)} />
+            <StatTile
+              label={t('members.onTime')}
+              value={`${stats.onTime}/${graded}`}
+              tone="text-success"
+            />
+            <StatTile label={t('members.late')} value={String(stats.late)} tone="text-warning" />
+            <StatTile label={t('members.missed')} value={String(stats.missed)} tone="text-danger" />
+            <StatTile
+              label={t('members.average')}
+              value={score(stats.averageScore, t('results.none'))}
+            />
           </dl>
           <section aria-labelledby={`${titleId}-recent`} className="flex flex-col gap-2">
             <h3 id={`${titleId}-recent`} className="font-semibold">
-              Bài gần đây
+              {t('members.recent')}
             </h3>
             {results.isPending ? (
-              <LoadingState label="Đang tải bài gần đây">
+              <LoadingState label={t('members.loadingRecent')}>
                 <Skeleton className="h-11 w-full" />
                 <Skeleton className="h-11 w-full" />
               </LoadingState>
             ) : results.isError ? (
               <ErrorState
-                title="Không tải được bài gần đây"
-                description="Kiểm tra kết nối mạng rồi thử lại."
+                title={t('members.recentFailed')}
+                description={t('checkNetwork')}
                 onRetry={() => void results.refetch()}
               />
             ) : results.data.data.length === 0 ? (
-              <p className="text-text-muted">Lớp chưa giao bài nào.</p>
+              <p className="text-text-muted">{t('members.noAssignments')}</p>
             ) : (
               <ul className="border-t border-border">
                 {results.data.data.slice(0, 5).map((item) => (
@@ -129,7 +137,9 @@ function MemberProfile({
                       {item.setTitle}
                     </span>
                     <span className="text-text-muted sm:order-none">
-                      {item.dueAt ? `Hạn ${formatDate(item.dueAt)}` : 'Không hạn'}
+                      {item.dueAt
+                        ? t('members.dueDate', { date: formatDate(item.dueAt) })
+                        : t('assignments.noDue')}
                     </span>
                     <StatusLabel status={item.status} />
                     <span className="text-right tabular-nums">
@@ -144,11 +154,11 @@ function MemberProfile({
           </section>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
             <Button variant="danger" onClick={() => setConfirming(true)}>
-              Xoá khỏi lớp
+              {t('members.remove')}
             </Button>
             <Button asChild variant="secondary">
               <Link href={`/classes/${classId}/members/${member.userId}` as Route}>
-                Xem tất cả bài
+                {t('members.seeAll')}
               </Link>
             </Button>
           </div>
@@ -157,9 +167,9 @@ function MemberProfile({
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title={`Xoá ${member.displayName} khỏi lớp?`}
-        description="Học sinh không còn xem được bộ từ của lớp. Muốn vào lại thì cần mã lớp."
-        confirmLabel="Xoá khỏi lớp"
+        title={t('members.removeTitle', { name: member.displayName })}
+        description={t('members.removeDescription')}
+        confirmLabel={t('members.remove')}
         pending={remove.isPending}
         error={remove.error ? formErrorMessage(remove.error) : null}
         onConfirm={() =>
@@ -167,7 +177,7 @@ function MemberProfile({
             onSuccess: () => {
               setConfirming(false);
               onClose();
-              toast.success(`Đã xoá ${member.displayName} khỏi lớp`);
+              toast.success(t('members.removed', { name: member.displayName }));
             },
           })
         }
@@ -177,6 +187,7 @@ function MemberProfile({
 }
 
 function MemberRow({ member, onOpen }: { member: ClassMember; onOpen: () => void }) {
+  const { t } = useTranslation('classes');
   const { stats } = member;
   return (
     <li className="relative grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b border-border py-2 last:border-b-0 hover:bg-primary-soft sm:grid-cols-[2fr_1fr_repeat(4,minmax(4rem,1fr))] sm:px-2">
@@ -186,28 +197,28 @@ function MemberRow({ member, onOpen }: { member: ClassMember; onOpen: () => void
         className="flex min-h-11 min-w-0 items-center text-left font-medium text-primary wrap-anywhere after:absolute after:inset-0"
       >
         {member.displayName}
-        <span className="sr-only">, mở hồ sơ</span>
+        <span className="sr-only">{t('members.openProfile')}</span>
       </button>
       <span className="text-small text-text-muted sm:text-body">
-        <span className="sm:hidden">Vào </span>
+        <span className="sm:hidden">{t('members.joinedShort')}</span>
         {formatDate(member.joinedAt)}
       </span>
       <span className="col-span-2 flex flex-wrap gap-x-3 text-small tabular-nums sm:contents sm:text-body">
         <span className="text-success sm:text-right">
-          <span className="sm:hidden">Đúng hạn </span>
+          <span className="sm:hidden">{t('members.onTimeShort')}</span>
           {stats.onTime}
         </span>
         <span className="text-warning sm:text-right">
-          <span className="sm:hidden">Trễ </span>
+          <span className="sm:hidden">{t('members.lateShort')}</span>
           {stats.late}
         </span>
         <span className="text-danger sm:text-right">
-          <span className="sm:hidden">Bỏ lỡ </span>
+          <span className="sm:hidden">{t('members.missedShort')}</span>
           {stats.missed}
         </span>
         <span className="sm:text-right">
-          <span className="sm:hidden">Điểm TB </span>
-          {score(stats.averageScore)}
+          <span className="sm:hidden">{t('members.averageShort')}</span>
+          {score(stats.averageScore, t('results.none'))}
         </span>
       </span>
     </li>
@@ -232,6 +243,7 @@ export function ClassMembers({
   clearHref: Route;
   onSearch: (next: { q: string; sort: MemberSort }) => void;
 }) {
+  const { t } = useTranslation('classes');
   const [open, setOpen] = useState<ClassMember | null>(null);
   const members = useQuery({
     queryKey: classKeys.membersQuery(klass.id, page, query, sort),
@@ -241,7 +253,7 @@ export function ClassMembers({
   let body;
   if (members.isPending) {
     body = (
-      <LoadingState label="Đang tải học sinh">
+      <LoadingState label={t('members.loading')}>
         {Array.from({ length: 3 }, (_, index) => (
           <Skeleton key={index} className="h-14 w-full" />
         ))}
@@ -250,18 +262,18 @@ export function ClassMembers({
   } else if (members.isError) {
     body = (
       <ErrorState
-        title="Không tải được học sinh"
-        description="Kiểm tra kết nối mạng rồi thử lại."
+        title={t('members.failed')}
+        description={t('checkNetwork')}
         onRetry={() => void members.refetch()}
       />
     );
   } else if (members.data.data.length === 0) {
     body = query ? (
-      <ListNoMatch text={`Không có học sinh nào khớp "${query}".`} clearHref={clearHref} />
+      <ListNoMatch text={t('members.noMatch', { q: query })} clearHref={clearHref} />
     ) : (
       <EmptyState
-        title="Chưa có học sinh"
-        description={`Gửi mã ${klass.joinCode} cho học sinh để các em tham gia lớp.`}
+        title={t('members.empty')}
+        description={t('members.emptyHint', { code: klass.joinCode })}
       />
     );
   } else {
@@ -272,14 +284,14 @@ export function ClassMembers({
           aria-hidden
           className="hidden grid-cols-[2fr_1fr_repeat(4,minmax(4rem,1fr))] gap-x-4 border-b border-border px-2 pb-2 text-small font-medium text-text-muted sm:grid"
         >
-          <span>Tên</span>
-          <span>Vào lớp</span>
-          <span className="text-right">Đúng hạn</span>
-          <span className="text-right">Trễ</span>
-          <span className="text-right">Bỏ lỡ</span>
-          <span className="text-right">Điểm TB</span>
+          <span>{t('members.name')}</span>
+          <span>{t('members.joined')}</span>
+          <span className="text-right">{t('members.onTime')}</span>
+          <span className="text-right">{t('members.lateCol')}</span>
+          <span className="text-right">{t('members.missed')}</span>
+          <span className="text-right">{t('members.average')}</span>
         </div>
-        <ul aria-label="Học sinh trong lớp" className="flex flex-col">
+        <ul aria-label={t('members.list')} className="flex flex-col">
           {data.map((member) => (
             <MemberRow key={member.userId} member={member} onOpen={() => setOpen(member)} />
           ))}
@@ -290,25 +302,25 @@ export function ClassMembers({
 
   return (
     <ListPanel
-      title="Học sinh"
+      title={t('members.title')}
       count={members.data?.meta.total}
       toolbar={
         <ListToolbar
           search={{
-            label: 'Tìm học sinh theo tên',
+            label: t('members.search'),
             value: query,
             onSearch: (q) => onSearch({ q, sort }),
           }}
           filters={
             <ListFilter wide>
               <Select
-                aria-label="Sắp xếp học sinh"
+                aria-label={t('members.sortLabel')}
                 value={sort}
                 onChange={(event) => onSearch({ q: query, sort: event.target.value as MemberSort })}
               >
-                {Object.entries(SORT_LABELS).map(([value, label]) => (
+                {MEMBER_SORTS.map((value) => (
                   <option key={value} value={value}>
-                    {label}
+                    {t(`members.sort.${value}`)}
                   </option>
                 ))}
               </Select>

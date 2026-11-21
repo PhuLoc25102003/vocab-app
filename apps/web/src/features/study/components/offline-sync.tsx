@@ -5,9 +5,11 @@ import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { accountStudyBackend } from '../api';
 import { syncPendingSessions } from '../offline-sync';
+import { useTranslation } from 'react-i18next';
 
 /** Chạy khi vào app đã đăng nhập và mỗi khi có mạng lại. Không hiện gì nếu không có phiên chờ. */
 export function OfflineSync() {
+  const { t } = useTranslation('study');
   const queryClient = useQueryClient();
   const running = useRef(false);
 
@@ -18,7 +20,7 @@ export function OfflineSync() {
       try {
         const { synced } = await syncPendingSessions(accountStudyBackend);
         if (synced > 0) {
-          toast.success(`Đã gửi ${synced} phiên học offline lên máy chủ`);
+          toast.success(t('offline.synced', { count: synced }));
           await queryClient.invalidateQueries();
         }
       } catch {
@@ -30,7 +32,7 @@ export function OfflineSync() {
     void run();
     window.addEventListener('online', run);
     return () => window.removeEventListener('online', run);
-  }, [queryClient]);
+  }, [queryClient, t]);
 
   return null;
 }

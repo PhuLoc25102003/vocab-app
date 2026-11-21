@@ -6,6 +6,7 @@ import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -34,13 +35,14 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = 'Huỷ',
+  cancelLabel,
   pending = false,
   error,
   children,
   tone = 'danger',
   onConfirm,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   const Icon = tone === 'danger' ? AlertTriangle : CircleHelp;
   const cancelRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
@@ -98,7 +100,7 @@ export function ConfirmDialog({
             disabled={pending}
             onClick={close}
           >
-            {cancelLabel}
+            {cancelLabel ?? t('actions.cancel')}
           </Button>
           <Button type="submit" variant={tone} loading={pending}>
             {confirmLabel}

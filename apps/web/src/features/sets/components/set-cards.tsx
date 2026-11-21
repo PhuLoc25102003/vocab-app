@@ -1,15 +1,18 @@
+'use client';
+
 import type { PublicSetSummary, SetSummary } from '@vocab/shared';
 import { Layers } from 'lucide-react';
 import type { Route } from 'next';
 import type { ReactNode } from 'react';
 import { SetCardList, SetCardShell, SetCardsSkeleton } from '@/components/common/set-card-shell';
-import { VISIBILITY_LABELS } from '../labels';
+import { useTranslation } from 'react-i18next';
 
-const dateFormat = new Intl.DateTimeFormat('vi-VN', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
+const formatSetDate = (dateStr: string, locale: string) =>
+  new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(dateStr));
 
 export type SetCardData = SetSummary & Partial<Pick<PublicSetSummary, 'owner'>>;
 
@@ -49,6 +52,7 @@ export function SetCardGrid<T extends SetCardData>({
   renderActions,
   itemProps,
 }: SetCardGridProps<T>) {
+  const { t, i18n } = useTranslation(['sets', 'common']);
   return (
     <SetCardList>
       {sets.map((set) => {
@@ -63,23 +67,23 @@ export function SetCardGrid<T extends SetCardData>({
             badge={
               variant === 'library' ? (
                 <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-                  {VISIBILITY_LABELS[visibility]}
+                  {t(`common:visibility.${visibility}`)}
                 </span>
               ) : undefined
             }
             count={
               <>
                 <Layers aria-hidden className="size-4" />
-                {cardCount} thẻ
+                {t('cardCount', { count: cardCount })}
               </>
             }
             footer={
               variant === 'community' && owner ? (
                 <OwnerLine name={owner.displayName} />
               ) : (
-                <span title="Cập nhật">
-                  <span className="sr-only">Cập nhật </span>
-                  <time dateTime={updatedAt}>{dateFormat.format(new Date(updatedAt))}</time>
+                <span title={t('updated')}>
+                  <span className="sr-only">{t('updated')} </span>
+                  <time dateTime={updatedAt}>{formatSetDate(updatedAt, i18n.language)}</time>
                 </span>
               )
             }
@@ -92,5 +96,6 @@ export function SetCardGrid<T extends SetCardData>({
 }
 
 export function SetCardsLoading({ count }: { count: number }) {
-  return <SetCardsSkeleton count={count} label="Đang tải bộ từ" />;
+  const { t } = useTranslation(['sets', 'common']);
+  return <SetCardsSkeleton count={count} label={t('loading')} />;
 }

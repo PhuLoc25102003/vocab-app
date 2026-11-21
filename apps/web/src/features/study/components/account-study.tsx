@@ -1,6 +1,6 @@
 'use client';
 
-import { STUDY_MODE_LABELS, type StudyMode } from '@vocab/shared';
+import type { StudyMode } from '@vocab/shared';
 import { ArrowRight } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import { accountStudyBackend } from '../api';
 import { chainHref, clearReviewCards, loadReviewCards, saveReviewCards } from '../review-chain';
 import { useStudyStore } from '../session.store';
 import { StudyShell } from './study-shell';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface AccountStudyProps {
   setId: string;
@@ -24,12 +25,18 @@ interface AccountStudyProps {
 }
 
 function NextReviewMode({ setId, next }: { setId: string; next: StudyMode[] }) {
+  const { t } = useTranslation(['study', 'common']);
   const [first] = next;
   if (!first) return null;
   return (
     <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
       <p className="text-small text-text-muted">
-        Còn <span className="tabular-nums">{next.length}</span> chế độ ôn với các thẻ này.
+        <Trans
+          t={t}
+          i18nKey="chain.remaining"
+          values={{ count: next.length }}
+          components={[<span key="c" className="tabular-nums" />]}
+        />
       </p>
       <Button asChild className="self-start">
         <Link
@@ -41,7 +48,7 @@ function NextReviewMode({ setId, next }: { setId: string; next: StudyMode[] }) {
             )
           }
         >
-          Chế độ tiếp: {STUDY_MODE_LABELS[first]}
+          {t('chain.mode', { mode: t(`common:modes.${first}`) })}
           <ArrowRight aria-hidden className="size-4" />
         </Link>
       </Button>
@@ -56,6 +63,7 @@ export function AccountStudy({
   next = [],
   review = false,
 }: AccountStudyProps) {
+  const { t } = useTranslation(['study', 'common']);
   const router = useRouter();
   // Đọc một lần khi mở trang; không có thì ôn thẻ đến hạn như bình thường.
   const [cardIds] = useState(() => {
@@ -66,9 +74,9 @@ export function AccountStudy({
   const fromReview = dueOnly || review;
 
   const skip = useCallback(() => {
-    toast.info(`Bỏ qua ${STUDY_MODE_LABELS[mode]}: chế độ này chưa dùng được với bộ từ.`);
+    toast.info(t('chain.skipped', { mode: t(`common:modes.${mode}`) }));
     router.replace(chainHref(setId, next));
-  }, [mode, next, router, setId]);
+  }, [mode, next, router, setId, t]);
 
   return (
     <StudyShell
@@ -78,7 +86,7 @@ export function AccountStudy({
       dueOnly={dueOnly || (review && !cardIds)}
       cardIds={cardIds}
       exitHref={(fromReview ? '/review' : `/sets/${setId}`) as Route}
-      exitLabel={fromReview ? 'Về Ôn hôm nay' : undefined}
+      exitLabel={fromReview ? t('chain.backToReview') : undefined}
       resultNote={next.length ? <NextReviewMode setId={setId} next={next} /> : undefined}
       onUnavailable={next.length ? skip : undefined}
     />

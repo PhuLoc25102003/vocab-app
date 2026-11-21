@@ -11,6 +11,7 @@ import { SetDetailSkeleton } from './set-detail-skeleton';
 import { SetLoadFailure } from './set-load-failure';
 import { SetMeta } from './set-meta';
 import { StudyModeGrid } from './study-mode-grid';
+import { useTranslation } from 'react-i18next';
 
 interface SetDetailProps {
   id: string;
@@ -37,6 +38,7 @@ export function SetDetail({
   renderCardExtra,
   renderEmptyAction,
 }: SetDetailProps) {
+  const { t } = useTranslation('sets');
   const set = useSet(id);
 
   if (set.isPending) {
@@ -59,7 +61,7 @@ export function SetDetail({
       />
       {hiddenAt ? (
         <p role="status" className="max-w-[65ch] border-l-4 border-danger-mark pl-3 text-danger">
-          Bộ từ đang bị quản trị viên ẩn khỏi người khác. Lý do: {hiddenReason}
+          {t('detail.hidden', { reason: hiddenReason })}
         </p>
       ) : null}
       <SetMeta set={set.data}>
@@ -79,8 +81,8 @@ export function SetDetail({
         </>
       ) : (
         <EmptyState
-          title="Bộ từ này chưa có thẻ"
-          description="Thẻ được thêm sẽ hiện ở đây."
+          title={t('noCards')}
+          description={t('detail.noCardsHint')}
           action={renderEmptyAction?.(set.data)}
         />
       )}

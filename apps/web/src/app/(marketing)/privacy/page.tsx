@@ -5,16 +5,28 @@ import {
   PRIVACY_INTRO,
   PRIVACY_SECTIONS,
 } from '@/features/marketing/legal-content';
+import {
+  PRIVACY_INTRO_EN,
+  PRIVACY_SECTIONS_EN,
+  PRIVACY_TITLE_EN,
+} from '@/features/marketing/legal-content.en';
+import { getLocale, getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Chính sách bảo mật' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('marketing');
+  return { title: t('legal.privacy') };
+}
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const locale = await getLocale();
+  const t = await getT('marketing');
+  const isEn = locale === 'en';
   return (
     <LegalPage
-      title="Chính sách bảo mật"
+      title={isEn ? PRIVACY_TITLE_EN : t('legal.privacy')}
       updatedAt={LEGAL_UPDATED_AT}
-      intro={PRIVACY_INTRO}
-      sections={PRIVACY_SECTIONS}
+      intro={isEn ? PRIVACY_INTRO_EN : PRIVACY_INTRO}
+      sections={isEn ? PRIVACY_SECTIONS_EN : PRIVACY_SECTIONS}
     />
   );
 }

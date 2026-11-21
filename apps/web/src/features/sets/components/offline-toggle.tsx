@@ -13,23 +13,25 @@ import {
   removeOfflineSet,
   saveOfflineSet,
 } from '@/lib/offline-store';
+import { useTranslation } from 'react-i18next';
 
 const SAVE_ERRORS = {
-  unsupported: 'Trình duyệt này không lưu được bộ từ để dùng offline.',
-  quota: 'Máy đã hết dung lượng. Hãy xoá bớt bộ đã tải rồi thử lại.',
-  failed: 'Không tải được bộ từ về máy. Hãy thử lại.',
+  unsupported: 'offline.unsupported',
+  quota: 'offline.quota',
+  failed: 'offline.failed',
 } as const;
 
 type OfflineState = 'missing' | 'saved' | 'outdated';
 
 const ACTIONS = {
-  missing: { label: 'Tải về máy', Icon: Download },
-  outdated: { label: 'Cập nhật bản offline', Icon: RefreshCw },
-  saved: { label: 'Xoá bản offline', Icon: Trash2 },
+  missing: { label: 'offline.missing', Icon: Download },
+  outdated: { label: 'offline.outdated', Icon: RefreshCw },
+  saved: { label: 'offline.saved', Icon: Trash2 },
 } as const;
 
 /** Trạng thái bản tải về máy của bộ từ và hành động phù hợp: tải, cập nhật hoặc xoá. */
 function useOfflineSet(set: SetDetail) {
+  const { t } = useTranslation('sets');
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [savedUpdatedAt, setSavedUpdatedAt] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -52,9 +54,9 @@ function useOfflineSet(set: SetDetail) {
       await saveOfflineSet(set);
       setSavedAt(new Date().toISOString());
       setSavedUpdatedAt(String(set.updatedAt));
-      toast.success('Đã tải về máy, xem được cả khi mất mạng');
+      toast.success(t('offline.savedToast'));
     } catch (error) {
-      toast.error(SAVE_ERRORS[error instanceof OfflineStorageError ? error.reason : 'failed']);
+      toast.error(t(SAVE_ERRORS[error instanceof OfflineStorageError ? error.reason : 'failed']));
     } finally {
       setBusy(false);
     }
@@ -65,15 +67,15 @@ function useOfflineSet(set: SetDetail) {
     try {
       await removeOfflineSet(set.id);
       setSavedAt(null);
-      toast.success('Đã xoá bản offline');
+      toast.success(t('offline.removed'));
     } catch {
-      toast.error('Không xoá được bản offline. Hãy thử lại.');
+      toast.error(t('offline.removeFailed'));
     } finally {
       setBusy(false);
     }
   };
 
-  return { ...ACTIONS[state], state, busy, save, remove };
+  return { ...ACTIONS[state], label: t(ACTIONS[state].label), state, busy, save, remove };
 }
 
 type OfflineSetControls = ReturnType<typeof useOfflineSet>;
@@ -88,13 +90,14 @@ function RemoveOfflineDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation('sets');
   return (
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xoá bản offline?"
-      description="Bộ từ vẫn còn trên tài khoản, chỉ không xem được khi mất mạng cho tới khi bạn tải lại."
-      confirmLabel="Xoá bản offline"
+      title={t('offline.removeTitle')}
+      description={t('offline.removeDescription')}
+      confirmLabel={t('offline.saved')}
       pending={offline.busy}
       onConfirm={() => void offline.remove().then(() => onOpenChange(false))}
     />

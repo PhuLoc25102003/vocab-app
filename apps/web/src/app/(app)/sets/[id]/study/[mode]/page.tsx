@@ -4,8 +4,12 @@ import { AccountStudy } from '@/features/study/components/account-study';
 import { AssignmentStudy } from '@/features/study/components/assignment-study';
 import { parseStudyMode } from '@/features/study/modes/parse-mode';
 import { parseModeList } from '@/features/study/review-chain';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Học bộ từ' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.study') };
+}
 
 export default async function StudyPage({
   params,

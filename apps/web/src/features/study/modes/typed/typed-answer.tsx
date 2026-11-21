@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import type { StudyModeProps } from '../views';
 import { diffAnswer } from './answer-diff';
 import { playCorrectSound } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 const MAX_ANSWER_LENGTH = 500;
 
@@ -36,6 +37,7 @@ export function TypedAnswer({
   prompt,
   inputLabel,
 }: TypedAnswerProps) {
+  const { t } = useTranslation('study');
   const [value, setValue] = useState('');
   const [result, setResult] = useState<GradeResult | null>(null);
   const shownAt = useRef(0);
@@ -101,17 +103,17 @@ export function TypedAnswer({
         {result?.isCorrect ? (
           <p className="feedback-correct flex items-center gap-2 rounded-md bg-success-soft p-3 text-success">
             <Check aria-hidden className="size-5 shrink-0" />
-            Chính xác
+            {t('correct')}
           </p>
         ) : null}
         {result && !result.isCorrect ? (
           <div className="feedback-wrong flex flex-col gap-2 rounded-md bg-danger-soft p-3">
             <p className="flex items-center gap-2 text-danger">
               <X aria-hidden className="size-5 shrink-0" />
-              Chưa đúng
+              {t('wrong')}
             </p>
             <WrongAnswer value={value} expected={result.expected} />
-            <p className="text-small text-text-muted">Đáp án đúng</p>
+            <p className="text-small text-text-muted">{t('expected')}</p>
             <p lang={languages.term} className="font-card text-h3 break-words text-success">
               {result.expected}
             </p>
@@ -122,11 +124,11 @@ export function TypedAnswer({
       <div className="mt-auto flex flex-col">
         {result ? (
           <Button ref={nextRef} type="submit">
-            Câu tiếp theo
+            {t('nextQuestion')}
           </Button>
         ) : (
           <Button type="submit" disabled={!value.trim()}>
-            Kiểm tra
+            {t('check')}
           </Button>
         )}
       </div>

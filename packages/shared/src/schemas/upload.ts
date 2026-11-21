@@ -1,16 +1,17 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 
 export const IMAGE_MAX_BYTES = 1024 * 1024;
 export const IMAGE_CONTENT_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;
 export type ImageContentType = (typeof IMAGE_CONTENT_TYPES)[number];
 
 export const presignImageSchema = z.object({
-  contentType: z.enum(IMAGE_CONTENT_TYPES, 'Chỉ nhận ảnh PNG, JPEG hoặc WebP'),
+  contentType: z.enum(IMAGE_CONTENT_TYPES, vm('imageType')),
   size: z
-    .number('Thiếu dung lượng ảnh')
+    .number(vm('imageSizeMissing'))
     .int()
-    .min(1, 'Ảnh rỗng')
-    .max(IMAGE_MAX_BYTES, 'Ảnh tối đa 1 MB'),
+    .min(1, vm('imageEmpty'))
+    .max(IMAGE_MAX_BYTES, vm('imageTooLarge')),
 });
 export type PresignImageInput = z.infer<typeof presignImageSchema>;
 

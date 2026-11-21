@@ -7,7 +7,7 @@ import { ServiceWorkerRegistration } from '@/components/common/service-worker';
 import { BRAND_COLORS } from '@/lib/brand';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config';
 import { I18nProvider } from '@/lib/i18n/provider';
-import { getLocale } from '@/lib/i18n/server';
+import { getLocale, getT } from '@/lib/i18n/server';
 import { themeInitScript } from '@/lib/theme';
 import './globals.css';
 
@@ -32,10 +32,13 @@ const notoSerif = Noto_Serif({
 
 export const viewport: Viewport = { themeColor: BRAND_COLORS.primary };
 
-export const metadata: Metadata = {
-  title: BRAND_NAME,
-  description: 'Ôn từ vựng bằng flashcard cho học sinh',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('marketing');
+  return {
+    title: BRAND_NAME,
+    description: t('hero.eyebrow'),
+  };
+}
 
 /**
  * Đọc cookie ngôn ngữ trong `Suspense` vì `cacheComponents` không cho đọc dữ liệu runtime ngoài

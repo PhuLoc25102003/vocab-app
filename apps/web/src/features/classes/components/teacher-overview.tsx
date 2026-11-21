@@ -16,6 +16,7 @@ import { dueText } from './class-work';
 import { formatDateTime } from '../format';
 import { AssignDialog } from './assign-dialog';
 import { CreateClassDialog } from './teacher-classes';
+import { useTranslation } from 'react-i18next';
 
 function Tile({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
@@ -43,12 +44,13 @@ const resultsHref = ({ classId, assignmentId }: OverviewAssignment) =>
   `/classes/${classId}/assignments/${assignmentId}` as Route;
 
 function SubmitBar({ submitted, memberCount }: { submitted: number; memberCount: number }) {
+  const { t } = useTranslation('classes');
   const value = memberCount ? Math.round((submitted * 100) / memberCount) : 0;
   return (
     <span className="flex items-center gap-2">
       <span
         role="meter"
-        aria-label="Đã nộp"
+        aria-label={t('overview.submitted')}
         aria-valuemin={0}
         aria-valuemax={memberCount}
         aria-valuenow={submitted}
@@ -64,12 +66,13 @@ function SubmitBar({ submitted, memberCount }: { submitted: number; memberCount:
 }
 
 function Attention({ attention }: { attention: Overview['attention'] }) {
+  const { t } = useTranslation('classes');
   const { lowSubmissions, missedStreaks } = attention;
   if (lowSubmissions.length === 0 && missedStreaks.length === 0) {
     return (
       <p className="flex items-center gap-2 text-success">
         <CircleCheck aria-hidden className="size-5" />
-        Lớp đang ổn, chưa có gì cần nhắc.
+        {t('overview.allGood')}
       </p>
     );
   }
@@ -82,7 +85,11 @@ function Attention({ attention }: { attention: Overview['attention'] }) {
               {item.setTitle} · {item.className}
             </span>
             <span className="text-small text-text-muted">
-              {dueText(item.dueAt)} · mới nộp {item.submitted}/{item.memberCount}
+              {t('overview.lowSubmissions', {
+                due: dueText(item.dueAt, undefined, t),
+                submitted: item.submitted,
+                total: item.memberCount,
+              })}
             </span>
           </Link>
         </li>
@@ -99,7 +106,7 @@ function Attention({ attention }: { attention: Overview['attention'] }) {
             {item.displayName}
           </Link>
           <span className="text-small text-danger">
-            Bỏ lỡ {item.missed} bài liền · {item.className}
+            {t('overview.missedStreak', { count: item.missed, className: item.className })}
           </span>
         </li>
       ))}
@@ -108,17 +115,14 @@ function Attention({ attention }: { attention: Overview['attention'] }) {
 }
 
 function EmptyClasses({ onCreate }: { onCreate: () => void }) {
-  const steps = [
-    'Tạo lớp và đặt tên dễ nhận ra, ví dụ "10A1 - Tiếng Anh".',
-    'Gửi mã lớp 6 ký tự cho học sinh để các em tham gia.',
-    'Giao bộ từ kèm các chế độ và hạn nộp.',
-  ];
+  const { t } = useTranslation('classes');
+  const steps = [t('overview.step1'), t('overview.step2'), t('overview.step3')];
   return (
     <section
-      aria-label="Bắt đầu với lớp học"
+      aria-label={t('overview.startLabel')}
       className="flex flex-col gap-4 rounded-lg border border-border-strong bg-surface p-6"
     >
-      <h2 className="text-h2">Bắt đầu dạy trong 3 bước</h2>
+      <h2 className="text-h2">{t('overview.startTitle')}</h2>
       <ol className="flex flex-col gap-3">
         {steps.map((step, index) => (
           <li key={step} className="flex items-start gap-3">
@@ -134,7 +138,7 @@ function EmptyClasses({ onCreate }: { onCreate: () => void }) {
       </ol>
       <Button className="self-start" onClick={onCreate}>
         <Plus aria-hidden className="size-4" />
-        Tạo lớp đầu tiên
+        {t('overview.createFirst')}
       </Button>
     </section>
   );
@@ -142,6 +146,7 @@ function EmptyClasses({ onCreate }: { onCreate: () => void }) {
 
 /** Tổng quan của giáo viên (việc 5.20): "Lớp nào, bài nào, em nào cần tôi nhắc?". */
 export function TeacherOverview() {
+  const { t } = useTranslation('classes');
   const [dialog, setDialog] = useState<'assign' | 'create' | null>(null);
   const overview = useQuery({ queryKey: classKeys.teacherOverview, queryFn: getTeacherOverview });
   const classes = useQuery({
@@ -153,18 +158,18 @@ export function TeacherOverview() {
   const noClasses = overview.isSuccess && overview.data.classCount === 0;
   const header = (
     <PageHeader
-      title="Tổng quan"
+      title={t('overview.title')}
       actions={
         overview.isSuccess ? (
           noClasses ? (
             <Button onClick={() => setDialog('create')}>
               <Plus aria-hidden className="size-4" />
-              Tạo lớp
+              {t('overview.createClass')}
             </Button>
           ) : (
             <Button onClick={() => setDialog('assign')}>
               <Send aria-hidden className="size-4" />
-              Giao bài
+              {t('overview.assign')}
             </Button>
           )
         ) : null
@@ -189,7 +194,7 @@ export function TeacherOverview() {
     return (
       <>
         {header}
-        <LoadingState label="Đang tải tổng quan lớp học">
+        <LoadingState label={t('overview.loading')}>
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-48 w-full" />
         </LoadingState>
@@ -201,8 +206,8 @@ export function TeacherOverview() {
       <>
         {header}
         <ErrorState
-          title="Không tải được tổng quan lớp học"
-          description="Kiểm tra kết nối mạng rồi thử lại."
+          title={t('overview.failed')}
+          description={t('checkNetwork')}
           onRetry={() => void overview.refetch()}
         />
       </>
@@ -223,30 +228,32 @@ export function TeacherOverview() {
     <>
       {header}
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Tile label="Lớp đang dạy" value={String(data.classCount)} />
+        <Tile label={t('overview.classes')} value={String(data.classCount)} />
         <Tile
-          label="Học sinh"
+          label={t('overview.students')}
           value={String(data.studentCount)}
-          note={data.newStudents ? `+${data.newStudents} trong 7 ngày` : undefined}
+          note={
+            data.newStudents ? t('overview.newStudents', { count: data.newStudents }) : undefined
+          }
         />
         <Tile
-          label="Bài đang mở"
+          label={t('overview.open')}
           value={String(data.openAssignmentCount)}
-          note={data.dueSoonCount ? `${data.dueSoonCount} bài hạn trong 48 giờ` : undefined}
+          note={data.dueSoonCount ? t('overview.dueSoon', { count: data.dueSoonCount }) : undefined}
         />
         <Tile
-          label="Nộp đúng hạn"
-          value={data.onTimeRate === null ? 'Chưa có' : `${data.onTimeRate}%`}
-          note="30 ngày qua"
+          label={t('overview.onTime')}
+          value={data.onTimeRate === null ? t('overview.none') : `${data.onTimeRate}%`}
+          note={t('overview.last30')}
         />
       </dl>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Cần chú ý">
+        <Panel title={t('overview.attention')}>
           <Attention attention={data.attention} />
         </Panel>
-        <Panel title="Sắp đến hạn">
+        <Panel title={t('overview.upcoming')}>
           {data.upcoming.length === 0 ? (
-            <p className="text-text-muted">Không có bài nào sắp đến hạn.</p>
+            <p className="text-text-muted">{t('overview.noUpcoming')}</p>
           ) : (
             <ul className="flex flex-col">
               {data.upcoming.map((item) => (
@@ -259,7 +266,9 @@ export function TeacherOverview() {
                       <span className="font-medium wrap-anywhere">
                         {item.setTitle} · {item.className}
                       </span>
-                      <span className="text-small text-text-muted">{dueText(item.dueAt)}</span>
+                      <span className="text-small text-text-muted">
+                        {dueText(item.dueAt, undefined, t)}
+                      </span>
                     </span>
                     <SubmitBar submitted={item.submitted} memberCount={item.memberCount} />
                   </Link>
@@ -269,9 +278,9 @@ export function TeacherOverview() {
           )}
         </Panel>
       </div>
-      <Panel title="Bài vừa nộp">
+      <Panel title={t('overview.recent')}>
         {data.recentSubmissions.length === 0 ? (
-          <p className="text-text-muted">Chưa có học sinh nào nộp bài.</p>
+          <p className="text-text-muted">{t('overview.noRecent')}</p>
         ) : (
           <ul className="flex flex-col">
             {data.recentSubmissions.map((item) => (
@@ -289,8 +298,8 @@ export function TeacherOverview() {
                   {item.setTitle} · {item.className}
                 </span>
                 <span className="tabular-nums">
-                  {item.score === null ? 'Đã nộp' : `${item.score}%`}
-                  {item.late ? ' · trễ' : ''}
+                  {item.score === null ? t('overview.submitted') : `${item.score}%`}
+                  {item.late ? t('overview.late') : ''}
                 </span>
                 <span className="ml-auto text-text-muted">{formatDateTime(item.submittedAt)}</span>
               </li>

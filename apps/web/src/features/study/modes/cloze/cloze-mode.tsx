@@ -4,9 +4,11 @@ import { CLOZE_BLANK } from '@vocab/shared';
 import { Fragment } from 'react';
 import { TypedAnswer } from '../typed/typed-answer';
 import type { StudyModeProps } from '../views';
+import { useTranslation } from 'react-i18next';
 
 /** Hiện chỗ trống thành một gạch dưới rõ ràng, trình đọc màn hình đọc là "chỗ trống". */
 function Sentence({ text, lang }: { text: string; lang: string }) {
+  const { t } = useTranslation('study');
   const parts = text.split(CLOZE_BLANK);
   return (
     <p lang={lang} className="font-card text-h1 break-words">
@@ -16,7 +18,7 @@ function Sentence({ text, lang }: { text: string; lang: string }) {
           {index < parts.length - 1 ? (
             <span
               role="img"
-              aria-label="chỗ trống"
+              aria-label={t('cloze.blank')}
               className="mx-1 inline-block w-20 border-b-2 border-text align-baseline"
             />
           ) : null}
@@ -27,18 +29,19 @@ function Sentence({ text, lang }: { text: string; lang: string }) {
 }
 
 export function ClozeModeView(props: StudyModeProps) {
+  const { t } = useTranslation('study');
   const { question, languages } = props;
 
   return (
     <TypedAnswer
       {...props}
-      inputLabel="Điền từ còn thiếu"
+      inputLabel={t('cloze.input')}
       prompt={
         <div className="flex flex-col gap-2">
           <Sentence text={question.prompt} lang={languages.term} />
           {question.hint ? (
             <p lang={languages.definition} className="text-text-muted break-words">
-              Gợi ý: {question.hint}
+              {t('cloze.hint', { hint: question.hint })}
             </p>
           ) : null}
         </div>

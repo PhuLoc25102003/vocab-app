@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SLOW_AFTER_MS = 3_000;
 
@@ -12,6 +13,7 @@ interface LoadingStateProps {
 }
 
 export function LoadingState({ label, children }: LoadingStateProps) {
+  const { t } = useTranslation();
   const [isSlow, setIsSlow] = useState(false);
 
   useEffect(() => {
@@ -22,11 +24,7 @@ export function LoadingState({ label, children }: LoadingStateProps) {
   return (
     <div role="status" aria-label={label} className="flex flex-col gap-4">
       {children}
-      {isSlow ? (
-        <p className="text-small text-text-muted">
-          Máy chủ đang khởi động, có thể mất khoảng 30 giây.
-        </p>
-      ) : null}
+      {isSlow ? <p className="text-small text-text-muted">{t('loading.slowServer')}</p> : null}
     </div>
   );
 }

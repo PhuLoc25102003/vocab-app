@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/menu';
 import { formErrorMessage } from '@/lib/form-errors';
 import { useFolders, useMoveSet } from '../hooks';
+import { useTranslation } from 'react-i18next';
 
 interface SetFolderPickerProps {
   setId: string;
@@ -33,6 +34,7 @@ export function SetFolderPicker({
   variant = 'chip',
   setTitle,
 }: SetFolderPickerProps) {
+  const { t } = useTranslation('sets');
   const folders = useFolders();
   const move = useMoveSet(setId);
   const list = folders.data?.data ?? [];
@@ -49,7 +51,7 @@ export function SetFolderPicker({
     // Dùng promise thay vì callback của `mutate`: gỡ bộ khỏi thư mục đang xem làm nút này
     // unmount trước khi request xong, khi đó TanStack Query bỏ qua callback và mất thông báo.
     move.mutateAsync(next).then(
-      () => toast.success(next ? 'Đã chuyển vào thư mục' : 'Đã gỡ khỏi thư mục'),
+      () => toast.success(t(next ? 'folders.movedShort' : 'folders.unfiled')),
       (error: unknown) => toast.error(formErrorMessage(error)),
     );
   };
@@ -59,7 +61,10 @@ export function SetFolderPicker({
       {variant === 'icon' ? (
         <MenuTrigger
           disabled={move.isPending}
-          aria-label={`Chuyển "${setTitle ?? ''}" vào thư mục, đang ở: ${current?.name ?? 'chưa xếp'}`}
+          aria-label={t('folders.moveSet', {
+            title: setTitle ?? '',
+            current: current?.name ?? t('folders.unfiledShort'),
+          })}
           className="inline-flex size-11 items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary disabled:opacity-50"
         >
           <FolderInput aria-hidden className="size-5" />
@@ -67,7 +72,9 @@ export function SetFolderPicker({
       ) : (
         <MenuTrigger
           disabled={move.isPending}
-          aria-label={`Thư mục: ${current?.name ?? 'chưa xếp'}. Đổi thư mục`}
+          aria-label={t('folders.changeChip', {
+            name: current?.name ?? t('folders.unfiledShort'),
+          })}
           className="inline-flex min-h-11 max-w-60 items-center gap-1.5 rounded-sm px-2 text-text transition-colors duration-fast ease-standard hover:bg-primary-soft disabled:opacity-50"
         >
           {current ? (
@@ -75,14 +82,14 @@ export function SetFolderPicker({
           ) : (
             <FolderMinus aria-hidden className="size-4 shrink-0 text-text-muted" />
           )}
-          <span className="truncate">{current?.name ?? 'Chưa xếp thư mục'}</span>
+          <span className="truncate">{current?.name ?? t('folders.noFolder')}</span>
           <ChevronDown aria-hidden className="size-4 shrink-0 text-text-muted" />
         </MenuTrigger>
       )}
       <MenuContent align="start" className="max-w-80">
-        <MenuLabel>Chuyển vào thư mục</MenuLabel>
+        <MenuLabel>{t('folders.moveTo')}</MenuLabel>
         <MenuRadioGroup value={folderId ?? NO_FOLDER} onValueChange={choose}>
-          <MenuRadioItem value={NO_FOLDER}>Không có thư mục</MenuRadioItem>
+          <MenuRadioItem value={NO_FOLDER}>{t('folders.none')}</MenuRadioItem>
           {list.map(({ id, name }) => (
             <MenuRadioItem key={id} value={id}>
               {name}
@@ -94,7 +101,9 @@ export function SetFolderPicker({
             <MenuSeparator />
             <MenuItem onSelect={() => choose(NO_FOLDER)}>
               <FolderMinus aria-hidden className="size-4" />
-              <span className="min-w-0 truncate">Gỡ khỏi thư mục {current.name}</span>
+              <span className="min-w-0 truncate">
+                {t('folders.removeFrom', { name: current.name })}
+              </span>
             </MenuItem>
           </>
         ) : null}

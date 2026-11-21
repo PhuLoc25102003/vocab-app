@@ -33,7 +33,7 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
   {
     title: 'Cookie và bộ nhớ trình duyệt',
     body: [
-      'Một cookie bảo mật giữ phiên đăng nhập. Trình duyệt cũng lưu lựa chọn giao diện sáng hoặc tối và bài đang làm dở, để bạn học tiếp khi tải lại trang.',
+      'Một cookie bảo mật giữ phiên đăng nhập. Trình duyệt cũng lưu lựa chọn giao diện sáng hoặc tối, ngôn ngữ và bài đang làm dở, để bạn học tiếp khi tải lại trang.',
     ],
   },
   {

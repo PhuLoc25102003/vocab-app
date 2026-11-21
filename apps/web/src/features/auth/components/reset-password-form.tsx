@@ -17,23 +17,26 @@ import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { resetPassword } from '../api';
+import { useTranslation } from 'react-i18next';
 
 const passwordSchema = resetPasswordSchema.pick({ password: true });
 type PasswordInput = Pick<ResetPasswordInput, 'password'>;
 const FIELDS = ['password'] as const;
 
 function LinkProblem({ message }: { message: string }) {
+  const { t } = useTranslation('auth');
   return (
     <div className="flex flex-col gap-4">
       <FormError>{message}</FormError>
       <Button asChild>
-        <Link href="/forgot-password">Gửi liên kết mới</Link>
+        <Link href="/forgot-password">{t('reset.newLink')}</Link>
       </Button>
     </div>
   );
 }
 
 export function ResetPasswordForm() {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const searchParams = useSearchParams();
   // Giữ token trong bộ nhớ rồi xoá khỏi thanh địa chỉ để không lọt vào lịch sử hay ảnh chụp màn hình.
@@ -72,26 +75,24 @@ export function ResetPasswordForm() {
   });
 
   if (!tokenValid) {
-    return (
-      <LinkProblem message="Liên kết không đầy đủ. Hãy mở lại liên kết trong thư, hoặc xin liên kết mới." />
-    );
+    return <LinkProblem message={t('reset.incomplete')} />;
   }
   if (expired) {
-    return <LinkProblem message="Liên kết đã hết hạn hoặc đã được dùng. Hãy xin liên kết mới." />;
+    return <LinkProblem message={t('reset.expired')} />;
   }
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       {formError ? <FormError>{formError}</FormError> : null}
       <PasswordField
-        label="Mật khẩu mới"
+        label={t('reset.newPassword')}
         autoComplete="new-password"
-        hint={`Ít nhất ${PASSWORD_MIN_LENGTH} ký tự. Các thiết bị đang đăng nhập sẽ bị đăng xuất.`}
+        hint={t('reset.hint', { min: PASSWORD_MIN_LENGTH })}
         error={errors.password?.message}
         {...register('password')}
       />
       <Button type="submit" loading={isSubmitting}>
-        Đặt mật khẩu mới
+        {t('reset.submit')}
       </Button>
     </form>
   );

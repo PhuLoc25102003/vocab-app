@@ -12,14 +12,15 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
-const NAV_ITEMS: { href: Route; label: string; icon: LucideIcon }[] = [
-  { href: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
-  { href: '/sets', label: 'Bộ từ', icon: BookOpen },
-  { href: '/explore', label: 'Khám phá', icon: Compass },
-  { href: '/review', label: 'Ôn hôm nay', icon: CalendarCheck },
-  { href: '/classes', label: 'Lớp học', icon: School },
-];
+const NAV_ITEMS = [
+  { href: '/dashboard', label: 'dashboard', icon: LayoutDashboard },
+  { href: '/sets', label: 'sets', icon: BookOpen },
+  { href: '/explore', label: 'explore', icon: Compass },
+  { href: '/review', label: 'review', icon: CalendarCheck },
+  { href: '/classes', label: 'classes', icon: School },
+] as const satisfies readonly { href: Route; label: string; icon: LucideIcon }[];
 
 function isCurrent(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -35,9 +36,10 @@ export function AppNavFallback() {
 }
 
 function NavLinks({ pathname }: { pathname: string }) {
+  const { t } = useTranslation();
   return (
     <nav
-      aria-label="Điều hướng chính"
+      aria-label={t('nav.main')}
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:pb-0"
     >
       <ul className="grid grid-cols-5 md:flex md:gap-2">
@@ -54,7 +56,7 @@ function NavLinks({ pathname }: { pathname: string }) {
                 )}
               >
                 <Icon aria-hidden className="size-5" />
-                {label}
+                {t(`nav.${label}`)}
               </Link>
             </li>
           );

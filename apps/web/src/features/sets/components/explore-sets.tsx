@@ -11,6 +11,7 @@ import { usePublicSets } from '../hooks/use-public-sets';
 import { toPage } from './my-sets';
 import { SetCardGrid, SetCardsLoading } from './set-cards';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
+import { useTranslation } from 'react-i18next';
 
 export const EXPLORE_PAGE_SIZE = 20;
 
@@ -57,6 +58,7 @@ function ExploreResults({
   page: number;
   audience: ExploreAudience;
 }) {
+  const { t } = useTranslation('sets');
   const paths = AUDIENCE_PATHS[audience];
   const sets = usePublicSets({ page, limit: EXPLORE_PAGE_SIZE, q });
 
@@ -66,8 +68,8 @@ function ExploreResults({
   if (sets.isError) {
     return (
       <ErrorState
-        title="Không tải được bộ từ"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('loadFailed')}
+        description={t('checkNetwork')}
         onRetry={() => void sets.refetch()}
       />
     );
@@ -77,29 +79,26 @@ function ExploreResults({
   if (meta.total === 0) {
     return q ? (
       <EmptyState
-        title="Không tìm thấy bộ từ phù hợp"
-        description={`Chưa có bộ từ công khai nào khớp với "${q}".`}
+        title={t('noMatch')}
+        description={t('explore.noMatch', { q })}
         action={
           <Button asChild variant="secondary">
-            <Link href={exploreHref(paths.list, '')}>Xem tất cả</Link>
+            <Link href={exploreHref(paths.list, '')}>{t('seeAll')}</Link>
           </Button>
         }
       />
     ) : (
-      <EmptyState
-        title="Chưa có bộ từ công khai"
-        description="Bộ từ được đặt ở chế độ công khai sẽ hiện ở đây."
-      />
+      <EmptyState title={t('explore.empty')} description={t('explore.emptyHint')} />
     );
   }
   if (data.length === 0) {
     return (
       <EmptyState
-        title="Trang này không có bộ từ"
-        description="Danh sách ngắn hơn số trang này."
+        title={t('pageEmpty')}
+        description={t('explore.pageEmptyHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href={exploreHref(paths.list, q)}>Về trang đầu</Link>
+            <Link href={exploreHref(paths.list, q)}>{t('firstPage')}</Link>
           </Button>
         }
       />

@@ -5,6 +5,7 @@ import { Search } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from 'react-i18next';
 
 const MAX_QUERY_LENGTH = 100;
 export const QUERY_FIELD = 'q';
@@ -21,6 +22,7 @@ interface SetSearchFormProps {
 }
 
 export function SetSearchForm({ id, value, onSearch }: SetSearchFormProps) {
+  const { t } = useTranslation('sets');
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next = new FormData(event.currentTarget).get(QUERY_FIELD);
@@ -30,7 +32,7 @@ export function SetSearchForm({ id, value, onSearch }: SetSearchFormProps) {
   return (
     <form role="search" onSubmit={submit} className="flex w-full max-w-[560px] gap-2">
       <label htmlFor={id} className="sr-only">
-        Tìm bộ từ theo tên
+        {t('search.label')}
       </label>
       <Input
         // Giữ ô tìm kiếm đúng với URL khi bấm quay lại trên trình duyệt.
@@ -40,11 +42,11 @@ export function SetSearchForm({ id, value, onSearch }: SetSearchFormProps) {
         type="search"
         defaultValue={value}
         maxLength={MAX_QUERY_LENGTH}
-        placeholder="Tìm theo tên bộ từ"
+        placeholder={t('search.placeholder')}
       />
       <Button type="submit">
         <Search aria-hidden className="size-4" />
-        Tìm
+        {t('search.submit')}
       </Button>
     </form>
   );

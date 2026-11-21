@@ -1,4 +1,7 @@
+'use client';
+
 import type { StatsOverview } from '@vocab/shared';
+import { useTranslation } from 'react-i18next';
 
 const WEEKDAYS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 const BAR_AREA_PX = 96;
@@ -9,17 +12,18 @@ function weekday(day: string): string {
 
 /** Cột số câu trả lời 7 ngày, một màu, có bảng cho trình đọc màn hình. */
 export function ActivityChart({ activity }: { activity: StatsOverview['activity'] }) {
+  const { t } = useTranslation('study');
   const max = Math.max(1, ...activity.map(({ answers }) => answers));
   return (
     <figure className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
-      <figcaption className="text-h3">Câu trả lời 7 ngày gần nhất</figcaption>
+      <figcaption className="text-h3">{t('stats.activity')}</figcaption>
       <div aria-hidden className="flex items-end gap-2" style={{ height: BAR_AREA_PX + 40 }}>
         {activity.map(({ day, answers }, index) => {
           const today = index === activity.length - 1;
           return (
             <div
               key={day}
-              title={`${weekday(day)}: ${answers} câu`}
+              title={t('stats.dayAnswers', { day: weekday(day), count: answers })}
               className="flex flex-1 flex-col items-center justify-end gap-1"
             >
               <span className="text-tiny text-text-muted tabular-nums">{answers}</span>
@@ -35,11 +39,11 @@ export function ActivityChart({ activity }: { activity: StatsOverview['activity'
         })}
       </div>
       <table className="sr-only">
-        <caption>Số câu trả lời theo ngày</caption>
+        <caption>{t('stats.byDay')}</caption>
         <thead>
           <tr>
-            <th scope="col">Ngày</th>
-            <th scope="col">Câu trả lời</th>
+            <th scope="col">{t('stats.day')}</th>
+            <th scope="col">{t('stats.answers')}</th>
           </tr>
         </thead>
         <tbody>
@@ -57,16 +61,17 @@ export function ActivityChart({ activity }: { activity: StatsOverview['activity'
 
 /** Tỉ lệ từ đã thuộc và đang học, chú thích bằng chữ và số. */
 export function MasteryBar({ mastered, learning }: { mastered: number; learning: number }) {
+  const { t } = useTranslation('study');
   const total = mastered + learning;
   const segments = [
-    { label: 'Đã thuộc', value: mastered, className: 'bg-success' },
-    { label: 'Đang học', value: learning, className: 'bg-primary' },
+    { label: t('stats.mastered'), value: mastered, className: 'bg-success' },
+    { label: t('stats.learning'), value: learning, className: 'bg-primary' },
   ];
   return (
     <figure className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
-      <figcaption className="text-h3">Mức nhớ các từ đã học</figcaption>
+      <figcaption className="text-h3">{t('stats.masteryTitle')}</figcaption>
       {total === 0 ? (
-        <p className="text-text-muted">Chưa có từ nào được học.</p>
+        <p className="text-text-muted">{t('stats.noWords')}</p>
       ) : (
         <>
           <div aria-hidden className="flex h-3 gap-0.5 overflow-hidden rounded-full bg-border">
@@ -89,9 +94,7 @@ export function MasteryBar({ mastered, learning }: { mastered: number; learning:
               </li>
             ))}
           </ul>
-          <p className="text-small text-text-muted">
-            Từ được tính là đã thuộc khi bạn trả lời đúng ở hai ngày khác nhau.
-          </p>
+          <p className="text-small text-text-muted">{t('stats.masteryRule')}</p>
         </>
       )}
     </figure>

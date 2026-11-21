@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { isSpeechSupported, speak } from '@/lib/speech';
+import { useTranslation } from 'react-i18next';
 
 interface AudioButtonProps {
   text: string;
@@ -25,6 +26,7 @@ export function useSpeechSupported(): boolean {
 
 /** Trình duyệt không có Web Speech thì không hiện nút. */
 export function AudioButton({ text, lang, label, className, withSlow = false }: AudioButtonProps) {
+  const { t } = useTranslation();
   const supported = useSpeechSupported();
   if (!supported) {
     return null;
@@ -52,8 +54,8 @@ export function AudioButton({ text, lang, label, className, withSlow = false }: 
         type="button"
         variant="ghost"
         size="icon"
-        aria-label={`${label} chậm`}
-        title="Nghe chậm"
+        aria-label={t('audio.slow', { label })}
+        title={t('audio.slowTitle')}
         onClick={() => speak(text, lang, { slow: true })}
       >
         <Snail aria-hidden className="size-5" />

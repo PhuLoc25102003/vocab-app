@@ -3,6 +3,7 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export interface ComboboxOption {
   value: string;
@@ -46,14 +47,15 @@ export function Combobox({
   options,
   value,
   onChange,
-  placeholder = 'Chọn hoặc gõ để tìm',
+  placeholder,
   hint,
   error,
-  emptyText = 'Không có kết quả',
+  emptyText,
   name,
   disabled = false,
   onBlur,
 }: ComboboxProps) {
+  const { t } = useTranslation();
   const id = useId();
   const listId = `${id}-list`;
   const hintId = hint ? `${id}-hint` : undefined;
@@ -151,7 +153,7 @@ export function Combobox({
           aria-invalid={error ? true : undefined}
           aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
           disabled={disabled}
-          placeholder={selected ? undefined : placeholder}
+          placeholder={selected ? undefined : (placeholder ?? t('combobox.placeholder'))}
           value={query ?? selected?.label ?? ''}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -172,7 +174,7 @@ export function Combobox({
         <button
           type="button"
           tabIndex={-1}
-          aria-label={open ? `Đóng danh sách ${label}` : `Mở danh sách ${label}`}
+          aria-label={t(open ? 'combobox.close' : 'combobox.open', { label })}
           disabled={disabled}
           // Giữ focus ở ô nhập để bàn phím và trình đọc màn hình không mất vị trí.
           onMouseDown={(event) => event.preventDefault()}
@@ -194,13 +196,13 @@ export function Combobox({
         <ul
           id={listId}
           role="listbox"
-          aria-label={`Lựa chọn ${label}`}
+          aria-label={t('combobox.options', { label })}
           hidden={!open}
           className="absolute inset-x-0 top-full z-10 mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-md border border-border bg-surface py-1 shadow-raised"
         >
           {matches.length === 0 ? (
             <li role="presentation" className="px-3 py-2 text-small text-text-muted">
-              {emptyText}
+              {emptyText ?? t('combobox.empty')}
             </li>
           ) : (
             matches.map((option, index) => {

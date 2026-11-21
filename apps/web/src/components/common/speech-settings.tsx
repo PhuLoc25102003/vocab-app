@@ -22,11 +22,13 @@ import {
   playCorrectSound,
   saveSoundEnabled,
 } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 const SAMPLE = 'Practice makes perfect.';
 
 /** Chọn giọng Anh Mỹ hoặc Anh Anh và tốc độ đọc, lưu trên thiết bị. */
 export function SpeechSettings() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SPEECH_SETTINGS);
   const [exact, setExact] = useState(true);
   const [sound, setSound] = useState(true);
@@ -61,50 +63,51 @@ export function SpeechSettings() {
       className="flex w-full flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5"
     >
       <h2 id="speech-title" className="text-h3">
-        Giọng đọc và âm thanh
+        {t('speech.title')}
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-small font-medium">
-          Giọng tiếng Anh
+          {t('speech.accent')}
           <Select
             value={settings.accent}
             onChange={(event) => update({ accent: event.target.value as Accent })}
           >
-            <option value="en-US">Anh Mỹ</option>
-            <option value="en-GB">Anh Anh</option>
+            <option value="en-US">{t('speech.us')}</option>
+            <option value="en-GB">{t('speech.gb')}</option>
           </Select>
         </label>
         <label className="flex flex-col gap-1 text-small font-medium">
-          Tốc độ đọc
+          {t('speech.rate')}
           <Select
             value={settings.rate}
             onChange={(event) => update({ rate: event.target.value as SpeechRate })}
           >
-            <option value="normal">Bình thường</option>
-            <option value="slow">Chậm</option>
+            <option value="normal">{t('speech.normal')}</option>
+            <option value="slow">{t('speech.slow')}</option>
           </Select>
         </label>
       </div>
       {!exact ? (
         <p role="status" className="text-small text-text-muted">
-          Máy này chưa có giọng {settings.accent === 'en-GB' ? 'Anh Anh' : 'Anh Mỹ'}, trình duyệt sẽ
-          dùng giọng tiếng Anh khác.
+          {t('speech.missingVoice', {
+            accent: t(settings.accent === 'en-GB' ? 'speech.gb' : 'speech.us'),
+          })}
         </p>
       ) : null}
       <div>
         <Button type="button" variant="secondary" onClick={() => speak(SAMPLE, 'en')}>
           <Volume2 aria-hidden className="size-4" />
-          Nghe thử
+          {t('speech.tryIt')}
         </Button>
       </div>
       {soundSupported ? (
         <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
           <span className="flex min-w-0 flex-col">
             <span id="sound-label" className="font-medium">
-              Âm thanh khi trả lời đúng
+              {t('speech.sound')}
             </span>
             <span id="sound-hint" className="text-small text-text-muted">
-              Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra.
+              {t('speech.soundHint')}
             </span>
           </span>
           <button

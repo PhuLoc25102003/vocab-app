@@ -10,17 +10,16 @@ import { cn } from '@/lib/utils';
 import { accountStudyBackend } from '../api';
 import { PATH_STEPS } from '../path-steps';
 import { StudyShell } from './study-shell';
+import { useTranslation } from 'react-i18next';
 
 const stepHref = (setId: string, index: number) =>
   `/sets/${setId}/study/path?step=${index + 1}` as Route;
 
 function PathSteps({ current }: { current: number }) {
+  const { t } = useTranslation('study');
   return (
-    <ol
-      aria-label="Các bước của lộ trình"
-      className="flex flex-wrap items-center gap-x-2 gap-y-1 pb-1"
-    >
-      {PATH_STEPS.map(({ mode, label }, index) => {
+    <ol aria-label={t('path.steps')} className="flex flex-wrap items-center gap-x-2 gap-y-1 pb-1">
+      {PATH_STEPS.map(({ mode }, index) => {
         const done = index < current;
         const active = index === current;
         return (
@@ -41,8 +40,8 @@ function PathSteps({ current }: { current: number }) {
                 {index + 1}
               </span>
             )}
-            {label}
-            {done ? <span className="sr-only"> (xong)</span> : null}
+            {t(`path.${mode}`)}
+            {done ? <span className="sr-only">{t('path.done')}</span> : null}
           </li>
         );
       })}
@@ -55,6 +54,7 @@ function PathSteps({ current }: { current: number }) {
  * thường nên kết quả và lịch ôn được lưu như khi học lẻ. Bước không dùng được thì bỏ qua.
  */
 export function StudyPath({ setId, step }: { setId: string; step: number }) {
+  const { t } = useTranslation('study');
   const router = useRouter();
   const current = PATH_STEPS[step] ?? PATH_STEPS[0];
   const next = PATH_STEPS[step + 1];
@@ -67,14 +67,14 @@ export function StudyPath({ setId, step }: { setId: string; step: number }) {
   const resultNote = next ? (
     <Button asChild>
       <Link href={stepHref(setId, step + 1)}>
-        Bước tiếp: {next.label}
+        {t('path.next', { step: t(`path.${next.mode}`) })}
         <ArrowRight aria-hidden className="size-4" />
       </Link>
     </Button>
   ) : (
     <p className="flex items-center gap-2 rounded-md border border-primary bg-primary-soft p-3 font-medium text-primary">
       <PartyPopper aria-hidden className="size-5 shrink-0" />
-      Bạn đã đi hết lộ trình: xem thẻ, trắc nghiệm, ghép cặp và luyện viết.
+      {t('path.finished')}
     </p>
   );
 

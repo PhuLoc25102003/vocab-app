@@ -13,9 +13,8 @@ import {
   type CalendarDay,
 } from '@/lib/local-date-time';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
-const WEEKDAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-const WEEKDAY_NAMES = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
 const ARROW_STEPS: Record<string, number> = {
   ArrowLeft: -1,
   ArrowRight: 1,
@@ -38,6 +37,9 @@ interface CalendarProps {
  * dùng mở để không gọi `new Date()` khi prerender.
  */
 export function Calendar({ selected, minDay, disablePast = false, onPick }: CalendarProps) {
+  const { t, i18n } = useTranslation();
+  const WEEKDAYS = t('calendar.weekdays').split(',');
+  const WEEKDAY_NAMES = t('calendar.weekdayNames').split(',');
   const [today] = useState(() => toCalendarDay(new Date()));
   const earliest = disablePast ? today : minDay;
   const start = selected ?? today;
@@ -45,7 +47,11 @@ export function Calendar({ selected, minDay, disablePast = false, onPick }: Cale
   const [focused, setFocused] = useState<CalendarDay>(start);
   const gridRef = useRef<HTMLDivElement>(null);
   const cells = monthGrid(view.year, view.month);
-  const heading = `Tháng ${view.month + 1}, ${view.year}`;
+  const heading = t('calendar.heading', {
+    month: view.month + 1,
+    year: view.year,
+    monthName: new Date(view.year, view.month, 1).toLocaleString(i18n.language, { month: 'long' }),
+  });
 
   // Focus ngày đang chọn khi mở và khi di chuyển bằng phím.
   useLayoutEffect(() => {
@@ -78,7 +84,7 @@ export function Calendar({ selected, minDay, disablePast = false, onPick }: Cale
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Tháng trước"
+          aria-label={t('calendar.prevMonth')}
           onClick={() => shiftMonth(-1)}
         >
           <ChevronLeft aria-hidden className="size-5" />
@@ -90,7 +96,7 @@ export function Calendar({ selected, minDay, disablePast = false, onPick }: Cale
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Tháng sau"
+          aria-label={t('calendar.nextMonth')}
           onClick={() => shiftMonth(1)}
         >
           <ChevronRight aria-hidden className="size-5" />

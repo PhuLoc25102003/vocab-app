@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { FormField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import type { ImportExtraColumns } from './import-source';
+import { translateValidation } from '@/lib/validation-message';
+import { useTranslation } from 'react-i18next';
 
 type RowField = 'term' | 'definition' | 'phonetic' | 'example';
 
@@ -20,7 +22,7 @@ function fieldErrors(row: ImportRow): Partial<Record<RowField, string>> {
   const errors: Partial<Record<RowField, string>> = {};
   for (const issue of result.success ? [] : result.error.issues) {
     const field = issue.path[0] as RowField;
-    errors[field] ??= issue.message;
+    errors[field] ??= translateValidation(issue.message);
   }
   return errors;
 }
@@ -37,6 +39,7 @@ interface ImportPreviewProps {
 }
 
 export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
+  const { t } = useTranslation('sets');
   const invalidCount = rows.filter(({ errors }) => errors.length > 0).length;
   const [onlyInvalid, setOnlyInvalid] = useState(invalidCount > 0);
   const visible = onlyInvalid && invalidCount > 0 ? rows.filter((row) => row.errors.length) : rows;
@@ -52,12 +55,13 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h2 id="preview-title" className="text-h2">
-            Xem trước <span className="tabular-nums">({rows.length} thẻ)</span>
+            {t('import.previewTitle')}{' '}
+            <span className="tabular-nums">{t('import.previewCount', { count: rows.length })}</span>
           </h2>
           <p className="text-small text-text-muted" aria-live="polite">
             {invalidCount > 0
-              ? `${invalidCount} dòng cần sửa hoặc bỏ trước khi lưu.`
-              : 'Mọi dòng đều hợp lệ.'}
+              ? t('import.invalidRows', { count: invalidCount })
+              : t('import.allValid')}
           </p>
         </div>
         {invalidCount > 0 ? (
@@ -68,7 +72,7 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
               checked={onlyInvalid}
               onChange={(event) => setOnlyInvalid(event.target.checked)}
             />
-            Chỉ hiện dòng lỗi
+            {t('import.onlyInvalid')}
           </label>
         ) : null}
       </div>
@@ -79,29 +83,29 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
           return (
             <li
               key={row.line}
-              aria-label={`Dòng ${row.line}`}
+              aria-label={t('import.row', { line: row.line })}
               data-invalid={row.errors.length > 0 || undefined}
               className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 data-invalid:border-danger-mark sm:flex-row sm:items-start"
             >
               <span className="text-small text-text-muted tabular-nums sm:w-16 sm:pt-9">
-                Dòng {row.line}
+                {t('import.row', { line: row.line })}
               </span>
               <div className="grid flex-1 gap-3 sm:grid-cols-2">
                 <FormField
-                  label="Từ"
+                  label={t('import.term')}
                   value={row.term}
                   error={errors.term}
                   onChange={(event) => update(row.line, 'term', event.target.value)}
                 />
                 <FormField
-                  label="Nghĩa"
+                  label={t('import.definition')}
                   value={row.definition}
                   error={errors.definition}
                   onChange={(event) => update(row.line, 'definition', event.target.value)}
                 />
                 {columns.phonetic ? (
                   <FormField
-                    label="Phiên âm"
+                    label={t('import.phonetic')}
                     value={row.phonetic ?? ''}
                     error={errors.phonetic}
                     onChange={(event) => update(row.line, 'phonetic', event.target.value)}
@@ -109,7 +113,7 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
                 ) : null}
                 {columns.example ? (
                   <FormField
-                    label="Ví dụ"
+                    label={t('import.example')}
                     value={row.example ?? ''}
                     error={errors.example}
                     onChange={(event) => update(row.line, 'example', event.target.value)}
@@ -121,7 +125,7 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
                 variant="ghost"
                 size="icon"
                 className="self-end sm:mt-6 sm:self-start"
-                aria-label={`Bỏ dòng ${row.line}`}
+                aria-label={t('import.removeRow', { line: row.line })}
                 onClick={() => remove(row.line)}
               >
                 <Trash2 aria-hidden className="size-4" />

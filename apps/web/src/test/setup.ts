@@ -6,6 +6,11 @@ import { createI18n } from '@/lib/i18n/config';
 // Component dùng `useTranslation` render được không cần bọc provider: instance `vi` toàn cục.
 createI18n('vi');
 
+// Server component gọi `getT` đọc cookie: trong test không có cookie nên là tiếng Việt.
+vi.mock('next/headers', () => ({
+  cookies: () => Promise.resolve({ get: () => undefined }),
+}));
+
 // jsdom không có matchMedia.
 window.matchMedia = vi.fn().mockReturnValue({
   matches: false,

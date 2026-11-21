@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useMySets } from '../hooks/use-my-sets';
 import { SetCardGrid, SetCardsLoading } from './set-cards';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
+import { useTranslation } from 'react-i18next';
 
 export const SETS_PAGE_SIZE = 20;
 
@@ -23,10 +24,10 @@ export function toPage(value: string | null): number {
 
 const DEFAULT_SORT = '-updatedAt';
 const SORT_OPTIONS = [
-  { value: DEFAULT_SORT, label: 'Mới cập nhật' },
-  { value: '-createdAt', label: 'Mới tạo' },
-  { value: 'title', label: 'Tên từ A đến Z' },
-];
+  { value: DEFAULT_SORT, label: 'mine.sortUpdated' },
+  { value: '-createdAt', label: 'mine.sortCreated' },
+  { value: 'title', label: 'mine.sortTitle' },
+] as const;
 
 function toSort(value: string | null): string {
   return SORT_OPTIONS.some((option) => option.value === value) ? (value as string) : DEFAULT_SORT;
@@ -57,6 +58,7 @@ interface MySetsProps {
 
 /** Thư mục đang mở nằm trong URL (`?folder=`), cột thư mục cũng đọc và đổi tham số này. */
 export function MySets({ renderCardActions }: MySetsProps = {}) {
+  const { t } = useTranslation('sets');
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = toPage(searchParams.get('page'));
@@ -88,13 +90,13 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
           </div>
           <div className="w-36 shrink-0 sm:w-48">
             <SelectField
-              label="Sắp xếp"
+              label={t('mine.sort')}
               value={sort}
               onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
             >
               {SORT_OPTIONS.map(({ value, label }) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t(label)}
                 </option>
               ))}
             </SelectField>
@@ -115,6 +117,7 @@ function MySetsResults({
   state: ListState;
   renderCardActions?: MySetsProps['renderCardActions'];
 }) {
+  const { t } = useTranslation('sets');
   const { q, folder } = state;
   if (sets.isPending) {
     return <SetCardsLoading count={6} />;
@@ -122,8 +125,8 @@ function MySetsResults({
   if (sets.isError) {
     return (
       <ErrorState
-        title="Không tải được bộ từ"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('loadFailed')}
+        description={t('checkNetwork')}
         onRetry={() => void sets.refetch()}
       />
     );
@@ -133,11 +136,11 @@ function MySetsResults({
   if (meta.total === 0 && q) {
     return (
       <EmptyState
-        title="Không tìm thấy bộ từ phù hợp"
-        description={`Bạn chưa có bộ từ nào khớp với "${q}".`}
+        title={t('noMatch')}
+        description={t('mine.noMatch', { q })}
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref({ ...state, q: '' })}>Xem tất cả</Link>
+            <Link href={listHref({ ...state, q: '' })}>{t('seeAll')}</Link>
           </Button>
         }
       />
@@ -146,27 +149,27 @@ function MySetsResults({
   if (meta.total === 0 && folder) {
     return (
       <EmptyState
-        title={folder === NO_FOLDER ? 'Bộ từ nào cũng đã có thư mục' : 'Thư mục này chưa có bộ từ'}
-        description="Bấm nút thư mục trên thẻ bộ từ để chuyển bộ vào đây."
+        title={t(folder === NO_FOLDER ? 'mine.allFiled' : 'mine.folderEmpty')}
+        description={t('mine.folderEmptyHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref({ ...state, folder: '' })}>Xem tất cả bộ từ</Link>
+            <Link href={listHref({ ...state, folder: '' })}>{t('mine.seeAllSets')}</Link>
           </Button>
         }
       />
     );
   }
   if (meta.total === 0) {
-    return <EmptyState title="Chưa có bộ từ nào" description="Tạo bộ đầu tiên để bắt đầu học." />;
+    return <EmptyState title={t('empty')} description={t('emptyHint')} />;
   }
   if (data.length === 0) {
     return (
       <EmptyState
-        title="Trang này không có bộ từ"
-        description="Danh sách của bạn ngắn hơn số trang này."
+        title={t('pageEmpty')}
+        description={t('mine.pageEmptyHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href={listHref(state)}>Về trang đầu</Link>
+            <Link href={listHref(state)}>{t('firstPage')}</Link>
           </Button>
         }
       />

@@ -18,6 +18,7 @@ import { useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { formErrorMessage } from '@/lib/form-errors';
 import { useMoveAnySet } from '../hooks';
+import { useTranslation } from 'react-i18next';
 
 interface DragData {
   title: string;
@@ -30,6 +31,7 @@ interface DragData {
  * Kéo thả chỉ là lối tắt, nút thư mục trên thẻ vẫn làm được mọi việc bằng bàn phím.
  */
 export function FolderDndArea({ children }: { children: ReactNode }) {
+  const { t } = useTranslation('sets');
   const move = useMoveAnySet();
   const [dragging, setDragging] = useState<DragData | null>(null);
   const sensors = useSensors(
@@ -55,7 +57,7 @@ export function FolderDndArea({ children }: { children: ReactNode }) {
     // Promise vẫn resolve khi thẻ bộ từ đã rời danh sách đang xem, callback của `mutate` thì không.
     move.mutateAsync({ setId: String(active.id), folderId }).then(
       () =>
-        toast.success(folderId ? `Đã chuyển "${data.title}" vào thư mục` : 'Đã gỡ khỏi thư mục'),
+        toast.success(folderId ? t('folders.moved', { title: data.title }) : t('folders.unfiled')),
       (error: unknown) => toast.error(formErrorMessage(error)),
     );
   };
@@ -89,6 +91,7 @@ interface SetDragHandleProps {
 
 /** Tay nắm để kéo thẻ bộ từ. Ẩn khỏi trình đọc màn hình vì đã có nút thư mục làm cùng việc. */
 export function SetDragHandle({ setId, title, folderId }: SetDragHandleProps) {
+  const { t } = useTranslation('sets');
   const { setNodeRef, listeners, isDragging } = useDraggable({
     id: setId,
     data: { title, folderId } satisfies DragData,
@@ -98,7 +101,7 @@ export function SetDragHandle({ setId, title, folderId }: SetDragHandleProps) {
       ref={setNodeRef}
       {...listeners}
       aria-hidden
-      title="Kéo vào một thư mục"
+      title={t('folders.dragHint')}
       data-drag-handle={setId}
       className={`inline-flex size-11 cursor-grab touch-none items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >

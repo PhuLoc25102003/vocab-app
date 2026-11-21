@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { speak } from '@/lib/speech';
 import { TypedAnswer } from '../typed/typed-answer';
 import type { StudyModeProps } from '../views';
+import { useTranslation } from 'react-i18next';
 
 export function DictationModeView(props: StudyModeProps) {
+  const { t } = useTranslation('study');
   const { question, languages, onAnswer } = props;
   const supported = useSpeechSupported();
 
@@ -21,15 +23,13 @@ export function DictationModeView(props: StudyModeProps) {
   if (!supported) {
     return (
       <div className="flex flex-1 flex-col items-start gap-3">
-        <h1 className="text-h2">Trình duyệt này không đọc được từ</h1>
-        <p className="text-text-muted">
-          Hãy mở bằng Chrome, Edge hoặc Safari để dùng chế độ Nghe viết.
-        </p>
+        <h1 className="text-h2">{t('dictation.unsupported')}</h1>
+        <p className="text-text-muted">{t('dictation.unsupportedHint')}</p>
         <Button
           variant="secondary"
           onClick={() => onAnswer({ questionId: question.id, value: '', timeMs: 0 })}
         >
-          Bỏ qua câu này
+          {t('dictation.skip')}
         </Button>
       </div>
     );
@@ -38,7 +38,7 @@ export function DictationModeView(props: StudyModeProps) {
   return (
     <TypedAnswer
       {...props}
-      inputLabel="Nhập từ bạn nghe được"
+      inputLabel={t('dictation.input')}
       prompt={
         <div className="flex flex-wrap gap-2">
           <Button
@@ -47,7 +47,7 @@ export function DictationModeView(props: StudyModeProps) {
             onClick={() => speak(question.prompt, languages.term)}
           >
             <Volume2 aria-hidden className="size-5" />
-            Nghe lại
+            {t('dictation.replay')}
           </Button>
           <Button
             type="button"
@@ -55,7 +55,7 @@ export function DictationModeView(props: StudyModeProps) {
             onClick={() => speak(question.prompt, languages.term, { slow: true })}
           >
             <Snail aria-hidden className="size-5" />
-            Nghe chậm
+            {t('dictation.slow')}
           </Button>
         </div>
       }

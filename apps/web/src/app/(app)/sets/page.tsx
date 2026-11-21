@@ -5,22 +5,27 @@ import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
 import { SetCardsLoading } from '@/features/sets/components/set-cards';
 import { MySetsScreen } from './my-sets-screen';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Bộ từ' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.sets') };
+}
 
-export default function SetsPage() {
+export default async function SetsPage() {
+  const t = await getT('common');
   return (
     <>
       <PageHeader
-        title="Bộ từ"
-        description="Thư viện của bạn: bộ từ bạn tạo, nhập và sao chép về. Bộ của người khác nằm ở Khám phá."
+        title={t('pages.sets')}
+        description={t('pages.setsDescription')}
         actions={
           <>
             <Button asChild variant="secondary">
-              <Link href="/sets/import">Nhập từ file</Link>
+              <Link href="/sets/import">{t('pages.importFromFile')}</Link>
             </Button>
             <Button asChild>
-              <Link href="/sets/new">Tạo bộ từ</Link>
+              <Link href="/sets/new">{t('pages.createSet')}</Link>
             </Button>
           </>
         }

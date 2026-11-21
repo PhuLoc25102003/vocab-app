@@ -10,12 +10,13 @@ import { isRecognitionSupported, ListenError, listenOnce } from '@/lib/speech-re
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 import { playCorrectSound } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 const FAILURE_MESSAGES = {
-  unsupported: 'Trình duyệt này chưa nhận được giọng nói. Hãy dùng Chrome hoặc Edge, hoặc bỏ qua.',
-  denied: 'Bạn chưa cho phép dùng micro. Hãy bật quyền micro cho trang này rồi thử lại.',
-  'no-speech': 'Chưa nghe thấy gì. Hãy nói rõ hơn rồi thử lại.',
-  failed: 'Không nhận được giọng nói. Hãy thử lại.',
+  unsupported: 'speak.unsupported',
+  denied: 'speak.denied',
+  'no-speech': 'speak.noSpeech',
+  failed: 'speak.failed',
 } as const;
 
 /**
@@ -23,6 +24,7 @@ const FAILURE_MESSAGES = {
  * Bỏ qua khi chưa nói lần nào thì gửi chuỗi rỗng.
  */
 export function SpeakModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const [supported] = useState(isRecognitionSupported);
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
           <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
             {question.prompt}
           </h1>
-          <AudioButton text={question.prompt} lang={languages.term} label="Nghe mẫu" />
+          <AudioButton text={question.prompt} lang={languages.term} label={t('speak.sample')} />
         </div>
         {question.hint ? (
           <p lang={languages.definition} className="text-text-muted break-words">
@@ -126,14 +128,14 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
             <X aria-hidden className="size-5 shrink-0" />
           )}
           <p className="min-w-0 break-words">
-            {result.isCorrect ? 'Chính xác' : 'Chưa đúng'}. Bạn nói:{' '}
+            {t(result.isCorrect ? 'correct' : 'wrong')}. {t('speak.youSaid')}{' '}
             <span lang={languages.term} className="font-card">
               {heard}
             </span>
           </p>
         </div>
       ) : null}
-      {failure ? <FormError>{FAILURE_MESSAGES[failure]}</FormError> : null}
+      {failure ? <FormError>{t(FAILURE_MESSAGES[failure])}</FormError> : null}
 
       <div className="mt-auto flex flex-col gap-4">
         {supported && !result?.isCorrect ? (
@@ -142,7 +144,9 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
             <button
               type="button"
               onClick={toggleMic}
-              aria-label={listening ? 'Dừng nghe' : heard === null ? 'Bấm để nói' : 'Thử lại'}
+              aria-label={t(
+                listening ? 'speak.stop' : heard === null ? 'speak.start' : 'speak.retry',
+              )}
               className={cn(
                 'flex size-16 items-center justify-center rounded-full border-2 border-primary transition-colors duration-fast ease-standard',
                 listening
@@ -160,18 +164,18 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
               {listening ? (
                 <span className="inline-flex items-center gap-1 text-primary">
                   <Mic aria-hidden className="size-4" />
-                  Đang nghe… hãy đọc to từ
+                  {t('speak.listening')}
                 </span>
               ) : (
                 <span className="text-text-muted">
-                  {heard === null ? 'Bấm micro rồi đọc to từ' : 'Bấm micro để thử lại'}
+                  {t(heard === null ? 'speak.tapMic' : 'speak.tapMicAgain')}
                 </span>
               )}
             </p>
           </div>
         ) : null}
         <Button variant={result?.isCorrect ? 'primary' : 'secondary'} onClick={next}>
-          {heard !== null ? 'Câu tiếp theo' : 'Bỏ qua'}
+          {t(heard !== null ? 'nextQuestion' : 'speak.skip')}
         </Button>
       </div>
     </div>

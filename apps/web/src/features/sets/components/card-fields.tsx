@@ -22,6 +22,8 @@ import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { getUploadConfig } from '../api';
 import { setKeys } from '../query-keys';
 import { CardImageField } from './card-image-field';
+import { translateValidation } from '@/lib/validation-message';
+import { useTranslation } from 'react-i18next';
 
 export const EMPTY_CARD: CardDraft = { term: '', definition: '', phonetic: '', example: '' };
 
@@ -35,6 +37,7 @@ interface CardFieldsProps {
 }
 
 export function CardFields({ control, register, setFocus, errors }: CardFieldsProps) {
+  const { t, i18n } = useTranslation('sets');
   const listRef = useRef<HTMLOListElement>(null);
   const addRef = useRef<HTMLButtonElement>(null);
   // `id` là id thẻ trong database, nên khoá của dòng phải dùng tên khác.
@@ -50,7 +53,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
     staleTime: 5 * 60_000,
   });
   const imagesEnabled = uploads.data?.images === true;
-  const listError = errors?.root?.message ?? errors?.message;
+  const listError = translateValidation(errors?.root?.message ?? errors?.message);
   const isFull = fields.length >= MAX_CARDS_PER_SET;
 
   // Giữ focus ở nút vừa bấm để bấm tiếp được bằng bàn phím.
@@ -100,11 +103,9 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
     <section aria-labelledby="cards-title" className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <h2 id="cards-title" className="text-h2">
-          Thẻ <span className="tabular-nums">({fields.length})</span>
+          {t('cards.title')} <span className="tabular-nums">({fields.length})</span>
         </h2>
-        <p className="text-small text-text-muted">
-          Dòng để trống sẽ được bỏ qua. Xoá thẻ đã có sẽ xoá cả tiến độ học của thẻ đó khi bạn lưu.
-        </p>
+        <p className="text-small text-text-muted">{t('cards.hint')}</p>
       </div>
       {listError ? (
         <p role="alert" className="text-small text-danger">
@@ -114,7 +115,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
       {/* Khung cuộn riêng để trang không dài mãi khi có nhiều thẻ, nút thêm và lưu luôn gần tay. */}
       <div
         role="region"
-        aria-label="Danh sách thẻ"
+        aria-label={t('cards.list')}
         tabIndex={0}
         className="max-h-[60dvh] min-h-48 overflow-y-auto overscroll-contain rounded-md border border-border bg-surface px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
@@ -132,14 +133,14 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 id={titleId} className="text-h3 tabular-nums">
-                    Thẻ {number}
+                    {t('cards.card', { number })}
                   </h3>
                   <div className="flex">
                     <Button
                       variant="ghost"
                       size="icon"
                       data-move="up"
-                      aria-label={`Đưa thẻ ${number} lên`}
+                      aria-label={t('cards.moveUp', { number })}
                       disabled={index === 0}
                       onClick={() => moveCard(index, 'up')}
                     >
@@ -149,7 +150,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                       variant="ghost"
                       size="icon"
                       data-move="down"
-                      aria-label={`Đưa thẻ ${number} xuống`}
+                      aria-label={t('cards.moveDown', { number })}
                       disabled={index === fields.length - 1}
                       onClick={() => moveCard(index, 'down')}
                     >
@@ -158,7 +159,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                     <Button
                       variant="ghost"
                       size="icon"
-                      aria-label={`Xoá thẻ ${number}`}
+                      aria-label={t('cards.remove', { number })}
                       onClick={() => requestRemove(index)}
                     >
                       <Trash2 aria-hidden className="size-5" />
@@ -167,25 +168,25 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <FormField
-                    label="Từ"
+                    label={t('cards.term')}
                     error={cardErrors?.term?.message}
                     {...register(`cards.${index}.term`)}
                   />
                   <TextareaField
-                    label="Nghĩa"
+                    label={t('cards.definition')}
                     rows={1}
                     className="min-h-11"
                     error={cardErrors?.definition?.message}
                     {...register(`cards.${index}.definition`)}
                   />
                   <FormField
-                    label="Phiên âm (không bắt buộc)"
+                    label={t('cards.phonetic')}
                     className="font-phonetic"
                     error={cardErrors?.phonetic?.message}
                     {...register(`cards.${index}.phonetic`)}
                   />
                   <TextareaField
-                    label="Ví dụ (không bắt buộc)"
+                    label={t('cards.example')}
                     rows={1}
                     className="min-h-11"
                     error={cardErrors?.example?.message}
@@ -213,20 +214,20 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
           onClick={() => append(EMPTY_CARD, { shouldFocus: true })}
         >
           <Plus aria-hidden className="size-5" />
-          Thêm thẻ
+          {t('cards.add')}
         </Button>
         {isFull ? (
           <p className="text-small text-text-muted">
-            Một bộ từ có tối đa {MAX_CARDS_PER_SET.toLocaleString('vi-VN')} thẻ.
+            {t('cards.limit', { max: MAX_CARDS_PER_SET.toLocaleString(i18n.language) })}
           </p>
         ) : null}
       </div>
       <ConfirmDialog
         open={pendingRemove !== null}
         onOpenChange={(open) => !open && setPendingRemove(null)}
-        title={`Xoá thẻ ${(pendingRemove ?? 0) + 1}?`}
-        description="Thẻ sẽ bị bỏ khỏi bộ từ khi bạn lưu, kèm tiến độ học của thẻ đó."
-        confirmLabel="Xoá thẻ"
+        title={t('cards.removeTitle', { number: (pendingRemove ?? 0) + 1 })}
+        description={t('cards.removeDescription')}
+        confirmLabel={t('cards.removeConfirm')}
         onConfirm={() => {
           if (pendingRemove !== null) {
             removeCard(pendingRemove);

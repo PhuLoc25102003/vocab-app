@@ -2,21 +2,9 @@ import type { Visibility } from '@vocab/shared';
 import { Globe, Lock, Users, type LucideIcon } from 'lucide-react';
 import { useId } from 'react';
 import type { UseFormRegisterReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-export const VISIBILITY_LABELS: Record<Visibility, string> = {
-  PRIVATE: 'Riêng tư',
-  CLASS: 'Lớp học',
-  PUBLIC: 'Công khai',
-};
-
-const DESCRIPTIONS: Record<Visibility, { icon: LucideIcon; text: string }> = {
-  PRIVATE: { icon: Lock, text: 'Chỉ mình bạn xem và học. Không hiện ở Khám phá.' },
-  PUBLIC: {
-    icon: Globe,
-    text: 'Ai có đường dẫn cũng xem và học thử được, kể cả người chưa đăng nhập. Hiện ở Khám phá, người khác sao chép được về tài khoản của họ.',
-  },
-  CLASS: { icon: Users, text: 'Chỉ giáo viên và học sinh của lớp được giao bộ này.' },
-};
+const ICONS: Record<Visibility, LucideIcon> = { PRIVATE: Lock, PUBLIC: Globe, CLASS: Users };
 
 interface VisibilityFieldProps extends UseFormRegisterReturn {
   options: readonly Visibility[];
@@ -25,14 +13,15 @@ interface VisibilityFieldProps extends UseFormRegisterReturn {
 
 /** Chọn ai xem được bộ từ bằng các thẻ có mô tả, thay ô chọn chỉ có tên. */
 export function VisibilityField({ options, error, ...field }: VisibilityFieldProps) {
+  const { t } = useTranslation();
   const id = useId();
   const errorId = `${id}-error`;
   return (
     <fieldset aria-describedby={error ? errorId : undefined} className="flex flex-col gap-1">
-      <legend className="mb-1 text-small font-medium">Ai xem được</legend>
+      <legend className="mb-1 text-small font-medium">{t('visibility.legend')}</legend>
       <div className="grid gap-3 sm:grid-cols-2">
         {options.map((visibility) => {
-          const { icon: Icon, text } = DESCRIPTIONS[visibility];
+          const Icon = ICONS[visibility];
           const titleId = `${id}-${visibility}-title`;
           const descriptionId = `${id}-${visibility}`;
           return (
@@ -58,10 +47,10 @@ export function VisibilityField({ options, error, ...field }: VisibilityFieldPro
               <span className="flex flex-col gap-1">
                 <span id={titleId} className="flex items-center gap-2 font-medium">
                   <Icon aria-hidden className="size-4 text-primary" />
-                  {VISIBILITY_LABELS[visibility]}
+                  {t(`visibility.${visibility}`)}
                 </span>
                 <span id={descriptionId} className="text-small text-text-muted">
-                  {text}
+                  {t(`visibilityHint.${visibility}`)}
                 </span>
               </span>
             </label>

@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ERROR_CODES,
-  STUDY_MODE_LABELS,
   type MyAssignmentDetail,
   type ProgressStatus,
   type StudyMode,
@@ -27,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { classKeys, getMyAssignment, submitMyAssignment } from '../api';
 import { formatDateTime } from '../format';
 import { PROGRESS_STATUS } from './status-label';
+import { useTranslation } from 'react-i18next';
 
 const studyHref = (setId: string, mode: StudyMode, assignmentId: string) =>
   `/sets/${setId}/study/${mode.toLowerCase()}?assignment=${encodeURIComponent(assignmentId)}` as Route;
@@ -42,6 +42,7 @@ export function progressStatusOf(
 }
 
 function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
+  const { t } = useTranslation(['classes', 'common']);
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
   const submit = useMutation({ mutationFn: () => submitMyAssignment(assignment.id) });
@@ -56,7 +57,7 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
       onSuccess: async (result) => {
         await queryClient.invalidateQueries({ queryKey: classKeys.all });
         setConfirming(false);
-        toast.success(result.late ? 'Đã nộp bài, bài được ghi là nộp trễ' : 'Đã nộp bài');
+        toast.success(t(result.late ? 'submit.lateDone' : 'submit.done'));
       },
       onError: async (error) => {
         if (error instanceof HttpError && error.code === ERROR_CODES.ASSIGNMENT_ALREADY_SUBMITTED) {
@@ -71,7 +72,7 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
     action = (
       <p className="flex flex-col gap-1">
         <span className="font-medium">
-          {submission.late ? 'Nộp trễ' : 'Đã nộp'} lúc{' '}
+          {t(submission.late ? 'submit.lateAt' : 'submit.at')}{' '}
           <span className="tabular-nums">{formatDateTime(submission.submittedAt)}</span>
           {submission.score !== null ? (
             <>
@@ -80,16 +81,16 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
             </>
           ) : null}
         </span>
-        <span className="text-small text-text-muted">
-          Bạn vẫn học lại các chế độ để luyện thêm, điểm bài đã chốt.
-        </span>
+        <span className="text-small text-text-muted">{t('submit.locked')}</span>
       </p>
     );
   } else if (next) {
     action = (
       <Button asChild className="self-start">
         <Link href={studyHref(setId, next.mode, id)}>
-          {doneCount === 0 ? 'Bắt đầu' : 'Tiếp tục'}: {STUDY_MODE_LABELS[next.mode]}
+          {t(doneCount === 0 ? 'submit.start' : 'submit.continue', {
+            mode: t(`common:modes.${next.mode}`),
+          })}
           <ArrowRight aria-hidden className="size-4" />
         </Link>
       </Button>
@@ -98,28 +99,28 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
     action = (
       <Button className="self-start" onClick={() => setConfirming(true)}>
         <Send aria-hidden className="size-4" />
-        Nộp bài
+        {t('submit.submit')}
       </Button>
     );
   }
 
   return (
     <section
-      aria-label="Tiến độ bài tập"
+      aria-label={t('submit.progress')}
       className="flex flex-col gap-4 rounded-md border border-border bg-surface p-4 sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className={cn('flex items-center gap-1.5 font-semibold', className)}>
           <StatusIcon aria-hidden className="size-5 shrink-0" />
-          {label}
+          {t(label)}
         </span>
         <span className="text-small text-text-muted tabular-nums">
-          {doneCount}/{progress.length} chế độ đã xong
+          {t('submit.modesDone', { done: doneCount, total: progress.length })}
         </span>
       </div>
       <div
         role="progressbar"
-        aria-label="Số chế độ đã xong"
+        aria-label={t('submit.modesDoneMeter')}
         aria-valuemin={0}
         aria-valuemax={progress.length}
         aria-valuenow={doneCount}
@@ -138,14 +139,10 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
           if (!open) submit.reset();
         }}
         tone="primary"
-        title="Nộp bài?"
-        description={
-          status === 'missed'
-            ? 'Bài đã quá hạn nên sẽ được ghi là nộp trễ. Nộp xong không rút lại được, điểm được chốt theo lần làm tốt nhất của từng chế độ.'
-            : 'Nộp xong không rút lại được, điểm được chốt theo lần làm tốt nhất của từng chế độ.'
-        }
-        confirmLabel="Nộp bài"
-        cancelLabel="Để sau"
+        title={t('submit.confirmTitle')}
+        description={status === 'missed' ? t('submit.confirmLate') : t('submit.confirm')}
+        confirmLabel={t('submit.submit')}
+        cancelLabel={t('submit.later')}
         pending={submit.isPending}
         error={submit.isError ? formErrorMessage(submit.error) : null}
         onConfirm={confirm}
@@ -155,11 +152,12 @@ function SubmitPanel({ assignment }: { assignment: MyAssignmentDetail }) {
 }
 
 function ModeList({ assignment }: { assignment: MyAssignmentDetail }) {
+  const { t } = useTranslation(['classes', 'common']);
   const { progress, setId, id } = assignment;
   return (
     <section aria-labelledby="assignment-modes" className="flex flex-col gap-2">
       <h2 id="assignment-modes" className="text-h3">
-        Các chế độ cần làm
+        {t('modes.title')}
       </h2>
       <ol className="border-t border-border">
         {progress.map(({ mode, done, score }, index) => (
@@ -180,24 +178,24 @@ function ModeList({ assignment }: { assignment: MyAssignmentDetail }) {
                 {done ? <Check className="size-4" /> : index + 1}
               </span>
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className="font-medium">{STUDY_MODE_LABELS[mode]}</span>
+                <span className="font-medium">{t(`common:modes.${mode}`)}</span>
                 <span className="text-small text-text-muted">
                   {done
                     ? score !== null
-                      ? `Đã xong · tốt nhất ${score}%`
-                      : 'Đã xong'
-                    : 'Chưa làm'}
+                      ? t('modes.doneBest', { score })
+                      : t('modes.done')
+                    : t('modes.todo')}
                 </span>
               </span>
               <span className="flex shrink-0 items-center gap-1 text-small font-medium text-primary">
                 {done ? (
                   <>
                     <RotateCcw aria-hidden className="size-4" />
-                    Làm lại
+                    {t('modes.redo')}
                   </>
                 ) : (
                   <>
-                    Làm
+                    {t('modes.do')}
                     <ArrowRight aria-hidden className="size-4" />
                   </>
                 )}
@@ -212,18 +210,19 @@ function ModeList({ assignment }: { assignment: MyAssignmentDetail }) {
 
 /** Trang học sinh làm bài giao: các chế độ theo thứ tự, nút tiếp tục và nộp bài. */
 export function AssignmentWork({ assignmentId }: { assignmentId: string }) {
+  const { t } = useTranslation('classes');
   const assignment = useQuery({
     queryKey: classKeys.myAssignment(assignmentId),
     queryFn: () => getMyAssignment(assignmentId),
   });
 
-  const back = <BackLink href="/classes" label="Lớp học" />;
+  const back = <BackLink href="/classes" label={t('work.backLabel')} />;
 
   if (assignment.isPending) {
     return (
       <>
         {back}
-        <LoadingState label="Đang tải bài tập">
+        <LoadingState label={t('work.loadingAssignment')}>
           <Skeleton className="h-10 w-2/3" />
           <Skeleton className="h-36 w-full" />
           <Skeleton className="h-14 w-full" />
@@ -239,11 +238,11 @@ export function AssignmentWork({ assignmentId }: { assignmentId: string }) {
         <>
           {back}
           <EmptyState
-            title="Không tìm thấy bài tập"
-            description="Bài này đã bị xoá, hoặc bạn không còn trong lớp được giao bài."
+            title={t('work.notFound')}
+            description={t('work.notFoundHint')}
             action={
               <Button asChild variant="secondary">
-                <Link href="/classes">Về lớp học</Link>
+                <Link href="/classes">{t('work.backToClasses')}</Link>
               </Button>
             }
           />
@@ -254,8 +253,8 @@ export function AssignmentWork({ assignmentId }: { assignmentId: string }) {
       <>
         {back}
         <ErrorState
-          title="Không tải được bài tập"
-          description="Kiểm tra kết nối mạng rồi thử lại."
+          title={t('work.failedAssignment')}
+          description={t('checkNetwork')}
           onRetry={() => void assignment.refetch()}
         />
       </>
@@ -266,11 +265,11 @@ export function AssignmentWork({ assignmentId }: { assignmentId: string }) {
   return (
     <>
       {back}
-      <PageHeader title={data.setTitle} description={`Lớp ${data.className}`} />
+      <PageHeader title={data.setTitle} description={t('work.class', { name: data.className })} />
       {data.dueAt ? (
         <p className="-mt-4 flex items-center gap-1.5 text-small text-text-muted">
           <CalendarClock aria-hidden className="size-4" />
-          Hạn <span className="tabular-nums">{formatDateTime(data.dueAt)}</span>
+          {t('dueLabel')} <span className="tabular-nums">{formatDateTime(data.dueAt)}</span>
         </p>
       ) : null}
       <SubmitPanel assignment={data} />

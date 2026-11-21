@@ -7,16 +7,18 @@ import { HttpError } from '@/lib/http';
 import { addPendingSession, getOfflineSet } from '@/lib/offline-store';
 import { createGuestBackend } from '../guest-backend';
 import { StudyShell } from './study-shell';
+import { useTranslation } from 'react-i18next';
 
 /** Học Flashcard bằng bộ đã tải về máy, kết quả vào hàng đợi để gửi khi có mạng. */
 export function OfflineStudyButton({ setId }: { setId: string }) {
+  const { t } = useTranslation('study');
   const [active, setActive] = useState(false);
   const [backend] = useState(() =>
     createGuestBackend({
       loadSet: async (id) => {
         const entry = await getOfflineSet(id);
         if (!entry) {
-          throw new HttpError('Bộ từ chưa được tải về máy', 404, ERROR_CODES.SET_NOT_FOUND);
+          throw new HttpError(t('offline.notDownloaded'), 404, ERROR_CODES.SET_NOT_FOUND);
         }
         return entry.set;
       },
@@ -34,7 +36,7 @@ export function OfflineStudyButton({ setId }: { setId: string }) {
   if (!active) {
     return (
       <Button variant="secondary" onClick={() => setActive(true)}>
-        Học offline
+        {t('offline.study')}
       </Button>
     );
   }
@@ -44,11 +46,7 @@ export function OfflineStudyButton({ setId }: { setId: string }) {
       setId={setId}
       mode="FLASHCARD"
       exitHref="/offline"
-      resultNote={
-        <p className="text-small text-text-muted">
-          Kết quả đã lưu trên máy và sẽ được gửi lên khi có mạng.
-        </p>
-      }
+      resultNote={<p className="text-small text-text-muted">{t('offline.note')}</p>}
     />
   );
 }

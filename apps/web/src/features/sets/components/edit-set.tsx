@@ -9,6 +9,7 @@ import { useEditableSet, useSaveSet } from '../hooks/use-set-editor';
 import { EMPTY_CARD } from './card-fields';
 import { SetForm } from './set-form';
 import { SetLoadFailure } from './set-load-failure';
+import { useTranslation } from 'react-i18next';
 
 function toCardDraft({ id, term, definition, phonetic, example, imageUrl }: Card): CardDraft {
   return {
@@ -23,13 +24,14 @@ function toCardDraft({ id, term, definition, phonetic, example, imageUrl }: Card
 }
 
 export function EditSet({ id }: { id: string }) {
+  const { t } = useTranslation('sets');
   const set = useEditableSet(id);
   const saveSet = useSaveSet(id);
   const detailHref = `/sets/${id}` as Route;
 
   if (set.isPending) {
     return (
-      <LoadingState label="Đang tải bộ từ">
+      <LoadingState label={t('loading')}>
         <div className="flex w-full flex-col gap-6">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-32 w-full" />
@@ -53,7 +55,7 @@ export function EditSet({ id }: { id: string }) {
       details: { ...rest, description: nextDescription || null },
       cards: nextCards,
     });
-    toast.success('Đã lưu bộ từ');
+    toast.success(t('saved'));
     return detailHref;
   };
 

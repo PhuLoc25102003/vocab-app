@@ -4,19 +4,21 @@ import { EmptyState } from '@/components/common/empty-state';
 import { ClassDetail } from '@/features/classes/components/class-detail';
 import { ClassesLoading } from '@/features/classes/components/teacher-classes';
 import { Can } from '@/features/auth/components/can';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Lớp học' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.classes') };
+}
 
 export default async function ClassDetailPage({ params }: PageProps<'/classes/[id]'>) {
+  const t = await getT('common');
   const { id } = await params;
   return (
     <Can
       action="manage-classes"
       fallback={
-        <EmptyState
-          title="Trang dành cho giáo viên"
-          description="Tài khoản giáo viên mới xem được trang quản lý lớp."
-        />
+        <EmptyState title={t('pages.teacherOnly')} description={t('pages.teacherOnlyClass')} />
       }
     >
       <Suspense fallback={<ClassesLoading />}>

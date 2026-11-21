@@ -23,6 +23,7 @@ import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
 import { getImportTarget, importAsNewSet, importIntoSet } from '../api';
 import { ImportPreview } from './import-preview';
 import { ImportSource, type ImportExtraColumns } from './import-source';
+import { useTranslation } from 'react-i18next';
 
 const newSetSchema = createSetSchema.pick({ title: true, visibility: true });
 type NewSetInput = z.input<typeof newSetSchema>;
@@ -38,6 +39,7 @@ interface ImportWizardProps {
 }
 
 export function ImportWizard({ setId }: ImportWizardProps) {
+  const { t } = useTranslation('sets');
   const router = useRouter();
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<ImportRow[] | null>(null);
@@ -79,7 +81,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   if (setId && target.isPending) {
     return (
-      <LoadingState label="Đang tải bộ từ">
+      <LoadingState label={t('loading')}>
         <Skeleton className="h-48 w-full" />
       </LoadingState>
     );
@@ -88,10 +90,8 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     const notFound = target.error instanceof HttpError && target.error.status === 404;
     return (
       <ErrorState
-        title={notFound ? 'Không tìm thấy bộ từ' : 'Không tải được bộ từ'}
-        description={
-          notFound ? 'Bộ từ đã bị xoá hoặc bạn không có quyền.' : 'Hãy kiểm tra mạng rồi thử lại.'
-        }
+        title={t(notFound ? 'failure.notFound' : 'loadFailed')}
+        description={notFound ? t('import.targetNotFound') : t('checkNetwork')}
         onRetry={notFound ? undefined : () => void target.refetch()}
       />
     );
@@ -99,7 +99,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   const targetNote = target.data ? (
     <p className="max-w-[65ch] text-text-muted wrap-anywhere">
-      Thẻ sẽ được thêm vào cuối bộ “{target.data.title}”, bộ đang có {target.data.cardCount} thẻ.
+      {t('import.targetNote', { title: target.data.title, count: target.data.cardCount })}
     </p>
   ) : null;
 
@@ -126,7 +126,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     try {
       const id = await save.mutateAsync(details);
       await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
-      toast.success(`Đã nhập ${rows.length} thẻ`);
+      toast.success(t('import.imported', { count: rows.length }));
       await guard.release();
       router.replace(`/sets/${id}` as Route);
     } catch {
@@ -144,9 +144,9 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   if (rows.length === 0) {
     return (
       <EmptyState
-        title="Không còn dòng nào để nhập"
-        description="Hãy dán lại danh sách hoặc chọn file khác."
-        action={<Button onClick={restart}>Nhập lại</Button>}
+        title={t('import.noRows')}
+        description={t('import.noRowsHint')}
+        action={<Button onClick={restart}>{t('import.restart')}</Button>}
       />
     );
   }
@@ -160,12 +160,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
         noValidate
         className="flex flex-col gap-4 border-t border-border pt-6"
       >
-        <h2 className="text-h2">Lưu</h2>
+        <h2 className="text-h2">{t('import.saveTitle')}</h2>
         {save.error ? <FormError>{formErrorMessage(save.error)}</FormError> : null}
         {targetNote ?? (
           <div className="flex flex-col gap-4">
             <FormField
-              label="Tên bộ từ mới"
+              label={t('import.newTitle')}
               error={form.formState.errors.title?.message}
               {...form.register('title')}
             />
@@ -174,10 +174,10 @@ export function ImportWizard({ setId }: ImportWizardProps) {
         )}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" loading={save.isPending} disabled={invalidCount > 0}>
-            Lưu {rows.length} thẻ
+            {t('import.saveCount', { count: rows.length })}
           </Button>
           <Button type="button" variant="secondary" onClick={restart}>
-            Nhập lại
+            {t('import.restart')}
           </Button>
         </div>
       </form>

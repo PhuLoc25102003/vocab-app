@@ -1,5 +1,5 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ERROR_CODES, IMPORT_MAX_CHARS, MAX_CARDS_PER_SET } from '@vocab/shared';
+import { ERROR_CODES, IMPORT_MAX_CHARS, MAX_CARDS_PER_SET, vm } from '@vocab/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AccessTokenService } from '../src/common/auth/access-token.service';
@@ -52,7 +52,12 @@ describe('POST /import/preview', () => {
       columnCount: 2,
       rows: [
         { line: 2, term: 'apple', definition: 'quả táo', errors: [] },
-        { line: 3, term: 'chỉ có từ', definition: '', errors: ['Hãy nhập định nghĩa'] },
+        {
+          line: 3,
+          term: 'chỉ có từ',
+          definition: '',
+          errors: [vm('required', { field: 'definition' })],
+        },
       ],
     });
     expect(await prisma.card.count()).toBe(0);

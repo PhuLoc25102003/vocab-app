@@ -1,3 +1,5 @@
+import { resources } from '@/lib/i18n/config';
+
 export const IMPORT_FILE_MAX_BYTES = 2 * 1024 * 1024;
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -8,8 +10,14 @@ const TEXT_EXTENSIONS = ['.txt', '.csv'];
 const TEXT_TYPES = ['', 'text/plain', 'text/csv', 'application/csv', 'application/vnd.ms-excel'];
 const XLSX_TYPES = ['', XLSX_MIME, 'application/octet-stream'];
 
+export type ImportFileErrorCode = keyof (typeof resources)['vi']['sets']['import']['file'];
+
+/** `code` là khoá dịch ở `sets:import.file`; `message` giữ câu tiếng Việt cho log và test. */
 export class ImportFileError extends Error {
   override name = 'ImportFileError';
+  constructor(readonly code: ImportFileErrorCode) {
+    super(resources.vi.sets.import.file[code]);
+  }
 }
 
 /** Nội dung đã đọc. File Excel được chuyển thành text ngăn bằng tab. */
@@ -21,10 +29,10 @@ export interface ImportFileContent {
 
 function checkSize(file: File) {
   if (file.size === 0) {
-    throw new ImportFileError('File đang trống.');
+    throw new ImportFileError('empty');
   }
   if (file.size > IMPORT_FILE_MAX_BYTES) {
-    throw new ImportFileError('File tối đa 2 MB. Hãy chia nhỏ rồi nhập từng phần.');
+    throw new ImportFileError('tooLarge');
   }
 }
 
@@ -41,7 +49,7 @@ function cellText(value: unknown): string {
  */
 async function readXlsx(file: File): Promise<string> {
   if (!XLSX_TYPES.includes(file.type)) {
-    throw new ImportFileError('Nội dung file không phải Excel. Hãy chọn file .xlsx khác.');
+    throw new ImportFileError('notXlsx');
   }
   checkSize(file);
   let rows: unknown[][];
@@ -49,7 +57,7 @@ async function readXlsx(file: File): Promise<string> {
     const { readSheet } = await import('read-excel-file/browser');
     rows = await readSheet(file);
   } catch {
-    throw new ImportFileError('File Excel bị hỏng hoặc không đọc được. Hãy lưu lại rồi thử lại.');
+    throw new ImportFileError('brokenXlsx');
   }
   const text = rows
     .map((row) => row.map(cellText))
@@ -57,7 +65,7 @@ async function readXlsx(file: File): Promise<string> {
     .map((cells) => cells.join('\t'))
     .join('\n');
   if (!text) {
-    throw new ImportFileError('Sheet đầu tiên của file Excel đang trống.');
+    throw new ImportFileError('emptySheet');
   }
   return text;
 }
@@ -69,21 +77,19 @@ export async function readImportFile(file: File): Promise<ImportFileContent> {
     return { text: await readXlsx(file), delimiter: 'tab' };
   }
   if (name.endsWith('.xls')) {
-    throw new ImportFileError(
-      'Chưa đọc được file .xls cũ. Hãy lưu lại thành .xlsx hoặc CSV (UTF-8) trong Excel.',
-    );
+    throw new ImportFileError('oldXls');
   }
   if (!TEXT_EXTENSIONS.some((extension) => name.endsWith(extension))) {
-    throw new ImportFileError('Chỉ nhận file .txt, .csv hoặc .xlsx.');
+    throw new ImportFileError('type');
   }
   if (!TEXT_TYPES.includes(file.type)) {
-    throw new ImportFileError('Nội dung file không phải văn bản. Hãy chọn file .txt hoặc .csv.');
+    throw new ImportFileError('notText');
   }
   checkSize(file);
 
   const text = await file.text();
   if (text.includes('\u0000')) {
-    throw new ImportFileError('File bị hỏng hoặc không phải văn bản UTF-8.');
+    throw new ImportFileError('encoding');
   }
   return { text };
 }

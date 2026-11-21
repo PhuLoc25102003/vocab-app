@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 import { playCorrectSound } from '@/lib/sound';
+import { useTranslation } from 'react-i18next';
 
 export function McqModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
+  const { t } = useTranslation('study');
   const choices = useMemo(() => question.choices ?? [], [question.choices]);
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -68,7 +70,7 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
         <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
           {question.prompt}
         </h1>
-        <AudioButton text={question.prompt} lang={languages.term} label="Nghe phát âm" />
+        <AudioButton text={question.prompt} lang={languages.term} label={t('listenTerm')} />
       </div>
 
       <ul className="flex flex-col gap-2">
@@ -94,10 +96,10 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
                   {choice}
                 </span>
                 {isExpected ? (
-                  <Check aria-label="Đáp án đúng" className="size-5 shrink-0 text-success" />
+                  <Check aria-label={t('expected')} className="size-5 shrink-0 text-success" />
                 ) : null}
                 {isWrongPick ? (
-                  <X aria-label="Bạn đã chọn" className="size-5 shrink-0 text-danger" />
+                  <X aria-label={t('mcq.yourChoice')} className="size-5 shrink-0 text-danger" />
                 ) : null}
               </button>
             </li>
@@ -112,13 +114,13 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
           result && !result.isCorrect && 'feedback-wrong',
         )}
       >
-        {result ? (result.isCorrect ? 'Chính xác' : 'Chưa đúng') : ''}
+        {result ? t(result.isCorrect ? 'correct' : 'wrong') : ''}
       </p>
 
       {result ? (
         <div className="mt-auto flex flex-col">
           <Button ref={nextRef} onClick={next}>
-            Câu tiếp theo
+            {t('nextQuestion')}
           </Button>
         </div>
       ) : null}
