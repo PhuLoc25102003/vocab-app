@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5: danh sách lớn và thư mục trên mobile 5.29 đến 5.34 (5.29 trước vì các việc sau dùng `ListPanel`).
+1. Giai đoạn 5: danh sách lớn và thư mục trên mobile 5.31 đến 5.34 (5.29, 5.30 đã xong, các việc còn lại dùng `ListPanel`).
 2. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): 6.1 làm nền trước, các việc dịch 6.3 đến 6.6 làm sau giai đoạn 5 để không dịch hai lần màn đang sửa.
 3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
@@ -26,16 +26,16 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      29 |      36 | Đang làm   |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      32 |      36 | Đang làm   |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       0 |       7 | Chưa làm   |
-| **Toàn dự án**          |                                            | **154** | **172** | **90%**    |
+| **Toàn dự án**          |                                            | **157** | **172** | **91%**    |
 
 ## Cách cập nhật
 
 - Làm theo thứ tự từ trên xuống, trừ khi việc sau không phụ thuộc việc trước.
 - Mỗi việc tương ứng một issue và một PR. Việc quá lớn thì tách thành nhiều việc nhỏ ngay trong file này.
-- PR của một việc **chỉ sửa dòng của việc đó**: đổi `[ ]` thành `[x]` và ghi số PR. Không sửa bảng tổng quan, "Đang ở", "Việc tiếp theo" trong PR của việc, vì nhiều PR song song cùng sửa các dòng đó sẽ xung đột.
-- Bảng tổng quan tính bằng `npm run progress` (đếm `[x]` của từng giai đoạn). Chạy lệnh này, cùng với cập nhật "Đang ở" và "Việc tiếp theo", trong một PR `docs(progress): sync` khi không còn PR nào khác đang mở, ví dụ cuối một loạt việc.
+- PR của một việc **chỉ sửa dòng của việc đó**: đổi `[ ]` thành `[x]` và ghi số PR. Không sửa bảng tổng quan, "Đang ở", "Việc tiếp theo" trong PR của việc, để PR của việc chỉ chạm đúng dòng của mình.
+- Bảng tổng quan tính bằng `npm run progress` (đếm `[x]` của từng giai đoạn). Chạy lệnh này, cùng với cập nhật "Đang ở" và "Việc tiếp theo", trong một PR `docs(progress): sync` khi không còn PR việc nào đang mở. Các việc làm tuần tự: một PR việc mở tại một thời điểm, merge xong mới làm việc sau.
 - Thêm hoặc tách việc mới thì làm một PR docs riêng và merge ngay khi CI xanh, không gộp vào PR đang code.
 - Không ghi `Đang làm: <nhánh>` vào dòng của việc: dòng đó sẽ bị sửa lại khi xong và dễ xung đột.
 - Một việc chỉ được tính là xong khi PR đã merge vào `develop`.
