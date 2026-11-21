@@ -263,7 +263,7 @@ Form ngắn (khoảng dưới 6 trường: tạo, sửa lớp, tham gia lớp, t
 
 - `FormDialog` và `ConfirmDialog` dùng chung khung `Dialog` trong `components/ui/dialog.tsx`: thẻ `dialog` gốc với `showModal()`, render qua portal ra `body`, Esc và bấm nền `overlay` xin đóng, đóng xong focus về nút đã mở.
 - Bố cục: đầu có tiêu đề `text-h3`, mô tả `text-small` `text-muted` và nút đóng biểu tượng 44 px (`aria-label="Đóng"`), ngăn với thân bằng viền `border`; thân cuộn riêng (`overscroll-contain`); chân có lỗi máy chủ (`FormError`) rồi hai nút Huỷ (`secondary`) và nút gửi (`primary`, vòng quay khi đang gửi).
-- Từ 640 px: rộng tối đa 512 px, cao tối đa `min(40rem, 100dvh - 4rem)`, bo `lg`. Dưới 640 px: chiếm toàn màn hình, không bo góc, chân luôn ở đáy; hai nút xếp dọc, nút gửi ở trên.
+- Chiều cao luôn theo nội dung, không đặt cố định; thân form cuộn khi dài hơn khung. Từ 640 px: căn giữa, cỡ `md` rộng tối đa 560 px (mặc định) hoặc `lg` 720 px (form có danh sách hoặc hai cột, ví dụ giao bài), cao tối đa `100dvh - 4rem`, bo `lg`. Dưới 640 px: tấm đáy rộng hết màn hình, bo hai góc trên, cao tối đa `100dvh - 2rem`; hai nút xếp dọc, nút gửi ở trên, chân chừa vùng an toàn của điện thoại.
 - Mở thì focus ô nhập đầu tiên (hoặc phần tử có `data-autofocus`). Đang gửi thì không đóng được.
 - Đã nhập (`dirty`) mà đóng bằng Esc, nền, nút đóng hoặc Huỷ thì hỏi "Bỏ nội dung đang nhập?" với "Nhập tiếp" và "Bỏ nội dung". Chưa nhập thì đóng ngay.
 - Gửi form trong hộp thoại dừng lan sự kiện để không gửi form của trang bên dưới.
