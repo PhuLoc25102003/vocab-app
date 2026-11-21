@@ -4,6 +4,7 @@ import { clearSessionMarker, setSessionMarker } from '@/lib/session-marker';
 import { LandingPage } from './landing-page';
 
 vi.mock('@/components/common/theme-toggle', () => ({ ThemeToggle: () => null }));
+vi.mock('@/components/common/language-switcher', () => ({ LanguageToggle: () => null }));
 
 describe('LandingPage', () => {
   afterEach(clearSessionMarker);

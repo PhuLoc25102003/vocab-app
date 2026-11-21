@@ -1,0 +1,12 @@
+{
+  "language": {
+    "label": "Ngôn ngữ",
+    "description": "Đổi ngôn ngữ của toàn bộ giao diện. Nội dung bạn nhập như bộ từ và tên lớp giữ nguyên.",
+    "switchTo": "đổi sang tiếng Anh",
+    "short": "EN",
+    "names": {
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Anh"
+    }
+  }
+}

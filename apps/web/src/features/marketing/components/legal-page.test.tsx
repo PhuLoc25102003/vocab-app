@@ -10,6 +10,7 @@ import {
 import { LegalPage } from './legal-page';
 
 vi.mock('@/components/common/theme-toggle', () => ({ ThemeToggle: () => null }));
+vi.mock('@/components/common/language-switcher', () => ({ LanguageToggle: () => null }));
 
 describe('LegalPage', () => {
   it('hiện tiêu đề, ngày cập nhật và các mục có đánh số', () => {

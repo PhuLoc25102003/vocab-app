@@ -30,6 +30,16 @@ Mọi thay đổi đi qua Pull Request, CI phải xanh (lint, typecheck, test, b
 - Comment giải thích **vì sao**, không giải thích code làm gì.
 - Cài thư viện vào đúng workspace: `npm i <pkg> -w <workspace>`.
 
+## Đa ngôn ngữ
+
+Giao diện có tiếng Việt (mặc định) và tiếng Anh theo ADR 0003.
+
+- **Không viết cứng chuỗi giao diện.** Chữ người dùng thấy (nhãn, nút, `aria-label`, thông báo, tiêu đề) lấy từ `t()`: client dùng `useTranslation('<namespace>')`, server dùng `await getT('<namespace>')` từ `@/lib/i18n/server`. Nội dung người dùng nhập (bộ từ, thẻ, tên lớp) không dịch.
+- Chuỗi nằm ở `apps/web/src/locales/<vi|en>/<namespace>.json`. Thêm khoá thì thêm vào cả hai file; namespace mới thì khai báo thêm trong `resources` ở `src/lib/i18n/config.ts`. Test `config.test.ts` báo lỗi khi hai ngôn ngữ lệch khoá, TypeScript báo lỗi khi gõ sai khoá.
+- Ngày giờ và số dùng `Intl` với `INTL_LOCALE[locale]`.
+- Ngôn ngữ lưu trong cookie `vocab.locale`. Root layout đọc cookie trong `Suspense` vì repo bật `cacheComponents`.
+- Màn hình cũ chưa dịch sẽ được chuyển dần ở các việc 6.2 đến 6.6; việc 6.7 thêm script báo chữ tiếng Việt viết cứng.
+
 ## Git workflow
 
 - Flow: issue → nhánh từ `develop` → commit → PR vào `develop` → review → squash merge. Phát hành bằng PR từ `develop` vào `main`. Chi tiết trong skill `git-workflow`.

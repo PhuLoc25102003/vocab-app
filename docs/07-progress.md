@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): 6.1 làm nền trước, rồi các việc dịch 6.3 đến 6.6. Giai đoạn 5 đã xong phần danh sách và thư mục (5.29 đến 5.34).
+1. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): nền 6.1 đã xong; tiếp 6.2 (lỗi và form) rồi các việc dịch 6.3 đến 6.6.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -26,8 +26,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      36 |      36 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       0 |       7 | Chưa làm   |
-| **Toàn dự án**          |                                            | **161** | **172** | **94%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       1 |       7 | Đang làm   |
+| **Toàn dự án**          |                                            | **162** | **172** | **94%**    |
 
 ## Cách cập nhật
 
@@ -330,7 +330,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 **Xong khi:** mọi màn đổi được giữa tiếng Việt và tiếng Anh, lựa chọn được nhớ, không còn chữ viết cứng. Thiết kế ở `docs/adr/0003-da-ngon-ngu-bang-i18next.md`, use case ở `docs/use-cases/07-da-ngon-ngu.md`.
 
-- [ ] **6.1** Nền i18next: `i18next`, `react-i18next`, file `locales/vi` và `locales/en`, cookie `vocab.locale`, `getT` cho server và `I18nProvider` cho client, `<html lang>`, nút đổi ngôn ngữ ở header và Tài khoản, khoá có kiểu, test hai bộ khoá giống nhau; quy tắc "không viết cứng chuỗi giao diện" trong `docs/06-conventions.md` (GAP-30).
+- [x] **6.1** Nền i18next: `i18next`, `react-i18next`, file `locales/vi` và `locales/en`, cookie `vocab.locale`, `getT` cho server và `I18nProvider` cho client, `<html lang>`, nút đổi ngôn ngữ ở header và Tài khoản, khoá có kiểu, test hai bộ khoá giống nhau; quy tắc "không viết cứng chuỗi giao diện" trong `docs/06-conventions.md` (GAP-30). (#399)
 - [ ] **6.2** Lỗi và form: thông báo theo `ERROR_CODES` ở namespace `errors`, Zod schema trong shared dùng khoá dịch, toast và hộp xác nhận. Cần 6.1.
 - [ ] **6.3** Dịch trang giới thiệu, đăng nhập, đăng ký, quên mật khẩu, trang công khai, Khám phá và metadata. Cần 6.1.
 - [ ] **6.4** Dịch khung app, Tổng quan, Bộ từ, thư mục, trình soạn, nhập từ. Cần 6.1.

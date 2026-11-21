@@ -15,6 +15,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label="Giao diện tối"
       aria-pressed={isDark}
+      className="shrink-0"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
       <Icon aria-hidden className="size-5" />
