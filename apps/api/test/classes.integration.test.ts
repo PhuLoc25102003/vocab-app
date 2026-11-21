@@ -120,6 +120,28 @@ describe('classes', () => {
     expect(old.body.data.map(({ id }: ClassBody) => id)).toEqual([archived.id]);
   });
 
+  it('tìm lớp theo tên, sắp xếp theo tên hoặc sĩ số', async () => {
+    const a = await createClass({ name: 'Anh văn 10A' });
+    const b = await createClass({ name: 'Toán 11B' });
+    const c = await createClass({ name: 'anh văn 12C' });
+    await prisma.classMember.createMany({
+      data: [
+        { classId: b.id, userId: student.id },
+        { classId: b.id, userId: admin.id },
+        { classId: c.id, userId: student.id },
+      ],
+    });
+    const ids = async (query: string) =>
+      (await call('get', `/classes?${query}`, teacher.token).expect(200)).body.data.map(
+        ({ id }: ClassBody) => id,
+      );
+
+    expect(await ids('sort=name')).toEqual([a.id, c.id, b.id]);
+    expect(await ids('sort=-memberCount')).toEqual([b.id, c.id, a.id]);
+    expect(await ids('q=ANH')).toEqual([c.id, a.id]);
+    expect(await ids('q=anh&sort=bogus')).toEqual([c.id, a.id]);
+  });
+
   it('chỉ giáo viên của lớp và ADMIN xem được lớp', async () => {
     const created = await createClass();
 

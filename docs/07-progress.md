@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5: lớp đang dạy có tìm và sắp xếp (5.33), thư mục trên mobile (5.34). 5.29 đến 5.32 đã xong.
+1. Giai đoạn 5: thư mục trên mobile (5.34). 5.29 đến 5.33 đã xong.
 2. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): 6.1 làm nền trước, các việc dịch 6.3 đến 6.6 làm sau giai đoạn 5 để không dịch hai lần màn đang sửa.
 3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
@@ -26,9 +26,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      34 |      36 | Đang làm   |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      35 |      36 | Đang làm   |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       0 |       7 | Chưa làm   |
-| **Toàn dự án**          |                                            | **159** | **172** | **92%**    |
+| **Toàn dự án**          |                                            | **160** | **172** | **93%**    |
 
 ## Cách cập nhật
 
@@ -324,7 +324,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **5.30** API lọc bài cần làm của học sinh: `group` (`todo`, `done`, `all`), `classId`, `q` theo tên bộ, `sort` (`due`, `-createdAt`) kèm số lượng từng nhóm; `GET /classes/joined` nhận `q` (GAP-32, #387).
 - [x] **5.31** Web học sinh `/classes`: khung Bài tập có tab Cần làm, Đã nộp, Tất cả, lọc lớp, tìm, sắp xếp; khung Lớp đã tham gia có tìm và phân trang; `AssignmentRow` dùng chung. Cần 5.29, 5.30 (GAP-31, GAP-32). (#391)
 - [x] **5.32** Bài đã giao của giáo viên: API `status` (`open`, `closed`, `all`), `q`, `sort`, số đã nộp x/y; tab Bài tập dùng `ListPanel` và `AssignmentRow` cùng kiểu với học sinh. Cần 5.29, 5.31 (GAP-32). (#393)
-- [ ] **5.33** Lớp đang dạy: API `GET /classes` nhận `q`, `sort` (`-createdAt`, `name`, `-memberCount`); web dùng `ListPanel` có tìm, sắp xếp, phân trang. Cần 5.29 (GAP-33).
+- [x] **5.33** Lớp đang dạy: API `GET /classes` nhận `q`, `sort` (`-createdAt`, `name`, `-memberCount`); web dùng `ListPanel` có tìm, sắp xếp, phân trang. Cần 5.29 (GAP-33). (#395)
 - [ ] **5.34** Thư mục trên mobile: nút "Thư mục: <tên>" mở tấm đáy chọn thư mục (tìm, tạo mới); "⋯ > Chuyển vào thư mục" thay kéo thả trên màn hình cảm ứng; ô tìm và nút sắp xếp chung hàng (GAP-34).
 
 ## Giai đoạn 6: Đa ngôn ngữ

@@ -3,7 +3,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  classListQuerySchema,
+  type ClassSort,
   createClassSchema,
+  LIST_SEARCH_MAX_LENGTH,
   paginationSchema,
   type ClassListItem,
   type CreateClassInput,
@@ -21,18 +24,41 @@ import { FormDialog } from '@/components/common/form-dialog';
 import { FormField, TextareaField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
-import { Pagination } from '@/components/common/pagination';
+import {
+  ListFilter,
+  ListNoMatch,
+  ListPager,
+  ListPanel,
+  ListToolbar,
+} from '@/components/common/list-panel';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, createClass, listClasses, CLASSES_PAGE_SIZE } from '../api';
 
 type CreateClassForm = { name: string; description?: string };
 
-function classesHref(archived: boolean, page = 1): Route {
+/** Bộ lọc danh sách lớp, nằm trong URL (việc 5.33). */
+interface ClassesView {
+  archived: boolean;
+  q: string;
+  sort: ClassSort;
+  page: number;
+}
+
+const SORT_LABELS: Record<ClassSort, string> = {
+  '-createdAt': 'Mới tạo trước',
+  name: 'Tên A–Z',
+  '-memberCount': 'Sĩ số lớn trước',
+};
+
+function classesHref(view: ClassesView): Route {
   const params = new URLSearchParams();
-  if (archived) params.set('archived', '1');
-  if (page > 1) params.set('page', String(page));
+  if (view.archived) params.set('archived', '1');
+  if (view.q) params.set('q', view.q);
+  if (view.sort !== '-createdAt') params.set('sort', view.sort);
+  if (view.page > 1) params.set('page', String(view.page));
   const query = params.toString();
   return (query ? `/classes?${query}` : '/classes') as Route;
 }
@@ -129,7 +155,7 @@ function CopyCodeButton({ code }: { code: string }) {
 function ClassRow({ item }: { item: ClassListItem }) {
   const initial = item.name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
   return (
-    <li className="relative flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary sm:p-4">
+    <li className="relative flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border py-3 transition-colors duration-fast ease-standard last:border-b-0 hover:bg-primary-soft sm:px-2">
       <span
         aria-hidden
         className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft font-semibold text-primary"
@@ -139,7 +165,7 @@ function ClassRow({ item }: { item: ClassListItem }) {
       <span className="flex min-w-0 flex-1 flex-col">
         <Link
           href={`/classes/${item.id}` as Route}
-          className="flex min-h-11 items-center font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-lg"
+          className="flex min-h-11 items-center font-semibold wrap-anywhere after:absolute after:inset-0"
         >
           {item.name}
         </Link>
@@ -198,73 +224,115 @@ function ClassesLoading() {
   );
 }
 
-function ClassList({ archived, page }: { archived: boolean; page: number }) {
+function ClassList({ view }: { view: ClassesView }) {
+  const router = useRouter();
+  const go = (patch: Partial<ClassesView>) =>
+    router.push(classesHref({ ...view, page: 1, ...patch }));
   const classes = useQuery({
-    queryKey: classKeys.list(archived, page),
-    queryFn: () => listClasses(archived, page),
+    queryKey: classKeys.list(view.archived, view.page, view.q, view.sort),
+    queryFn: () =>
+      listClasses(view.archived, view.page, { q: view.q || undefined, sort: view.sort }),
   });
+  const total = classes.data?.meta.total;
 
-  if (classes.isPending) return <ClassesLoading />;
-  if (classes.isError) {
-    return (
+  let body;
+  if (classes.isPending) {
+    body = <ClassesLoading />;
+  } else if (classes.isError) {
+    body = (
       <ErrorState
         title="Không tải được lớp học"
         description="Kiểm tra kết nối mạng rồi thử lại."
         onRetry={() => void classes.refetch()}
       />
     );
-  }
-  const { data, meta } = classes.data;
-  if (data.length === 0) {
-    return archived ? (
-      <EmptyState title="Chưa có lớp nào đã lưu trữ" description="Lớp bạn lưu trữ sẽ nằm ở đây." />
-    ) : (
-      <EmptyState
-        title="Bạn chưa có lớp nào"
-        description="Tạo lớp rồi gửi mã lớp cho học sinh để các em tham gia."
-      />
-    );
-  }
-  return (
-    <>
-      <ul aria-label={archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'} className="flex flex-col gap-2">
-        {data.map((item) => (
+  } else if (classes.data.data.length === 0) {
+    if (view.q) {
+      body = (
+        <ListNoMatch
+          text={`Không có lớp nào khớp "${view.q}".`}
+          clearHref={classesHref({ ...view, q: '', page: 1 })}
+        />
+      );
+    } else if (view.archived) {
+      body = (
+        <EmptyState
+          title="Chưa có lớp nào đã lưu trữ"
+          description="Lớp bạn lưu trữ sẽ nằm ở đây."
+        />
+      );
+    } else {
+      body = (
+        <EmptyState
+          title="Bạn chưa có lớp nào"
+          description="Tạo lớp rồi gửi mã lớp cho học sinh để các em tham gia."
+        />
+      );
+    }
+  } else {
+    body = (
+      <ul aria-label={view.archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'} className="flex flex-col">
+        {classes.data.data.map((item) => (
           <ClassRow key={item.id} item={item} />
         ))}
       </ul>
-      <Pagination
-        page={meta.page}
-        pageCount={Math.ceil(meta.total / CLASSES_PAGE_SIZE)}
-        hrefFor={(next) => classesHref(archived, next)}
-      />
-    </>
-  );
-}
+    );
+  }
 
-function FilterLink({
-  href,
-  current,
-  children,
-}: {
-  href: Route;
-  current: boolean;
-  children: string;
-}) {
   return (
-    <Link
-      href={href}
-      aria-current={current ? 'page' : undefined}
-      className="inline-flex min-h-11 items-center rounded-md px-3 font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
+    <ListPanel
+      title={view.archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'}
+      count={total}
+      toolbar={
+        <ListToolbar
+          key={view.q}
+          tabs={[false, true].map((archived) => ({
+            label: archived ? 'Đã lưu trữ' : 'Đang dạy',
+            href: classesHref({ ...view, archived, page: 1 }),
+            current: view.archived === archived,
+          }))}
+          search={{ label: 'Tìm lớp theo tên', value: view.q, onSearch: (q) => go({ q }) }}
+          filters={
+            <ListFilter>
+              <Select
+                aria-label="Sắp xếp lớp"
+                value={view.sort}
+                onChange={(event) => go({ sort: event.target.value as ClassSort })}
+              >
+                {Object.entries(SORT_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </ListFilter>
+          }
+        />
+      }
+      footer={
+        classes.data && classes.data.meta.total > 0 ? (
+          <ListPager
+            page={classes.data.meta.page}
+            pageSize={CLASSES_PAGE_SIZE}
+            total={classes.data.meta.total}
+            hrefFor={(page) => classesHref({ ...view, page })}
+          />
+        ) : null
+      }
     >
-      {children}
-    </Link>
+      {body}
+    </ListPanel>
   );
 }
 
 export function TeacherClasses() {
   const searchParams = useSearchParams();
-  const archived = searchParams.get('archived') === '1';
-  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('page') ?? undefined);
+  const view: ClassesView = {
+    archived: searchParams.get('archived') === '1',
+    q: (searchParams.get('q') ?? '').slice(0, LIST_SEARCH_MAX_LENGTH),
+    sort: classListQuerySchema.shape.sort.parse(searchParams.get('sort') ?? undefined),
+    page: paginationSchema.shape.page.catch(1).parse(searchParams.get('page') ?? undefined),
+  };
   const [creating, setCreating] = useState(false);
 
   return (
@@ -280,15 +348,7 @@ export function TeacherClasses() {
         }
       />
       <CreateClassDialog open={creating} onOpenChange={setCreating} />
-      <nav aria-label="Lọc lớp" className="flex gap-1">
-        <FilterLink href={classesHref(false)} current={!archived}>
-          Đang dạy
-        </FilterLink>
-        <FilterLink href={classesHref(true)} current={archived}>
-          Đã lưu trữ
-        </FilterLink>
-      </nav>
-      <ClassList archived={archived} page={page} />
+      <ClassList view={view} />
     </>
   );
 }

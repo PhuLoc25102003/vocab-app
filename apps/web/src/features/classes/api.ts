@@ -24,6 +24,7 @@ import {
   type AssignmentSummary,
   type Class,
   type ClassList,
+  type ClassSort,
   type ClassMember,
   type ClassMemberList,
   type MemberResultList,
@@ -48,7 +49,8 @@ export const MEMBERS_PAGE_SIZE = 20;
 
 export const classKeys = {
   all: ['classes'] as const,
-  list: (archived: boolean, page: number) => ['classes', 'list', archived, page] as const,
+  list: (archived: boolean, page: number, q = '', sort: ClassSort = '-createdAt') =>
+    ['classes', 'list', archived, page, q, sort] as const,
   detail: (id: string) => ['classes', 'detail', id] as const,
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
   membersQuery: (id: string, page: number, q: string, sort: string) =>
@@ -76,12 +78,18 @@ export const classKeys = {
 
 const classPath = (id: string) => `/classes/${encodeURIComponent(id)}`;
 
-export async function listClasses(archived: boolean, page: number): Promise<ClassList> {
+export async function listClasses(
+  archived: boolean,
+  page: number,
+  options: { q?: string; sort?: ClassSort } = {},
+): Promise<ClassList> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(CLASSES_PAGE_SIZE),
     archived: String(archived),
   });
+  if (options.q) params.set('q', options.q);
+  if (options.sort && options.sort !== '-createdAt') params.set('sort', options.sort);
   return classListSchema.parse(await http(`/classes?${params.toString()}`));
 }
 

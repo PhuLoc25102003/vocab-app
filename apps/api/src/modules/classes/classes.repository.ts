@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { ClassListQuery } from '@vocab/shared';
+import type { Prisma } from '../../generated/prisma/client';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
@@ -47,12 +48,21 @@ export class ClassesRepository extends BaseRepository {
   }
 
   async findByTeacher(teacherId: string, query: ClassListQuery) {
-    const where = { teacherId, archivedAt: query.archived ? { not: null } : null };
+    const where: Prisma.ClassWhereInput = {
+      teacherId,
+      archivedAt: query.archived ? { not: null } : null,
+      ...(query.q ? { name: { contains: query.q, mode: 'insensitive' } } : {}),
+    };
+    const ORDER: Record<ClassListQuery['sort'], Prisma.ClassOrderByWithRelationInput> = {
+      '-createdAt': { createdAt: 'desc' },
+      name: { name: 'asc' },
+      '-memberCount': { members: { _count: 'desc' } },
+    };
     const [rows, total] = await Promise.all([
       this.prisma.class.findMany({
         where,
         select: CLASS_SELECT,
-        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        orderBy: [ORDER[query.sort], { createdAt: 'desc' }, { id: 'asc' }],
         ...toSkipTake(query),
       }),
       this.prisma.class.count({ where }),

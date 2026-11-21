@@ -62,7 +62,7 @@ describe('TeacherClasses', () => {
     expect(row).toHaveTextContent('78% đúng hạn');
     expect(row).toHaveTextContent('ABC234');
     expect(screen.getByRole('button', { name: 'Sao chép mã lớp ABC234' })).toBeInTheDocument();
-    expect(listClasses).toHaveBeenCalledWith(false, 1);
+    expect(listClasses).toHaveBeenCalledWith(false, 1, { q: undefined, sort: '-createdAt' });
     expect(screen.getByRole('link', { name: 'Đang dạy' })).toHaveAttribute('aria-current', 'page');
   });
 
@@ -72,7 +72,40 @@ describe('TeacherClasses', () => {
     renderPage();
 
     expect(await screen.findByText('Chưa có lớp nào đã lưu trữ')).toBeInTheDocument();
-    expect(listClasses).toHaveBeenCalledWith(true, 1);
+    expect(listClasses).toHaveBeenCalledWith(true, 1, { q: undefined, sort: '-createdAt' });
+  });
+
+  it('đọc tìm và sắp xếp từ URL, đổi thì về trang 1 và giữ tab', async () => {
+    navigation.params = new URLSearchParams('archived=1&q=10a&sort=name&page=3');
+    vi.mocked(listClasses).mockResolvedValue(page([klass()]));
+    renderPage();
+
+    await screen.findByRole('list', { name: 'Lớp đã lưu trữ' });
+    expect(listClasses).toHaveBeenCalledWith(true, 3, { q: '10a', sort: 'name' });
+    expect(screen.getByRole('link', { name: 'Đang dạy' })).toHaveAttribute(
+      'href',
+      '/classes?q=10a&sort=name',
+    );
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Sắp xếp lớp' }),
+      '-memberCount',
+    );
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes?archived=1&q=10a&sort=-memberCount');
+    const search = screen.getByRole('searchbox', { name: 'Tìm lớp theo tên' });
+    await userEvent.clear(search);
+    await userEvent.type(search, 'toán{Enter}');
+    expect(navigation.push).toHaveBeenLastCalledWith(
+      `/classes?archived=1&q=${encodeURIComponent('toán')}&sort=name`,
+    );
+  });
+
+  it('tìm không ra lớp thì cho xoá bộ lọc', async () => {
+    navigation.params = new URLSearchParams('q=zzz');
+    vi.mocked(listClasses).mockResolvedValue(page([]));
+    renderPage();
+
+    expect(await screen.findByText('Không có lớp nào khớp "zzz".')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Xoá bộ lọc' })).toHaveAttribute('href', '/classes');
   });
 
   it('chưa có lớp thì mời tạo, lỗi mạng thì cho thử lại', async () => {
