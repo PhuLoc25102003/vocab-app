@@ -204,9 +204,19 @@ Tên bộ, mô tả, tên người dùng, tên lớp, thư mục và thuật ng�
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
 
+Trên màn hình di động (< 640 px), khi các ô chọn nằm chung hàng (như trong `ListToolbar`), chữ hiển thị trong `select` dùng `text-small` (14 px) kèm `truncate`, chiều cao cố định `min-h-11`, tuyệt đối không để nhãn dài rớt dòng làm phình chiều cao ô và lệch hàng với ô bên cạnh (GAP-35).
+
 ## Khung danh sách
 
-Danh sách có thể dài (bài tập, lớp, học sinh, kết quả) dùng `ListPanel` trong `components/common/list-panel.tsx` (việc 5.29): viền `border-strong`, nền `surface`, bo `lg`; đầu khung là tiêu đề `text-h3` kèm tổng số và nút hành động; hàng công cụ `ListToolbar` gồm tab trạng thái (link trong URL, kèm số), ô tìm co giãn chiếm phần còn lại và các ô lọc, sắp xếp bọc trong `ListFilter` để có bề rộng cố định (176 px, `wide` 224 px); chân `ListPager` ghi "1–20 trên N" kèm phân trang. Bốn trạng thái nằm trong thân khung; đang lọc mà không có kết quả dùng `ListNoMatch` có nút "Xoá bộ lọc". Ở 360 px ô tìm một hàng, các ô lọc chia đều hàng dưới. Bộ lọc, ô tìm và số trang luôn nằm trong URL.
+Danh sách có thể dài (bài tập, lớp, học sinh, kết quả) dùng `ListPanel` trong `components/common/list-panel.tsx` (việc 5.29): viền `border-strong`, nền `surface`, bo `lg`; đầu khung là tiêu đề `text-h3` kèm tổng số và nút hành động; hàng công cụ `ListToolbar` gồm tab trạng thái (link trong URL, kèm số), ô tìm co giãn chiếm phần còn lại và các ô lọc, sắp xếp bọc trong `ListFilter` để có bề rộng cố định (176 px, `wide` 224 px); chân `ListPager` ghi "1–20 trên N" kèm phân trang. Bốn trạng thái nằm trong thân khung; đang lọc mà không có kết quả dùng `ListNoMatch` có nút "Xoá bộ lọc". Ở 360 px ô tìm một hàng, các ô lọc chia đều hàng dưới; các nhãn lựa chọn trong ô lọc phải ngắn gọn ("Mới nhất" / "Newest"), không bẻ đôi từ làm lệch chiều cao. Bộ lọc, ô tìm và số trang luôn nằm trong URL.
+
+## Thanh điều hướng dưới (Bottom navigation) trên mobile
+
+Dùng `AppNav` trong `components/common/app-nav.tsx`: cố định đáy màn hình dưới 768 px (`fixed inset-x-0 bottom-0 z-30`), viền trên `border`, nền `surface`, padding đáy theo vùng an toàn của điện thoại `pb-[env(safe-area-inset-bottom)]`.
+
+- 5 tab chia đều bằng lưới `grid-cols-5`, mỗi ô rộng khoảng 72 px ở màn hình 360 px.
+- Vùng bấm mỗi tab tối thiểu 48 px (`min-h-16`), icon ở trên, nhãn ở dưới.
+- Nhãn tab phải **luôn luôn là 1 dòng duy nhất** (`whitespace-nowrap`, `truncate`, cỡ `text-tiny`), không để từ có dấu cách rớt dòng ("Review today" hay "Ôn hôm nay" bị ngắt thành 2 dòng làm lệch icon lên cao và méo chiều cao thanh nav). Nhãn hiển thị trên mobile ưu tiên từ ngắn gọn (tiếng Anh: "Review", tiếng Việt: "Ôn tập").
 
 ## Ô chọn có tìm kiếm
 
@@ -246,7 +256,9 @@ Trang Bộ từ chia hai cột từ 1024 px: cột thư mục rộng 240 px dín
 
 Khi mở một thư mục, phía trên danh sách có thanh `FolderHeader`: đường dẫn "Bộ từ › tên thư mục" kèm số bộ, menu ba chấm (đổi tên tại chỗ, xoá qua hộp thoại) và nút đóng về Tất cả. Thư mục đang mở nằm trong URL (`?folder=`). Mỗi thẻ bộ từ có nút biểu tượng thư mục mở menu chọn thư mục và mục "Gỡ khỏi thư mục".
 
-Kéo thả (`FolderDndArea`, thư viện `@dnd-kit/core`): mỗi thẻ có tay nắm chấm dọc 44 px cạnh nút thư mục. Chuột kéo sau 8 px, cảm ứng giữ 250 ms. Khi đang kéo, mọi thư mục nhận thả có viền gạch `primary`; thư mục dưới con trỏ đổi nền `primary`, chữ `primary-fg`. Lớp nổi đi theo con trỏ là chip tên bộ từ có đổ bóng `shadow-raised`. Thả vào "Chưa xếp thư mục" là gỡ khỏi thư mục. Tay nắm ẩn khỏi trình đọc màn hình và không nhận focus vì nút thư mục trên thẻ đã làm cùng việc bằng bàn phím.
+Thanh tìm kiếm và sắp xếp trên trang Bộ từ: dưới 640 px (mobile 360 px) xếp thành 2 hàng — ô tìm kiếm trọn 1 hàng (`w-full`), ô sắp xếp ở hàng dưới (bỏ nhãn trôi nổi gây lệch hàng); từ 640 px xếp chung 1 hàng theo mẫu `ListToolbar`.
+
+Kéo thả (`FolderDndArea`, thư viện `@dnd-kit/core`): mỗi thẻ có tay nắm chấm dọc 44 px cạnh nút thư mục (chỉ hiện trên màn hình từ 768 px `hidden md:flex`, ẩn trên cảm ứng/mobile để không vướng thao tác chạm và tránh nhầm với cuộn trang; mobile dùng menu ⋯ chuyển thư mục). Chuột kéo sau 8 px. Khi đang kéo, mọi thư mục nhận thả có viền gạch `primary`; thư mục dưới con trỏ đổi nền `primary`, chữ `primary-fg`. Lớp nổi đi theo con trỏ là chip tên bộ từ có đổ bóng `shadow-raised`. Thả vào "Chưa xếp thư mục" là gỡ khỏi thư mục. Tay nắm ẩn khỏi trình đọc màn hình và không nhận focus vì nút thư mục trên thẻ đã làm cùng việc bằng bàn phím.
 
 ## Menu thao tác
 

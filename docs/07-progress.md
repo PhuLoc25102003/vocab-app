@@ -8,8 +8,9 @@ Cập nhật lần cuối: 2026-11-21
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-2. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Sửa lỗi layout trên mobile 360 px (việc 5.36, GAP-35).
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -22,9 +23,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      37 |      37 | Xong       |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      37 |      38 | Đang làm   |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       9 |       9 | Xong       |
-| **Toàn dự án**          |                                            | **171** | **175** | **98%**    |
+| **Toàn dự án**          |                                            | **171** | **176** | **97%**    |
 
 ## Cách cập nhật
 
@@ -323,6 +324,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **5.33** Lớp đang dạy: API `GET /classes` nhận `q`, `sort` (`-createdAt`, `name`, `-memberCount`); web dùng `ListPanel` có tìm, sắp xếp, phân trang. Cần 5.29 (GAP-33). (#395)
 - [x] **5.34** Thư mục trên mobile: nút "Thư mục: <tên>" mở tấm đáy chọn thư mục (tìm, tạo mới); "⋯ > Chuyển vào thư mục" thay kéo thả trên màn hình cảm ứng; ô tìm và nút sắp xếp chung hàng (GAP-34). (#397)
 - [x] **5.35** Trang Quản lý người dùng đồng bộ với các danh sách khác: nút quay lại Tổng quan, `ListPanel` có tab trạng thái (Tất cả, Đang hoạt động, Đã khoá), tìm, lọc vai trò, sắp xếp, chân "1–20 trên N" kèm phân trang; API `GET /admin/users` nhận `role`, `status`. Cần 5.29 (#405, #406).
+- [ ] **5.36** Sửa lỗi layout trên mobile 360 px (GAP-35): nhãn Bottom Nav 1 dòng ở cả 2 ngôn ngữ ("Review" / "Ôn tập"); thanh tìm kiếm và sắp xếp trang Bộ từ gọn gàng; ô chọn trong `ListToolbar` ở Quản lý người dùng không gãy chữ làm lệch hàng; ẩn tay nắm kéo thả bộ từ trên mobile. Cần 5.29, 5.34, 5.35, 6.7.
 
 ## Giai đoạn 6: Đa ngôn ngữ
 
