@@ -60,8 +60,17 @@ export const classSchema = z.object({
 });
 export type Class = z.infer<typeof classSchema>;
 
+/** Lớp trong danh sách của giáo viên kèm số liệu nhanh (việc 5.16a). */
+export const classListItemSchema = classSchema.extend({
+  /** Bài chưa tới hạn hoặc không có hạn. */
+  openAssignmentCount: z.number().int(),
+  /** Phần trăm bài nộp đúng hạn trong 30 ngày qua, `null` khi chưa có bài nào hết hạn. */
+  onTimeRate: z.number().int().nullable(),
+});
+export type ClassListItem = z.infer<typeof classListItemSchema>;
+
 export const classListSchema = z.object({
-  data: z.array(classSchema),
+  data: z.array(classListItemSchema),
   meta: paginationMetaSchema,
 });
 export type ClassList = z.infer<typeof classListSchema>;

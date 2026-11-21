@@ -294,7 +294,7 @@ Không tính vào tổng số việc.
 ### 5E. Giáo viên theo dõi lớp
 
 - [x] **5.15** API số liệu học sinh trong lớp: đúng hạn, trễ, bỏ lỡ, đang chờ, điểm trung bình, hoạt động gần nhất; sắp xếp và tìm theo tên; số liệu tóm tắt ở API để trang kết quả một học sinh phân trang được. Cần 5.12 (GAP-19, #360).
-- [ ] **5.16a** Danh sách lớp của giáo viên dạng thẻ hàng: ô chữ cái đầu, tên, mô tả 1 dòng, số học sinh, số bài đang mở, tỉ lệ nộp đúng hạn 30 ngày, mã lớp kèm nút sao chép; API `GET /classes` trả thêm `openAssignmentCount`, `onTimeRate`. Cần 5.15 (GAP-20).
+- [x] **5.16a** Danh sách lớp của giáo viên dạng thẻ hàng: ô chữ cái đầu, tên, mô tả 1 dòng, số học sinh, số bài đang mở, tỉ lệ nộp đúng hạn 30 ngày, mã lớp kèm nút sao chép; API `GET /classes` trả thêm `openAssignmentCount`, `onTimeRate`. Cần 5.15 (GAP-20, #364).
 - [ ] **5.16b** Trang lớp gọn: mã lớp thành chip có nút sao chép, modal "Mời học sinh" (mã lớn, sao chép, đổi mã), menu "⋯" (sửa tên và mô tả trong modal, đổi mã, lưu trữ), tab Bài tập và Học sinh trong URL (`?tab=`). Cần 5.8 (GAP-20).
 - [ ] **5.16c** Tab Học sinh: bảng Tên, Vào lớp, Đúng hạn, Trễ, Bỏ lỡ, Điểm TB từ API 5.15, tìm và sắp theo tên, phân trang 20, thẻ 2 dòng ở 360 px; bấm hàng mở modal hồ sơ học sinh (4 ô số liệu, 5 bài gần đây, "Xem tất cả bài", "Xoá khỏi lớp"). Cần 5.15, 5.16b (GAP-19).
 - [ ] **5.17** Trang kết quả bài giao theo bài nộp: trạng thái 5 loại, điểm theo từng chế độ, lọc theo trạng thái. Cần 5.12.

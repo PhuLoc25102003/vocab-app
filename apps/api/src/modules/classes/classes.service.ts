@@ -27,13 +27,61 @@ function isJoinCodeTaken(error: unknown): boolean {
   return (error as { code?: unknown } | null)?.code === 'P2002';
 }
 
+const ON_TIME_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+interface ListStatsInput {
+  assignments: { id: string; classId: string; dueAt: Date | null }[];
+  members: { classId: string; userId: string; joinedAt: Date }[];
+  onTime: { assignmentId: string; userId: string }[];
+}
+
+/**
+ * Số bài đang mở và tỉ lệ nộp đúng hạn 30 ngày của một lớp. Mẫu số là số cặp (bài hết hạn trong
+ * 30 ngày, học sinh đang trong lớp và vào lớp trước hạn); tử số là bài nộp đúng hạn của các cặp đó.
+ */
+export function classListStats(
+  classId: string,
+  { assignments, members, onTime }: ListStatsInput,
+  since: Date,
+  now: Date,
+) {
+  const own = assignments.filter((item) => item.classId === classId);
+  const openAssignmentCount = own.filter(({ dueAt }) => !dueAt || dueAt > now).length;
+  const roster = members.filter((item) => item.classId === classId);
+  const submitted = new Set(onTime.map(({ assignmentId, userId }) => `${assignmentId}:${userId}`));
+  let expected = 0;
+  let done = 0;
+  for (const { id, dueAt } of own) {
+    if (!dueAt || dueAt < since || dueAt > now) continue;
+    for (const { userId, joinedAt } of roster) {
+      if (joinedAt > dueAt) continue;
+      expected += 1;
+      if (submitted.has(`${id}:${userId}`)) done += 1;
+    }
+  }
+  return {
+    openAssignmentCount,
+    onTimeRate: expected ? Math.round((done * 100) / expected) : null,
+  };
+}
+
 @Injectable()
 export class ClassesService {
   constructor(private readonly classes: ClassesRepository) {}
 
-  async listTaught(teacherId: string, query: ClassListQuery) {
+  async listTaught(teacherId: string, query: ClassListQuery, now = new Date()) {
     const { items, total } = await this.classes.findByTeacher(teacherId, query);
-    return paginated(items, total, query);
+    const since = new Date(now.getTime() - ON_TIME_WINDOW_MS);
+    const input = await this.classes.findListStatsInput(
+      items.map(({ id }) => id),
+      since,
+      now,
+    );
+    const withStats = items.map((item) => ({
+      ...item,
+      ...classListStats(item.id, input, since, now),
+    }));
+    return paginated(withStats, total, query);
   }
 
   async get(id: string) {

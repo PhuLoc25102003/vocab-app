@@ -5,10 +5,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createClassSchema,
   paginationSchema,
-  type Class,
+  type ClassListItem,
   type CreateClassInput,
 } from '@vocab/shared';
-import { Plus, Users } from 'lucide-react';
+import { ChevronRight, Copy, Plus, Users } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -102,30 +102,88 @@ function CreateClassDialog({
   );
 }
 
-function ClassRow({ item }: { item: Class }) {
+function CopyCodeButton({ code }: { code: string }) {
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success(`Đã sao chép mã ${code}`);
+    } catch {
+      toast.error('Không sao chép được, hãy chép mã bằng tay');
+    }
+  };
   return (
-    <li className="border-b border-border last:border-b-0">
-      <Link
-        href={`/classes/${item.id}` as Route}
-        className="flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:px-2"
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={`Sao chép mã lớp ${code}`}
+      onClick={() => void copy()}
+      className="relative z-10"
+    >
+      <Copy aria-hidden className="size-4" />
+    </Button>
+  );
+}
+
+/** Thẻ hàng: cả thẻ mở trang lớp, riêng nút sao chép mã nằm trên lớp link. */
+function ClassRow({ item }: { item: ClassListItem }) {
+  const initial = item.name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
+  return (
+    <li className="relative flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary sm:p-4">
+      <span
+        aria-hidden
+        className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft font-semibold text-primary"
       >
-        <span className="flex min-w-0 flex-col">
-          <span className="font-medium wrap-anywhere">{item.name}</span>
-          {item.description ? (
-            <span className="line-clamp-1 text-small text-text-muted">{item.description}</span>
-          ) : null}
+        {initial}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <Link
+          href={`/classes/${item.id}` as Route}
+          className="flex min-h-11 items-center font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-lg"
+        >
+          {item.name}
+        </Link>
+        {item.description ? (
+          <span className="line-clamp-1 text-small text-text-muted">{item.description}</span>
+        ) : null}
+      </span>
+      <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-small text-text-muted sm:w-auto">
+        <span className="flex items-center gap-1 tabular-nums">
+          <Users aria-hidden className="size-4" />
+          {item.memberCount} HS
         </span>
-        <span className="flex items-center gap-4 text-small text-text-muted">
-          <span className="flex items-center gap-1 tabular-nums">
-            <Users aria-hidden className="size-4" />
-            {item.memberCount} học sinh
-          </span>
+        <span className="tabular-nums">{item.openAssignmentCount} bài mở</span>
+        <span className="flex min-w-32 items-center gap-2">
+          {item.onTimeRate === null ? (
+            <span>Chưa có bài hết hạn</span>
+          ) : (
+            <>
+              <span
+                role="meter"
+                aria-label="Tỉ lệ nộp đúng hạn 30 ngày"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={item.onTimeRate}
+                className="h-1.5 w-16 overflow-hidden rounded-full bg-border"
+              >
+                <span
+                  className="block h-full bg-primary"
+                  style={{ width: `${item.onTimeRate}%` }}
+                />
+              </span>
+              <span className="tabular-nums">{item.onTimeRate}% đúng hạn</span>
+            </>
+          )}
+        </span>
+        <span className="flex items-center">
           <span className="rounded-sm bg-primary-soft px-2 font-mono tracking-wider text-primary">
             <span className="sr-only">Mã lớp </span>
             {item.joinCode}
           </span>
+          <CopyCodeButton code={item.joinCode} />
         </span>
-      </Link>
+      </span>
+      <ChevronRight aria-hidden className="hidden size-5 shrink-0 text-text-muted sm:block" />
     </li>
   );
 }
@@ -169,7 +227,7 @@ function ClassList({ archived, page }: { archived: boolean; page: number }) {
   }
   return (
     <>
-      <ul aria-label={archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'} className="flex flex-col">
+      <ul aria-label={archived ? 'Lớp đã lưu trữ' : 'Lớp đang dạy'} className="flex flex-col gap-2">
         {data.map((item) => (
           <ClassRow key={item.id} item={item} />
         ))}
