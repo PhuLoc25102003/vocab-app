@@ -40,12 +40,20 @@ export const updateClassSchema = z
   });
 export type UpdateClassInput = z.infer<typeof updateClassSchema>;
 
+export const LIST_SEARCH_MAX_LENGTH = 100;
+
+export const CLASS_SORTS = ['-createdAt', 'name', '-memberCount'] as const;
+export type ClassSort = (typeof CLASS_SORTS)[number];
+
 export const classListQuerySchema = paginationSchema.extend({
   /** Mặc định chỉ trả lớp đang hoạt động. */
   archived: z
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+  /** Tìm theo tên lớp, không phân biệt hoa thường (việc 5.33). */
+  q: z.string().trim().max(LIST_SEARCH_MAX_LENGTH).optional(),
+  sort: z.enum(CLASS_SORTS).catch('-createdAt').default('-createdAt'),
 });
 export type ClassListQuery = z.infer<typeof classListQuerySchema>;
 
@@ -130,8 +138,6 @@ export const classMemberListSchema = z.object({
   meta: paginationMetaSchema,
 });
 export type ClassMemberList = z.infer<typeof classMemberListSchema>;
-
-export const LIST_SEARCH_MAX_LENGTH = 100;
 
 export const joinedClassListQuerySchema = paginationSchema.extend({
   /** Tìm theo tên lớp, không phân biệt hoa thường (việc 5.30). */
