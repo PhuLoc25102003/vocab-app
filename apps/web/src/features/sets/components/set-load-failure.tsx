@@ -1,9 +1,12 @@
+'use client';
+
 import { ERROR_CODES } from '@vocab/shared';
 import Link from 'next/link';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { Button } from '@/components/ui/button';
 import { HttpError } from '@/lib/http';
+import { useTranslation } from 'react-i18next';
 
 interface SetLoadFailureProps {
   error: unknown;
@@ -11,24 +14,19 @@ interface SetLoadFailureProps {
 }
 
 export function SetLoadFailure({ error, onRetry }: SetLoadFailureProps) {
+  const { t } = useTranslation('sets');
   if (error instanceof HttpError && error.code === ERROR_CODES.SET_NOT_FOUND) {
     return (
       <EmptyState
-        title="Không tìm thấy bộ từ"
-        description="Bộ từ này đã bị xoá hoặc bạn không có quyền xem."
+        title={t('failure.notFound')}
+        description={t('failure.notFoundHint')}
         action={
           <Button asChild variant="secondary">
-            <Link href="/sets">Về danh sách bộ từ</Link>
+            <Link href="/sets">{t('failure.backToList')}</Link>
           </Button>
         }
       />
     );
   }
-  return (
-    <ErrorState
-      title="Không tải được bộ từ"
-      description="Hãy kiểm tra mạng rồi thử lại."
-      onRetry={onRetry}
-    />
-  );
+  return <ErrorState title={t('loadFailed')} description={t('checkNetwork')} onRetry={onRetry} />;
 }

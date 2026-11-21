@@ -1,0 +1,320 @@
+{
+  "languages": {
+    "en": "English",
+    "vi": "Vietnamese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "zh": "Chinese",
+    "fr": "French",
+    "de": "German",
+    "es": "Spanish"
+  },
+  "modes": {
+    "flashcard": {
+      "label": "Flashcards",
+      "hint": "Flip cards and rate whether you remember"
+    },
+    "learn": {
+      "label": "Learn",
+      "hint": "Multiple choice then typing, missed ones come back"
+    },
+    "write": {
+      "label": "Write",
+      "hint": "See the meaning, type the term"
+    },
+    "dictation": {
+      "label": "Dictation",
+      "hint": "Listen and type what you hear"
+    },
+    "mcq": {
+      "label": "Multiple choice",
+      "hint": "Pick the right meaning out of four"
+    },
+    "cloze": {
+      "label": "Fill in the blank",
+      "hint": "Fill the missing word into the example"
+    },
+    "match": {
+      "label": "Match",
+      "hint": "Match terms with meanings quickly"
+    },
+    "test": {
+      "label": "Test",
+      "hint": "Mixed questions, graded when you submit"
+    },
+    "speak": {
+      "label": "Speak",
+      "hint": "Say the term out loud, speech is recognized"
+    }
+  },
+  "grid": {
+    "title": "Choose how to study",
+    "guestLabel": "Try it",
+    "guestHint": "Try it without an account. Sign in to save progress and follow a study path.",
+    "pathLabel": "Start studying",
+    "pathHint": "Start studying: cards → multiple choice → match → write, one after another."
+  },
+  "cards": {
+    "title": "Cards",
+    "hint": "Empty rows are skipped. Deleting an existing card also deletes its progress when you save.",
+    "list": "Card list",
+    "card": "Card {{number}}",
+    "moveUp": "Move card {{number}} up",
+    "moveDown": "Move card {{number}} down",
+    "remove": "Delete card {{number}}",
+    "term": "Term",
+    "definition": "Definition",
+    "phonetic": "Phonetic (optional)",
+    "example": "Example (optional)",
+    "add": "Add card",
+    "limit": "A set can have at most {{max}} cards.",
+    "removeTitle": "Delete card {{number}}?",
+    "removeDescription": "The card and its progress will be removed from the set when you save.",
+    "removeConfirm": "Delete card"
+  },
+  "image": {
+    "type": "Only PNG, JPEG or WebP images are accepted.",
+    "tooLarge": "The image is larger than 1 MB. Choose a smaller image or resize it.",
+    "uploadFailed": "Could not upload the image. Check your connection and try again.",
+    "label": "Image (optional)",
+    "alt": "Image for card {{number}}",
+    "changeFor": "Change the image for card {{number}}",
+    "addFor": "Add an image to card {{number}}",
+    "uploading": "Uploading image",
+    "change": "Change image",
+    "add": "Add image",
+    "removeFor": "Remove the image from card {{number}}",
+    "remove": "Remove image",
+    "rules": "PNG, JPEG or WebP, up to 1 MB."
+  },
+  "list": {
+    "range": "Cards {{from}} to {{to}} of {{total}}",
+    "listen": "Listen to {{term}}",
+    "imageAlt": "Illustration for {{term}}"
+  },
+  "saved": "Set saved",
+  "loading": "Loading set",
+  "loadFailed": "Could not load sets",
+  "checkNetwork": "Check your connection and try again.",
+  "noMatch": "No matching sets",
+  "explore": {
+    "noMatch": "No public set matches \"{{q}}\" yet.",
+    "empty": "No public sets yet",
+    "emptyHint": "Sets made public will appear here.",
+    "pageEmptyHint": "The list is shorter than this page."
+  },
+  "seeAll": "See all",
+  "pageEmpty": "This page has no sets",
+  "firstPage": "Back to the first page",
+  "mine": {
+    "sortUpdated": "Recently updated",
+    "sortCreated": "Newest",
+    "sortTitle": "Name A to Z",
+    "sort": "Sort",
+    "noMatch": "You have no set matching \"{{q}}\".",
+    "allFiled": "Every set is already in a folder",
+    "folderEmpty": "This folder has no sets yet",
+    "folderEmptyHint": "Use the folder button on a set to move it here.",
+    "seeAllSets": "See all sets",
+    "pageEmptyHint": "Your list is shorter than this page."
+  },
+  "empty": "No sets yet",
+  "emptyHint": "Create your first set to start studying.",
+  "offline": {
+    "unsupported": "This browser cannot save sets for offline use.",
+    "quota": "This device is out of space. Remove some saved sets and try again.",
+    "failed": "Could not save the set to this device. Try again.",
+    "missing": "Save offline",
+    "outdated": "Update offline copy",
+    "saved": "Remove offline copy",
+    "savedToast": "Saved to this device, available without a connection",
+    "removed": "Offline copy removed",
+    "removeFailed": "Could not remove the offline copy. Try again.",
+    "removeTitle": "Remove the offline copy?",
+    "removeDescription": "The set stays in your account, it just will not be available offline until you save it again."
+  },
+  "public": {
+    "back": "Back to Explore",
+    "loginToCopy": "Sign in to copy",
+    "openInAccount": "Open in your account",
+    "ctaTitle": "Want to remember this set for good?",
+    "ctaText": "Create a free account to copy the set, save your progress and get reminders at the right time.",
+    "register": "Create account",
+    "login": "Sign in",
+    "noCardsHint": "Check back later."
+  },
+  "noCards": "This set has no cards yet",
+  "recent": {
+    "failed": "Could not load recent sets",
+    "create": "Create a set",
+    "title": "Recent sets",
+    "seeAll": "See all {{count}} sets"
+  },
+  "actions": {
+    "deleted": "Set deleted",
+    "edit": "Edit set",
+    "more": "More actions",
+    "importMore": "Import more cards",
+    "delete": "Delete set",
+    "deleteTitle": "Delete the set \"{{title}}\"?",
+    "deleteDescription": "The set, its cards and your progress will be deleted. This cannot be undone.",
+    "copied": "Set copied",
+    "copy": "Copy set"
+  },
+  "cardCount": "{{count}} cards",
+  "summaryCount": "Set of {{count}} cards",
+  "notFound": "Set not found",
+  "notFoundHint": "This vocabulary set does not exist or is no longer public.",
+  "updated": "Updated",
+  "detail": {
+    "hidden": "An administrator has hidden this set from others. Reason: {{reason}}",
+    "noCardsHint": "Cards you add will appear here."
+  },
+  "form": {
+    "title": "Set name",
+    "description": "Description (optional)",
+    "termLang": "Term language",
+    "swap": "Swap term and definition languages",
+    "defLang": "Definition language",
+    "save": "Save set",
+    "cancel": "Cancel"
+  },
+  "failure": {
+    "notFound": "Set not found",
+    "notFoundHint": "This set was deleted or you do not have access.",
+    "backToList": "Back to your sets"
+  },
+  "createdBy": "By {{name}}",
+  "search": {
+    "label": "Search sets by name",
+    "placeholder": "Search by set name",
+    "submit": "Search"
+  },
+  "folders": {
+    "moved": "Moved \"{{title}}\" to the folder",
+    "unfiled": "Removed from the folder",
+    "dragHint": "Drag into a folder",
+    "noFolder": "Not in a folder",
+    "breadcrumb": "Breadcrumb",
+    "sets": "Sets",
+    "setCount": "{{count}} sets",
+    "actionsFor": "Actions for folder {{name}}",
+    "rename": "Rename folder",
+    "delete": "Delete folder",
+    "close": "Close folder",
+    "deleteTitle": "Delete the folder \"{{name}}\"?",
+    "deleteDescription": "The {{count}} sets in the folder are kept, they just leave this folder.",
+    "deleted": "Folder deleted, the sets are kept",
+    "name": "Folder name",
+    "save": "Save",
+    "renamed": "Folder renamed",
+    "create": "Create folder",
+    "newName": "New folder name",
+    "createSubmit": "Create",
+    "created": "Folder created",
+    "title": "Folders",
+    "createNew": "Create a new folder",
+    "filter": "Filter folders",
+    "all": "All sets",
+    "loadFailed": "Could not load folders.",
+    "noMatch": "No folders match.",
+    "folder": "Folder",
+    "current": "Folder: {{name}}",
+    "choose": "Choose a folder",
+    "search": "Search folders",
+    "list": "Folder list",
+    "movedShort": "Moved to the folder",
+    "moveSet": "Move \"{{title}}\" to a folder, currently: {{current}}",
+    "unfiledShort": "none",
+    "changeChip": "Folder: {{name}}. Change folder",
+    "moveTo": "Move to folder",
+    "none": "No folder",
+    "removeFrom": "Remove from {{name}}"
+  },
+  "import": {
+    "previewTitle": "Preview",
+    "previewCount": "({{count}} cards)",
+    "invalidRows": "{{count}} rows need fixing or removing before saving.",
+    "allValid": "Every row is valid.",
+    "onlyInvalid": "Show only rows with errors",
+    "row": "Row {{line}}",
+    "term": "Term",
+    "definition": "Definition",
+    "phonetic": "Phonetic",
+    "example": "Example",
+    "removeRow": "Remove row {{line}}",
+    "delimiters": {
+      "auto": "Detect automatically (recommended)",
+      "tab": "Tab: pasted from Excel, Google Sheets",
+      "comma": "Comma: apple, quả táo",
+      "semicolon": "Semicolon: apple; quả táo",
+      "dash": "Dash: apple - quả táo"
+    },
+    "detected": {
+      "tab": "tab",
+      "comma": "comma",
+      "semicolon": "semicolon",
+      "dash": "dash"
+    },
+    "delimiterField": "Terms and definitions are separated by",
+    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nOne card per line, term and definition separated by a tab, a comma or \" - \".",
+    "templateFailed": "Could not create the template. Try again.",
+    "readFailed": "Could not read the file.",
+    "columnSample": "Column {{column}}: {{sample}}",
+    "column": "Column {{column}}",
+    "summary": {
+      "term": "terms in column {{column}}",
+      "definition": "definitions in column {{column}}",
+      "phonetic": "phonetics in column {{column}}",
+      "example": "examples in column {{column}}"
+    },
+    "autoDetectLater": "The separator is detected after you paste or choose a file.",
+    "separatedBy": "Separated by {{name}}.",
+    "noColumn": "None",
+    "templateTitle": "Get the template",
+    "optional": "(optional)",
+    "templateText1": "An Excel file with example rows and a guide sheet, opens in Excel or Google Sheets.",
+    "templateText2": "The Term and Definition columns are required, Phonetic and Example can be empty.",
+    "templateDownload": "Download the Excel template (.xlsx)",
+    "sourceTitle": "Add your list",
+    "paste": "Paste your word list",
+    "chooseFile": "Choose a .txt, .csv or .xlsx file",
+    "fileRead": "Read {{name}}",
+    "fileLimit": "Up to 2 MB. Only the first sheet of an Excel file is read.",
+    "templateDetected": "Template headers found, columns are preselected.",
+    "optionsTitle": "Check how it is read",
+    "singleColumn": "Terms and definitions could not be split. Choose the separator your list uses.",
+    "detectedHint": "Detected: {{name}}.",
+    "takeColumns": "Using {{columns}}",
+    "skipHeader": ", skipping the header row.",
+    "changeOptions": "Change how it is read",
+    "step": "Step {{step}}: ",
+    "optionsLegend": "How the list is read",
+    "termColumn": "Term column",
+    "definitionColumn": "Definition column",
+    "phoneticColumn": "Phonetic column (optional)",
+    "exampleColumn": "Example column (optional)",
+    "hasHeader": "The first row is a header, skip it",
+    "hasHeaderHint": "Turn on if the first row holds column names like Term, Definition.",
+    "targetNotFound": "The set was deleted or you do not have access.",
+    "targetNote": "Cards will be added to the end of “{{title}}”, which has {{count}} cards.",
+    "imported": "Imported {{count}} cards",
+    "noRows": "No rows left to import",
+    "noRowsHint": "Paste the list again or choose another file.",
+    "restart": "Start over",
+    "saveTitle": "Save",
+    "newTitle": "New set name",
+    "saveCount": "Save {{count}} cards",
+    "file": {
+      "empty": "The file is empty.",
+      "tooLarge": "Files can be at most 2 MB. Split it and import in parts.",
+      "notXlsx": "The file is not an Excel file. Choose another .xlsx file.",
+      "brokenXlsx": "The Excel file is damaged or unreadable. Save it again and retry.",
+      "emptySheet": "The first sheet of the Excel file is empty.",
+      "oldXls": "Old .xls files are not supported. Save it as .xlsx or CSV (UTF-8) in Excel.",
+      "type": "Only .txt, .csv or .xlsx files are accepted.",
+      "notText": "The file is not text. Choose a .txt or .csv file.",
+      "encoding": "The file is damaged or not UTF-8 text."
+    }
+  }
+}

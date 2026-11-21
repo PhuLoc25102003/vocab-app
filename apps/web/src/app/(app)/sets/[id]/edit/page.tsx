@@ -3,15 +3,20 @@ import { BackLink } from '@/components/common/back-link';
 import { PageContainer } from '@/components/common/page-container';
 import { PageHeader } from '@/components/common/page-header';
 import { EditSet } from '@/features/sets/components/edit-set';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Sửa bộ từ' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.editSet') };
+}
 
 export default async function EditSetPage({ params }: PageProps<'/sets/[id]/edit'>) {
+  const t = await getT('common');
   const { id } = await params;
   return (
     <PageContainer width="narrow">
-      <BackLink href={`/sets/${id}` as Route} label="Quay lại bộ từ" />
-      <PageHeader title="Sửa bộ từ" />
+      <BackLink href={`/sets/${id}` as Route} label={t('pages.backToSet')} />
+      <PageHeader title={t('pages.editSet')} />
       <EditSet id={id} />
     </PageContainer>
   );

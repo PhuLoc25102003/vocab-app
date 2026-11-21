@@ -12,9 +12,11 @@ import { DuplicateSetButton, SetOwnerActions } from '@/features/sets/components/
 import { SetDetail } from '@/features/sets/components/set-detail';
 import { CardMasteryBadge } from '@/features/stats/components/card-mastery';
 import { SetProgressSummary } from '@/features/stats/components/set-progress';
+import { useTranslation } from 'react-i18next';
 
 /** Feature không import lẫn nhau, nên quyền và nút bộ từ được ghép ở tầng trang. */
 export function SetDetailScreen({ id }: { id: string }) {
+  const { t } = useTranslation();
   return (
     <SetDetail
       id={id}
@@ -22,15 +24,15 @@ export function SetDetailScreen({ id }: { id: string }) {
         <Can
           action="update"
           resource={set}
-          fallback={<BackLink href="/explore" label="Quay lại Khám phá" />}
+          fallback={<BackLink href="/explore" label={t('pages.backToExplore')} />}
         >
-          <BackLink href="/sets" label="Quay lại Bộ từ" />
+          <BackLink href="/sets" label={t('pages.backToSets')} />
         </Can>
       )}
       renderEmptyAction={(set) => (
         <Can action="update" resource={set} fallback={null}>
           <Button asChild>
-            <Link href={`/sets/${set.id}/edit` as Route}>Thêm thẻ</Link>
+            <Link href={`/sets/${set.id}/edit` as Route}>{t('pages.addCards')}</Link>
           </Button>
         </Can>
       )}

@@ -26,8 +26,10 @@ import { VisibilityField } from '@/components/common/visibility-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
-import { LANGUAGE_LABELS } from '../labels';
+import { LANGUAGE_CODES } from '../labels';
 import { CardFields, EMPTY_CARD } from './card-fields';
+import { translateValidation } from '@/lib/validation-message';
+import { useTranslation } from 'react-i18next';
 
 const FIELDS = ['title', 'description', 'termLang', 'defLang', 'visibility'] as const;
 const SELECTABLE_VISIBILITY: readonly Visibility[] = ['PRIVATE', 'PUBLIC'];
@@ -47,10 +49,10 @@ function withCurrent<T extends string>(options: readonly T[], current: T): reado
 }
 
 /** Cả hai ô ngôn ngữ cùng có hai giá trị đang lưu để đảo chiều không mất lựa chọn. */
-function languageOptions({ termLang, defLang }: SetFormInput) {
-  return withCurrent(withCurrent(Object.keys(LANGUAGE_LABELS), termLang), defLang).map((code) => ({
+function languageOptions({ termLang, defLang }: SetFormInput, name: (code: string) => string) {
+  return withCurrent(withCurrent(LANGUAGE_CODES, termLang), defLang).map((code) => ({
     value: code,
-    label: LANGUAGE_LABELS[code] ?? code,
+    label: name(code),
   }));
 }
 
@@ -69,12 +71,17 @@ function SetDetailsFields({
   errors,
   onSwapLanguages,
 }: SetDetailsFieldsProps) {
-  const languages = languageOptions(initialValues);
+  const { t } = useTranslation('sets');
+  const languages = languageOptions(initialValues, (code) =>
+    (LANGUAGE_CODES as readonly string[]).includes(code)
+      ? t(`languages.${code as (typeof LANGUAGE_CODES)[number]}`)
+      : code,
+  );
   return (
     <div className="flex flex-col gap-4">
-      <FormField label="Tên bộ từ" error={errors.title?.message} {...register('title')} />
+      <FormField label={t('form.title')} error={errors.title?.message} {...register('title')} />
       <TextareaField
-        label="Mô tả (không bắt buộc)"
+        label={t('form.description')}
         rows={2}
         className="max-h-60 min-h-16 field-sizing-content"
         error={errors.description?.message}
@@ -86,7 +93,7 @@ function SetDetailsFields({
           name="termLang"
           render={({ field }) => (
             <Combobox
-              label="Ngôn ngữ của từ"
+              label={t('form.termLang')}
               options={languages}
               value={field.value}
               onChange={field.onChange}
@@ -100,8 +107,8 @@ function SetDetailsFields({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Đảo ngôn ngữ của từ và nghĩa"
-          title="Đảo ngôn ngữ của từ và nghĩa"
+          aria-label={t('form.swap')}
+          title={t('form.swap')}
           className="justify-self-center sm:mt-6"
           onClick={onSwapLanguages}
         >
@@ -112,7 +119,7 @@ function SetDetailsFields({
           name="defLang"
           render={({ field }) => (
             <Combobox
-              label="Ngôn ngữ của nghĩa"
+              label={t('form.defLang')}
               options={languages}
               value={field.value}
               onChange={field.onChange}
@@ -152,6 +159,7 @@ interface SetFormProps {
 }
 
 export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
+  const { t } = useTranslation('sets');
   const router = useRouter();
   const [initialValues] = useState(defaultValues);
   const hasMounted = useRef(false);
@@ -210,7 +218,9 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
   return (
     <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
       {guard.dialog}
-      {errors.root?.message ? <FormError>{errors.root.message}</FormError> : null}
+      {errors.root?.message ? (
+        <FormError>{translateValidation(errors.root.message)}</FormError>
+      ) : null}
       <SetDetailsFields
         initialValues={initialValues}
         register={register}
@@ -221,10 +231,10 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
       <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />
       <div className="flex flex-wrap gap-2">
         <Button type="submit" loading={isSubmitting}>
-          Lưu bộ từ
+          {t('form.save')}
         </Button>
         <Button asChild variant="secondary">
-          <Link href={cancelHref}>Huỷ</Link>
+          <Link href={cancelHref}>{t('form.cancel')}</Link>
         </Button>
       </div>
     </form>

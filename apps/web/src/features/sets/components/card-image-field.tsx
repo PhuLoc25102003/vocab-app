@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { uploadCardImage } from '../api';
+import { useTranslation } from 'react-i18next';
 
 interface CardImageFieldProps {
   control: Control<SetFormInput, unknown, SetFormValues>;
@@ -20,18 +21,19 @@ interface CardImageFieldProps {
   error?: string;
 }
 
-function checkFile(file: File): string | null {
+function checkFile(file: File): 'image.type' | 'image.tooLarge' | null {
   if (!(IMAGE_CONTENT_TYPES as readonly string[]).includes(file.type)) {
-    return 'Chỉ nhận ảnh PNG, JPEG hoặc WebP.';
+    return 'image.type';
   }
   if (file.size > IMAGE_MAX_BYTES) {
-    return 'Ảnh lớn hơn 1 MB. Hãy chọn ảnh nhỏ hơn hoặc giảm kích thước ảnh.';
+    return 'image.tooLarge';
   }
   return null;
 }
 
 /** Ảnh của một thẻ: tải lên kho ảnh ngay khi chọn, form chỉ giữ địa chỉ ảnh. */
 export function CardImageField({ control, index, error }: CardImageFieldProps) {
+  const { t } = useTranslation('sets');
   const number = index + 1;
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -46,16 +48,14 @@ export function CardImageField({ control, index, error }: CardImageFieldProps) {
     event.target.value = '';
     if (!file) return;
     const problem = checkFile(file);
-    setUploadError(problem);
+    setUploadError(problem && t(problem));
     if (problem) return;
     setUploading(true);
     try {
       field.onChange(await uploadCardImage(file));
     } catch (failure) {
       setUploadError(
-        failure instanceof HttpError
-          ? formErrorMessage(failure)
-          : 'Không tải được ảnh lên. Hãy kiểm tra mạng rồi thử lại.',
+        failure instanceof HttpError ? formErrorMessage(failure) : t('image.uploadFailed'),
       );
     } finally {
       setUploading(false);
@@ -64,14 +64,14 @@ export function CardImageField({ control, index, error }: CardImageFieldProps) {
 
   return (
     <div className="flex flex-col gap-2 sm:col-span-2">
-      <span className="text-small font-medium">Ảnh (không bắt buộc)</span>
+      <span className="text-small font-medium">{t('image.label')}</span>
       <div className="flex flex-wrap items-center gap-3">
         {imageUrl ? (
           // Ảnh nằm ở kho ảnh ngoài, không qua bộ tối ưu ảnh của Next.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imageUrl}
-            alt={`Ảnh của thẻ ${number}`}
+            alt={t('image.alt', { number })}
             className="size-20 rounded-md border border-border bg-bg object-cover"
           />
         ) : null}
@@ -87,7 +87,7 @@ export function CardImageField({ control, index, error }: CardImageFieldProps) {
         <Button
           variant="secondary"
           loading={uploading}
-          aria-label={`${imageUrl ? 'Đổi ảnh' : 'Thêm ảnh'} cho thẻ ${number}`}
+          aria-label={t(imageUrl ? 'image.changeFor' : 'image.addFor', { number })}
           onClick={() => inputRef.current?.click()}
         >
           {imageUrl ? (
@@ -95,19 +95,19 @@ export function CardImageField({ control, index, error }: CardImageFieldProps) {
           ) : (
             <ImagePlus aria-hidden className="size-5" />
           )}
-          {uploading ? 'Đang tải ảnh' : imageUrl ? 'Đổi ảnh' : 'Thêm ảnh'}
+          {t(uploading ? 'image.uploading' : imageUrl ? 'image.change' : 'image.add')}
         </Button>
         {imageUrl && !uploading ? (
           <Button
             variant="ghost"
-            aria-label={`Gỡ ảnh khỏi thẻ ${number}`}
+            aria-label={t('image.removeFor', { number })}
             onClick={() => {
               setUploadError(null);
               field.onChange(null);
             }}
           >
             <X aria-hidden className="size-5" />
-            Gỡ ảnh
+            {t('image.remove')}
           </Button>
         ) : null}
       </div>
@@ -116,7 +116,7 @@ export function CardImageField({ control, index, error }: CardImageFieldProps) {
           {message}
         </p>
       ) : (
-        <p className="text-small text-text-muted">PNG, JPEG hoặc WebP, tối đa 1 MB.</p>
+        <p className="text-small text-text-muted">{t('image.rules')}</p>
       )}
     </div>
   );

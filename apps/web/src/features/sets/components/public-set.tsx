@@ -11,12 +11,14 @@ import { getPublicSet } from '../public-set';
 import { CardList } from './card-list';
 import { SetMeta } from './set-meta';
 import { StudyModeGrid } from './study-mode-grid';
+import { getT } from '@/lib/i18n/server';
 
 /**
  * Trang của khách khi mở đường dẫn chia sẻ hoặc vào từ Khám phá.
  * Người đã đăng nhập được `proxy` chuyển sang `/sets/:id` trước khi tới đây.
  */
 export async function PublicSet({ id }: { id: string }) {
+  const t = await getT('sets');
   const set = await getPublicSet(id);
   if (!set) {
     notFound();
@@ -28,7 +30,7 @@ export async function PublicSet({ id }: { id: string }) {
 
   return (
     <>
-      <BackLink href="/explore" label="Quay lại Khám phá" />
+      <BackLink href="/explore" label={t('public.back')} />
       <PageHeader
         title={set.title}
         description={set.description ?? undefined}
@@ -37,8 +39,8 @@ export async function PublicSet({ id }: { id: string }) {
             <CopyLinkButton path={`/public/sets/${id}`} />
             <SessionLink
               variant="secondary"
-              guest={{ href: loginHref, label: 'Đăng nhập để sao chép' }}
-              member={{ href: detailPath as Route, label: 'Mở trong tài khoản' }}
+              guest={{ href: loginHref, label: t('public.loginToCopy') }}
+              member={{ href: detailPath as Route, label: t('public.openInAccount') }}
             />
           </>
         }
@@ -54,24 +56,22 @@ export async function PublicSet({ id }: { id: string }) {
           >
             <div className="flex max-w-[52ch] flex-col gap-1">
               <h2 id="guest-signup-title" className="text-h3">
-                Muốn nhớ lâu bộ từ này?
+                {t('public.ctaTitle')}
               </h2>
-              <p className="text-small text-text-muted">
-                Tạo tài khoản miễn phí để sao chép bộ từ, lưu tiến độ và được nhắc ôn đúng lúc.
-              </p>
+              <p className="text-small text-text-muted">{t('public.ctaText')}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link href={registerHref}>Tạo tài khoản</Link>
+                <Link href={registerHref}>{t('public.register')}</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href={loginHref}>Đăng nhập</Link>
+                <Link href={loginHref}>{t('public.login')}</Link>
               </Button>
             </div>
           </section>
         </>
       ) : (
-        <EmptyState title="Bộ từ này chưa có thẻ" description="Hãy quay lại sau nhé." />
+        <EmptyState title={t('noCards')} description={t('public.noCardsHint')} />
       )}
     </>
   );

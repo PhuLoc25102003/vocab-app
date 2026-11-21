@@ -8,5 +8,181 @@
       "vi": "Vietnamese",
       "en": "English"
     }
+  },
+  "nav": {
+    "dashboard": "Overview",
+    "sets": "Sets",
+    "explore": "Explore",
+    "review": "Review today",
+    "classes": "Classes",
+    "main": "Main navigation",
+    "skipToContent": "Skip to main content"
+  },
+  "audio": {
+    "slow": "{{label}} slowly",
+    "slowTitle": "Listen slowly"
+  },
+  "calendar": {
+    "weekdays": "Mo,Tu,We,Th,Fr,Sa,Su",
+    "weekdayNames": "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
+    "heading": "{{monthName}} {{year}}",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "combobox": {
+    "placeholder": "Choose or type to search",
+    "empty": "No results",
+    "close": "Close the {{label}} list",
+    "open": "Open the {{label}} list",
+    "options": "{{label}} options"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Try again",
+    "clearFilters": "Clear filters"
+  },
+  "copyLink": {
+    "done": "Link copied",
+    "failed": "Could not copy. Open the public page and copy it from the address bar.",
+    "label": "Copy link"
+  },
+  "dateTime": {
+    "noDue": "No due date",
+    "endOfToday": "End of today",
+    "tomorrow": "Tomorrow",
+    "oneWeek": "1 week",
+    "day": "Date",
+    "pickOnCalendar": "Pick a date on the calendar",
+    "time": "Time",
+    "pickDay": "Pick a date"
+  },
+  "formDialog": {
+    "discardTitle": "Discard what you typed?",
+    "discardDescription": "What you typed in this dialog will be lost.",
+    "discard": "Discard",
+    "keepEditing": "Keep editing"
+  },
+  "list": {
+    "statusFilter": "Filter by status",
+    "range": "{{from}}–{{to}} of {{total}}"
+  },
+  "loading": {
+    "slowServer": "The server is starting up, this can take about 30 seconds."
+  },
+  "offline": {
+    "title": "You are offline",
+    "description": "There is no network connection, so this page cannot open yet. Check your Wi-Fi or mobile data and try again.",
+    "savedSets": "Sets saved on this device",
+    "savedMeta": "{{count}} cards, saved on {{date}}"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page {{page}}/{{count}}"
+  },
+  "password": {
+    "hide": "Hide password",
+    "show": "Show password"
+  },
+  "speech": {
+    "title": "Voice and sound",
+    "accent": "English accent",
+    "us": "American",
+    "gb": "British",
+    "rate": "Reading speed",
+    "normal": "Normal",
+    "slow": "Slow",
+    "missingVoice": "This device has no {{accent}} voice, so the browser will use another English voice.",
+    "tryIt": "Listen",
+    "sound": "Sound for correct answers",
+    "soundHint": "Play a short chime in every study mode except Test."
+  },
+  "theme": {
+    "dark": "Dark mode"
+  },
+  "unsaved": {
+    "title": "Leave without saving?",
+    "description": "What you just typed on this page will be lost.",
+    "leave": "Leave",
+    "stay": "Stay"
+  },
+  "visibility": {
+    "PRIVATE": "Private",
+    "CLASS": "Class",
+    "PUBLIC": "Public",
+    "legend": "Who can see it"
+  },
+  "visibilityHint": {
+    "PRIVATE": "Only you can see and study it. Not shown in Explore.",
+    "PUBLIC": "Anyone with the link can view and try it, even without signing in. Shown in Explore, and others can copy it to their account.",
+    "CLASS": "Only the teacher and students of classes it is assigned to."
+  },
+  "modes": {
+    "FLASHCARD": "Flashcards",
+    "LEARN": "Learn",
+    "WRITE": "Write",
+    "DICTATION": "Dictation",
+    "CLOZE": "Fill in the blank",
+    "MCQ": "Multiple choice",
+    "MATCH": "Match",
+    "TEST": "Test",
+    "SPEAK": "Speak"
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "TEACHER": "Teacher",
+    "ADMIN": "Administrator"
+  },
+  "pages": {
+    "dashboard": "Overview",
+    "myLearning": "My learning",
+    "sets": "Sets",
+    "setsDescription": "Your library: sets you created, imported or copied. Other people’s sets are in Explore.",
+    "importFromFile": "Import from file",
+    "createSet": "Create set",
+    "import": "Import",
+    "backToSet": "Back to the set",
+    "backToList": "Back to the list",
+    "importMore": "Import more cards",
+    "importList": "Import a word list",
+    "importDescription": "Paste from Quizlet, Excel, Google Sheets or choose a .txt, .csv or .xlsx file. One card per line.",
+    "classes": "Classes",
+    "teacherOnly": "For teachers only",
+    "teacherOnlyClass": "Only teacher accounts can manage classes.",
+    "teacherOnlyResults": "Only teacher accounts can see class results.",
+    "teacherOnlyStudent": "Only teacher accounts can see student results.",
+    "assignment": "Assignment",
+    "assignmentResults": "Assignment results",
+    "studentResults": "Student results",
+    "account": "Account",
+    "adminUsers": "Manage users",
+    "explore": "Explore",
+    "exploreDescription": "Public sets made by the community. Open one to study or copy it to your library.",
+    "review": "Review today",
+    "newSet": "Create set",
+    "setDetail": "Set details",
+    "backToExplore": "Back to Explore",
+    "backToSets": "Back to Sets",
+    "addCards": "Add cards",
+    "editSet": "Edit set",
+    "studyPath": "Study path",
+    "study": "Study",
+    "loading": "Loading page",
+    "loadFailed": "Could not load this page",
+    "checkNetwork": "Check your connection and try again.",
+    "notFoundTitle": "Page not found",
+    "notFoundDesc": "This link does not exist or has been moved.",
+    "offlineTitle": "Offline",
+    "globalErrorTitle": "An error occurred",
+    "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes."
+  },
+  "session": {
+    "login": "Sign in",
+    "myPage": "To my page",
+    "home": "To home"
   }
 }

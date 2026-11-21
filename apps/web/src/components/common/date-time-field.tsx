@@ -15,6 +15,7 @@ import {
   toLocalValue,
   type CalendarDay,
 } from '@/lib/local-date-time';
+import { useTranslation } from 'react-i18next';
 
 const PANEL_GAP = 4;
 const EDGE = 8;
@@ -53,8 +54,9 @@ export function DateTimeField({
   disablePast = false,
   hint,
   error,
-  clearLabel = 'Không có hạn',
+  clearLabel,
 }: DateTimeFieldProps) {
+  const { t } = useTranslation();
   const id = useId();
   const initial = fromLocalValue(defaultValue);
   const [dateText, setDateText] = useState(initial ? formatDay(initial.day) : '');
@@ -113,10 +115,10 @@ export function DateTimeField({
   // Số ngày tính từ hôm nay. Ngày hôm nay chỉ đọc khi bấm, không đọc lúc render vì Next cấm
   // `new Date()` khi prerender.
   const presets: { label: string; offset: number | null }[] = [
-    { label: 'Hết hôm nay', offset: 0 },
-    { label: 'Ngày mai', offset: 1 },
-    { label: '1 tuần', offset: 7 },
-    { label: clearLabel, offset: null },
+    { label: t('dateTime.endOfToday'), offset: 0 },
+    { label: t('dateTime.tomorrow'), offset: 1 },
+    { label: t('dateTime.oneWeek'), offset: 7 },
+    { label: clearLabel ?? t('dateTime.noDue'), offset: null },
   ];
 
   const hintId = `${id}-hint`;
@@ -130,7 +132,7 @@ export function DateTimeField({
         <div className="flex min-w-0 flex-[2_1_10rem] gap-1">
           <Input
             ref={dateRef}
-            aria-label="Ngày"
+            aria-label={t('dateTime.day')}
             inputMode="numeric"
             placeholder="dd/mm/yyyy"
             autoComplete="off"
@@ -144,7 +146,7 @@ export function DateTimeField({
             type="button"
             variant="secondary"
             size="icon"
-            aria-label="Chọn ngày trên lịch"
+            aria-label={t('dateTime.pickOnCalendar')}
             aria-expanded={calendarOpen}
             aria-controls={`${id}-calendar`}
             onClick={() => panelRef.current?.togglePopover?.()}
@@ -154,7 +156,7 @@ export function DateTimeField({
           </Button>
         </div>
         <Input
-          aria-label="Giờ"
+          aria-label={t('dateTime.time')}
           inputMode="numeric"
           placeholder="23:59"
           autoComplete="off"
@@ -199,7 +201,7 @@ export function DateTimeField({
         id={`${id}-calendar`}
         popover="auto"
         role="dialog"
-        aria-label="Chọn ngày"
+        aria-label={t('dateTime.pickDay')}
         className="inset-auto m-0 rounded-lg border border-border bg-surface p-3 text-text shadow-raised"
       >
         {calendarOpen ? (

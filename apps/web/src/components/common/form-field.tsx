@@ -4,6 +4,7 @@ import { useId, type ComponentProps, type ReactNode } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { translateValidation } from '@/lib/validation-message';
 
 interface FieldText {
   label: string;
@@ -21,8 +22,10 @@ interface FieldShellProps extends FieldText {
   children: (control: ControlProps) => ReactNode;
 }
 
-function FieldShell({ label, hint, error, children }: FieldShellProps) {
+function FieldShell({ label, hint, error: rawError, children }: FieldShellProps) {
   const id = useId();
+  // Lỗi từ Zod của shared hoặc `details` của API là khoá dịch.
+  const error = translateValidation(rawError);
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
 

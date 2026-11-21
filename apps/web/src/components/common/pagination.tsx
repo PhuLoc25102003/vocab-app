@@ -3,6 +3,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 /**
  * `hrefFor`: số trang nằm trong URL, dùng cho danh sách chính của trang.
@@ -49,6 +50,7 @@ function PageLink({ href, onClick, disabled, label, children }: PageLinkProps) {
 }
 
 export function Pagination({ page, pageCount, hrefFor, onPageChange }: PaginationProps) {
+  const { t } = useTranslation();
   if (pageCount <= 1) {
     return null;
   }
@@ -58,16 +60,16 @@ export function Pagination({ page, pageCount, hrefFor, onPageChange }: Paginatio
       : { href: enabled ? hrefFor(next) : null };
 
   return (
-    <nav aria-label="Phân trang" className="flex items-center justify-between gap-2">
-      <PageLink {...target(page - 1, page > 1)} label="Trang trước">
+    <nav aria-label={t('pagination.label')} className="flex items-center justify-between gap-2">
+      <PageLink {...target(page - 1, page > 1)} label={t('pagination.prevPage')}>
         <ChevronLeft aria-hidden className="size-4" />
-        Trước
+        {t('pagination.prev')}
       </PageLink>
       <p className="text-small whitespace-nowrap tabular-nums">
-        Trang {page}/{pageCount}
+        {t('pagination.page', { page, count: pageCount })}
       </p>
-      <PageLink {...target(page + 1, page < pageCount)} label="Trang sau">
-        Sau
+      <PageLink {...target(page + 1, page < pageCount)} label={t('pagination.nextPage')}>
+        {t('pagination.next')}
         <ChevronRight aria-hidden className="size-4" />
       </PageLink>
     </nav>

@@ -4,6 +4,7 @@ import type { Card } from '@vocab/shared';
 import { useRef, useState, type ReactNode } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { Pagination } from '@/components/common/pagination';
+import { useTranslation } from 'react-i18next';
 
 /** Bộ có thể tới 2.000 thẻ, chỉ hiện 50 thẻ một lần. */
 export const CARDS_PAGE_SIZE = 50;
@@ -17,6 +18,7 @@ interface CardListProps {
 }
 
 export function CardList({ cards, termLang, defLang, renderCardExtra }: CardListProps) {
+  const { t } = useTranslation('sets');
   const [requested, setRequested] = useState(1);
   const listRef = useRef<HTMLOListElement>(null);
   const pageCount = Math.max(1, Math.ceil(cards.length / CARDS_PAGE_SIZE));
@@ -38,7 +40,7 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
         start={first + 1}
         aria-label={
           pageCount > 1
-            ? `Thẻ ${first + 1} đến ${first + visible.length} trên ${cards.length}`
+            ? t('list.range', { from: first + 1, to: first + visible.length, total: cards.length })
             : undefined
         }
         className="scroll-mt-20 border-t border-border"
@@ -53,7 +55,7 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
                 <p lang={termLang} className="min-w-0 font-card text-h3 break-words">
                   {term}
                 </p>
-                <AudioButton text={term} lang={termLang} label={`Nghe phát âm ${term}`} />
+                <AudioButton text={term} lang={termLang} label={t('list.listen', { term })} />
               </div>
               {phonetic ? (
                 <p className="font-phonetic text-small break-words text-text-muted">{phonetic}</p>
@@ -64,7 +66,7 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={imageUrl}
-                  alt={`Ảnh minh hoạ cho ${term}`}
+                  alt={t('list.imageAlt', { term })}
                   loading="lazy"
                   className="mt-2 aspect-[4/3] w-32 rounded-md border border-border bg-bg object-cover"
                 />
