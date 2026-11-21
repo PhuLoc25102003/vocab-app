@@ -14,8 +14,14 @@ export type ResumableSession = StartedSession & { progress?: StudyProgress };
 const startedKey = (key: string) => `${key}:started`;
 const progressKey = (key: string) => `${key}:progress`;
 
-export function studySnapshotKey(setId: string, mode: StudyMode, dueOnly: boolean): string {
-  return `study:${setId}:${mode}:${dueOnly ? 'due' : 'all'}`;
+export function studySnapshotKey(
+  setId: string,
+  mode: StudyMode,
+  dueOnly: boolean,
+  assignmentId?: string,
+): string {
+  const base = `study:${setId}:${mode}:${dueOnly ? 'due' : 'all'}`;
+  return assignmentId ? `${base}:a:${assignmentId}` : base;
 }
 
 function parseItem<T>(value: string | null, parse: (input: unknown) => T): T | null {

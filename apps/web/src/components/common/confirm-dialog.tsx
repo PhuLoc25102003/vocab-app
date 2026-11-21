@@ -1,10 +1,11 @@
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CircleHelp } from 'lucide-react';
 import { useId, useRef, type FormEvent, type ReactNode } from 'react';
 import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -21,6 +22,8 @@ interface ConfirmDialogProps {
   error?: string | null;
   /** Trường nhập thêm, ví dụ mật khẩu để xác nhận. */
   children?: ReactNode;
+  /** `primary` cho thao tác không hoàn tác được nhưng không phá dữ liệu, ví dụ nộp bài. */
+  tone?: 'danger' | 'primary';
   onConfirm: () => void;
 }
 
@@ -35,8 +38,10 @@ export function ConfirmDialog({
   pending = false,
   error,
   children,
+  tone = 'danger',
   onConfirm,
 }: ConfirmDialogProps) {
+  const Icon = tone === 'danger' ? AlertTriangle : CircleHelp;
   const cancelRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -67,9 +72,12 @@ export function ConfirmDialog({
         <div className="flex items-start gap-3">
           <span
             aria-hidden
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-danger-soft text-danger"
+            className={cn(
+              'flex size-10 shrink-0 items-center justify-center rounded-full',
+              tone === 'danger' ? 'bg-danger-soft text-danger' : 'bg-primary-soft text-primary',
+            )}
           >
-            <AlertTriangle className="size-5" />
+            <Icon className="size-5" />
           </span>
           <div className="flex min-w-0 flex-col gap-1">
             <h2 id={titleId} className="text-h3 wrap-anywhere">
@@ -92,7 +100,7 @@ export function ConfirmDialog({
           >
             {cancelLabel}
           </Button>
-          <Button type="submit" variant="danger" loading={pending}>
+          <Button type="submit" variant={tone} loading={pending}>
             {confirmLabel}
           </Button>
         </div>
