@@ -18,7 +18,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { classKeys, createAssignment, listMySetsForAssigning } from '../api';
 
-type FieldErrors = Partial<Record<'setId' | 'modes' | 'dueAt' | 'shareToClass', string>>;
+type FieldErrors = Partial<
+  Record<'classId' | 'setId' | 'modes' | 'dueAt' | 'shareToClass', string>
+>;
 
 /** Giá trị `YYYY-MM-DDTHH:mm` không có múi giờ, hiểu theo giờ máy của giáo viên rồi đổi sang ISO. */
 function toIsoDue(local: string): string | null {
@@ -31,19 +33,28 @@ function toIsoDue(local: string): string | null {
 const DEFAULT_MODES: StudyMode[] = ['FLASHCARD', 'MCQ', 'MATCH', 'WRITE'];
 
 interface AssignDialogProps {
-  classId: string;
+  /** Lớp cố định khi mở từ trang lớp. Không có thì hiện ô chọn lớp trong `classes`. */
+  classId?: string;
+  classes?: { id: string; name: string }[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 /** Giao bộ từ cho lớp: chọn bộ, các chế độ theo thứ tự, hạn nộp. Bộ riêng tư cần đồng ý chia sẻ. */
-export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps) {
+export function AssignDialog({
+  classId: fixedClassId,
+  classes = [],
+  open,
+  onOpenChange,
+}: AssignDialogProps) {
   const queryClient = useQueryClient();
   const sets = useQuery({
     queryKey: classKeys.mySets,
     queryFn: listMySetsForAssigning,
     enabled: open,
   });
+  const [pickedClassId, setPickedClassId] = useState('');
+  const classId = fixedClassId ?? pickedClassId;
   const assign = useMutation({
     mutationFn: (dto: Parameters<typeof createAssignment>[1]) => createAssignment(classId, dto),
   });
@@ -59,6 +70,7 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
 
   const close = (next: boolean) => {
     if (!next) {
+      setPickedClassId('');
       setSetId('');
       setModes(DEFAULT_MODES);
       setDue('');
@@ -89,6 +101,7 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
       shareToClass: isPrivate ? share : undefined,
     });
     const next: FieldErrors = {};
+    if (!classId) next.classId = 'Hãy chọn lớp';
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
         const key = issue.path[0];
@@ -100,7 +113,7 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
     if (!parsed.success || Object.keys(next).length) return;
     assign.mutate(parsed.data, {
       onSuccess: async (created) => {
-        await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
+        await queryClient.invalidateQueries({ queryKey: classKeys.all });
         if (isPrivate) await queryClient.invalidateQueries({ queryKey: classKeys.mySets });
         toast.success(`Đã giao ${created.setTitle}`);
         close(false);
@@ -127,6 +140,16 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
         submit();
       }}
     >
+      {fixedClassId ? null : (
+        <Combobox
+          label="Lớp"
+          placeholder="Chọn lớp"
+          value={pickedClassId}
+          onChange={setPickedClassId}
+          error={errors.classId}
+          options={classes.map(({ id, name }) => ({ value: id, label: name }))}
+        />
+      )}
       {sets.isPending ? (
         <Skeleton className="h-11 w-full" />
       ) : sets.isError ? (

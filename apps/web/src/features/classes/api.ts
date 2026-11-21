@@ -13,6 +13,7 @@ import {
   myAssignmentDetailResponseSchema,
   myAssignmentListSchema,
   submissionResponseSchema,
+  teacherOverviewResponseSchema,
   setListSchema,
   type Assignment,
   type AssignmentList,
@@ -32,6 +33,7 @@ import {
   type ProgressStatus,
   type MyAssignmentList,
   type Submission,
+  type TeacherOverview,
   type SetSummary,
   type UpdateClassInput,
 } from '@vocab/shared';
@@ -55,6 +57,7 @@ export const classKeys = {
   member: (id: string, userId: string) => ['classes', 'member', id, userId] as const,
   memberResults: (id: string, userId: string) => ['classes', 'member-results', id, userId] as const,
   myAssignments: ['classes', 'my-assignments'] as const,
+  teacherOverview: ['classes', 'teacher-overview'] as const,
   myAssignmentsPage: (page: number) => ['classes', 'my-assignments', page] as const,
   myAssignment: (assignmentId: string) => ['classes', 'my-assignment', assignmentId] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
@@ -222,4 +225,8 @@ export async function listMemberResults(id: string, userId: string): Promise<Mem
   return memberResultListSchema.parse(
     await http(`${classPath(id)}/members/${encodeURIComponent(userId)}/results?${ONE_PAGE}`),
   );
+}
+
+export async function getTeacherOverview(): Promise<TeacherOverview> {
+  return teacherOverviewResponseSchema.parse(await http('/teacher/overview')).data;
 }

@@ -37,7 +37,7 @@ function classesHref(archived: boolean, page = 1): Route {
   return (query ? `/classes?${query}` : '/classes') as Route;
 }
 
-function CreateClassDialog({
+export function CreateClassDialog({
   open,
   onOpenChange,
 }: {
