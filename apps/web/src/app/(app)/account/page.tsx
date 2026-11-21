@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { LanguageSettings } from '@/components/common/language-switcher';
 import { SpeechSettings } from '@/components/common/speech-settings';
 import { PageHeader } from '@/components/common/page-header';
 import { AccountSettings } from '@/features/auth/components/account-settings';
@@ -10,6 +11,7 @@ export default function AccountPage() {
     <>
       <PageHeader title="Tài khoản" />
       <AccountSettings>
+        <LanguageSettings />
         <SpeechSettings />
       </AccountSettings>
     </>

@@ -1,0 +1,12 @@
+{
+  "language": {
+    "label": "Language",
+    "description": "Change the language of the whole interface. What you type, like sets and class names, stays as is.",
+    "switchTo": "switch to Vietnamese",
+    "short": "VI",
+    "names": {
+      "vi": "Vietnamese",
+      "en": "English"
+    }
+  }
+}

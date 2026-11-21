@@ -28,5 +28,6 @@ Giao diện web hiện viết cứng tiếng Việt trong khoảng 150 file `.ts
 
 - Thêm dependency `i18next`, `react-i18next` cho `@vocab/web`; theo dõi qua Dependabot.
 - Root layout đọc cookie nên các trang giới thiệu tĩnh chuyển sang render động. Chấp nhận, đo lại Lighthouse ở việc 1.34.
+- Repo bật `cacheComponents` nên việc đọc cookie nằm trong `Suspense` ngay dưới `<body>` (việc 6.1). `<html lang>` tĩnh là `vi`; khi cookie là `en`, một script nhỏ trong phần stream đổi `lang` trước khi React hydrate.
 - Mọi chuỗi giao diện mới phải đi qua `t()`. Việc 6.7 thêm script báo chữ tiếng Việt viết cứng trong `.tsx`, chạy cùng `npm run lint`.
 - Test component render dưới `I18nProvider` với `vi`, nên phần lớn test hiện có giữ nguyên câu chữ.

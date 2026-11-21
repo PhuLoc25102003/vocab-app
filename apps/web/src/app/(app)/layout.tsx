@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from 'react';
 import { AppNav, AppNavFallback } from '@/components/common/app-nav';
 import { Logo } from '@/components/common/logo';
+import { LanguageToggle } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
 import { OfflineSync } from '@/features/study/components/offline-sync';
@@ -22,6 +23,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <AppNav />
           </Suspense>
           <div className="ml-auto flex items-center gap-1">
+            <LanguageToggle />
             <ThemeToggle />
             <AccountMenu />
           </div>

@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
+import { createI18n } from '@/lib/i18n/config';
+
+// Component dùng `useTranslation` render được không cần bọc provider: instance `vi` toàn cục.
+createI18n('vi');
 
 // jsdom không có matchMedia.
 window.matchMedia = vi.fn().mockReturnValue({

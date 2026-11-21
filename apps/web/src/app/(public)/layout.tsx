@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Logo } from '@/components/common/logo';
 import { SessionLink } from '@/components/common/session-link';
+import { LanguageToggle } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
@@ -10,6 +11,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
           <Logo href="/" />
           <div className="ml-auto flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
             <SessionLink
               variant="secondary"
