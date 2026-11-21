@@ -107,13 +107,22 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   const todo = student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link');
   await expect(todo).toContainText('Chưa làm');
   await todo.click();
-  await student.waitForURL(`**/sets/${setId}/study/mcq`);
+  await student.waitForURL('**/classes/assignments/*');
+  await student.getByRole('link', { name: /Bắt đầu: Trắc nghiệm/ }).click();
+  await student.waitForURL(
+    (url) =>
+      url.pathname.endsWith(`/sets/${setId}/study/mcq`) && url.searchParams.has('assignment'),
+  );
   await answerAll(student);
   await expect(student.getByText(/^Bạn nhớ/)).toBeVisible();
+  await student.getByRole('link', { name: 'Về bài tập để nộp' }).click();
+  await student.waitForURL('**/classes/assignments/*');
+  await student.getByRole('button', { name: 'Nộp bài' }).click();
+  await student.getByRole('dialog').getByRole('button', { name: 'Nộp bài' }).click();
+  await expect(student.getByText(/Đã nộp lúc/)).toBeVisible();
   await student.goto('/classes');
-  // Phiên mở từ danh sách chưa gắn bài giao nên chưa tính là đã nộp; trang bài tập có nút Nộp bài ở 5.14.
   await expect(student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link')).toContainText(
-    'Chưa làm',
+    'Đã nộp',
   );
 
   // Giáo viên xem kết quả bài và kết quả của học sinh.
