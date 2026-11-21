@@ -36,7 +36,14 @@ const klass: Class = {
   memberCount: 1,
 };
 const members = {
-  data: [{ userId: 'u1', displayName: 'An', joinedAt: '2026-11-10T00:00:00.000Z' }],
+  data: [
+    {
+      userId: 'u1',
+      displayName: 'An',
+      joinedAt: '2026-11-10T00:00:00.000Z',
+      stats: { onTime: 0, late: 0, missed: 0, pending: 0, averageScore: null, lastActiveAt: null },
+    },
+  ],
   meta: { page: 1, limit: 50, total: 1 },
 };
 
