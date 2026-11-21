@@ -426,6 +426,7 @@ export function ClassDetail({ id }: { id: string }) {
             classHref({ tab: 'students', page: next, q: memberQuery, sort: memberSort })
           }
           onSearch={({ q, sort }) => router.push(classHref({ tab: 'students', q, sort }))}
+          clearHref={classHref({ tab: 'students' })}
         />
       )}
     </>
