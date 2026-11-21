@@ -108,7 +108,7 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   await expect(
     student.getByRole('list', { name: 'Lớp đã tham gia' }).getByText(className),
   ).toBeVisible();
-  const todo = student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link');
+  const todo = student.getByRole('list', { name: 'Bài tập: Cần làm' }).getByRole('link');
   await expect(todo).toContainText('Chưa làm');
   await todo.click();
   await student.waitForURL('**/classes/assignments/*');
@@ -124,10 +124,13 @@ test('giáo viên tạo lớp và giao bài, học sinh vào lớp bằng mã, l
   await student.getByRole('button', { name: 'Nộp bài' }).click();
   await student.getByRole('dialog').getByRole('button', { name: 'Nộp bài' }).click();
   await expect(student.getByText(/Đã nộp lúc/)).toBeVisible();
+  // Bài đã nộp rời tab Cần làm, nằm ở tab Đã nộp.
   await student.goto('/classes');
-  await expect(student.getByRole('list', { name: 'Bài cần làm' }).getByRole('link')).toContainText(
-    'Đã nộp',
-  );
+  await expect(student.getByText('Không còn bài cần làm')).toBeVisible();
+  await student.getByRole('link', { name: 'Đã nộp (1)' }).click();
+  await expect(
+    student.getByRole('list', { name: 'Bài tập: Đã nộp' }).getByRole('link'),
+  ).toContainText('Đã nộp');
 
   // Giáo viên xem kết quả bài và kết quả của học sinh.
   await teacher.goto(classPath);

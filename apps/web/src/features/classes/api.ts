@@ -16,6 +16,7 @@ import {
   teacherOverviewResponseSchema,
   setListSchema,
   type Assignment,
+  type AssignmentGroup,
   type AssignmentList,
   type AssignmentResultList,
   type AssignmentSummary,
@@ -28,6 +29,7 @@ import {
   type CreateClassInput,
   type JoinClassInput,
   type JoinedClass,
+  type MyAssignmentListQuery,
   type JoinedClassList,
   type MyAssignmentDetail,
   type ProgressStatus,
@@ -54,11 +56,15 @@ export const classKeys = {
   mySets: ['classes', 'my-sets'] as const,
   joined: ['classes', 'joined'] as const,
   joinedPage: (page: number) => ['classes', 'joined', page] as const,
+  joinedQuery: (page: number, q: string, limit: number) =>
+    ['classes', 'joined', page, q, limit] as const,
   member: (id: string, userId: string) => ['classes', 'member', id, userId] as const,
   memberResults: (id: string, userId: string) => ['classes', 'member-results', id, userId] as const,
   myAssignments: ['classes', 'my-assignments'] as const,
   teacherOverview: ['classes', 'teacher-overview'] as const,
   myAssignmentsPage: (page: number) => ['classes', 'my-assignments', page] as const,
+  myAssignmentsQuery: (page: number, filter: MyAssignmentFilter) =>
+    ['classes', 'my-assignments', page, filter] as const,
   myAssignment: (assignmentId: string) => ['classes', 'my-assignment', assignmentId] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
   results: (id: string, assignmentId: string, page: number, status?: string) =>
@@ -182,19 +188,40 @@ export async function joinClass(dto: JoinClassInput): Promise<JoinedClass> {
 
 export const JOINED_PAGE_SIZE = 20;
 
-export async function listJoinedClasses(page = 1): Promise<JoinedClassList> {
-  const params = new URLSearchParams({ page: String(page), limit: String(JOINED_PAGE_SIZE) });
+export async function listJoinedClasses(
+  page = 1,
+  options: { q?: string; limit?: number } = {},
+): Promise<JoinedClassList> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(options.limit ?? JOINED_PAGE_SIZE),
+  });
+  if (options.q) params.set('q', options.q);
   return joinedClassListSchema.parse(await http(`/classes/joined?${params.toString()}`));
 }
 
 export const MY_ASSIGNMENTS_PAGE_SIZE = 20;
 
 /** Bài cần làm, máy chủ đã xếp: bỏ lỡ, chưa nộp theo hạn, đã nộp. */
-export async function listMyAssignments(page = 1): Promise<MyAssignmentList> {
+export interface MyAssignmentFilter {
+  group?: AssignmentGroup;
+  classId?: string;
+  q?: string;
+  sort?: MyAssignmentListQuery['sort'];
+}
+
+export async function listMyAssignments(
+  page = 1,
+  filter: MyAssignmentFilter = {},
+): Promise<MyAssignmentList> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(MY_ASSIGNMENTS_PAGE_SIZE),
   });
+  if (filter.group) params.set('group', filter.group);
+  if (filter.classId) params.set('classId', filter.classId);
+  if (filter.q) params.set('q', filter.q);
+  if (filter.sort) params.set('sort', filter.sort);
   return myAssignmentListSchema.parse(await http(`/classes/assignments?${params.toString()}`));
 }
 

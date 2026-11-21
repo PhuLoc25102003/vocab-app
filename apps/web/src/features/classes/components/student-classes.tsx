@@ -3,19 +3,23 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ASSIGNMENT_GROUPS,
+  type AssignmentGroup,
+  assignmentGroupSchema,
   ERROR_CODES,
   joinClassSchema,
   JOIN_CODE_LENGTH,
   STUDY_MODE_LABELS,
   type JoinClassInput,
   type JoinedClass,
+  LIST_SEARCH_MAX_LENGTH,
   type MyAssignment,
+  myAssignmentListQuerySchema,
   paginationSchema,
 } from '@vocab/shared';
-import { CalendarClock, ChevronRight, LogIn, LogOut } from 'lucide-react';
+import { CalendarClock, LogIn, LogOut } from 'lucide-react';
 import type { Route } from 'next';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,12 +30,18 @@ import { FormDialog } from '@/components/common/form-dialog';
 import { FormField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { PageHeader } from '@/components/common/page-header';
-import { Pagination } from '@/components/common/pagination';
+import {
+  ListFilter,
+  ListNoMatch,
+  ListPager,
+  ListPanel,
+  ListToolbar,
+} from '@/components/common/list-panel';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import { cn } from '@/lib/utils';
 import {
   classKeys,
   JOINED_PAGE_SIZE,
@@ -40,9 +50,13 @@ import {
   listJoinedClasses,
   listMyAssignments,
   MY_ASSIGNMENTS_PAGE_SIZE,
+  type MyAssignmentFilter,
 } from '../api';
 import { formatDateTime } from '../format';
+import { AssignmentRow } from './assignment-row';
 import { PROGRESS_STATUS } from './status-label';
+
+const CLASS_OPTIONS_LIMIT = 100;
 
 const assignmentHref = ({ id }: MyAssignment) => `/classes/assignments/${id}` as Route;
 
@@ -110,59 +124,120 @@ function JoinDialog({
   );
 }
 
-function AssignmentRow({ item }: { item: MyAssignment }) {
-  const { label, icon: Icon, className } = PROGRESS_STATUS[item.progressStatus];
+function MyAssignmentRow({ item }: { item: MyAssignment }) {
   return (
-    <li className="border-b border-border last:border-b-0">
-      <Link
-        href={assignmentHref(item)}
-        className="flex min-h-16 items-center gap-3 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:px-2"
-      >
-        <span
-          className={cn('flex w-24 shrink-0 items-center gap-1 text-small font-medium', className)}
-        >
-          <Icon aria-hidden className="size-4 shrink-0" />
-          {label}
+    <AssignmentRow
+      href={assignmentHref(item)}
+      status={PROGRESS_STATUS[item.progressStatus]}
+      title={item.setTitle}
+    >
+      <span>{item.className}</span>
+      <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
+        {STUDY_MODE_LABELS[item.mode]}
+        {item.modes.length > 1 ? ` +${item.modes.length - 1}` : ''}
+      </span>
+      {item.modes.length > 1 ? (
+        <span className="tabular-nums">
+          {item.doneModes}/{item.modes.length} chế độ
         </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="font-medium wrap-anywhere">{item.setTitle}</span>
-          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-text-muted">
-            <span>{item.className}</span>
-            <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-              {STUDY_MODE_LABELS[item.mode]}
-              {item.modes.length > 1 ? ` +${item.modes.length - 1}` : ''}
-            </span>
-            {item.modes.length > 1 ? (
-              <span className="tabular-nums">
-                {item.doneModes}/{item.modes.length} chế độ
-              </span>
-            ) : null}
-            {item.dueAt ? (
-              <span className="flex items-center gap-1">
-                <CalendarClock aria-hidden className="size-4" />
-                Hạn {formatDateTime(item.dueAt)}
-              </span>
-            ) : null}
-          </span>
+      ) : null}
+      {item.dueAt ? (
+        <span className="flex items-center gap-1">
+          <CalendarClock aria-hidden className="size-4" />
+          Hạn {formatDateTime(item.dueAt)}
         </span>
-        <ChevronRight aria-hidden className="size-5 shrink-0 text-text-muted" />
-      </Link>
-    </li>
+      ) : null}
+    </AssignmentRow>
   );
 }
 
-function MyAssignments() {
-  const searchParams = useSearchParams();
-  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('bpage') ?? undefined);
+type AssignmentSort = NonNullable<MyAssignmentFilter['sort']>;
+
+const GROUP_LABELS: Record<AssignmentGroup, string> = {
+  todo: 'Cần làm',
+  done: 'Đã nộp',
+  all: 'Tất cả',
+};
+
+const GROUP_EMPTY: Record<AssignmentGroup, { title: string; description: string }> = {
+  todo: {
+    title: 'Không còn bài cần làm',
+    description: 'Bài giáo viên giao sẽ hiện ở đây. Bài đã nộp nằm ở tab Đã nộp.',
+  },
+  done: { title: 'Chưa nộp bài nào', description: 'Làm xong và nộp bài thì bài sẽ hiện ở đây.' },
+  all: { title: 'Chưa có bài nào', description: 'Bài giáo viên giao sẽ hiện ở đây.' },
+};
+
+const SORT_LABELS: Record<AssignmentSort, string> = {
+  due: 'Hạn gần nhất',
+  '-createdAt': 'Mới giao trước',
+};
+
+/** Bộ lọc của trang `/classes`, nằm trong URL để nút quay lại về đúng chỗ. */
+interface ClassesView {
+  group: AssignmentGroup;
+  classId: string;
+  q: string;
+  sort: AssignmentSort;
+  bpage: number;
+  cq: string;
+  cpage: number;
+}
+
+function readView(searchParams: { get: (key: string) => string | null }): ClassesView {
+  const page = (key: string) =>
+    paginationSchema.shape.page.catch(1).parse(searchParams.get(key) ?? undefined);
+  const text = (key: string) => (searchParams.get(key) ?? '').slice(0, LIST_SEARCH_MAX_LENGTH);
+  return {
+    group: assignmentGroupSchema.catch('todo').parse(searchParams.get('group') ?? 'todo'),
+    classId: text('class'),
+    q: text('q'),
+    sort: myAssignmentListQuerySchema.shape.sort.parse(searchParams.get('sort') ?? undefined),
+    bpage: page('bpage'),
+    cq: text('cq'),
+    cpage: page('cpage'),
+  };
+}
+
+function viewHref(view: ClassesView): Route {
+  const params = new URLSearchParams();
+  if (view.group !== 'todo') params.set('group', view.group);
+  if (view.classId) params.set('class', view.classId);
+  if (view.q) params.set('q', view.q);
+  if (view.sort !== 'due') params.set('sort', view.sort);
+  if (view.bpage > 1) params.set('bpage', String(view.bpage));
+  if (view.cq) params.set('cq', view.cq);
+  if (view.cpage > 1) params.set('cpage', String(view.cpage));
+  const query = params.toString();
+  return (query ? `/classes?${query}` : '/classes') as Route;
+}
+
+function MyAssignments({ view }: { view: ClassesView }) {
+  const router = useRouter();
+  const go = (patch: Partial<ClassesView>) =>
+    router.push(viewHref({ ...view, bpage: 1, ...patch }));
+  const filter: MyAssignmentFilter = {
+    group: view.group,
+    classId: view.classId || undefined,
+    q: view.q || undefined,
+    sort: view.sort,
+  };
   const assignments = useQuery({
-    queryKey: classKeys.myAssignmentsPage(page),
-    queryFn: () => listMyAssignments(page),
+    queryKey: classKeys.myAssignmentsQuery(view.bpage, filter),
+    queryFn: () => listMyAssignments(view.bpage, filter),
   });
+  // Ô lọc lớp lấy tối đa 100 lớp đã tham gia, đủ cho một học sinh.
+  const classes = useQuery({
+    queryKey: classKeys.joinedQuery(1, '', CLASS_OPTIONS_LIMIT),
+    queryFn: () => listJoinedClasses(1, { limit: CLASS_OPTIONS_LIMIT }),
+  });
+  const filtered = Boolean(view.classId || view.q);
+  const counts = assignments.data?.counts;
 
   let body;
   if (assignments.isPending) {
     body = (
-      <LoadingState label="Đang tải bài cần làm">
+      <LoadingState label="Đang tải bài tập">
         <Skeleton className="h-16 w-full" />
         <Skeleton className="h-16 w-full" />
       </LoadingState>
@@ -170,38 +245,90 @@ function MyAssignments() {
   } else if (assignments.isError) {
     body = (
       <ErrorState
-        title="Không tải được bài cần làm"
+        title="Không tải được bài tập"
         description="Kiểm tra kết nối mạng rồi thử lại."
         onRetry={() => void assignments.refetch()}
       />
     );
   } else if (assignments.data.data.length === 0) {
-    body = <p className="text-text-muted">Chưa có bài nào. Bài giáo viên giao sẽ hiện ở đây.</p>;
+    body = filtered ? (
+      <ListNoMatch
+        text="Không có bài nào khớp bộ lọc."
+        clearHref={viewHref({ ...view, classId: '', q: '', bpage: 1 })}
+      />
+    ) : (
+      <EmptyState {...GROUP_EMPTY[view.group]} />
+    );
   } else {
-    const { meta } = assignments.data;
     body = (
-      <>
-        <ul aria-label="Bài cần làm" className="flex flex-col">
-          {assignments.data.data.map((item) => (
-            <AssignmentRow key={item.id} item={item} />
-          ))}
-        </ul>
-        <Pagination
-          page={meta.page}
-          pageCount={Math.ceil(meta.total / MY_ASSIGNMENTS_PAGE_SIZE)}
-          hrefFor={(next) => `/classes?bpage=${next}` as Route}
-        />
-      </>
+      <ul aria-label={`Bài tập: ${GROUP_LABELS[view.group]}`} className="flex flex-col">
+        {assignments.data.data.map((item) => (
+          <MyAssignmentRow key={item.id} item={item} />
+        ))}
+      </ul>
     );
   }
 
   return (
-    <section aria-labelledby="my-assignments-title" className="flex flex-col gap-3">
-      <h2 id="my-assignments-title" className="text-h2">
-        Bài cần làm
-      </h2>
+    <ListPanel
+      title="Bài tập"
+      count={assignments.data?.meta.total}
+      toolbar={
+        <ListToolbar
+          key={view.q}
+          tabs={ASSIGNMENT_GROUPS.map((group) => ({
+            label: GROUP_LABELS[group],
+            href: viewHref({ ...view, group, bpage: 1 }),
+            current: view.group === group,
+            count: counts?.[group],
+          }))}
+          search={{ label: 'Tìm theo tên bộ từ', value: view.q, onSearch: (q) => go({ q }) }}
+          filters={
+            <>
+              <ListFilter wide>
+                <Select
+                  aria-label="Lọc theo lớp"
+                  value={view.classId}
+                  onChange={(event) => go({ classId: event.target.value })}
+                >
+                  <option value="">Tất cả lớp</option>
+                  {classes.data?.data.map((klass) => (
+                    <option key={klass.id} value={klass.id}>
+                      {klass.name}
+                    </option>
+                  ))}
+                </Select>
+              </ListFilter>
+              <ListFilter>
+                <Select
+                  aria-label="Sắp xếp bài tập"
+                  value={view.sort}
+                  onChange={(event) => go({ sort: event.target.value as AssignmentSort })}
+                >
+                  {Object.entries(SORT_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </ListFilter>
+            </>
+          }
+        />
+      }
+      footer={
+        assignments.data && assignments.data.meta.total > 0 ? (
+          <ListPager
+            page={assignments.data.meta.page}
+            pageSize={MY_ASSIGNMENTS_PAGE_SIZE}
+            total={assignments.data.meta.total}
+            hrefFor={(bpage) => viewHref({ ...view, bpage })}
+          />
+        ) : null
+      }
+    >
       {body}
-    </section>
+    </ListPanel>
   );
 }
 
@@ -249,12 +376,11 @@ function JoinedRow({ item }: { item: JoinedClass }) {
   );
 }
 
-function JoinedClasses() {
-  const searchParams = useSearchParams();
-  const page = paginationSchema.shape.page.catch(1).parse(searchParams.get('cpage') ?? undefined);
+function JoinedClasses({ view }: { view: ClassesView }) {
+  const router = useRouter();
   const joined = useQuery({
-    queryKey: classKeys.joinedPage(page),
-    queryFn: () => listJoinedClasses(page),
+    queryKey: classKeys.joinedQuery(view.cpage, view.cq, JOINED_PAGE_SIZE),
+    queryFn: () => listJoinedClasses(view.cpage, { q: view.cq || undefined }),
   });
 
   let body;
@@ -273,42 +399,60 @@ function JoinedClasses() {
       />
     );
   } else if (joined.data.data.length === 0) {
-    body = (
+    body = view.cq ? (
+      <ListNoMatch
+        text={`Không có lớp nào khớp "${view.cq}".`}
+        clearHref={viewHref({ ...view, cq: '', cpage: 1 })}
+      />
+    ) : (
       <EmptyState
         title="Bạn chưa vào lớp nào"
         description="Bấm Tham gia lớp ở đầu trang rồi nhập mã giáo viên gửi."
       />
     );
   } else {
-    const { meta } = joined.data;
     body = (
-      <>
-        <ul aria-label="Lớp đã tham gia" className="flex flex-col">
-          {joined.data.data.map((item) => (
-            <JoinedRow key={item.id} item={item} />
-          ))}
-        </ul>
-        <Pagination
-          page={meta.page}
-          pageCount={Math.ceil(meta.total / JOINED_PAGE_SIZE)}
-          hrefFor={(next) => `/classes?cpage=${next}` as Route}
-        />
-      </>
+      <ul aria-label="Lớp đã tham gia" className="flex flex-col">
+        {joined.data.data.map((item) => (
+          <JoinedRow key={item.id} item={item} />
+        ))}
+      </ul>
     );
   }
 
   return (
-    <section aria-labelledby="joined-title" className="flex flex-col gap-3">
-      <h2 id="joined-title" className="text-h2">
-        Lớp đã tham gia
-      </h2>
+    <ListPanel
+      title="Lớp đã tham gia"
+      count={joined.data?.meta.total}
+      toolbar={
+        <ListToolbar
+          key={view.cq}
+          search={{
+            label: 'Tìm lớp theo tên',
+            value: view.cq,
+            onSearch: (cq) => router.push(viewHref({ ...view, cq, cpage: 1 })),
+          }}
+        />
+      }
+      footer={
+        joined.data && joined.data.meta.total > 0 ? (
+          <ListPager
+            page={joined.data.meta.page}
+            pageSize={JOINED_PAGE_SIZE}
+            total={joined.data.meta.total}
+            hrefFor={(cpage) => viewHref({ ...view, cpage })}
+          />
+        ) : null
+      }
+    >
       {body}
-    </section>
+    </ListPanel>
   );
 }
 
 export function StudentClasses() {
   const [joining, setJoining] = useState(false);
+  const view = readView(useSearchParams());
   return (
     <>
       <PageHeader
@@ -322,8 +466,8 @@ export function StudentClasses() {
         }
       />
       <JoinDialog open={joining} onOpenChange={setJoining} />
-      <MyAssignments />
-      <JoinedClasses />
+      <MyAssignments view={view} />
+      <JoinedClasses view={view} />
     </>
   );
 }
