@@ -7,6 +7,7 @@ import { HttpError } from '@/lib/http';
 import {
   getClass,
   listAssignments,
+  listMemberResults,
   listMembers,
   regenerateJoinCode,
   removeMember,
@@ -14,12 +15,16 @@ import {
 } from '../api';
 import { ClassDetail } from './class-detail';
 
-const navigation = vi.hoisted(() => ({ params: new URLSearchParams() }));
-vi.mock('next/navigation', () => ({ useSearchParams: () => navigation.params }));
+const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => navigation.params,
+  useRouter: () => ({ push: navigation.push }),
+}));
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
   getClass: vi.fn(),
   listAssignments: vi.fn(),
+  listMemberResults: vi.fn(),
   listMembers: vi.fn(),
   regenerateJoinCode: vi.fn(),
   removeMember: vi.fn(),
@@ -41,7 +46,7 @@ const members = {
       userId: 'u1',
       displayName: 'An',
       joinedAt: '2026-11-10T00:00:00.000Z',
-      stats: { onTime: 0, late: 0, missed: 0, pending: 0, averageScore: null, lastActiveAt: null },
+      stats: { onTime: 3, late: 1, missed: 2, pending: 0, averageScore: 82.5, lastActiveAt: null },
     },
   ],
   meta: { page: 1, limit: 50, total: 1 },
@@ -60,6 +65,7 @@ describe('ClassDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     navigation.params = new URLSearchParams();
+    navigation.push.mockReset();
     vi.mocked(getClass).mockResolvedValue(klass);
     vi.mocked(listMembers).mockResolvedValue(members);
     vi.mocked(listAssignments).mockResolvedValue({
@@ -84,13 +90,26 @@ describe('ClassDetail', () => {
     expect(listMembers).not.toHaveBeenCalled();
   });
 
-  it('tab Học sinh nằm trong URL và liệt kê học sinh', async () => {
+  it('tab Học sinh có số liệu từng em, tìm và sắp xếp đưa vào URL', async () => {
     navigation.params = new URLSearchParams('tab=students');
     renderDetail();
 
     const list = await screen.findByRole('list', { name: 'Học sinh trong lớp' });
-    expect(within(list).getByText('An')).toBeInTheDocument();
-    expect(within(list).getByText('Vào lớp 10/11/2026')).toBeInTheDocument();
+    const row = within(list).getByRole('button', { name: /An/ }).closest('li') as HTMLElement;
+    expect(row).toHaveTextContent('10/11/2026');
+    expect(row).toHaveTextContent('82.5%');
+    expect(listMembers).toHaveBeenCalledWith('c1', 1, { q: '', sort: 'joinedAt' });
+
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Tìm học sinh theo tên' }),
+      'an{enter}',
+    );
+    expect(navigation.push).toHaveBeenCalledWith('/classes/c1?tab=students&q=an');
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Sắp xếp học sinh' }),
+      'name',
+    );
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes/c1?tab=students&q=an&sort=name');
     expect(screen.getByRole('link', { name: 'Học sinh (1)' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -140,12 +159,39 @@ describe('ClassDetail', () => {
     await waitFor(() => expect(updateClass).toHaveBeenCalledWith('c1', { archived: true }));
   });
 
-  it('xoá học sinh khỏi lớp sau khi xác nhận', async () => {
+  it('bấm học sinh mở hồ sơ, xoá khỏi lớp sau khi xác nhận', async () => {
     navigation.params = new URLSearchParams('tab=students');
     vi.mocked(removeMember).mockResolvedValue();
+    vi.mocked(listMemberResults).mockResolvedValue({
+      data: [
+        {
+          id: 'a1',
+          classId: 'c1',
+          setId: 's1',
+          setTitle: 'Unit 3',
+          mode: 'MCQ',
+          modes: ['MCQ'],
+          dueAt: '2026-11-25T00:00:00.000Z',
+          createdAt: '2026-11-01T00:00:00.000Z',
+          status: 'done',
+          completedAt: '2026-11-20T00:00:00.000Z',
+          correct: 9,
+          total: 10,
+        },
+      ],
+      meta: { page: 1, limit: 100, total: 1 },
+    });
     renderDetail();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Xoá An khỏi lớp' }));
+    await userEvent.click(await screen.findByRole('button', { name: /An, mở hồ sơ/ }));
+    const profile = screen.getByRole('dialog', { name: 'An' });
+    expect(within(profile).getByText('3/6')).toBeInTheDocument();
+    expect(await within(profile).findByText('Unit 3')).toBeInTheDocument();
+    expect(within(profile).getByRole('link', { name: 'Xem tất cả bài' })).toHaveAttribute(
+      'href',
+      '/classes/c1/members/u1',
+    );
+    await userEvent.click(within(profile).getByRole('button', { name: 'Xoá khỏi lớp' }));
     const dialog = screen.getByRole('dialog', { name: 'Xoá An khỏi lớp?' });
     await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá khỏi lớp' }));
 

@@ -37,13 +37,15 @@ import {
 import { http } from '@/lib/http';
 
 export const CLASSES_PAGE_SIZE = 20;
-export const MEMBERS_PAGE_SIZE = 50;
+export const MEMBERS_PAGE_SIZE = 20;
 
 export const classKeys = {
   all: ['classes'] as const,
   list: (archived: boolean, page: number) => ['classes', 'list', archived, page] as const,
   detail: (id: string) => ['classes', 'detail', id] as const,
   members: (id: string, page: number) => ['classes', 'members', id, page] as const,
+  membersQuery: (id: string, page: number, q: string, sort: string) =>
+    ['classes', 'members', id, page, q, sort] as const,
   assignments: (id: string) => ['classes', 'assignments', id] as const,
   assignmentsPage: (id: string, page: number) => ['classes', 'assignments', id, page] as const,
   mySets: ['classes', 'my-sets'] as const,
@@ -89,8 +91,14 @@ export async function regenerateJoinCode(id: string): Promise<Class> {
   return classResponseSchema.parse(body).data;
 }
 
-export async function listMembers(id: string, page: number): Promise<ClassMemberList> {
+export async function listMembers(
+  id: string,
+  page: number,
+  options: { q?: string; sort?: string } = {},
+): Promise<ClassMemberList> {
   const params = new URLSearchParams({ page: String(page), limit: String(MEMBERS_PAGE_SIZE) });
+  if (options.q) params.set('q', options.q);
+  if (options.sort) params.set('sort', options.sort);
   return classMemberListSchema.parse(await http(`${classPath(id)}/members?${params.toString()}`));
 }
 
