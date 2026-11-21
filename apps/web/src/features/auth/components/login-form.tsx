@@ -15,10 +15,12 @@ import { applyFormError } from '@/lib/form-errors';
 import { safeNextPath } from '../next-path';
 import { startSession } from '../session';
 import { FormError, FormNotice } from '@/components/common/form-message';
+import { useTranslation } from 'react-i18next';
 
 const FIELDS = ['email', 'password'] as const;
 
 export function LoginForm() {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next');
@@ -52,12 +54,8 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
-      {searchParams.get('registered') ? (
-        <FormNotice>Nếu email này chưa được dùng, tài khoản đã sẵn sàng. Hãy đăng nhập.</FormNotice>
-      ) : null}
-      {searchParams.get('reset') ? (
-        <FormNotice>Đã đặt mật khẩu mới. Hãy đăng nhập bằng mật khẩu mới.</FormNotice>
-      ) : null}
+      {searchParams.get('registered') ? <FormNotice>{t('loginForm.registered')}</FormNotice> : null}
+      {searchParams.get('reset') ? <FormNotice>{t('loginForm.reset')}</FormNotice> : null}
       {formError ? <FormError>{formError}</FormError> : null}
       <FormField
         label="Email"
@@ -68,7 +66,7 @@ export function LoginForm() {
         {...register('email')}
       />
       <PasswordField
-        label="Mật khẩu"
+        label={t('password')}
         autoComplete="current-password"
         error={errors.password?.message}
         {...register('password')}
@@ -77,18 +75,18 @@ export function LoginForm() {
         href="/forgot-password"
         className="-mt-2 inline-flex min-h-11 items-center self-end text-small font-medium text-primary underline underline-offset-4"
       >
-        Quên mật khẩu?
+        {t('loginForm.forgot')}
       </Link>
       <Button type="submit" loading={isSubmitting}>
-        Đăng nhập
+        {t('login')}
       </Button>
       <p className="text-small text-text-muted">
-        Chưa có tài khoản?{' '}
+        {t('loginForm.noAccount')}{' '}
         <Link
           href={registerHref as Route}
           className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
         >
-          Đăng ký
+          {t('register')}
         </Link>
       </p>
     </form>

@@ -15,6 +15,7 @@ import {
 import { safeNextPath } from '../next-path';
 import { startSession } from '../session';
 import { FormError } from '@/components/common/form-message';
+import { useTranslation } from 'react-i18next';
 
 /** Nút lớn nhất của Google cao 40 px, phóng lên để đạt vùng bấm 44 px. */
 const BUTTON_SCALE = 1.1;
@@ -27,6 +28,7 @@ function toGoogleWidth(frameWidth: number): number {
 }
 
 function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButtonText }) {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const next = useSearchParams().get('next');
   const frameRef = useRef<HTMLDivElement>(null);
@@ -106,11 +108,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
   }, [clientId, next, router, text]);
 
   if (status === 'unavailable') {
-    return (
-      <p className="text-small text-text-muted">
-        Chưa tải được đăng nhập Google. Bạn vẫn có thể dùng email và mật khẩu.
-      </p>
-    );
+    return <p className="text-small text-text-muted">{t('google.failed')}</p>;
   }
 
   return (
@@ -127,12 +125,12 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       </div>
       {submitting ? (
         <p role="status" className="text-small text-text-muted">
-          Đang đăng nhập bằng Google...
+          {t('google.loading')}
         </p>
       ) : null}
       <div className="flex items-center gap-3 text-small text-text-muted">
         <span aria-hidden className="h-px flex-1 bg-border" />
-        hoặc
+        {t('google.or')}
         <span aria-hidden className="h-px flex-1 bg-border" />
       </div>
     </div>

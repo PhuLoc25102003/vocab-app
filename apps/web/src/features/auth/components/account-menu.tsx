@@ -7,18 +7,20 @@ import { useState } from 'react';
 import { can } from '../permissions';
 import { signOut } from '../session';
 import { useAuthStore } from '../store';
+import { useTranslation } from 'react-i18next';
 
 const ITEM_CLASS =
   'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:opacity-50';
 
 /** Ảnh đại diện kèm tên hiển thị, mở menu tài khoản. Tên ẩn trên màn hình hẹp. */
 export function AccountMenu() {
+  const { t } = useTranslation('account');
   const user = useAuthStore((state) => state.user);
   // Nhớ phiên lúc bấm Đăng xuất. Header không bị huỷ khi chuyển trang, nên đăng nhập lại
   // (store có đối tượng user mới) phải tự hết trạng thái "Đang đăng xuất".
   const [leavingUser, setLeavingUser] = useState<typeof user>(null);
   const leaving = user !== null && leavingUser === user;
-  const name = user?.displayName ?? 'Tài khoản';
+  const name = user?.displayName ?? t('title');
   const initial = name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
 
   return (
@@ -31,7 +33,7 @@ export function AccountMenu() {
           {initial}
         </span>
         {/* Tên đọc được là "Tài khoản: <tên>", phần chữ hiện trên nút nằm trong đó. */}
-        <span className="sr-only">Tài khoản: </span>
+        <span className="sr-only">{t('menuLabel')}</span>
         <span className="sr-only max-w-40 truncate text-small font-medium sm:not-sr-only">
           {name}
         </span>
@@ -52,14 +54,14 @@ export function AccountMenu() {
           <DropdownMenu.Item asChild className={ITEM_CLASS}>
             <Link href="/account">
               <UserRound aria-hidden className="size-4" />
-              Tài khoản
+              {t('title')}
             </Link>
           </DropdownMenu.Item>
           {can(user, 'manage-users') ? (
             <DropdownMenu.Item asChild className={ITEM_CLASS}>
               <Link href="/admin/users">
                 <ShieldCheck aria-hidden className="size-4" />
-                Quản lý người dùng
+                {t('manageUsers')}
               </Link>
             </DropdownMenu.Item>
           ) : null}
@@ -73,7 +75,7 @@ export function AccountMenu() {
             }}
           >
             <LogOut aria-hidden className="size-4" />
-            {leaving ? 'Đang đăng xuất' : 'Đăng xuất'}
+            {t(leaving ? 'loggingOut' : 'logout')}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

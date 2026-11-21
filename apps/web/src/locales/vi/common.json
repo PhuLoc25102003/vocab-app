@@ -8,5 +8,181 @@
       "vi": "Tiếng Việt",
       "en": "Tiếng Anh"
     }
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "sets": "Bộ từ",
+    "explore": "Khám phá",
+    "review": "Ôn hôm nay",
+    "classes": "Lớp học",
+    "main": "Điều hướng chính",
+    "skipToContent": "Đến nội dung chính"
+  },
+  "audio": {
+    "slow": "{{label}} chậm",
+    "slowTitle": "Nghe chậm"
+  },
+  "calendar": {
+    "weekdays": "T2,T3,T4,T5,T6,T7,CN",
+    "weekdayNames": "Thứ Hai,Thứ Ba,Thứ Tư,Thứ Năm,Thứ Sáu,Thứ Bảy,Chủ nhật",
+    "heading": "Tháng {{month}}, {{year}}",
+    "prevMonth": "Tháng trước",
+    "nextMonth": "Tháng sau"
+  },
+  "combobox": {
+    "placeholder": "Chọn hoặc gõ để tìm",
+    "empty": "Không có kết quả",
+    "close": "Đóng danh sách {{label}}",
+    "open": "Mở danh sách {{label}}",
+    "options": "Lựa chọn {{label}}"
+  },
+  "actions": {
+    "cancel": "Huỷ",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "clearFilters": "Xoá bộ lọc"
+  },
+  "copyLink": {
+    "done": "Đã sao chép đường dẫn",
+    "failed": "Không sao chép được. Hãy mở trang công khai rồi sao chép từ thanh địa chỉ.",
+    "label": "Sao chép đường dẫn"
+  },
+  "dateTime": {
+    "noDue": "Không có hạn",
+    "endOfToday": "Hết hôm nay",
+    "tomorrow": "Ngày mai",
+    "oneWeek": "1 tuần",
+    "day": "Ngày",
+    "pickOnCalendar": "Chọn ngày trên lịch",
+    "time": "Giờ",
+    "pickDay": "Chọn ngày"
+  },
+  "formDialog": {
+    "discardTitle": "Bỏ nội dung đang nhập?",
+    "discardDescription": "Những gì bạn đã nhập trong hộp thoại này sẽ mất.",
+    "discard": "Bỏ nội dung",
+    "keepEditing": "Nhập tiếp"
+  },
+  "list": {
+    "statusFilter": "Lọc theo trạng thái",
+    "range": "{{from}}–{{to}} trên {{total}}"
+  },
+  "loading": {
+    "slowServer": "Máy chủ đang khởi động, có thể mất khoảng 30 giây."
+  },
+  "offline": {
+    "title": "Bạn đang offline",
+    "description": "Không kết nối được mạng nên chưa mở được trang này. Hãy kiểm tra Wi-Fi hoặc dữ liệu di động rồi thử lại.",
+    "savedSets": "Bộ từ đã tải về máy",
+    "savedMeta": "{{count}} thẻ, tải ngày {{date}}"
+  },
+  "pagination": {
+    "label": "Phân trang",
+    "prevPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "prev": "Trước",
+    "next": "Sau",
+    "page": "Trang {{page}}/{{count}}"
+  },
+  "password": {
+    "hide": "Ẩn mật khẩu",
+    "show": "Hiện mật khẩu"
+  },
+  "speech": {
+    "title": "Giọng đọc và âm thanh",
+    "accent": "Giọng tiếng Anh",
+    "us": "Anh Mỹ",
+    "gb": "Anh Anh",
+    "rate": "Tốc độ đọc",
+    "normal": "Bình thường",
+    "slow": "Chậm",
+    "missingVoice": "Máy này chưa có giọng {{accent}}, trình duyệt sẽ dùng giọng tiếng Anh khác.",
+    "tryIt": "Nghe thử",
+    "sound": "Âm thanh khi trả lời đúng",
+    "soundHint": "Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra."
+  },
+  "theme": {
+    "dark": "Giao diện tối"
+  },
+  "unsaved": {
+    "title": "Rời trang khi chưa lưu?",
+    "description": "Những gì bạn vừa nhập ở trang này sẽ mất.",
+    "leave": "Rời trang",
+    "stay": "Ở lại"
+  },
+  "visibility": {
+    "PRIVATE": "Riêng tư",
+    "CLASS": "Lớp học",
+    "PUBLIC": "Công khai",
+    "legend": "Ai xem được"
+  },
+  "visibilityHint": {
+    "PRIVATE": "Chỉ mình bạn xem và học. Không hiện ở Khám phá.",
+    "PUBLIC": "Ai có đường dẫn cũng xem và học thử được, kể cả người chưa đăng nhập. Hiện ở Khám phá, người khác sao chép được về tài khoản của họ.",
+    "CLASS": "Chỉ giáo viên và học sinh của lớp được giao bộ này."
+  },
+  "modes": {
+    "FLASHCARD": "Flashcard",
+    "LEARN": "Học kỹ",
+    "WRITE": "Luyện viết",
+    "DICTATION": "Nghe viết",
+    "CLOZE": "Điền từ",
+    "MCQ": "Trắc nghiệm",
+    "MATCH": "Ghép cặp",
+    "TEST": "Kiểm tra",
+    "SPEAK": "Luyện nói"
+  },
+  "roles": {
+    "STUDENT": "Học sinh",
+    "TEACHER": "Giáo viên",
+    "ADMIN": "Quản trị viên"
+  },
+  "pages": {
+    "dashboard": "Tổng quan",
+    "myLearning": "Việc học của tôi",
+    "sets": "Bộ từ",
+    "setsDescription": "Thư viện của bạn: bộ từ bạn tạo, nhập và sao chép về. Bộ của người khác nằm ở Khám phá.",
+    "importFromFile": "Nhập từ file",
+    "createSet": "Tạo bộ từ",
+    "import": "Nhập từ",
+    "backToSet": "Quay lại bộ từ",
+    "backToList": "Quay lại danh sách",
+    "importMore": "Nhập thêm thẻ",
+    "importList": "Nhập danh sách từ",
+    "importDescription": "Dán từ Quizlet, Excel, Google Sheets hoặc chọn file .txt, .csv, .xlsx. Mỗi dòng là một thẻ.",
+    "classes": "Lớp học",
+    "teacherOnly": "Trang dành cho giáo viên",
+    "teacherOnlyClass": "Tài khoản giáo viên mới xem được trang quản lý lớp.",
+    "teacherOnlyResults": "Tài khoản giáo viên mới xem được kết quả của lớp.",
+    "teacherOnlyStudent": "Tài khoản giáo viên mới xem được kết quả học sinh.",
+    "assignment": "Bài tập",
+    "assignmentResults": "Kết quả bài giao",
+    "studentResults": "Kết quả học sinh",
+    "account": "Tài khoản",
+    "adminUsers": "Quản lý người dùng",
+    "explore": "Khám phá",
+    "exploreDescription": "Bộ từ công khai do cộng đồng tạo. Mở một bộ để học hoặc sao chép về thư viện của bạn.",
+    "review": "Ôn hôm nay",
+    "newSet": "Tạo bộ từ",
+    "setDetail": "Chi tiết bộ từ",
+    "backToExplore": "Quay lại Khám phá",
+    "backToSets": "Quay lại Bộ từ",
+    "addCards": "Thêm thẻ",
+    "editSet": "Sửa bộ từ",
+    "studyPath": "Lộ trình học",
+    "study": "Học bộ từ",
+    "loading": "Đang tải trang",
+    "loadFailed": "Không tải được trang này",
+    "checkNetwork": "Kiểm tra kết nối mạng rồi thử lại.",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundDesc": "Đường dẫn này không tồn tại hoặc đã được đổi.",
+    "offlineTitle": "Mất kết nối",
+    "globalErrorTitle": "Đã có lỗi xảy ra",
+    "globalErrorDesc": "Hãy thử lại. Nếu vẫn lỗi, tải lại trang sau ít phút."
+  },
+  "session": {
+    "login": "Đăng nhập",
+    "myPage": "Về trang của tôi",
+    "home": "Về trang chủ"
   }
 }

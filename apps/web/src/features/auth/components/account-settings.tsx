@@ -11,7 +11,6 @@ import {
   type ChangeDisplayNameInput,
   type ChangePasswordInput,
   type ConfirmPasswordInput,
-  type Role,
 } from '@vocab/shared';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
@@ -30,13 +29,9 @@ import { cn } from '@/lib/utils';
 import { changeDisplayName, changePassword, deleteAccount, getAccount, logoutAll } from '../api';
 import { leaveSession, startSession } from '../session';
 import { useAuthStore } from '../store';
+import { useTranslation } from 'react-i18next';
 
 const ACCOUNT_KEY = ['account'] as const;
-const ROLE_LABELS: Record<Role, string> = {
-  STUDENT: 'Học sinh',
-  TEACHER: 'Giáo viên',
-  ADMIN: 'Quản trị viên',
-};
 
 const isWrongPassword = (error: unknown) =>
   error instanceof HttpError && error.code === ERROR_CODES.WRONG_PASSWORD;
@@ -103,6 +98,7 @@ function NameDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation('account');
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const {
@@ -133,7 +129,7 @@ function NameDialog({
       }
       queryClient.setQueryData<Account>(ACCOUNT_KEY, { ...account, ...user });
       reset({ displayName: user.displayName });
-      toast.success('Đã lưu tên hiển thị');
+      toast.success(t('name.saved'));
       onOpenChange(false);
     } catch (error) {
       setFormError(formErrorMessage(error));
@@ -144,16 +140,16 @@ function NameDialog({
     <FormDialog
       open={open}
       onOpenChange={close}
-      title="Đổi tên hiển thị"
-      description="Tên này hiện cho giáo viên, bạn cùng lớp và trên bộ từ công khai của bạn."
-      submitLabel="Lưu tên"
+      title={t('name.title')}
+      description={t('name.description')}
+      submitLabel={t('name.save')}
       pending={isSubmitting}
       error={formError}
       dirty={isDirty}
       onSubmit={(event) => void submit(event)}
     >
       <FormField
-        label="Tên hiển thị"
+        label={t('name.label')}
         autoComplete="name"
         error={errors.displayName?.message}
         {...register('displayName')}
@@ -169,6 +165,7 @@ function PasswordDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation('account');
   const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
@@ -196,11 +193,11 @@ function PasswordDialog({
     setFormError(null);
     try {
       startSession(await changePassword(values));
-      toast.success('Đã đổi mật khẩu. Các thiết bị khác đã được đăng xuất.');
+      toast.success(t('password.changed'));
       close(false);
     } catch (error) {
       if (isWrongPassword(error)) {
-        setError('currentPassword', { message: 'Mật khẩu hiện tại không đúng' });
+        setError('currentPassword', { message: t('password.wrongCurrent') });
       } else {
         setFormError(formErrorMessage(error));
       }
@@ -211,22 +208,22 @@ function PasswordDialog({
     <FormDialog
       open={open}
       onOpenChange={close}
-      title="Đổi mật khẩu"
-      description="Sau khi đổi, các thiết bị khác sẽ bị đăng xuất."
-      submitLabel="Đổi mật khẩu"
+      title={t('password.title')}
+      description={t('password.description')}
+      submitLabel={t('password.title')}
       pending={isSubmitting}
       error={formError}
       dirty={isDirty}
       onSubmit={(event) => void submit(event)}
     >
       <PasswordField
-        label="Mật khẩu hiện tại"
+        label={t('password.current')}
         autoComplete="current-password"
         error={errors.currentPassword?.message}
         {...register('currentPassword')}
       />
       <PasswordField
-        label="Mật khẩu mới"
+        label={t('password.new')}
         autoComplete="new-password"
         error={errors.newPassword?.message}
         {...register('newPassword')}
@@ -236,6 +233,7 @@ function PasswordDialog({
 }
 
 function LogoutAll() {
+  const { t } = useTranslation('account');
   const [confirming, setConfirming] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -261,15 +259,15 @@ function LogoutAll() {
           setConfirming(true);
         }}
       >
-        Đăng xuất mọi thiết bị
+        {t('logoutAll.button')}
       </Button>
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title="Đăng xuất mọi thiết bị?"
-        description="Bạn sẽ phải đăng nhập lại trên mọi thiết bị, kể cả thiết bị này."
-        confirmLabel="Đăng xuất tất cả"
-        cancelLabel="Giữ đăng nhập"
+        title={t('logoutAll.title')}
+        description={t('logoutAll.description')}
+        confirmLabel={t('logoutAll.confirm')}
+        cancelLabel={t('logoutAll.cancel')}
         pending={isLeaving}
         error={error}
         onConfirm={() => void confirm()}
@@ -279,6 +277,7 @@ function LogoutAll() {
 }
 
 function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
+  const { t } = useTranslation('account');
   const [confirming, setConfirming] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const {
@@ -305,11 +304,11 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
     setFormError(null);
     try {
       await deleteAccount(hasPassword ? password : undefined);
-      toast.success('Đã xoá tài khoản');
+      toast.success(t('delete.done'));
       leaveSession();
     } catch (error) {
       if (isWrongPassword(error)) {
-        setError('password', { message: 'Mật khẩu không đúng' });
+        setError('password', { message: t('delete.wrongPassword') });
       } else {
         setFormError(formErrorMessage(error));
       }
@@ -319,22 +318,22 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
   return (
     <div>
       <Button variant="secondary" className="text-danger" onClick={() => toggle(true)}>
-        Xoá tài khoản
+        {t('delete.button')}
       </Button>
       <ConfirmDialog
         open={confirming}
         onOpenChange={toggle}
-        title="Xoá tài khoản?"
-        description="Mọi bộ từ, tiến độ học và phiên đăng nhập của bạn sẽ bị xoá. Việc này không thể hoàn tác."
-        confirmLabel="Xoá vĩnh viễn"
-        cancelLabel="Giữ tài khoản"
+        title={t('delete.title')}
+        description={t('delete.description')}
+        confirmLabel={t('delete.confirm')}
+        cancelLabel={t('delete.cancel')}
         pending={isSubmitting}
         error={formError}
         onConfirm={() => void submit()}
       >
         {hasPassword ? (
           <PasswordField
-            label="Nhập mật khẩu để xác nhận"
+            label={t('delete.passwordLabel')}
             autoComplete="current-password"
             error={errors.password?.message}
             {...register('password')}
@@ -347,12 +346,13 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
 
 /** `children`: phần cài đặt thêm do trang ghép vào cột phải, ví dụ giọng đọc. */
 export function AccountSettings({ children }: { children?: ReactNode }) {
+  const { t } = useTranslation(['account', 'common']);
   const account = useQuery({ queryKey: ACCOUNT_KEY, queryFn: getAccount });
   const [editing, setEditing] = useState<'name' | 'password' | null>(null);
 
   if (account.isPending) {
     return (
-      <LoadingState label="Đang tải tài khoản">
+      <LoadingState label={t('loading')}>
         <div className="flex w-full flex-col gap-6">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-32 w-full" />
@@ -363,8 +363,8 @@ export function AccountSettings({ children }: { children?: ReactNode }) {
   if (account.isError) {
     return (
       <ErrorState
-        title="Không tải được tài khoản"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('failed')}
+        description={t('checkNetwork')}
         onRetry={() => void account.refetch()}
       />
     );
@@ -376,7 +376,7 @@ export function AccountSettings({ children }: { children?: ReactNode }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
       <aside
-        aria-label="Hồ sơ"
+        aria-label={t('profile')}
         className="flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-5 text-center lg:sticky lg:top-6"
       >
         <span
@@ -388,46 +388,42 @@ export function AccountSettings({ children }: { children?: ReactNode }) {
         <p className="text-h3 wrap-anywhere">{displayName}</p>
         <p className="text-small wrap-anywhere text-text-muted">{email}</p>
         <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-          {ROLE_LABELS[role]}
+          {t(`common:roles.${role}`)}
         </span>
       </aside>
       <div className="flex min-w-0 flex-col gap-6">
-        <Section id="profile-heading" title="Hồ sơ">
+        <Section id="profile-heading" title={t('profile')}>
           <SettingRow
-            label="Tên hiển thị"
+            label={t('name.label')}
             value={displayName}
             action={
               <Button variant="secondary" onClick={() => setEditing('name')}>
-                Sửa tên
+                {t('editName')}
               </Button>
             }
           />
           <SettingRow label="Email" value={email} />
         </Section>
-        <Section id="security-heading" title="Bảo mật">
+        <Section id="security-heading" title={t('security')}>
           <SettingRow
-            label="Mật khẩu"
-            value={hasPassword ? '••••••••' : 'Đăng nhập bằng Google'}
+            label={t('passwordRow')}
+            value={hasPassword ? '••••••••' : t('googleOnly')}
             action={
               hasPassword ? (
                 <Button variant="secondary" onClick={() => setEditing('password')}>
-                  Đổi mật khẩu
+                  {t('password.title')}
                 </Button>
               ) : undefined
             }
           />
-          <SettingRow
-            label="Phiên đăng nhập"
-            value="Đăng xuất khỏi mọi thiết bị, dùng khi bạn quên đăng xuất ở máy khác."
-            action={<LogoutAll />}
-          />
+          <SettingRow label={t('sessions')} value={t('sessionsHint')} action={<LogoutAll />} />
         </Section>
         {children}
         <Section
           id="delete-heading"
-          title="Xoá tài khoản"
+          title={t('delete.button')}
           tone="danger"
-          description="Tài khoản, bộ từ và tiến độ học của bạn sẽ bị xoá hẳn. Tiến độ của người khác trên các bộ từ này cũng mất."
+          description={t('delete.sectionDescription')}
         >
           <DeleteAccount hasPassword={hasPassword} />
         </Section>

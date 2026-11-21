@@ -23,6 +23,7 @@ import { useFolderDrop } from './folder-dnd';
 import { FolderNameDialog } from './folder-name-form';
 import { folderHref, FOLDER_PARAM } from './folder-links';
 import { FolderSheet } from './folder-sheet';
+import { useTranslation } from 'react-i18next';
 
 /** Nhiều thư mục hơn số này thì hiện ô lọc. */
 const FILTER_THRESHOLD = 6;
@@ -68,6 +69,7 @@ function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLink
  * đáy chọn thư mục (`FolderSheet`, việc 5.34).
  */
 export function FolderPanel() {
+  const { t } = useTranslation(['sets', 'common']);
   const router = useRouter();
   const searchParams = useSearchParams();
   const current = searchParams.get(FOLDER_PARAM) ?? '';
@@ -88,13 +90,13 @@ export function FolderPanel() {
       <FolderNameDialog
         open={creating}
         onOpenChange={setCreating}
-        title="Tạo thư mục"
-        label="Tên thư mục mới"
-        submitLabel="Tạo"
+        title={t('folders.create')}
+        label={t('folders.newName')}
+        submitLabel={t('folders.createSubmit')}
         onSave={async (name) => {
           const folder = await create.mutateAsync(name);
           setCreating(false);
-          toast.success('Đã tạo thư mục');
+          toast.success(t('folders.created'));
           router.push(folderHref(folder.id, sort));
         }}
       />
@@ -107,15 +109,15 @@ export function FolderPanel() {
         />
       </div>
       <nav
-        aria-label="Thư mục"
+        aria-label={t('folders.title')}
         className="hidden min-w-0 flex-col gap-3 lg:sticky lg:top-20 lg:flex lg:self-start"
       >
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-h3">Thư mục</h2>
+          <h2 className="text-h3">{t('folders.title')}</h2>
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Tạo thư mục mới"
+            aria-label={t('folders.createNew')}
             onClick={() => setCreating(true)}
           >
             <FolderPlus aria-hidden className="size-5" />
@@ -124,8 +126,8 @@ export function FolderPanel() {
         {list.length > FILTER_THRESHOLD ? (
           <Input
             type="search"
-            aria-label="Lọc thư mục"
-            placeholder="Lọc thư mục"
+            aria-label={t('folders.filter')}
+            placeholder={t('folders.filter')}
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
           />
@@ -133,13 +135,13 @@ export function FolderPanel() {
         <ul className="flex max-h-[calc(100dvh-16rem)] flex-col gap-0.5 overflow-y-auto">
           <FolderLink
             href={folderHref('', sort)}
-            label="Tất cả bộ từ"
+            label={t('folders.all')}
             active={current === ''}
             Icon={Library}
           />
           <FolderLink
             href={folderHref(NO_FOLDER, sort)}
-            label="Chưa xếp thư mục"
+            label={t('folders.noFolder')}
             active={current === NO_FOLDER}
             Icon={FolderMinus}
             dropTarget={NO_FOLDER}
@@ -164,18 +166,18 @@ export function FolderPanel() {
         </ul>
         {folders.isError ? (
           <p role="alert" className="text-small text-danger">
-            Không tải được thư mục.{' '}
+            {t('folders.loadFailed')}{' '}
             <button
               type="button"
               className="min-h-11 font-medium underline underline-offset-4"
               onClick={() => void folders.refetch()}
             >
-              Thử lại
+              {t('common:actions.retry')}
             </button>
           </p>
         ) : null}
         {keyword && shown.length === 0 ? (
-          <p className="text-small text-text-muted">Không có thư mục nào khớp.</p>
+          <p className="text-small text-text-muted">{t('folders.noMatch')}</p>
         ) : null}
       </nav>
     </>

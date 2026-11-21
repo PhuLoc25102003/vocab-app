@@ -1,15 +1,18 @@
 import Link from 'next/link';
 import { EmptyState } from '@/components/common/empty-state';
 import { Button } from '@/components/ui/button';
+import { getT } from '@/lib/i18n/server';
 
-export default function PublicSetNotFound() {
+export default async function PublicSetNotFound() {
+  const t = await getT('sets');
+  const tCommon = await getT('common');
   return (
     <EmptyState
-      title="Không tìm thấy bộ từ"
-      description="Bộ từ này không tồn tại hoặc không còn công khai."
+      title={t('notFound')}
+      description={t('notFoundHint')}
       action={
         <Button asChild variant="secondary">
-          <Link href="/">Về trang chủ</Link>
+          <Link href="/">{tCommon('session.home')}</Link>
         </Button>
       }
     />

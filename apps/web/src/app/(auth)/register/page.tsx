@@ -4,13 +4,18 @@ import { PageHeader } from '@/components/common/page-header';
 import { AuthFormSkeleton } from '@/features/auth/components/auth-form-skeleton';
 import { GoogleSignIn } from '@/features/auth/components/google-sign-in';
 import { RegisterForm } from '@/features/auth/components/register-form';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Đăng ký' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('auth');
+  return { title: t('pages.registerTitle') };
+}
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const t = await getT('auth');
   return (
     <>
-      <PageHeader title="Tạo tài khoản" description="Lưu bộ từ và tiến độ học của bạn." />
+      <PageHeader title={t('pages.registerTitle')} description={t('pages.registerDesc')} />
       <Suspense fallback={<AuthFormSkeleton />}>
         <GoogleSignIn text="signup_with" />
         <RegisterForm />

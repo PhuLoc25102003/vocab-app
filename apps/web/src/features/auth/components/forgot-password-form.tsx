@@ -10,12 +10,14 @@ import { FormError, FormNotice } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 import { requestPasswordReset } from '../api';
+import { Trans, useTranslation } from 'react-i18next';
 
 const FIELDS = ['email'] as const;
 const linkClass =
   'inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4';
 
 export function ForgotPasswordForm() {
+  const { t } = useTranslation('auth');
   const [formError, setFormError] = useState<string | null>(null);
   const [sent, setSent] = useState<string | null>(null);
   const {
@@ -43,17 +45,20 @@ export function ForgotPasswordForm() {
       <div className="flex flex-col gap-4">
         <FormNotice>{sent}</FormNotice>
         <p className="text-text-muted">
-          Thư gửi tới{' '}
-          <span className="font-medium text-text wrap-anywhere">{getValues('email')}</span>. Liên
-          kết dùng được một lần trong 30 phút.
+          <Trans
+            t={t}
+            i18nKey="forgot.sentTo"
+            values={{ email: getValues('email') }}
+            components={[<span key="e" className="font-medium text-text wrap-anywhere" />]}
+          />
         </p>
         <Button asChild>
-          <Link href="/login">Quay lại đăng nhập</Link>
+          <Link href="/login">{t('forgot.back')}</Link>
         </Button>
         <p className="text-small text-text-muted">
-          Chưa thấy thư?{' '}
+          {t('forgot.noEmail')}{' '}
           <button type="button" className={linkClass} onClick={() => setSent(null)}>
-            Gửi lại
+            {t('forgot.resend')}
           </button>
         </p>
       </div>
@@ -68,17 +73,17 @@ export function ForgotPasswordForm() {
         type="email"
         autoComplete="email"
         inputMode="email"
-        hint="Email bạn dùng để đăng nhập Nhớ Từ."
+        hint={t('forgot.emailHint')}
         error={errors.email?.message}
         {...register('email')}
       />
       <Button type="submit" loading={isSubmitting}>
-        Gửi liên kết
+        {t('forgot.submit')}
       </Button>
       <p className="text-small text-text-muted">
-        Nhớ ra mật khẩu rồi?{' '}
+        {t('forgot.remembered')}{' '}
         <Link href="/login" className={linkClass}>
-          Đăng nhập
+          {t('login')}
         </Link>
       </p>
     </form>

@@ -4,10 +4,15 @@ import { Logo } from '@/components/common/logo';
 import { SessionLink } from '@/components/common/session-link';
 import { LanguageToggle } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Không tìm thấy trang', robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('common');
+  return { title: t('pages.notFoundTitle'), robots: { index: false } };
+}
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getT('common');
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border">
@@ -21,13 +26,13 @@ export default function NotFound() {
       </header>
       <main className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col px-4 py-8 md:px-6 lg:px-8">
         <EmptyState
-          title="Không tìm thấy trang"
-          description="Đường dẫn này không tồn tại hoặc đã được đổi."
+          title={t('pages.notFoundTitle')}
+          description={t('pages.notFoundDesc')}
           action={
             <SessionLink
               variant="secondary"
-              guest={{ href: '/', label: 'Về trang chủ' }}
-              member={{ href: '/dashboard', label: 'Về trang của tôi' }}
+              guest={{ href: '/', label: t('session.home') }}
+              member={{ href: '/dashboard', label: t('session.myPage') }}
             />
           }
         />

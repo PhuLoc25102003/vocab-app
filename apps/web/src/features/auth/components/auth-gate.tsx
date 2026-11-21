@@ -8,9 +8,11 @@ import { LoadingState } from '@/components/common/loading-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { refreshSession } from '../session';
 import { useAuthStore } from '../store';
+import { useTranslation } from 'react-i18next';
 
 /** Khôi phục phiên khi mở trang và chỉ hiện nội dung cho người đã đăng nhập. */
 export function AuthGate({ children }: { children: ReactNode }) {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const pathname = usePathname();
   const status = useAuthStore((state) => state.status);
@@ -32,8 +34,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
   if (status === 'unavailable') {
     return (
       <ErrorState
-        title="Không kết nối được máy chủ"
-        description="Hãy kiểm tra mạng rồi thử lại."
+        title={t('gate.offline')}
+        description={t('gate.checkNetwork')}
         onRetry={() => setStatus('loading')}
       />
     );
@@ -42,8 +44,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
 }
 
 export function AuthGateLoading() {
+  const { t } = useTranslation('auth');
   return (
-    <LoadingState label="Đang kiểm tra phiên đăng nhập">
+    <LoadingState label={t('gate.checking')}>
       <Skeleton className="h-10 w-48" />
       <Skeleton className="h-24 w-full" />
     </LoadingState>

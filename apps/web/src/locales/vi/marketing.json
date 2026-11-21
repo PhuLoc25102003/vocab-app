@@ -1,0 +1,118 @@
+{
+  "modes": {
+    "flashcard": {
+      "name": "Flashcard",
+      "description": "Lật thẻ, tự chấm đã nhớ hay chưa."
+    },
+    "learn": {
+      "name": "Học kỹ",
+      "description": "Trắc nghiệm rồi gõ từ, câu sai hỏi lại."
+    },
+    "write": {
+      "name": "Viết",
+      "description": "Gõ từ từ trí nhớ, phần sai gạch đỏ."
+    },
+    "dictation": {
+      "name": "Nghe viết",
+      "description": "Nghe phát âm, viết lại từ vừa nghe."
+    },
+    "mcq": {
+      "name": "Trắc nghiệm",
+      "description": "Chọn nghĩa đúng khi muốn ôn nhanh."
+    },
+    "cloze": {
+      "name": "Điền từ",
+      "description": "Điền từ còn thiếu vào câu ví dụ."
+    },
+    "match": {
+      "name": "Ghép cặp",
+      "description": "Ghép từ với nghĩa thật nhanh."
+    },
+    "test": {
+      "name": "Kiểm tra",
+      "description": "Làm bài nhiều dạng, chấm khi nộp."
+    },
+    "speak": {
+      "name": "Luyện nói",
+      "description": "Đọc to từ, máy nghe và chấm."
+    }
+  },
+  "schedule": {
+    "today": {
+      "when": "Hôm nay",
+      "what": "Học thẻ mới"
+    },
+    "day1": {
+      "when": "Sau 1 ngày",
+      "what": "Ôn lần đầu"
+    },
+    "day6": {
+      "when": "Sau 6 ngày",
+      "what": "Đúng tiếp thì đã thuộc"
+    },
+    "later": {
+      "when": "Về sau",
+      "what": "Lịch giãn dần, nhớ lâu"
+    }
+  },
+  "steps": {
+    "prepare": {
+      "title": "Chuẩn bị bộ từ",
+      "description": "Tự tạo, nhập từ Excel hoặc chọn bộ công khai."
+    },
+    "practice": {
+      "title": "Luyện tập",
+      "description": "Chọn chế độ hợp với bạn, đổi bất cứ lúc nào."
+    },
+    "review": {
+      "title": "Ôn đúng lúc",
+      "description": "Ôn hôm nay gom thẻ đến hạn, Tổng quan cho thấy tiến bộ."
+    }
+  },
+  "highlights": {
+    "modes": "9 chế độ học",
+    "schedule": "Lịch ôn tự động",
+    "free": "Miễn phí"
+  },
+  "start": {
+    "guest": "Tạo tài khoản",
+    "member": "Vào học tiếp"
+  },
+  "sample": {
+    "meaning": "ghi nhớ",
+    "caption": "Thẻ mẫu: từ remember, nghĩa là ghi nhớ."
+  },
+  "hero": {
+    "eyebrow": "Học từ vựng có lịch ôn riêng cho từng thẻ",
+    "title": "Từ nào sắp quên, ôn đúng lúc đó.",
+    "description": "{{brand}} giúp bạn học từ vựng bằng flashcard, viết, nghe, nói và trắc nghiệm, rồi tự xếp lịch ôn để bạn nhớ lâu mà không phải học dồn.",
+    "explore": "Khám phá bộ từ"
+  },
+  "modesSection": {
+    "title": "Chín cách luyện một bộ từ",
+    "description": "Đổi cách học để não không quen lối mòn: nhìn, viết, nghe, nói đều được."
+  },
+  "scheduleSection": {
+    "title": "Lịch ôn tự giãn theo trí nhớ của bạn",
+    "description": "Trả lời đúng thì thẻ được hẹn ôn xa hơn, sai thì quay lại sớm. Một từ được tính là đã thuộc khi bạn nhớ đúng ở hai ngày khác nhau.",
+    "milestone": "Mốc {{number}}"
+  },
+  "stepsSection": {
+    "title": "Học mỗi ngày trong ba bước",
+    "step": "Bước {{number}}:"
+  },
+  "cta": {
+    "title": "Bắt đầu với bộ từ đầu tiên",
+    "description": "Bạn có thể học thử các bộ từ công khai ngay, không cần tài khoản."
+  },
+  "legal": {
+    "updatedAt": "Cập nhật lần cuối: {{date}}",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản sử dụng",
+    "nav": "Thông tin pháp lý"
+  },
+  "shell": {
+    "login": "Đăng nhập",
+    "myPage": "Trang của tôi"
+  }
+}

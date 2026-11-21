@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/button';
 import { registerAccount } from '../api';
 import { applyFormError } from '@/lib/form-errors';
 import { FormError } from '@/components/common/form-message';
+import { useTranslation } from 'react-i18next';
 
 const FIELDS = ['displayName', 'email', 'password'] as const;
 
 export function RegisterForm() {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const next = useSearchParams().get('next');
   const [formError, setFormError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export function RegisterForm() {
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       {formError ? <FormError>{formError}</FormError> : null}
       <FormField
-        label="Tên hiển thị"
+        label={t('displayName')}
         autoComplete="name"
         error={errors.displayName?.message}
         {...register('displayName')}
@@ -62,22 +64,22 @@ export function RegisterForm() {
         {...register('email')}
       />
       <PasswordField
-        label="Mật khẩu"
+        label={t('password')}
         autoComplete="new-password"
-        hint={`Tối thiểu ${PASSWORD_MIN_LENGTH} ký tự.`}
+        hint={t('registerForm.passwordHint', { min: PASSWORD_MIN_LENGTH })}
         error={errors.password?.message}
         {...register('password')}
       />
       <Button type="submit" loading={isSubmitting}>
-        Tạo tài khoản
+        {t('registerForm.submit')}
       </Button>
       <p className="text-small text-text-muted">
-        Đã có tài khoản?{' '}
+        {t('registerForm.haveAccount')}{' '}
         <Link
           href={`/login${nextQuery && `?${nextQuery}`}` as Route}
           className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4"
         >
-          Đăng nhập
+          {t('login')}
         </Link>
       </p>
     </form>

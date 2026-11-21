@@ -3,8 +3,10 @@ import { Logo } from '@/components/common/logo';
 import { SessionLink } from '@/components/common/session-link';
 import { LanguageToggle } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
+import { getT } from '@/lib/i18n/server';
 
-export default function PublicLayout({ children }: { children: ReactNode }) {
+export default async function PublicLayout({ children }: { children: ReactNode }) {
+  const t = await getT('common');
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border">
@@ -15,8 +17,8 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             <ThemeToggle />
             <SessionLink
               variant="secondary"
-              guest={{ href: '/login', label: 'Đăng nhập' }}
-              member={{ href: '/dashboard', label: 'Về trang của tôi' }}
+              guest={{ href: '/login', label: t('session.login') }}
+              member={{ href: '/dashboard', label: t('session.myPage') }}
             />
           </div>
         </div>

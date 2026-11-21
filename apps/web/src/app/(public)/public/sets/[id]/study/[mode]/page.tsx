@@ -3,8 +3,12 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { GuestStudy } from '@/features/study/components/guest-study';
 import { parseStudyMode } from '@/features/study/modes/parse-mode';
+import { getT } from '@/lib/i18n/server';
 
-export const metadata: Metadata = { title: 'Học thử', robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT('sets');
+  return { title: t('grid.guestLabel'), robots: { index: false } };
+}
 
 type GuestStudyPageProps = PageProps<'/public/sets/[id]/study/[mode]'>;
 
