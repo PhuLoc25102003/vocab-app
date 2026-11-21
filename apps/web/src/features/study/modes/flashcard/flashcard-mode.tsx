@@ -7,6 +7,7 @@ import { CardImage } from '@/components/common/card-image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
+import { playCorrectSound } from '@/lib/sound';
 
 const LONG_TEXT_LENGTH = 24;
 const FACE =
@@ -34,6 +35,7 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
         return;
       }
       answered.current = true;
+      if (value === FLASHCARD_ANSWERS.known) playCorrectSound();
       onAnswer({ questionId: question.id, value, timeMs: Date.now() - shownAt.current });
     },
     [onAnswer, question.id],

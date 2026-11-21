@@ -15,6 +15,12 @@ import {
   type SpeechRate,
   type SpeechSettings as Settings,
 } from '@/lib/speech';
+import {
+  isSoundSupported,
+  loadSoundEnabled,
+  playCorrectSound,
+  saveSoundEnabled,
+} from '@/lib/sound';
 
 const SAMPLE = 'Practice makes perfect.';
 
@@ -22,11 +28,15 @@ const SAMPLE = 'Practice makes perfect.';
 export function SpeechSettings() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SPEECH_SETTINGS);
   const [exact, setExact] = useState(true);
+  const [sound, setSound] = useState(true);
+  const [soundSupported, setSoundSupported] = useState(false);
 
   useEffect(() => {
     // Đọc lựa chọn đã lưu sau khi hiện để HTML từ máy chủ và trình duyệt giống nhau.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- chỉ đọc localStorage một lần
     setSettings(loadSpeechSettings());
+    setSound(loadSoundEnabled());
+    setSoundSupported(isSoundSupported());
   }, []);
 
   useEffect(() => {
@@ -50,7 +60,7 @@ export function SpeechSettings() {
       className="flex w-full flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5"
     >
       <h2 id="speech-title" className="text-h3">
-        Giọng đọc
+        Giọng đọc và âm thanh
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-small font-medium">
@@ -86,6 +96,27 @@ export function SpeechSettings() {
           Nghe thử
         </Button>
       </div>
+      {soundSupported ? (
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 border-t border-border pt-4">
+          <input
+            type="checkbox"
+            checked={sound}
+            onChange={(event) => {
+              const enabled = event.target.checked;
+              setSound(enabled);
+              saveSoundEnabled(enabled);
+              if (enabled) playCorrectSound();
+            }}
+            className="size-5 shrink-0 accent-primary"
+          />
+          <span className="flex flex-col">
+            <span className="font-medium">Âm thanh khi trả lời đúng</span>
+            <span className="text-small text-text-muted">
+              Phát một tiếng chuông ngắn ở mọi chế độ học, trừ Kiểm tra.
+            </span>
+          </span>
+        </label>
+      ) : null}
     </section>
   );
 }

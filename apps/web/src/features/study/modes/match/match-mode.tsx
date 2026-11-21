@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
+import { playCorrectSound } from '@/lib/sound';
 
 interface Tile {
   /** Câu hỏi sở hữu nghĩa này. Hai thẻ trùng nghĩa vẫn là hai ô riêng. */
@@ -88,6 +89,7 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
       setFeedback(`Chưa đúng, "${tile.text}" không phải nghĩa của "${item.prompt}".`);
       return;
     }
+    playCorrectSound();
     setMatched((current) => new Set(current).add(item.id));
     setUsedTiles((current) => new Set(current).add(tile.id));
     setSelected(null);

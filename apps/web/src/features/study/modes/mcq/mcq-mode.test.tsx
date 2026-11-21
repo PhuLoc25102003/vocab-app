@@ -2,7 +2,10 @@ import type { Question } from '@vocab/shared';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { playCorrectSound } from '@/lib/sound';
 import { McqModeView } from './mcq-mode';
+
+vi.mock('@/lib/sound', () => ({ playCorrectSound: vi.fn() }));
 
 const question: Question = {
   id: 'c1',
@@ -31,6 +34,7 @@ describe('McqModeView', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /quả táo/ }));
     expect(screen.getByText('Chính xác')).toBeInTheDocument();
+    expect(playCorrectSound).toHaveBeenCalledTimes(1);
     expect(onAnswer).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Câu tiếp theo' }));

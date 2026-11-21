@@ -102,3 +102,12 @@
 - **Ngoại lệ:** chưa học gì thì mời bắt đầu; lỗi mạng có nút thử lại; bộ đã xoá không nằm trong từ hay sai.
 - **Test đã có:** `stats.integration`, `stats-overview.test`, unit `stats`, E2E.
 - **Test cần thêm:** integration ranh giới 0 giờ Việt Nam.
+
+## UC-L12. Âm thanh khi trả lời đúng
+
+- **Việc:** 5.24. **Người dùng:** mọi người, kể cả khách học thử. **Trạng thái:** Đủ, chưa nghe thử bằng tai trên điện thoại.
+- **Phải có:** một tiếng chuông ngắn (hai nốt đi lên, dưới 0,3 giây, âm lượng nhỏ) ngay khi đáp án được chấm đúng ở Flashcard (bấm "Đã nhớ"), Học kỹ, Viết, Nghe viết, Điền từ, Trắc nghiệm, Ghép cặp (mỗi cặp đúng) và Luyện nói. Trả lời sai không phát âm thanh để không làm nản. Bật tắt ở Tài khoản, mục "Giọng đọc và âm thanh", lưu trên thiết bị, mặc định bật; bật lên thì phát thử một lần.
+- **Quy tắc:** Kiểm tra không phát âm thanh trong lúc làm vì sẽ lộ đáp án. Âm thanh tạo bằng Web Audio, không tải file. Âm thanh chỉ là phản hồi phụ, màu, icon và chữ "Chính xác" vẫn giữ nguyên.
+- **Ngoại lệ:** trình duyệt không có Web Audio thì ẩn nút bật tắt và không phát; localStorage bị chặn thì coi như bật; lỗi phát âm thanh không làm hỏng phiên học.
+- **Test đã có:** `sound.test`, `mcq-mode.test`.
+- **Test thủ công:** Chrome Android, Safari iOS (chế độ im lặng), Chrome máy tính.

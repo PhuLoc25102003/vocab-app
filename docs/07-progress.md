@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5 theo thứ tự: 5.15 đến 5.17 (giáo viên theo dõi lớp) rồi dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
+1. Giai đoạn 5: 5.25 và 5.26 (ô chọn có tìm kiếm, kích thước modal) trước, vì 5.16 và 5.20 dùng lại `Combobox` và modal mới; rồi 5.15 đến 5.17, dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      14 |      23 | Đang làm   |
-| **Toàn dự án**          |                                            | **139** | **152** | **91%**    |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      15 |      26 | Đang làm   |
+| **Toàn dự án**          |                                            | **140** | **155** | **90%**    |
 
 ## Cách cập nhật
 
@@ -301,6 +301,12 @@ Không tính vào tổng số việc.
 - [ ] **5.21** API thống kê ADMIN mở rộng: người hoạt động 7 ngày, đăng ký mới, phiên học, phân bố vai trò, chuỗi 30 ngày, bộ công khai mới để rà (GAP-16).
 - [ ] **5.22** Tổng quan ADMIN theo thiết kế: 4 ô số liệu, biểu đồ 30 ngày, Cần xử lý, Vai trò, Người dùng mới, Bộ công khai mới có nút Ẩn. Cần 5.21 (GAP-16).
 - [ ] **5.23** E2E: giáo viên giao bài 3 chế độ từ bộ riêng tư, học sinh làm và nộp, giáo viên thấy ở Tổng quan và modal hồ sơ; audit accessibility các trang mới ở light, dark, 360 px.
+
+### 5G. Trải nghiệm học và độ gọn của form
+
+- [x] **5.24** Âm thanh khi trả lời đúng ở mọi chế độ học trừ Kiểm tra, tạo bằng Web Audio, bật tắt ở Tài khoản (mặc định bật); use case UC-L12 trong `docs/use-cases/03-hoc-tap.md`. (#348).
+- [ ] **5.25** `Combobox` dùng chung có tìm kiếm ngay trong ô chọn (mẫu ARIA combobox, lọc không dấu); thay ô chọn bộ và bỏ ô "Tìm bộ từ" riêng ở modal giao bài, thay hai ô ngôn ngữ ở form bộ từ; dùng cho ô chọn lớp ở 5.20; ghi quy tắc vào `docs/05-ui-tokens.md` (GAP-27).
+- [ ] **5.26** `FormDialog` rộng hơn (cỡ `md` 560 px, `lg` 720 px cho giao bài), cao theo nội dung ở mọi kích thước; ở 360 px là tấm đáy cao theo nội dung thay vì toàn màn hình; cập nhật `docs/05-ui-tokens.md` (GAP-28).
 
 ## Quyết định cần chốt
 

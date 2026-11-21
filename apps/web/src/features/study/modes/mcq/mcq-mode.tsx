@@ -7,6 +7,7 @@ import { AudioButton } from '@/components/common/audio-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
+import { playCorrectSound } from '@/lib/sound';
 
 export function McqModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
   const choices = useMemo(() => question.choices ?? [], [question.choices]);
@@ -32,7 +33,9 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
       timeMs.current = Date.now() - shownAt.current;
       const answer = { questionId: question.id, value, timeMs: timeMs.current };
       setSelected(value);
-      setResult(getMode(question.mode).grade(question, answer));
+      const graded = getMode(question.mode).grade(question, answer);
+      if (graded.isCorrect) playCorrectSound();
+      setResult(graded);
       onChecked?.(answer);
     },
     [onChecked, question],

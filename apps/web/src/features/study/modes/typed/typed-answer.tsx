@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { StudyModeProps } from '../views';
 import { diffAnswer } from './answer-diff';
+import { playCorrectSound } from '@/lib/sound';
 
 const MAX_ANSWER_LENGTH = 500;
 
@@ -60,7 +61,9 @@ export function TypedAnswer({
       if (value.trim()) {
         timeMs.current = Date.now() - shownAt.current;
         const answer = { questionId: question.id, value, timeMs: timeMs.current };
-        setResult(getMode(question.mode).grade(question, answer));
+        const graded = getMode(question.mode).grade(question, answer);
+        if (graded.isCorrect) playCorrectSound();
+        setResult(graded);
         onChecked?.(answer);
       }
       return;
