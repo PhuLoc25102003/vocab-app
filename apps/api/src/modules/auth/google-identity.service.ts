@@ -39,15 +39,19 @@ export class GoogleIdentityService {
     this.clientId = config.get('GOOGLE_CLIENT_ID', { infer: true });
   }
 
-  /** Kiểm tra chữ ký, hạn dùng, nơi phát hành và token có được cấp cho app này không. */
-  async verify(credential: string): Promise<GoogleIdentity> {
+  /**
+   * Kiểm tra chữ ký, hạn dùng, nơi phát hành và token có được cấp cho app này không.
+   * Có `nonce` thì token phải mang đúng nonce đó (luồng redirect, chống login CSRF).
+   */
+  async verify(credential: string, nonce?: string): Promise<GoogleIdentity> {
     if (!this.clientId) {
       throw unavailableError();
     }
 
     const payload = await this.readPayload(credential);
     const email = emailSchema.safeParse(payload?.email);
-    if (!payload?.sub || payload.email_verified !== true || !email.success) {
+    const nonceMismatch = nonce !== undefined && payload?.nonce !== nonce;
+    if (!payload?.sub || payload.email_verified !== true || !email.success || nonceMismatch) {
       throw invalidTokenError();
     }
 

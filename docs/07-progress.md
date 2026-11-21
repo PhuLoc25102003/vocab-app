@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-21
 
-**Đang ở:** Giai đoạn 2, 3, 4, 5, 6 đã xong toàn bộ mã nguồn trong repo. Giai đoạn 6 (Đa ngôn ngữ bằng i18next) đã hoàn thiện 100% tất cả các màn hình, schema validation, dialogs, auth, app shell, study, classes, admin, format ngày giờ/số động theo locale và tích hợp linter kiểm tra chuỗi hardcoded. Đã hoàn thành sửa lỗi layout mobile 360 px và chống nhảy layout ôn tập (5.36). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Giai đoạn 2, 3, 4, 5, 6 đã xong toàn bộ mã nguồn trong repo. Giai đoạn 6 (Đa ngôn ngữ bằng i18next) đã hoàn thiện 100% tất cả các màn hình, schema validation, dialogs, auth, app shell, study, classes, admin, format ngày giờ/số động theo locale và tích hợp linter kiểm tra chuỗi hardcoded. Đã hoàn thành sửa lỗi layout mobile 360 px và chống nhảy layout ôn tập (5.36), sửa đăng nhập Google kẹt màn hình trắng trên mobile (5.37). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -22,9 +22,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      38 |      38 | Xong       |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       9 |       9 | Xong       |
-| **Toàn dự án**          |                                            | **172** | **176** | **98%**    |
+| **Toàn dự án**          |                                            | **173** | **177** | **98%**    |
 
 ## Cách cập nhật
 
@@ -265,6 +265,7 @@ Không tính vào tổng số việc.
 
 - [x] **5.1** Mục "Đăng xuất" kẹt ở "Đang đăng xuất" sau khi đăng nhập lại: đặt lại state khi người dùng đổi, test đăng xuất rồi đăng nhập lại (GAP-14, #317).
 - [x] **5.2** Luyện nói: nút micro tròn, trạng thái "Đang nghe… hãy đọc to từ" có hiệu ứng toả nhẹ (tắt khi giảm chuyển động), nút Dừng, `aria-live` (GAP-15, #319).
+- [x] **5.37** Đăng nhập Google trên mobile kẹt màn hình trắng: popup của Google mở sang tab hoặc trình duyệt khác (PWA đã cài, Zalo, Messenger) nên mất `window.opener`. Màn hình cảm ứng và PWA chuyển sang `ux_mode: 'redirect'`, Google POST về `POST /auth/google/redirect`, API kiểm tra `nonce` với cookie rồi chuyển về `/login?google=done`, web refresh lấy phiên và đi tiếp tới `?next=`. Cần thêm Authorized redirect URI trên Google Cloud (docs/08-deploy.md). (#413)
 
 ### 5B. Nền giao diện
 

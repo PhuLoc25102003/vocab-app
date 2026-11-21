@@ -126,17 +126,17 @@ Sentry đã hoãn khỏi MVP theo quyết định ngày 2026-11-20: xem lỗi b�
 
 Web dùng nút đăng nhập của Google, API kiểm tra token với cùng Client ID. Đặt Client ID ở cả hai nơi: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` trên Vercel, `GOOGLE_CLIENT_ID` trên Render. Hai giá trị khác nhau thì API từ chối đăng nhập.
 
-1. Google Cloud, **Google Auth Platform**, **Clients**: tạo client loại Web application. Thêm địa chỉ web và `http://localhost:3000` vào **Authorized JavaScript origins**, không cần redirect URI và client secret.
+1. Google Cloud, **Google Auth Platform**, **Clients**: tạo client loại Web application. Thêm địa chỉ web và `http://localhost:3000` vào **Authorized JavaScript origins**. Thêm `https://<web>.vercel.app/api/v1/auth/google/redirect` và `http://localhost:3000/api/v1/auth/google/redirect` vào **Authorized redirect URIs**: trên mobile nút Google dùng chế độ redirect vì popup mất liên kết với trang gốc và kẹt ở màn hình trắng. Không cần client secret.
 2. **Branding**: điền tên app, email hỗ trợ, trang chủ, `/privacy`, `/terms`. **Authorized domains** là tên máy đầy đủ, ví dụ `vocab-app-nine-psi.vercel.app`, vì `vercel.app` là tên miền dùng chung. Không tải logo, có logo thì phải chờ Google duyệt.
 3. **Audience**: **Publish app**. App chỉ xin email và tên nên không cần Google duyệt. Để chế độ Testing thì chỉ email trong **Test users** đăng nhập được.
 
-Khi đổi địa chỉ web, cập nhật **Authorized JavaScript origins** và **Authorized domains**.
+Khi đổi địa chỉ web, cập nhật **Authorized JavaScript origins**, **Authorized redirect URIs** và **Authorized domains**. Chế độ redirect cần API nhận được cookie do web đặt, tức API phải đi qua chuyển tiếp `/api/v1` hoặc chung tên miền với web.
 
 ## Kiểm tra sau khi deploy
 
 1. `https://<tên>.onrender.com/api/v1/health` trả `{"status":"ok","db":"up"}`.
 2. `https://<web>.vercel.app/api/v1/health` trả cùng kết quả, tức chuyển tiếp đã chạy.
 3. Đăng ký, đăng nhập, tải lại trang vẫn còn đăng nhập, kể cả trên Safari. Cookie `refresh_token` có `HttpOnly`, `Secure`, `SameSite=Lax`.
-4. Trang đăng nhập có nút Google và đăng nhập Google được.
+4. Trang đăng nhập có nút Google và đăng nhập Google được, cả trên máy tính (popup) lẫn điện thoại (chuyển trang rồi quay về trang đích).
 5. `/privacy` và `/terms` mở được, footer trang chủ có link tới hai trang.
 6. Tạo bộ từ, học một phiên, xem thống kê.

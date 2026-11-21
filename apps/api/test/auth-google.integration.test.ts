@@ -200,4 +200,54 @@ describe('POST /auth/google', () => {
     });
     expect(verifyIdToken).not.toHaveBeenCalled();
   });
+
+  describe('POST /auth/google/redirect', () => {
+    const redirect = (form: Record<string, string>, nonce?: string) => {
+      const call = request(app.getHttpServer())
+        .post('/api/v1/auth/google/redirect')
+        .set('X-Forwarded-For', ip)
+        .set('Origin', 'https://accounts.google.com')
+        .type('form')
+        .send(form);
+      return nonce ? call.set('Cookie', `google_nonce=${nonce}`) : call;
+    };
+    const queryOf = (location: string) => new URL(location, 'http://web.test').searchParams;
+
+    it('nonce khớp thì mở phiên, đặt cookie refresh và chuyển về trang đăng nhập để web lấy phiên', async () => {
+      signInWith({ ...GOOGLE_USER, nonce: 'n-1' });
+
+      const response = await redirect({ credential: 'google-id-token' }, 'n-1').expect(303);
+
+      const query = queryOf(response.headers.location ?? '');
+      expect(response.headers.location).toMatch(/\/login\?/);
+      expect(query.get('google')).toBe('done');
+      const cookies = [response.headers['set-cookie'] ?? []].flat().join(';');
+      expect(cookies).toContain('refresh_token=');
+      expect(cookies).toContain('google_nonce=;');
+    });
+
+    it('từ chối khi thiếu cookie nonce hoặc nonce không khớp', async () => {
+      signInWith({ ...GOOGLE_USER, nonce: 'n-1' });
+
+      for (const nonce of [undefined, 'khac']) {
+        const response = await redirect({ credential: 'google-id-token' }, nonce).expect(303);
+        expect(queryOf(response.headers.location ?? '').get('google_error')).toBe(
+          ERROR_CODES.GOOGLE_TOKEN_INVALID,
+        );
+        expect([response.headers['set-cookie'] ?? []].flat().join(';')).not.toContain(
+          'refresh_token=',
+        );
+      }
+      expect(await prisma.user.count()).toBe(0);
+    });
+
+    it('body sai cũng chuyển về trang đăng nhập kèm mã lỗi', async () => {
+      const response = await redirect({}, 'n-1').expect(303);
+
+      expect(queryOf(response.headers.location ?? '').get('google_error')).toBe(
+        ERROR_CODES.GOOGLE_TOKEN_INVALID,
+      );
+      expect(verifyIdToken).not.toHaveBeenCalled();
+    });
+  });
 });

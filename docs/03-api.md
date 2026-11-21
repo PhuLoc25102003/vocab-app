@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -11,6 +11,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | POST   | /auth/register                                 | Công khai                 | Đăng ký email + mật khẩu, trả 202                          |
 | POST   | /auth/login                                    | Công khai                 | Trả access token, đặt cookie refresh                       |
 | POST   | /auth/google                                   | Công khai                 | Đăng nhập bằng Google ID token                             |
+| POST   | /auth/google/redirect                          | Công khai                 | Nhận kết quả đăng nhập Google ở chế độ redirect (mobile)   |
 | POST   | /auth/refresh                                  | Cookie refresh            | Cấp cặp token mới (rotation)                               |
 | POST   | /auth/logout                                   | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
 | POST   | /auth/logout-all                               | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
@@ -102,6 +103,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `POST /auth/register` nhận `{ email, password, displayName }`, luôn trả 202 `{ "data": { "status": "accepted" } }` khi dữ liệu hợp lệ, kể cả khi email đã có. Tài khoản cũ không bị đổi. Giao diện chuyển người dùng sang trang đăng nhập.
 - `POST /auth/login` nhận `{ email, password }`, trả 200 `{ "data": { "user": { id, email, displayName, role }, "accessToken": "..." } }` và đặt cookie `refresh_token`. Mọi trường hợp sai trả 401 `INVALID_CREDENTIALS` với cùng thông báo.
 - `POST /auth/google` nhận `{ credential }` là Google ID token, trả 200 cùng dạng với đăng nhập. Lần đầu tạo tài khoản `STUDENT` không có mật khẩu, các lần sau nhận ra người dùng theo Google ID. Token không hợp lệ hoặc email Google chưa xác minh trả 401 `GOOGLE_TOKEN_INVALID`. Email trùng tài khoản mật khẩu thì gộp vào tài khoản đó, đồng thời xoá mật khẩu cũ và kết thúc mọi phiên cũ. Email đã gắn với Google ID khác trả 409 `GOOGLE_EMAIL_IN_USE`. Chưa đặt `GOOGLE_CLIENT_ID` hoặc không tải được khoá của Google trả 503. `Origin` ngoài `CORS_ORIGINS` trả 403.
+- `POST /auth/google/redirect` là `login_uri` của nút Google ở chế độ redirect, dùng trên màn hình cảm ứng và PWA đã cài. Google POST form `application/x-www-form-urlencoded` có `credential`. API kiểm tra token như `POST /auth/google`, thêm điều kiện claim `nonce` khớp cookie `google_nonce`, rồi xoá cookie đó. Không kiểm tra `Origin` vì form đến từ `accounts.google.com`. Luôn trả 303 về `<WEB_ORIGIN>/login`: thành công thì kèm `?google=done` và đặt cookie refresh, web gọi `POST /auth/refresh` để lấy phiên; lỗi thì kèm `?google_error=<mã lỗi>`.
 - `POST /auth/refresh` đọc cookie, trả 200 cùng dạng với đăng nhập và đặt cookie mới. Cookie sai hoặc phiên đã thu hồi trả 401 `REFRESH_TOKEN_INVALID` và xoá cookie. Request khác vừa xoay vòng cùng token trả 409 `REFRESH_IN_PROGRESS`, cookie giữ nguyên, client gửi lại một lần. `Origin` ngoài `CORS_ORIGINS` trả 403.
 - `POST /auth/logout` và `POST /auth/logout-all` cần access token, trả 204 và xoá cookie.
 - `POST /auth/forgot-password` nhận `{ email }`, luôn trả 202 `{ "data": { "message": "..." } }` cùng một thông báo, dù email có tài khoản hay không. Tài khoản tồn tại và chưa bị khoá thì nhận email có liên kết `${WEB_ORIGIN}/reset-password?token=...`, sống 30 phút. Liên kết mới làm liên kết cũ hết hiệu lực. Chưa cấu hình Brevo thì API dùng bộ gửi thư trong bộ nhớ, chỉ ghi log cảnh báo.

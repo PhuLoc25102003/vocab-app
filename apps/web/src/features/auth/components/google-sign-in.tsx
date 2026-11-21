@@ -5,15 +5,19 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { loginWithGoogle } from '../api';
-import { formErrorMessage } from '@/lib/form-errors';
+import { ERROR_CODES } from '@vocab/shared';
+import { errorCodeMessage, formErrorMessage } from '@/lib/form-errors';
 import {
   getGoogleClientId,
   type GoogleButtonText,
   listenForGoogleCredential,
   loadGoogleIdentity,
+  rememberGoogleNext,
+  takeGoogleNext,
+  usesGoogleRedirect,
 } from '../google-identity';
 import { safeNextPath } from '../next-path';
-import { startSession } from '../session';
+import { refreshSession, startSession } from '../session';
 import { FormError } from '@/components/common/form-message';
 import { useTranslation } from 'react-i18next';
 
@@ -30,13 +34,36 @@ function toGoogleWidth(frameWidth: number): number {
 function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButtonText }) {
   const { t } = useTranslation('auth');
   const router = useRouter();
-  const next = useSearchParams().get('next');
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next');
+  const redirectDone = searchParams.get('google') === 'done';
+  const redirectError = searchParams.get('google_error');
   const frameRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef(false);
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(redirectDone);
+  const [error, setError] = useState<string | null>(() =>
+    redirectError ? errorCodeMessage(redirectError) : null,
+  );
+
+  // Quay về từ chế độ redirect: API đã đặt cookie refresh, chỉ cần lấy phiên rồi đi tiếp.
+  useEffect(() => {
+    if (!redirectDone || submittingRef.current) {
+      return;
+    }
+    submittingRef.current = true;
+    void refreshSession().then((token) => {
+      if (token) {
+        router.refresh();
+        router.replace(safeNextPath(takeGoogleNext()) as Route);
+        return;
+      }
+      submittingRef.current = false;
+      setSubmitting(false);
+      setError(errorCodeMessage(ERROR_CODES.INTERNAL_ERROR));
+    });
+  }, [redirectDone, router]);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -75,6 +102,9 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
         if (!active) {
           return;
         }
+        if (usesGoogleRedirect() && !redirectDone) {
+          rememberGoogleNext(next);
+        }
         observer = new ResizeObserver(([entry]) => {
           const width = toGoogleWidth(entry?.contentRect.width ?? 0);
           if (width !== renderedWidth) {
@@ -105,7 +135,7 @@ function GoogleButton({ clientId, text }: { clientId: string; text: GoogleButton
       observer?.disconnect();
       stopListening();
     };
-  }, [clientId, next, router, text]);
+  }, [clientId, next, redirectDone, router, text]);
 
   if (status === 'unavailable') {
     return <p className="text-small text-text-muted">{t('google.failed')}</p>;
