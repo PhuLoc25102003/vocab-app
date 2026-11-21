@@ -45,16 +45,22 @@ describe('DueSets', () => {
     expect(screen.getByText('Khi nào thẻ đến hạn ôn?').closest('summary')).toBeInTheDocument();
   });
 
-  it('mở phiên ôn bằng chế độ đã chọn', async () => {
+  it('chọn nhiều chế độ để ôn nối tiếp, bỏ Flashcard thì bắt đầu bằng chế độ kế', async () => {
     vi.mocked(listDueSets).mockResolvedValue(list(2));
     renderDue();
 
-    await userEvent.selectOptions(await screen.findByLabelText('Ôn bằng chế độ'), 'mcq');
-
-    expect(screen.getByRole('link', { name: /^Ôn bộ từ/ })).toHaveAttribute(
+    await userEvent.click(await screen.findByRole('button', { name: /Trắc nghiệm/ }));
+    const link = () => screen.getByRole('link', { name: /^Ôn bộ từ/ });
+    expect(link()).toHaveAttribute(
       'href',
-      expect.stringContaining('/study/mcq?due=1'),
+      expect.stringContaining('/study/flashcard?due=1&next=mcq'),
     );
+
+    await userEvent.click(screen.getByRole('button', { name: /Flashcard/, pressed: true }));
+    expect(link()).toHaveAttribute('href', expect.stringMatching(/\/study\/mcq\?due=1$/));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Chọn tất cả' }));
+    expect(screen.getAllByRole('button', { pressed: true }).length).toBeGreaterThanOrEqual(7);
   });
 
   it('báo khi chưa có thẻ cần ôn', async () => {

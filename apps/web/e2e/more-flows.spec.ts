@@ -301,7 +301,9 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.goto('/dashboard');
     await page.getByRole('link', { name: 'Ôn ngay' }).click();
     await page.waitForURL('**/review');
-    await page.getByLabel('Ôn bằng chế độ').selectOption({ label: 'Trắc nghiệm' });
+    // Chọn Trắc nghiệm rồi bỏ Flashcard: chỉ ôn bằng Trắc nghiệm.
+    await page.getByRole('button', { name: /Trắc nghiệm/ }).click();
+    await page.getByRole('button', { name: /Flashcard/, pressed: true }).click();
     await page.getByRole('link', { name: `Ôn bộ từ ${title}` }).click();
     await page.waitForURL('**/study/mcq?due=1');
     await answerChoices(page);
