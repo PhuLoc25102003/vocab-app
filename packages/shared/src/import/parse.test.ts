@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { importOptionsSchema, importPreviewSchema } from '../schemas/import';
 import { detectDelimiter, parseImport } from './parse';
+import { vm } from '../validation';
 
 const options = (overrides: Partial<Parameters<typeof parseImport>[1]> = {}) =>
   importOptionsSchema.parse(overrides);
@@ -70,9 +71,9 @@ describe('parseImport', () => {
     const result = parseImport(`chỉ có từ\n\tchỉ có nghĩa\n${'a'.repeat(201)}\tdài quá`, options());
 
     expect(result.rows.map(({ errors }) => errors)).toEqual([
-      ['Hãy nhập định nghĩa'],
-      ['Hãy nhập thuật ngữ'],
-      ['thuật ngữ tối đa 200 ký tự'],
+      [vm('required', { field: 'definition' })],
+      [vm('required', { field: 'term' })],
+      [vm('tooLong', { field: 'term', max: 200 })],
     ]);
   });
 
@@ -116,8 +117,8 @@ describe('parseImport', () => {
     );
 
     expect(result.rows[0]?.errors).toEqual([
-      'phiên âm tối đa 200 ký tự',
-      'ví dụ tối đa 1000 ký tự',
+      vm('tooLong', { field: 'phonetic', max: 200 }),
+      vm('tooLong', { field: 'example', max: 1000 }),
     ]);
   });
 
@@ -142,10 +143,10 @@ describe('importPreviewSchema', () => {
       importOptionsSchema.safeParse({ termColumn: 1, definitionColumn: 2, ...extra });
 
     expect(parse({ phoneticColumn: 2 }).error?.issues).toMatchObject([
-      { path: ['phoneticColumn'], message: 'Cột phiên âm phải khác cột từ và cột nghĩa' },
+      { path: ['phoneticColumn'], message: vm('phoneticColumnSame') },
     ]);
     expect(parse({ phoneticColumn: 3, exampleColumn: 3 }).error?.issues).toMatchObject([
-      { path: ['exampleColumn'], message: 'Cột ví dụ phải khác các cột đã chọn' },
+      { path: ['exampleColumn'], message: vm('exampleColumnSame') },
     ]);
     expect(parse({ phoneticColumn: '', exampleColumn: '4' }).data).toMatchObject({
       phoneticColumn: undefined,

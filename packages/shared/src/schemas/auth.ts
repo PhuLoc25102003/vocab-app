@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 
 export const PASSWORD_MIN_LENGTH = 8;
 /** Chặn mật khẩu quá dài để không tốn tài nguyên khi hash. */
@@ -8,29 +9,29 @@ export const roleSchema = z.enum(['STUDENT', 'TEACHER', 'ADMIN']);
 export type Role = z.infer<typeof roleSchema>;
 
 export const emailSchema = z
-  .string('Hãy nhập email')
+  .string(vm('required', { field: 'email' }))
   .trim()
   .toLowerCase()
-  .max(254, 'Email quá dài')
-  .pipe(z.email('Email không hợp lệ'));
+  .max(254, vm('emailTooLong'))
+  .pipe(z.email(vm('emailInvalid')));
 
 const newPasswordSchema = z
-  .string('Hãy nhập mật khẩu')
-  .min(PASSWORD_MIN_LENGTH, `Mật khẩu cần ít nhất ${PASSWORD_MIN_LENGTH} ký tự`)
-  .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`);
+  .string(vm('required', { field: 'password' }))
+  .min(PASSWORD_MIN_LENGTH, vm('passwordTooShort', { min: PASSWORD_MIN_LENGTH }))
+  .max(PASSWORD_MAX_LENGTH, vm('tooLong', { field: 'password', max: PASSWORD_MAX_LENGTH }));
 
 /** Mật khẩu đã có: không áp độ dài tối thiểu, để đổi quy tắc sau này không khoá tài khoản cũ. */
 const existingPasswordSchema = z
-  .string('Hãy nhập mật khẩu')
-  .min(1, 'Hãy nhập mật khẩu')
-  .max(PASSWORD_MAX_LENGTH, `Mật khẩu tối đa ${PASSWORD_MAX_LENGTH} ký tự`);
+  .string(vm('required', { field: 'password' }))
+  .min(1, vm('required', { field: 'password' }))
+  .max(PASSWORD_MAX_LENGTH, vm('tooLong', { field: 'password', max: PASSWORD_MAX_LENGTH }));
 
 export const displayNameSchema = z
-  .string('Hãy nhập tên hiển thị')
+  .string(vm('required', { field: 'displayName' }))
   .trim()
-  .min(1, 'Hãy nhập tên hiển thị')
-  .max(100, 'Tên hiển thị tối đa 100 ký tự')
-  .regex(/^\P{Cc}+$/u, 'Tên hiển thị chứa ký tự không hợp lệ');
+  .min(1, vm('required', { field: 'displayName' }))
+  .max(100, vm('tooLong', { field: 'displayName', max: 100 }))
+  .regex(/^\P{Cc}+$/u, vm('badChars', { field: 'displayName' }));
 
 export const registerSchema = z.object({
   email: emailSchema,
@@ -44,9 +45,7 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 /** Token trong liên kết đặt lại mật khẩu là 32 byte base64url, 43 ký tự. */
 export const resetPasswordSchema = z.object({
-  token: z
-    .string('Liên kết không hợp lệ')
-    .regex(/^[A-Za-z0-9_-]{32,128}$/, 'Liên kết không hợp lệ'),
+  token: z.string(vm('linkInvalid')).regex(/^[A-Za-z0-9_-]{32,128}$/, vm('linkInvalid')),
   password: newPasswordSchema,
 });
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
@@ -58,7 +57,7 @@ export const loginSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const googleLoginSchema = z.object({
-  credential: z.string('Thiếu thông tin từ Google').min(1, 'Thiếu thông tin từ Google').max(4096),
+  credential: z.string(vm('googleMissing')).min(1, vm('googleMissing')).max(4096),
 });
 export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
 
@@ -69,11 +68,11 @@ export const updateAccountSchema = z
     newPassword: newPasswordSchema.optional(),
   })
   .refine(({ displayName, newPassword }) => displayName !== undefined || newPassword, {
-    message: 'Chưa có thay đổi nào',
+    message: vm('noChanges'),
   })
   .refine(({ currentPassword, newPassword }) => !newPassword || currentPassword, {
     path: ['currentPassword'],
-    message: 'Hãy nhập mật khẩu hiện tại',
+    message: vm('currentPasswordRequired'),
   });
 export type UpdateAccountInput = z.infer<typeof updateAccountSchema>;
 

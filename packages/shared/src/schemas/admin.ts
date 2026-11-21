@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 import { roleSchema } from './auth';
 import { paginationMetaSchema, paginationSchema } from './pagination';
 
@@ -7,17 +8,21 @@ export const LOCK_REASON_MAX_LENGTH = 500;
 /** Tìm theo email hoặc tên hiển thị. */
 export const adminUserQuerySchema = paginationSchema.extend({
   sort: z.string().max(50).default('-createdAt'),
-  q: z.string().trim().max(100, 'Từ khoá tối đa 100 ký tự').optional(),
+  q: z
+    .string()
+    .trim()
+    .max(100, vm('keywordTooLong', { max: 100 }))
+    .optional(),
 });
 export type AdminUserQuery = z.infer<typeof adminUserQuerySchema>;
 
 /** Lý do ẩn bộ từ vi phạm, cùng giới hạn với lý do khoá tài khoản. */
 export const hideSetSchema = z.object({
   reason: z
-    .string('Hãy nhập lý do ẩn')
+    .string(vm('required', { field: 'hideReason' }))
     .trim()
-    .min(1, 'Hãy nhập lý do ẩn')
-    .max(LOCK_REASON_MAX_LENGTH, `Lý do tối đa ${LOCK_REASON_MAX_LENGTH} ký tự`),
+    .min(1, vm('required', { field: 'hideReason' }))
+    .max(LOCK_REASON_MAX_LENGTH, vm('reasonTooLong', { max: LOCK_REASON_MAX_LENGTH })),
 });
 export type HideSetDto = z.infer<typeof hideSetSchema>;
 
@@ -33,10 +38,10 @@ export const hiddenSetResponseSchema = z.object({ data: hiddenSetSchema });
 
 export const lockUserSchema = z.object({
   reason: z
-    .string('Hãy nhập lý do khoá')
+    .string(vm('required', { field: 'lockReason' }))
     .trim()
-    .min(1, 'Hãy nhập lý do khoá')
-    .max(LOCK_REASON_MAX_LENGTH, `Lý do tối đa ${LOCK_REASON_MAX_LENGTH} ký tự`),
+    .min(1, vm('required', { field: 'lockReason' }))
+    .max(LOCK_REASON_MAX_LENGTH, vm('reasonTooLong', { max: LOCK_REASON_MAX_LENGTH })),
 });
 export type LockUserDto = z.infer<typeof lockUserSchema>;
 

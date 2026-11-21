@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 import { studyModeSchema } from '../study/types';
 import { paginationMetaSchema, paginationSchema } from './pagination';
 
@@ -9,17 +10,20 @@ export const JOIN_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const JOIN_CODE_LENGTH = 6;
 
 const classNameSchema = z
-  .string('Hãy nhập tên lớp')
+  .string(vm('required', { field: 'className' }))
   .trim()
-  .min(1, 'Hãy nhập tên lớp')
-  .max(CLASS_NAME_MAX_LENGTH, `Tên lớp tối đa ${CLASS_NAME_MAX_LENGTH} ký tự`)
-  .regex(/^\P{Cc}+$/u, 'Tên lớp chứa ký tự không hợp lệ');
+  .min(1, vm('required', { field: 'className' }))
+  .max(CLASS_NAME_MAX_LENGTH, vm('tooLong', { field: 'className', max: CLASS_NAME_MAX_LENGTH }))
+  .regex(/^\P{Cc}+$/u, vm('badChars', { field: 'className' }));
 
 /** Chuỗi rỗng sau khi bỏ khoảng trắng nghĩa là xoá mô tả. */
 const classDescriptionSchema = z
   .string()
   .trim()
-  .max(CLASS_DESCRIPTION_MAX_LENGTH, `Mô tả tối đa ${CLASS_DESCRIPTION_MAX_LENGTH} ký tự`)
+  .max(
+    CLASS_DESCRIPTION_MAX_LENGTH,
+    vm('tooLong', { field: 'classDescription', max: CLASS_DESCRIPTION_MAX_LENGTH }),
+  )
   .transform((value) => (value === '' ? null : value));
 
 export const createClassSchema = z.object({
@@ -36,7 +40,7 @@ export const updateClassSchema = z
     archived: z.boolean().optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
-    message: 'Không có thay đổi nào',
+    message: vm('nothingChanged'),
   });
 export type UpdateClassInput = z.infer<typeof updateClassSchema>;
 
@@ -87,11 +91,11 @@ export const classResponseSchema = z.object({ data: classSchema });
 
 export const joinClassSchema = z.object({
   joinCode: z
-    .string('Hãy nhập mã lớp')
+    .string(vm('required', { field: 'joinCode' }))
     .trim()
     .toUpperCase()
-    .length(JOIN_CODE_LENGTH, `Mã lớp gồm ${JOIN_CODE_LENGTH} ký tự`)
-    .regex(new RegExp(`^[${JOIN_CODE_ALPHABET}]+$`), 'Mã lớp không hợp lệ'),
+    .length(JOIN_CODE_LENGTH, vm('joinCodeLength', { length: JOIN_CODE_LENGTH }))
+    .regex(new RegExp(`^[${JOIN_CODE_ALPHABET}]+$`), vm('joinCodeInvalid')),
 });
 export type JoinClassInput = z.infer<typeof joinClassSchema>;
 
@@ -167,24 +171,27 @@ export const MAX_ASSIGNMENT_MODES = studyModeSchema.options.length;
 
 export const createAssignmentSchema = z
   .object({
-    setId: z.string('Hãy chọn bộ từ').min(1, 'Hãy chọn bộ từ').max(64),
+    setId: z.string(vm('setRequired')).min(1, vm('setRequired')).max(64),
     /** Các chế độ phải làm theo thứ tự (việc 5.11). */
     modes: z
       .array(studyModeSchema)
-      .min(1, 'Chọn ít nhất một chế độ')
-      .max(MAX_ASSIGNMENT_MODES, `Chọn tối đa ${MAX_ASSIGNMENT_MODES} chế độ`)
-      .refine((modes) => new Set(modes).size === modes.length, 'Mỗi chế độ chỉ chọn một lần')
+      .min(1, vm('modesMin'))
+      .max(MAX_ASSIGNMENT_MODES, vm('modesMax', { max: MAX_ASSIGNMENT_MODES }))
+      .refine((modes) => new Set(modes).size === modes.length, vm('modesUnique'))
       .optional(),
     /** Cách gửi cũ một chế độ, vẫn nhận để web cũ chạy được. */
     mode: studyModeSchema.optional(),
     /** Thời điểm hết hạn theo ISO 8601, bỏ trống là không có hạn. */
-    dueAt: z.iso.datetime({ offset: true, message: 'Hạn nộp không hợp lệ' }).nullable().optional(),
+    dueAt: z.iso
+      .datetime({ offset: true, message: vm('dueInvalid') })
+      .nullable()
+      .optional(),
     /** Bộ đang riêng tư: đồng ý cho học sinh trong lớp xem, bộ chuyển sang `CLASS`. */
     shareToClass: z.boolean().optional(),
   })
   .refine((dto) => dto.modes ?? dto.mode, {
     path: ['modes'],
-    message: 'Chọn ít nhất một chế độ',
+    message: vm('modesMin'),
   })
   .transform(({ mode, modes, ...rest }) => ({
     ...rest,

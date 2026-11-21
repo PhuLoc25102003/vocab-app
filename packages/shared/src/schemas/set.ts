@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { vm } from '../validation';
 import { paginationMetaSchema, paginationSchema } from './pagination';
 
 export const SET_TITLE_MAX_LENGTH = 200;
@@ -11,38 +12,41 @@ export const visibilitySchema = z.enum(['PRIVATE', 'CLASS', 'PUBLIC']);
 export type Visibility = z.infer<typeof visibilitySchema>;
 
 /** Một dòng, không có ký tự điều khiển. */
-const lineSchema = (label: string, max: number) =>
+const lineSchema = (field: string, max: number) =>
   z
-    .string(`Hãy nhập ${label}`)
+    .string(vm('required', { field }))
     .trim()
-    .min(1, `Hãy nhập ${label}`)
-    .max(max, `${label} tối đa ${max} ký tự`)
-    .regex(/^\P{Cc}+$/u, `${label} chứa ký tự không hợp lệ`);
+    .min(1, vm('required', { field }))
+    .max(max, vm('tooLong', { field, max }))
+    .regex(/^\P{Cc}+$/u, vm('badChars', { field }));
 
 /** Cho phép xuống dòng. PostgreSQL không lưu được ký tự NUL. */
-const textSchema = (label: string, max: number) =>
+const textSchema = (field: string, max: number) =>
   z
-    .string(`Hãy nhập ${label}`)
+    .string(vm('required', { field }))
     .trim()
-    .max(max, `${label} tối đa ${max} ký tự`)
-    .refine((value) => !value.includes('\u0000'), `${label} chứa ký tự không hợp lệ`);
+    .max(max, vm('tooLong', { field, max }))
+    .refine((value) => !value.includes('\u0000'), vm('badChars', { field }));
 
 const languageSchema = z
   .string()
   .trim()
-  .max(35, 'Mã ngôn ngữ quá dài')
-  .regex(/^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/, 'Mã ngôn ngữ không hợp lệ');
+  .max(35, vm('langTooLong'))
+  .regex(/^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/, vm('langInvalid'));
 
-const titleSchema = lineSchema('tên bộ từ', SET_TITLE_MAX_LENGTH);
-const descriptionSchema = textSchema('mô tả', SET_DESCRIPTION_MAX_LENGTH);
+const titleSchema = lineSchema('setTitle', SET_TITLE_MAX_LENGTH);
+const descriptionSchema = textSchema('description', SET_DESCRIPTION_MAX_LENGTH);
 
 export const cardInputSchema = z.object({
-  term: lineSchema('thuật ngữ', CARD_TERM_MAX_LENGTH),
-  definition: textSchema('định nghĩa', CARD_DEFINITION_MAX_LENGTH).min(1, 'Hãy nhập định nghĩa'),
-  phonetic: lineSchema('phiên âm', CARD_TERM_MAX_LENGTH).optional(),
-  example: textSchema('ví dụ', CARD_DEFINITION_MAX_LENGTH).optional(),
+  term: lineSchema('term', CARD_TERM_MAX_LENGTH),
+  definition: textSchema('definition', CARD_DEFINITION_MAX_LENGTH).min(
+    1,
+    vm('required', { field: 'definition' }),
+  ),
+  phonetic: lineSchema('phonetic', CARD_TERM_MAX_LENGTH).optional(),
+  example: textSchema('example', CARD_DEFINITION_MAX_LENGTH).optional(),
   /** Ảnh đã tải lên qua `POST /uploads/presign`. API chỉ nhận địa chỉ thuộc kho ảnh của app. */
-  imageUrl: z.url('Địa chỉ ảnh không hợp lệ').max(500, 'Địa chỉ ảnh quá dài').nullable().optional(),
+  imageUrl: z.url(vm('imageUrlInvalid')).max(500, vm('imageUrlTooLong')).nullable().optional(),
 });
 export type CardInput = z.infer<typeof cardInputSchema>;
 
@@ -54,7 +58,7 @@ export const createSetSchema = z.object({
   visibility: visibilitySchema.default('PRIVATE'),
   cards: z
     .array(cardInputSchema)
-    .max(MAX_CARDS_PER_SET, `Một bộ từ tối đa ${MAX_CARDS_PER_SET} thẻ`)
+    .max(MAX_CARDS_PER_SET, vm('tooManyCards', { max: MAX_CARDS_PER_SET }))
     .default([]),
 });
 
@@ -99,7 +103,7 @@ export type PublicSetList = z.infer<typeof publicSetListSchema>;
 export const replaceCardsSchema = z.object({
   cards: z
     .array(cardInputSchema.extend({ id: z.string().min(1).max(64).optional() }))
-    .max(MAX_CARDS_PER_SET, `Một bộ từ tối đa ${MAX_CARDS_PER_SET} thẻ`)
+    .max(MAX_CARDS_PER_SET, vm('tooManyCards', { max: MAX_CARDS_PER_SET }))
     .superRefine((cards, context) => {
       const seen = new Set<string>();
       cards.forEach(({ id }, index) => {
@@ -107,7 +111,7 @@ export const replaceCardsSchema = z.object({
           context.addIssue({
             code: 'custom',
             path: [index, 'id'],
-            message: 'Thẻ bị trùng trong danh sách',
+            message: vm('duplicateCard'),
           });
         }
         if (id) {
@@ -119,7 +123,11 @@ export const replaceCardsSchema = z.object({
 export type ReplaceCardsDto = z.infer<typeof replaceCardsSchema>;
 
 export const publicSetQuerySchema = paginationSchema.extend({
-  q: z.string().trim().max(100, 'Từ khoá tối đa 100 ký tự').optional(),
+  q: z
+    .string()
+    .trim()
+    .max(100, vm('keywordTooLong', { max: 100 }))
+    .optional(),
 });
 export type PublicSetQuery = z.infer<typeof publicSetQuerySchema>;
 
@@ -142,7 +150,7 @@ export const updateSetSchema = z
     folderId: z.string().min(1).max(64).nullable().optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
-    message: 'Chưa có thay đổi nào',
+    message: vm('noChanges'),
   });
 export type UpdateSetDto = z.infer<typeof updateSetSchema>;
 
