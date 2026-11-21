@@ -103,7 +103,7 @@ export function SetDragHandle({ setId, title, folderId }: SetDragHandleProps) {
       aria-hidden
       title={t('folders.dragHint')}
       data-drag-handle={setId}
-      className={`inline-flex size-11 cursor-grab touch-none items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
+      className={`hidden md:inline-flex size-11 cursor-grab touch-none items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
     >
       <GripVertical className="size-5" />
     </span>

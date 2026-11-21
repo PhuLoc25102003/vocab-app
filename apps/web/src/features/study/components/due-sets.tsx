@@ -123,26 +123,34 @@ function ReviewModePicker({
               aria-pressed={on}
               onClick={() => toggle(mode)}
               className={cn(
-                'flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard',
+                'inline-flex h-9 min-h-9 items-center gap-2 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard sm:h-10 sm:min-h-10',
                 on
                   ? 'border-board-fg bg-board-fg text-board'
-                  : 'border-board-muted text-board-fg hover:border-board-fg',
+                  : 'border-board-muted/70 text-board-fg hover:border-board-fg',
               )}
             >
-              {on ? (
-                <span aria-hidden className="tabular-nums">
-                  {order + 1}.
-                </span>
-              ) : null}
-              {t(`common:modes.${mode}`)}
+              <span
+                aria-hidden
+                className={cn(
+                  'flex size-5 shrink-0 items-center justify-center rounded-full text-tiny tabular-nums transition-colors',
+                  on
+                    ? 'bg-board font-bold text-board-fg'
+                    : 'border border-board-muted/50 text-transparent',
+                )}
+              >
+                {on ? order + 1 : ''}
+              </span>
+              <span>{t(`common:modes.${mode}`)}</span>
             </button>
           );
         })}
+      </div>
+      <div className="mt-1 flex items-center">
         <button
           type="button"
           aria-pressed={all}
           onClick={() => onModesChange(all ? ['FLASHCARD'] : [...REVIEW_MODES])}
-          className="flex min-h-11 items-center gap-1.5 rounded-full px-3 text-small font-medium text-board-fg underline underline-offset-4"
+          className="inline-flex min-h-8 items-center gap-1.5 text-small font-medium text-board-fg/90 underline underline-offset-4 transition-colors hover:text-board-fg"
         >
           {all ? null : <Check aria-hidden className="size-4" />}
           {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
@@ -157,7 +165,7 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
   return (
     <section
       aria-labelledby="review-summary"
-      className="flex flex-col gap-6 rounded-lg bg-board p-6 text-board-fg md:flex-row md:items-end md:justify-between md:p-8"
+      className="flex flex-col gap-6 rounded-lg bg-board p-4 text-board-fg sm:p-6 md:flex-row md:items-end md:justify-between md:p-8"
     >
       <div className="flex flex-col gap-1">
         <h2 id="review-summary" className="text-small font-medium text-board-muted">
