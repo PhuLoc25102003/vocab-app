@@ -29,6 +29,7 @@ import {
   type JoinedClass,
   type JoinedClassList,
   type MyAssignmentDetail,
+  type ProgressStatus,
   type MyAssignmentList,
   type Submission,
   type SetSummary,
@@ -57,8 +58,8 @@ export const classKeys = {
   myAssignmentsPage: (page: number) => ['classes', 'my-assignments', page] as const,
   myAssignment: (assignmentId: string) => ['classes', 'my-assignment', assignmentId] as const,
   summary: (id: string, assignmentId: string) => ['classes', 'summary', id, assignmentId] as const,
-  results: (id: string, assignmentId: string, page: number) =>
-    ['classes', 'results', id, assignmentId, page] as const,
+  results: (id: string, assignmentId: string, page: number, status?: string) =>
+    ['classes', 'results', id, assignmentId, page, status ?? 'all'] as const,
 };
 
 const classPath = (id: string) => `/classes/${encodeURIComponent(id)}`;
@@ -156,8 +157,10 @@ export async function listAssignmentResults(
   id: string,
   assignmentId: string,
   page: number,
+  status?: ProgressStatus,
 ): Promise<AssignmentResultList> {
   const params = new URLSearchParams({ page: String(page), limit: String(RESULTS_PAGE_SIZE) });
+  if (status) params.set('status', status);
   return assignmentResultListSchema.parse(
     await http(`${assignmentPath(id, assignmentId)}/results?${params.toString()}`),
   );

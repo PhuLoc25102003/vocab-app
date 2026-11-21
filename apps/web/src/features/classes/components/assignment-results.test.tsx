@@ -21,6 +21,7 @@ const assignment: Assignment = {
   setId: 's1',
   setTitle: 'Unit 1',
   mode: 'MCQ',
+  modes: ['MCQ', 'WRITE'],
   dueAt: null,
   createdAt: '2026-11-01T00:00:00.000Z',
 };
@@ -28,6 +29,9 @@ const summary: AssignmentSummary = {
   memberCount: 3,
   doneCount: 2,
   overdueCount: 1,
+  submittedCount: 1,
+  lateCount: 1,
+  missedCount: 1,
   averageScore: 50,
   hardCards: [
     { cardId: 'k1', term: 'banana', definition: 'quả chuối', wrongCount: 2, attemptCount: 3 },
@@ -40,6 +44,12 @@ const result = (overrides: Partial<AssignmentResult>): AssignmentResult => ({
   completedAt: '2026-11-10T03:00:00.000Z',
   correct: 9,
   total: 10,
+  progressStatus: 'submitted',
+  submission: { submittedAt: '2026-11-10T03:00:00.000Z', score: 85, late: false },
+  modeScores: [
+    { mode: 'MCQ', done: true, score: 90 },
+    { mode: 'WRITE', done: true, score: 80 },
+  ],
   ...overrides,
 });
 
@@ -70,6 +80,12 @@ describe('AssignmentResults', () => {
           completedAt: null,
           correct: null,
           total: null,
+          progressStatus: 'missed',
+          submission: null,
+          modeScores: [
+            { mode: 'MCQ', done: false, score: null },
+            { mode: 'WRITE', done: false, score: null },
+          ],
         }),
       ],
       meta: { page: 1, limit: 50, total: 2 },
@@ -80,7 +96,7 @@ describe('AssignmentResults', () => {
     renderPage();
 
     expect(await screen.findByRole('heading', { name: 'Unit 1' })).toBeInTheDocument();
-    expect(screen.getByText('Trắc nghiệm, không có hạn')).toBeInTheDocument();
+    expect(screen.getByText('Trắc nghiệm, Luyện viết · không có hạn')).toBeInTheDocument();
     expect(screen.getByText('2/3')).toBeInTheDocument();
     expect(screen.getByText('50%')).toBeInTheDocument();
     expect(screen.getByText('Sai 2/3 lần')).toBeInTheDocument();
@@ -88,10 +104,26 @@ describe('AssignmentResults', () => {
     const rows = within(
       await screen.findByRole('list', { name: 'Kết quả từng học sinh' }),
     ).getAllByRole('listitem');
-    expect(rows[0]).toHaveTextContent('Đã làm');
-    expect(rows[0]).toHaveTextContent('9/10 (90%)');
-    expect(rows[1]).toHaveTextContent('Quá hạn');
-    expect(rows[1]).toHaveTextContent('Chưa có điểm');
+    const studentRows = rows.filter(
+      (row) => row.parentElement?.getAttribute('aria-label') === 'Kết quả từng học sinh',
+    );
+    expect(studentRows[0]).toHaveTextContent('Đã nộp');
+    expect(studentRows[0]).toHaveTextContent('Trắc nghiệm 90%');
+    expect(studentRows[0]).toHaveTextContent('85%');
+    expect(studentRows[1]).toHaveTextContent('Bỏ lỡ');
+    expect(studentRows[1]).toHaveTextContent('Chưa nộp');
+  });
+
+  it('lọc theo trạng thái nằm trong URL và gửi lên API', async () => {
+    navigation.params = new URLSearchParams('status=missed');
+    renderPage();
+
+    expect(await screen.findByRole('link', { name: 'Bỏ lỡ', current: 'page' })).toHaveAttribute(
+      'href',
+      '/classes/c1/assignments/a1?status=missed',
+    );
+    expect(listAssignmentResults).toHaveBeenCalledWith('c1', 'a1', 1, 'missed');
+    navigation.params = new URLSearchParams();
   });
 
   it('chưa ai làm thì điểm trung bình là "Chưa có" và không có từ hay sai', async () => {

@@ -2,13 +2,14 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
   type Assignment,
+  type AssignmentResultListQuery,
   type AssignmentStatus,
   type Pagination,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { AssignmentsRepository } from './assignments.repository';
-import { assignmentStatus } from './assignments.service';
+import { assignmentStatus, modeProgress, progressStatus } from './assignments.service';
 import {
   ClassResultsRepository,
   type AssignmentTarget,
@@ -86,10 +87,45 @@ export class ClassResultsService {
     return target;
   }
 
+  /** Trạng thái theo bài nộp và điểm từng chế độ của mỗi học sinh. */
+  private async submissionResults(
+    assignmentId: string,
+    target: AssignmentTarget,
+    userIds: string[],
+    now: Date,
+  ) {
+    const { modes, submissions, sessions } = await this.results.findSubmissionData(
+      assignmentId,
+      userIds,
+    );
+    const dueAt = target.dueAt?.toISOString() ?? null;
+    return new Map(
+      userIds.map((userId) => {
+        const found = submissions.find((item) => item.userId === userId);
+        const submission = found
+          ? { submittedAt: found.submittedAt.toISOString(), score: found.score, late: found.late }
+          : null;
+        const modeScores = modeProgress(
+          modes,
+          sessions.filter((session) => session.userId === userId),
+        );
+        const done = modeScores.filter((item) => item.done).length;
+        return [
+          userId,
+          { progressStatus: progressStatus(submission, done, dueAt, now), submission, modeScores },
+        ] as const;
+      }),
+    );
+  }
+
   /** Số liệu cả lớp của một bài giao, chỉ tính học sinh hiện còn trong lớp. */
   async summary(classId: string, assignmentId: string, now = new Date()) {
     const target = await this.target(classId, assignmentId);
     const { items: members } = await this.results.findMembers(classId);
+    const userIds = members.map(({ userId }) => userId);
+    const byUser = await this.submissionResults(assignmentId, target, userIds, now);
+    const count = (status: string) =>
+      [...byUser.values()].filter((item) => item.progressStatus === status).length;
     const [sessions, hardCards] = await Promise.all([
       this.results.findFinishedSessions(
         members.map(({ userId }) => userId),
@@ -112,33 +148,49 @@ export class ClassResultsService {
       memberCount: members.length,
       doneCount: done.length,
       overdueCount: scores.filter(({ status }) => status === 'overdue').length,
+      submittedCount: count('submitted'),
+      lateCount: count('late'),
+      missedCount: count('missed'),
       averageScore,
       hardCards,
     });
   }
 
-  /** Kết quả từng học sinh của một bài giao, theo thứ tự vào lớp. */
+  /**
+   * Kết quả từng học sinh của một bài giao, theo thứ tự vào lớp. Lọc theo trạng thái bài nộp nên
+   * tính cho cả lớp rồi mới cắt trang.
+   */
   async assignmentResults(
     classId: string,
     assignmentId: string,
-    query: Pagination,
+    query: AssignmentResultListQuery,
     now = new Date(),
   ) {
     const target = await this.target(classId, assignmentId);
-    const { items: members, total } = await this.results.findMembers(classId, query);
-    const sessions = await this.results.findFinishedSessions(
-      members.map(({ userId }) => userId),
-      [target],
-    );
-    const data = members.map((member) => ({
-      ...member,
-      ...scoreFor(
-        sessions.filter((session) => session.userId === member.userId),
-        target,
-        now,
-      ),
-    }));
-    return paginated(data, total, query);
+    const { items: members } = await this.results.findMembers(classId);
+    const userIds = members.map(({ userId }) => userId);
+    const [sessions, byUser] = await Promise.all([
+      this.results.findFinishedSessions(userIds, [target]),
+      this.submissionResults(assignmentId, target, userIds, now),
+    ]);
+    const rows = members
+      .map((member) => {
+        const extra = byUser.get(member.userId);
+        return {
+          ...member,
+          ...scoreFor(
+            sessions.filter((session) => session.userId === member.userId),
+            target,
+            now,
+          ),
+          progressStatus: extra?.progressStatus ?? ('todo' as const),
+          submission: extra?.submission ?? null,
+          modeScores: extra?.modeScores ?? [],
+        };
+      })
+      .filter((row) => !query.status || row.progressStatus === query.status);
+    const start = (query.page - 1) * query.limit;
+    return paginated(rows.slice(start, start + query.limit), rows.length, query);
   }
 
   /** Kết quả của một học sinh qua các bài giao của lớp, hạn gần nhất trước. */

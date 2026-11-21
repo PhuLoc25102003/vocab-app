@@ -23,6 +23,7 @@ import {
   updateClassSchema,
   type ClassListQuery,
   type CreateClassInput,
+  type AssignmentResultListQuery,
   type ClassMemberListQuery,
   type Pagination,
   type UpdateClassInput,
@@ -166,7 +167,7 @@ export class ClassesController {
   assignmentResults(
     @Param('id') id: string,
     @Param('assignmentId') assignmentId: string,
-    @Query(new ZodValidationPipe(assignmentResultListQuerySchema)) query: Pagination,
+    @Query(new ZodValidationPipe(assignmentResultListQuerySchema)) query: AssignmentResultListQuery,
   ) {
     return this.results.assignmentResults(id, assignmentId, query);
   }
