@@ -47,6 +47,8 @@ interface StudyShellProps {
   exitLabel?: string;
   /** Gọi khi máy chủ đã lưu kết quả phiên. */
   onFinished?: () => void;
+  /** Chỉ học các thẻ này ngay từ đầu, ví dụ chế độ thứ hai khi ôn nhiều chế độ. Không khôi phục phiên dở. */
+  cardIds?: string[];
 }
 
 const UNAVAILABLE_CODES = new Set<string>([
@@ -174,16 +176,18 @@ export function StudyShell({
   assignmentId,
   exitLabel,
   onFinished,
+  cardIds: initialCardIds,
 }: StudyShellProps) {
   const queryClient = useQueryClient();
-  const snapshotKey = backend.resumable
-    ? studySnapshotKey(setId, mode, dueOnly, assignmentId)
-    : undefined;
+  const snapshotKey =
+    backend.resumable && !initialCardIds
+      ? studySnapshotKey(setId, mode, dueOnly, assignmentId)
+      : undefined;
   const retryCardIds = useRef<string[] | null>(null);
   const started = useQuery({
     queryKey: studyKeys.session(setId, mode, dueOnly, assignmentId),
     queryFn: async (): Promise<ResumableSession> => {
-      const cardIds = retryCardIds.current;
+      const cardIds = retryCardIds.current ?? initialCardIds;
       retryCardIds.current = null;
       if (cardIds) {
         return backend.start(setId, mode, { cardIds });

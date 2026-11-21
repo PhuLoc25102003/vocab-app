@@ -10,7 +10,7 @@ Giai đoạn 3 đã có schema lớp học (3.1), API giáo viên quản lý l�
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 5: 5.28 (Ôn hôm nay chọn nhiều chế độ) trước; rồi 5.15 đến 5.17, dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
+1. Giai đoạn 5: 5.15 đến 5.17, dashboard 5.18 đến 5.22, cuối cùng E2E 5.23.
 2. Giai đoạn 6 (đa ngôn ngữ bằng i18next, ADR 0003): 6.1 làm nền trước, các việc dịch 6.3 đến 6.6 làm sau giai đoạn 5 để không dịch hai lần màn đang sửa.
 3. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 4. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
@@ -26,9 +26,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
-| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      18 |      28 | Đang làm   |
+| 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      19 |      28 | Đang làm   |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |       0 |       7 | Chưa làm   |
-| **Toàn dự án**          |                                            | **143** | **164** | **87%**    |
+| **Toàn dự án**          |                                            | **144** | **164** | **88%**    |
 
 ## Cách cập nhật
 
@@ -312,7 +312,7 @@ Không tính vào tổng số việc.
 - [x] **5.25** `Combobox` dùng chung có tìm kiếm ngay trong ô chọn (mẫu ARIA combobox, lọc không dấu); thay ô chọn bộ và bỏ ô "Tìm bộ từ" riêng ở modal giao bài, thay hai ô ngôn ngữ ở form bộ từ; dùng cho ô chọn lớp ở 5.20; ghi quy tắc vào `docs/05-ui-tokens.md` (GAP-27, #352).
 - [x] **5.26** `FormDialog` rộng hơn (cỡ `md` 560 px, `lg` 720 px cho giao bài), cao theo nội dung ở mọi kích thước; ở 360 px là tấm đáy cao theo nội dung thay vì toàn màn hình; cập nhật `docs/05-ui-tokens.md` (GAP-28, #350).
 - [x] **5.27** Giao bài chọn được từ 1 đến tất cả chế độ dùng được với bộ (bỏ `MAX_ASSIGNMENT_MODES = 5`), nút "Chọn tất cả" và "Bỏ chọn" trong modal; cập nhật `docs/03-api.md` (GAP-29, #354).
-- [ ] **5.28** Ôn hôm nay chọn một, nhiều hoặc tất cả chế độ, các phiên chạy nối tiếp như lộ trình, bỏ qua chế độ không dùng được, lưu lựa chọn trên thiết bị; UC-L10 trong `docs/use-cases/03-hoc-tap.md` (GAP-29).
+- [x] **5.28** Ôn hôm nay chọn một, nhiều hoặc tất cả chế độ, các phiên chạy nối tiếp như lộ trình, bỏ qua chế độ không dùng được, lưu lựa chọn trên thiết bị; UC-L10 trong `docs/use-cases/03-hoc-tap.md` (GAP-29, #358).
 
 ## Giai đoạn 6: Đa ngôn ngữ
 

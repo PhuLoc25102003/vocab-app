@@ -1,21 +1,22 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { paginationSchema } from '@vocab/shared';
-import { CalendarClock, ChevronDown, Info, Play } from 'lucide-react';
+import { paginationSchema, STUDY_MODE_LABELS, type StudyMode } from '@vocab/shared';
+import { CalendarClock, Check, ChevronDown, Info, Play } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { SelectField } from '@/components/common/form-field';
 import { LoadingState } from '@/components/common/loading-state';
 import { Pagination } from '@/components/common/pagination';
 import { SetCardList, SetCardShell, SetCardsSkeleton } from '@/components/common/set-card-shell';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { listDueSets } from '../api';
+import { loadReviewModes, REVIEW_MODES, reviewHref, saveReviewModes } from '../review-chain';
+import { cn } from '@/lib/utils';
 import { studyKeys } from '../query-keys';
 
 export const DUE_PAGE_SIZE = 20;
@@ -34,16 +35,6 @@ export function DueSetsLoading() {
 function pageHref(page: number): Route {
   return (page === 1 ? '/review' : `/review?page=${page}`) as Route;
 }
-
-const REVIEW_MODES = [
-  { slug: 'flashcard', label: 'Flashcard' },
-  { slug: 'learn', label: 'Học kỹ' },
-  { slug: 'write', label: 'Viết' },
-  { slug: 'dictation', label: 'Nghe viết' },
-  { slug: 'mcq', label: 'Trắc nghiệm' },
-  { slug: 'cloze', label: 'Điền từ' },
-  { slug: 'match', label: 'Ghép cặp' },
-];
 
 const dueFormat = new Intl.DateTimeFormat('vi-VN', {
   hour: '2-digit',
@@ -95,13 +86,75 @@ function ScheduleNote() {
 interface ReviewSummaryProps {
   dueCards: number;
   setCount: number;
-  mode: string;
-  onModeChange: (mode: string) => void;
+  modes: StudyMode[];
+  onModesChange: (modes: StudyMode[]) => void;
   first: { setId: string; title: string } | undefined;
 }
 
 /** Khối tóm tắt nền bảng xanh: số thẻ cần ôn cỡ lớn, chọn chế độ và nút ôn ngay. */
-function ReviewSummary({ dueCards, setCount, mode, onModeChange, first }: ReviewSummaryProps) {
+/** Chọn một, nhiều hoặc tất cả chế độ; số thứ tự là thứ tự ôn (việc 5.28). */
+function ReviewModePicker({
+  modes,
+  onModesChange,
+}: {
+  modes: StudyMode[];
+  onModesChange: (modes: StudyMode[]) => void;
+}) {
+  const toggle = (mode: StudyMode) =>
+    onModesChange(
+      modes.includes(mode)
+        ? modes.length > 1
+          ? modes.filter((item) => item !== mode)
+          : modes
+        : [...modes, mode],
+    );
+  const all = modes.length === REVIEW_MODES.length;
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="mb-2 text-small font-medium text-board-fg">
+        Ôn bằng chế độ (chọn nhiều để ôn nối tiếp)
+      </legend>
+      <div className="flex flex-wrap gap-2">
+        {REVIEW_MODES.map((mode) => {
+          const order = modes.indexOf(mode);
+          const on = order >= 0;
+          return (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={on}
+              onClick={() => toggle(mode)}
+              className={cn(
+                'flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard',
+                on
+                  ? 'border-board-fg bg-board-fg text-board'
+                  : 'border-board-muted text-board-fg hover:border-board-fg',
+              )}
+            >
+              {on ? (
+                <span aria-hidden className="tabular-nums">
+                  {order + 1}.
+                </span>
+              ) : null}
+              {STUDY_MODE_LABELS[mode]}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          aria-pressed={all}
+          onClick={() => onModesChange(all ? ['FLASHCARD'] : [...REVIEW_MODES])}
+          className="flex min-h-11 items-center gap-1.5 rounded-full px-3 text-small font-medium text-board-fg underline underline-offset-4"
+        >
+          {all ? null : <Check aria-hidden className="size-4" />}
+          {all ? 'Chỉ Flashcard' : 'Chọn tất cả'}
+        </button>
+      </div>
+    </fieldset>
+  );
+}
+
+function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: ReviewSummaryProps) {
   return (
     <section
       aria-labelledby="review-summary"
@@ -119,23 +172,11 @@ function ReviewSummary({ dueCards, setCount, mode, onModeChange, first }: Review
           trong <span className="tabular-nums">{setCount}</span> bộ từ. Ôn đúng hạn để nhớ lâu hơn.
         </p>
       </div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="sm:w-48 [&_label]:text-board-fg [&_select]:text-text">
-          <SelectField
-            label="Ôn bằng chế độ"
-            value={mode}
-            onChange={(event) => onModeChange(event.target.value)}
-          >
-            {REVIEW_MODES.map(({ slug, label }) => (
-              <option key={slug} value={slug}>
-                {label}
-              </option>
-            ))}
-          </SelectField>
-        </div>
+      <div className="flex flex-col items-start gap-4 md:max-w-[560px]">
+        <ReviewModePicker modes={modes} onModesChange={onModesChange} />
         {first ? (
           <Button asChild className="bg-board-fg text-board hover:bg-surface">
-            <Link href={`/sets/${first.setId}/study/${mode}?due=1` as Route}>
+            <Link href={reviewHref(first.setId, modes)}>
               <Play aria-hidden className="size-4" />
               Ôn bộ đầu tiên
             </Link>
@@ -147,7 +188,16 @@ function ReviewSummary({ dueCards, setCount, mode, onModeChange, first }: Review
 }
 
 export function DueSets() {
-  const [mode, setMode] = useState(REVIEW_MODES[0]?.slug ?? 'flashcard');
+  const [modes, setModesState] = useState<StudyMode[]>(['FLASHCARD']);
+  useEffect(() => {
+    // Đọc lựa chọn đã lưu sau khi hiện để HTML từ máy chủ và trình duyệt giống nhau.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- chỉ đọc localStorage một lần
+    setModesState(loadReviewModes());
+  }, []);
+  const setModes = (next: StudyMode[]) => {
+    setModesState(next);
+    saveReviewModes(next);
+  };
   const parsedPage = paginationSchema.shape.page.safeParse(useSearchParams().get('page'));
   const page = parsedPage.success ? parsedPage.data : 1;
   const due = useQuery({
@@ -196,8 +246,8 @@ export function DueSets() {
       <ReviewSummary
         dueCards={summary.dueCards}
         setCount={meta.total}
-        mode={mode}
-        onModeChange={setMode}
+        modes={modes}
+        onModesChange={setModes}
         first={data[0]}
       />
       <ScheduleNote />
@@ -220,10 +270,7 @@ export function DueSets() {
               count={<span className="font-medium text-text">{dueCount} thẻ đến hạn</span>}
               actions={
                 <Button asChild>
-                  <Link
-                    href={`/sets/${setId}/study/${mode}?due=1` as Route}
-                    aria-label={`Ôn bộ từ ${title}`}
-                  >
+                  <Link href={reviewHref(setId, modes)} aria-label={`Ôn bộ từ ${title}`}>
                     Ôn ngay
                   </Link>
                 </Button>
