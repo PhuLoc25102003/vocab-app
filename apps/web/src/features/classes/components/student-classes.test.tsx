@@ -7,8 +7,11 @@ import { HttpError } from '@/lib/http';
 import { joinClass, leaveClass, listJoinedClasses, listMyAssignments } from '../api';
 import { StudentClasses } from './student-classes';
 
-const navigation = vi.hoisted(() => ({ params: new URLSearchParams() }));
-vi.mock('next/navigation', () => ({ useSearchParams: () => navigation.params }));
+const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => navigation.params,
+  useRouter: () => ({ push: navigation.push }),
+}));
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
   joinClass: vi.fn(),
@@ -79,9 +82,9 @@ describe('StudentClasses', () => {
   it('giữ thứ tự máy chủ, hiện trạng thái bài nộp và số chế độ đã xong', async () => {
     renderPage();
 
-    const links = within(await screen.findByRole('list', { name: 'Bài cần làm' })).getAllByRole(
-      'link',
-    );
+    const links = within(
+      await screen.findByRole('list', { name: 'Bài tập: Cần làm' }),
+    ).getAllByRole('link');
     expect(links.map((link) => link.textContent)).toEqual([
       expect.stringContaining('Bỏ lỡ'),
       expect.stringContaining('Đang làm'),
@@ -146,7 +149,7 @@ describe('StudentClasses', () => {
     renderPage();
 
     expect(await screen.findByText('Bạn chưa vào lớp nào')).toBeInTheDocument();
-    expect(screen.getByText(/Chưa có bài nào/)).toBeInTheDocument();
+    expect(screen.getByText('Không còn bài cần làm')).toBeInTheDocument();
   });
 
   it('lớp đã tham gia đọc số trang từ cpage và có nút chuyển trang', async () => {
@@ -159,10 +162,66 @@ describe('StudentClasses', () => {
     renderPage();
 
     expect(await screen.findByText('Trang 2/2')).toBeInTheDocument();
-    expect(listJoinedClasses).toHaveBeenCalledWith(2);
-    expect(screen.getByRole('link', { name: 'Trang trước' })).toHaveAttribute(
+    expect(listJoinedClasses).toHaveBeenCalledWith(2, { q: undefined });
+    expect(screen.getByRole('link', { name: 'Trang trước' })).toHaveAttribute('href', '/classes');
+    navigation.params = new URLSearchParams();
+  });
+
+  it('đọc tab, lớp, từ khoá và sắp xếp từ URL, tab có số bài và giữ bộ lọc', async () => {
+    navigation.params = new URLSearchParams('group=done&class=c1&q=unit&sort=-createdAt');
+    vi.mocked(listMyAssignments).mockResolvedValue({
+      ...page([assignment({ progressStatus: 'submitted' })]),
+      counts: { todo: 3, done: 1, all: 4 },
+    });
+    renderPage();
+
+    await screen.findByRole('list', { name: 'Bài tập: Đã nộp' });
+    expect(listMyAssignments).toHaveBeenCalledWith(1, {
+      group: 'done',
+      classId: 'c1',
+      q: 'unit',
+      sort: '-createdAt',
+    });
+    const tabs = screen.getByRole('navigation', { name: 'Lọc theo trạng thái' });
+    expect(within(tabs).getByRole('link', { name: 'Cần làm (3)' })).toHaveAttribute(
       'href',
-      '/classes?cpage=1',
+      '/classes?class=c1&q=unit&sort=-createdAt',
+    );
+    expect(within(tabs).getByRole('link', { name: 'Đã nộp (1)' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(await screen.findByRole('option', { name: '10A1' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Lọc theo lớp' })).toHaveValue('c1');
+    navigation.params = new URLSearchParams();
+  });
+
+  it('tìm và lọc lớp đưa bộ lọc vào URL, về trang 1', async () => {
+    navigation.params = new URLSearchParams('bpage=3');
+    renderPage();
+
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: 'Tìm theo tên bộ từ' }),
+      'unit{Enter}',
+    );
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes?q=unit');
+    await screen.findByRole('option', { name: '10A1' });
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Lọc theo lớp' }), 'c1');
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes?class=c1');
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Tìm lớp theo tên' }), '10a{Enter}');
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes?bpage=3&cq=10a');
+    navigation.params = new URLSearchParams();
+  });
+
+  it('lọc không ra bài nào thì cho xoá bộ lọc, giữ tab', async () => {
+    navigation.params = new URLSearchParams('group=all&q=zzz');
+    vi.mocked(listMyAssignments).mockResolvedValue(page([]));
+    renderPage();
+
+    expect(await screen.findByText('Không có bài nào khớp bộ lọc.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Xoá bộ lọc' })).toHaveAttribute(
+      'href',
+      '/classes?group=all',
     );
     navigation.params = new URLSearchParams();
   });

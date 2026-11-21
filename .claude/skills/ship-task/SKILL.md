@@ -69,19 +69,20 @@ Sau đó chạy skill `code-review` và sửa hết mục "Chưa đạt".
 
 ### 6. Commit, push, PR
 
-Mỗi task một commit. Không đoán trước số PR.
+Mỗi task **một commit chứa cả code lẫn docs**, nên mỗi task chỉ chờ CI một lần. Không mở PR docs riêng.
 
-1. Commit đúng file của task (chưa sửa `docs/07-progress.md`), rebase lên `origin/develop`, rồi `git push -u origin HEAD`.
-2. Mở PR vào `develop` theo mẫu trong `git-workflow`, có `Closes #<số>`.
-3. Trong `docs/07-progress.md` **chỉ sửa dòng của task**: `[x]` và `(#<số-PR>)`. Không sửa bảng tổng quan, "Đang ở", "Việc tiếp theo".
-4. `git commit --amend --no-edit` rồi `git push --force-with-lease` (chỉ nhánh của task).
+1. Cập nhật docs trong cùng commit với code:
+   - `docs/07-progress.md`: dòng của task thành `[x]`, chạy `npm run progress`, sửa "Đang ở" và "Việc tiếp theo" nếu thay đổi.
+   - Docs khác mà task đụng tới (API, database, token, use case, skill).
+2. Commit, rebase lên `origin/develop`, `git push -u origin HEAD`. Push nhánh task không chạy CI.
+3. Mở PR vào `develop` theo mẫu trong `git-workflow`, có `Closes #<số>`. CI bắt đầu chạy.
+4. **Ngay lập tức** ghi `(#<số-PR>)` vào dòng task, `git commit --amend --no-edit`, `git push --force-with-lease`. CI có `cancel-in-progress` nên lượt đầu bị huỷ sau vài giây, chỉ lượt sau tính.
 
-#### Tránh xung đột docs
+#### Docs và xung đột
 
-- PR của task chỉ sửa dòng của task trong `docs/07-progress.md`, không chạm bảng tổng quan, "Đang ở", "Việc tiếp theo".
-- Bảng tổng quan đồng bộ bằng `npm run progress`. Sau khi merge, nếu không còn PR task nào đang mở, mở PR `docs(progress): sync` gồm `npm run progress`, "Đang ở" và "Việc tiếp theo", merge ngay khi CI xanh, rồi mới sang task mới.
-- Người dùng giao thêm việc giữa chừng: tạo nhánh `docs/<số>-them-viec` từ `origin/develop`, chỉ thêm dòng việc và use case, mở PR và merge ngay khi CI xanh. Không gộp vào PR đang code.
-- Nếu rebase vẫn xung đột và chỉ ở file docs: giữ cả hai phía (mỗi dòng task lấy bản `[x]` mới hơn), chạy `npm run progress` nếu bảng bị đụng, `git rebase --continue`, `git push --force-with-lease`, rồi merge ngay khi CI xanh, không cần hỏi.
+- Làm tuần tự nên không có PR task nào khác chạm `docs/07-progress.md`; PR của task được sửa cả bảng tổng quan, "Đang ở", "Việc tiếp theo".
+- Người dùng giao thêm việc giữa chừng: thêm dòng việc và use case vào commit của task đang làm (hoặc task kế tiếp nếu PR hiện tại đang chờ CI). Không mở PR docs riêng.
+- Nếu rebase xung đột chỉ ở file docs: giữ cả hai phía, chạy lại `npm run progress`, `git rebase --continue`, `git push --force-with-lease`, rồi merge ngay khi CI xanh, không cần hỏi.
 
 ### 7. Chờ CI rồi mới làm tiếp
 
@@ -92,7 +93,7 @@ gh pr checks <số-pr> --watch --interval 30   # chạy nền, có thông báo k
 ```
 
 - Chờ thông báo, không poll, không đọc file hay viết code cho task khác để tiết kiệm token.
-- Xanh: merge theo bước 8, đồng bộ docs nếu cần, rồi mới quay lại bước 1 cho task mới (nhánh mới luôn tạo từ `develop` vừa pull).
+- Xanh: merge theo bước 8 rồi quay lại bước 1 cho task mới (nhánh mới luôn tạo từ `develop` vừa pull). Docs đã nằm trong PR nên không có bước đồng bộ riêng.
 - Đỏ: đọc log bằng `gh run view <id> --log-failed`, sửa, push, chờ lần CI tiếp theo. Đỏ sau 2 lần sửa vì cùng một nguyên nhân thì dừng lại và báo.
 - Chỉ có tối đa **một** PR task mở tại một thời điểm. Không dùng `git worktree` cho repo này.
 
