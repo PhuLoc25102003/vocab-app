@@ -14,6 +14,7 @@ Trạng thái được đối chiếu với code ở `develop` ngày 2026-11-19.
 | [04-nen-tang.md](04-nen-tang.md)                     | Nền tảng, trang giới thiệu, deploy, phát hành                          |
 | [05-lo-trinh.md](05-lo-trinh.md)                     | Giai đoạn 2, 3, 4                                                      |
 | [06-vai-tro-va-lop-hoc.md](06-vai-tro-va-lop-hoc.md) | Giai đoạn 5: tổng quan theo vai trò, giao và nộp bài, độ gọn giao diện |
+| [07-da-ngon-ngu.md](07-da-ngon-ngu.md)               | Giai đoạn 6: giao diện tiếng Việt và tiếng Anh                         |
 
 Mỗi use case gồm: việc liên quan, người dùng, trạng thái, phải có, luồng chính, ngoại lệ, test và phần còn thiếu.
 

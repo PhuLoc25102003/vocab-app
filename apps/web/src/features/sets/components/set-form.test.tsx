@@ -71,8 +71,8 @@ describe('CreateSet', () => {
     await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Từ tiếng Việt');
     await userEvent.click(screen.getByRole('button', { name: 'Đảo ngôn ngữ của từ và nghĩa' }));
 
-    expect(screen.getByLabelText('Ngôn ngữ của từ')).toHaveValue('vi');
-    expect(screen.getByLabelText('Ngôn ngữ của nghĩa')).toHaveValue('en');
+    expect(screen.getByLabelText('Ngôn ngữ của từ')).toHaveValue('Tiếng Việt');
+    expect(screen.getByLabelText('Ngôn ngữ của nghĩa')).toHaveValue('Tiếng Anh');
     await save();
     await waitFor(() =>
       expect(vi.mocked(createSet).mock.calls[0]?.[0]).toMatchObject({

@@ -88,13 +88,18 @@ describe('ClassAssignments', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
     const dialog = await screen.findByRole('dialog', { name: 'Giao bài' });
-    await within(dialog).findByRole('option', { name: /Nháp/ });
+    const picker = await within(dialog).findByRole('combobox', { name: 'Bộ từ' });
 
     await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
     expect(await within(dialog).findByText('Hãy chọn bộ từ')).toBeInTheDocument();
     expect(createAssignment).not.toHaveBeenCalled();
 
-    await userEvent.selectOptions(within(dialog).getByLabelText('Bộ từ'), 's1');
+    // Gõ ngay trong ô chọn để lọc, không có ô tìm kiếm riêng.
+    await userEvent.click(picker);
+    await userEvent.keyboard('unit');
+    expect(within(dialog).queryByRole('option', { name: /Nháp/ })).not.toBeInTheDocument();
+    await userEvent.keyboard('{Enter}');
+    expect(picker).toHaveValue('Unit 1');
     // Mặc định là lộ trình đề xuất; bỏ Flashcard và Ghép cặp, đưa Luyện viết lên đầu.
     await userEvent.click(within(dialog).getByRole('checkbox', { name: /Flashcard/ }));
     await userEvent.click(within(dialog).getByRole('checkbox', { name: /Ghép cặp/ }));
@@ -122,7 +127,8 @@ describe('ClassAssignments', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Giao bài' }));
     const dialog = await screen.findByRole('dialog', { name: 'Giao bài' });
-    await userEvent.selectOptions(await within(dialog).findByLabelText('Bộ từ'), 's2');
+    await userEvent.click(await within(dialog).findByRole('combobox', { name: 'Bộ từ' }));
+    await userEvent.click(within(dialog).getByRole('option', { name: /Nháp/ }));
     expect(within(dialog).getByText(/người ngoài lớp vẫn không thấy/)).toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Giao bài' }));
     expect(

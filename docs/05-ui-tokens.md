@@ -204,6 +204,10 @@ Tên bộ, mô tả, tên người dùng, tên lớp, thư mục và thuật ng�
 
 Dùng `Select` trong `components/ui/select.tsx`, không viết `select` trần. Component giữ thẻ `select` gốc để form, bàn phím, trình đọc màn hình và bộ chọn trên điện thoại vẫn đúng, chỉ thay giao diện. Trình duyệt hỗ trợ `appearance: base-select` thì danh sách lựa chọn dùng `--surface`, `--border`, `--shadow-raised`, mục được chọn có dấu tích màu `--primary` (lớp `select-styled` trong `globals.css`).
 
+## Ô chọn có tìm kiếm
+
+Ô chọn có thể quá 8 lựa chọn (bộ từ, lớp, ngôn ngữ) dùng `Combobox` trong `components/common/combobox.tsx`, không đặt thêm một ô "Tìm…" cạnh ô chọn. Ô nhập chính là ô chọn: bấm hoặc focus thì mở danh sách và bôi đen chữ để gõ đè, gõ thì lọc không phân biệt dấu và hoa thường, phím lên xuống đổi mục (`aria-activedescendant`), Enter chọn mà không gửi form, Esc đóng danh sách và giữ giá trị cũ (không đóng modal), không khớp thì ghi "Không có kết quả". Danh sách nền `surface`, viền `border`, `shadow-raised`, cao tối đa 256 px rồi cuộn, mục cao tối thiểu 44 px, mục đang trỏ nền `primary-soft`, mục đã chọn có dấu tích `primary`, có thể có dòng phụ `text-muted` (ví dụ "12 thẻ · Riêng tư"). Ô chọn ngắn, cố định giữ `Select`.
+
 ## Ô ngày giờ
 
 Dùng `DateTimeField` trong `components/common/date-time-field.tsx`, không dùng `input type="datetime-local"` hay `type="date"` vì ô gốc hiện theo ngôn ngữ máy (`mm/dd/yyyy`, AM/PM) và màu của trình duyệt.

@@ -12,9 +12,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftRight } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
+import {
+  Controller,
+  useForm,
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+} from 'react-hook-form';
+import { Combobox } from '@/components/common/combobox';
 import { FormError } from '@/components/common/form-message';
-import { FormField, SelectField, TextareaField } from '@/components/common/form-field';
+import { FormField, TextareaField } from '@/components/common/form-field';
 import { VisibilityField } from '@/components/common/visibility-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
@@ -41,16 +48,16 @@ function withCurrent<T extends string>(options: readonly T[], current: T): reado
 
 /** Cả hai ô ngôn ngữ cùng có hai giá trị đang lưu để đảo chiều không mất lựa chọn. */
 function languageOptions({ termLang, defLang }: SetFormInput) {
-  return withCurrent(withCurrent(Object.keys(LANGUAGE_LABELS), termLang), defLang).map((code) => (
-    <option key={code} value={code}>
-      {LANGUAGE_LABELS[code] ?? code}
-    </option>
-  ));
+  return withCurrent(withCurrent(Object.keys(LANGUAGE_LABELS), termLang), defLang).map((code) => ({
+    value: code,
+    label: LANGUAGE_LABELS[code] ?? code,
+  }));
 }
 
 interface SetDetailsFieldsProps {
   initialValues: SetFormInput;
   register: UseFormRegister<SetFormInput>;
+  control: Control<SetFormInput, unknown, SetFormValues>;
   errors: FieldErrors<SetFormInput>;
   onSwapLanguages: () => void;
 }
@@ -58,9 +65,11 @@ interface SetDetailsFieldsProps {
 function SetDetailsFields({
   initialValues,
   register,
+  control,
   errors,
   onSwapLanguages,
 }: SetDetailsFieldsProps) {
+  const languages = languageOptions(initialValues);
   return (
     <div className="flex flex-col gap-4">
       <FormField label="Tên bộ từ" error={errors.title?.message} {...register('title')} />
@@ -72,13 +81,21 @@ function SetDetailsFields({
         {...register('description')}
       />
       <div className="grid gap-x-2 gap-y-2 sm:grid-cols-[1fr_auto_1fr] sm:items-start">
-        <SelectField
-          label="Ngôn ngữ của từ"
-          error={errors.termLang?.message}
-          {...register('termLang')}
-        >
-          {languageOptions(initialValues)}
-        </SelectField>
+        <Controller
+          control={control}
+          name="termLang"
+          render={({ field }) => (
+            <Combobox
+              label="Ngôn ngữ của từ"
+              options={languages}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+              error={errors.termLang?.message}
+            />
+          )}
+        />
         <Button
           type="button"
           variant="ghost"
@@ -90,13 +107,21 @@ function SetDetailsFields({
         >
           <ArrowLeftRight aria-hidden className="size-5 rotate-90 sm:rotate-0" />
         </Button>
-        <SelectField
-          label="Ngôn ngữ của nghĩa"
-          error={errors.defLang?.message}
-          {...register('defLang')}
-        >
-          {languageOptions(initialValues)}
-        </SelectField>
+        <Controller
+          control={control}
+          name="defLang"
+          render={({ field }) => (
+            <Combobox
+              label="Ngôn ngữ của nghĩa"
+              options={languages}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+              error={errors.defLang?.message}
+            />
+          )}
+        />
       </div>
       <VisibilityField
         options={withCurrent(SELECTABLE_VISIBILITY, initialValues.visibility)}
@@ -189,6 +214,7 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
       <SetDetailsFields
         initialValues={initialValues}
         register={register}
+        control={control}
         errors={errors}
         onSwapLanguages={swapLanguages}
       />
