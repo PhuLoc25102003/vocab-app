@@ -94,7 +94,7 @@ function Attention({ attention }: { attention: Overview['attention'] }) {
         >
           <Link
             href={`/classes/${item.classId}/members/${item.userId}` as Route}
-            className="font-medium wrap-anywhere text-primary"
+            className="inline-flex min-h-11 items-center font-medium wrap-anywhere text-primary"
           >
             {item.displayName}
           </Link>
@@ -281,7 +281,7 @@ export function TeacherOverview() {
               >
                 <Link
                   href={`/classes/${item.classId}/members/${item.userId}` as Route}
-                  className="font-medium text-primary wrap-anywhere"
+                  className="inline-flex min-h-11 items-center font-medium text-primary wrap-anywhere"
                 >
                   {item.displayName}
                 </Link>

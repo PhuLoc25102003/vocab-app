@@ -157,9 +157,9 @@ test('giáo viên giao bài 3 chế độ từ bộ riêng tư, học sinh làm 
   await teacher.goto('/dashboard');
   await expect(teacher.getByRole('region', { name: 'Bài vừa nộp' })).toContainText(studentName);
   await teacher.goto(`${classPath}?tab=students`);
-  await teacher.getByRole('button', { name: new RegExp(`${studentName}, mở hồ sơ`) }).click();
+  await teacher.getByRole('button', { name: new RegExp(`${studentName}\\s*, mở hồ sơ`) }).click();
   const profile = teacher.getByRole('dialog', { name: studentName });
-  await expect(profile.getByText('1/1')).toBeVisible();
+  await expect(profile.getByText('1/1', { exact: true })).toBeVisible();
   await expect(profile).toContainText(setTitle);
   await profile.getByRole('button', { name: 'Đóng' }).click();
 
