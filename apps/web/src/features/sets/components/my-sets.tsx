@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { EmptyState } from '@/components/common/empty-state';
-import { SelectField } from '@/components/common/form-field';
 import { ErrorState } from '@/components/common/error-state';
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { useMySets } from '../hooks/use-my-sets';
 import { SetCardGrid, SetCardsLoading } from './set-cards';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
@@ -80,7 +80,7 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
   return (
     <>
       {hasTools ? (
-        <div className="flex items-end gap-2 sm:gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
           <div className="min-w-0 flex-1">
             <SetSearchForm
               id="my-sets-search"
@@ -88,9 +88,9 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
               onSearch={(value) => router.push(listHref({ ...state, q: value }))}
             />
           </div>
-          <div className="w-36 shrink-0 sm:w-48">
-            <SelectField
-              label={t('mine.sort')}
+          <div className="w-full sm:w-48">
+            <Select
+              aria-label={t('mine.sort')}
               value={sort}
               onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
             >
@@ -99,7 +99,7 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
                   {t(label)}
                 </option>
               ))}
-            </SelectField>
+            </Select>
           </div>
         </div>
       ) : null}

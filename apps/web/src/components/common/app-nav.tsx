@@ -55,8 +55,10 @@ function NavLinks({ pathname }: { pathname: string }) {
                   current ? 'font-semibold text-primary' : 'text-text-muted',
                 )}
               >
-                <Icon aria-hidden className="size-5" />
-                {t(`nav.${label}`)}
+                <Icon aria-hidden className="size-5 shrink-0" />
+                <span className="max-w-full truncate px-0.5 text-center whitespace-nowrap">
+                  {t(`nav.${label}`)}
+                </span>
               </Link>
             </li>
           );

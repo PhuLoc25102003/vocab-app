@@ -12,7 +12,7 @@ export function Select({ className, ...props }: ComponentProps<'select'>) {
     <div className="relative w-full">
       <select
         className={cn(
-          'select-styled min-h-11 w-full cursor-pointer appearance-none rounded-md border border-border-strong bg-surface py-2 pr-10 pl-3 text-body transition-colors duration-fast ease-standard hover:border-text-muted focus-visible:border-primary disabled:cursor-not-allowed disabled:bg-bg aria-invalid:border-danger-mark',
+          'select-styled h-11 min-h-11 w-full cursor-pointer appearance-none truncate rounded-md border border-border-strong bg-surface py-2 pr-10 pl-3 text-small transition-colors duration-fast ease-standard hover:border-text-muted focus-visible:border-primary disabled:cursor-not-allowed disabled:bg-bg aria-invalid:border-danger-mark sm:text-body',
           className,
         )}
         {...props}

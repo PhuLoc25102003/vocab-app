@@ -82,8 +82,8 @@
     "allRoles": "Mọi vai trò",
     "sort": "Sắp xếp",
     "sorts": {
-      "-createdAt": "Mới đăng ký",
-      "createdAt": "Đăng ký lâu nhất",
+      "-createdAt": "Mới nhất",
+      "createdAt": "Cũ nhất",
       "displayName": "Tên A–Z",
       "email": "Email A–Z"
     },

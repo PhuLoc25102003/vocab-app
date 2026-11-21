@@ -82,8 +82,8 @@
     "allRoles": "All roles",
     "sort": "Sort",
     "sorts": {
-      "-createdAt": "Newest sign-ups",
-      "createdAt": "Oldest sign-ups",
+      "-createdAt": "Newest",
+      "createdAt": "Oldest",
       "displayName": "Name A–Z",
       "email": "Email A–Z"
     },
