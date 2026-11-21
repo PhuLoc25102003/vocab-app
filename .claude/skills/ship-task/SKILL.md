@@ -69,10 +69,20 @@ Sau đó chạy skill `code-review` và sửa hết mục "Chưa đạt".
 
 ### 6. Commit, push, PR
 
-1. Trong `docs/07-progress.md`: đánh dấu `[x]`, cập nhật bảng tổng quan, "Đang ở", "Việc tiếp theo".
-2. Commit đúng file của task, rebase lên `origin/develop`, rồi `git push -u origin HEAD`.
-3. Mở PR vào `develop` theo mẫu trong `git-workflow`, có `Closes #<số>`.
-4. Ghi số PR vào dòng của task trong file tiến độ, commit và push.
+Mỗi task một commit. Không đoán trước số PR.
+
+1. Commit đúng file của task (chưa sửa `docs/07-progress.md`), rebase lên `origin/develop`, rồi `git push -u origin HEAD`.
+2. Mở PR vào `develop` theo mẫu trong `git-workflow`, có `Closes #<số>`.
+3. Trong `docs/07-progress.md` **chỉ sửa dòng của task**: `[x]` và `(#<số-PR>)`. Không sửa bảng tổng quan, "Đang ở", "Việc tiếp theo".
+4. `git commit --amend --no-edit` rồi `git push --force-with-lease` (chỉ nhánh của task).
+
+#### Tránh xung đột docs
+
+- Dòng của từng task không bao giờ trùng nhau nên các PR song song không xung đột ở `docs/07-progress.md`. Xung đột chỉ đến từ các dòng chung, nên PR của task không chạm vào chúng.
+- Bảng tổng quan đồng bộ bằng `npm run progress`. Khi không còn PR nào khác đang mở, mở PR `docs(progress): sync` gồm `npm run progress`, "Đang ở" và "Việc tiếp theo", merge ngay khi CI xanh.
+- Người dùng giao thêm việc giữa chừng: tạo nhánh `docs/<số>-them-viec` từ `origin/develop`, chỉ thêm dòng việc và use case, mở PR và merge ngay khi CI xanh. Không gộp vào PR đang code.
+- Tránh nhánh xếp chồng. Chỉ tách nhánh từ nhánh của PR khác khi task mới sửa cùng file code. Khi PR gốc đã squash merge: `git rebase --onto origin/develop <commit-cuối-của-PR-gốc>`.
+- Nếu vẫn xung đột và chỉ ở file docs: giữ cả hai phía (mỗi dòng task lấy bản `[x]` mới hơn), chạy `npm run progress` nếu bảng bị đụng, `git rebase --continue`, push, rồi merge ngay khi CI xanh, không cần hỏi.
 
 ### 7. Chờ CI, không ngồi đợi
 
@@ -83,7 +93,7 @@ gh pr checks <số-pr> --watch --interval 30   # chạy nền, có thông báo k
 ```
 
 1. Chọn task tiếp theo như bước 1 và tạo issue như bước 2.
-2. Task mới không phụ thuộc PR đang chờ: tạo nhánh từ `origin/develop`. Có phụ thuộc: tạo nhánh từ nhánh của PR, sau khi PR được squash merge thì `git rebase --onto origin/develop <commit-cuối-của-PR>`.
+2. Task mới không sửa cùng file code với PR đang chờ: tạo nhánh từ `origin/develop` (kể cả khi cả hai cùng đánh dấu `docs/07-progress.md`, vì mỗi PR chỉ sửa dòng của mình). Có sửa cùng file code: tạo nhánh từ nhánh của PR, sau khi PR được squash merge thì `git rebase --onto origin/develop <commit-cuối-của-PR>`.
 3. Code task mới như bước 4 và 5.
 4. Khi CI của PR cũ xong:
    - Cất phần đang làm: `git stash push -u -m <task-mới>` (hoặc commit tạm trên nhánh mới).

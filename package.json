@@ -13,6 +13,7 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:migrate": "npm run prisma:migrate -w @vocab/api",
+    "progress": "node scripts/progress.mjs && prettier --write docs/07-progress.md",
     "prepare": "node .husky/install.mjs"
   },
   "keywords": [],
