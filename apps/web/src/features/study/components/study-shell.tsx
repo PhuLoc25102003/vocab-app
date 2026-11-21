@@ -41,6 +41,12 @@ interface StudyShellProps {
   header?: ReactNode;
   /** Chế độ không dùng được với bộ này (quá ít thẻ, thiếu ví dụ). Có hàm này thì gọi thay vì báo lỗi. */
   onUnavailable?: () => void;
+  /** Phiên làm cho bài giao này; học lại thẻ sai không gắn bài để điểm bài không bị thổi phồng. */
+  assignmentId?: string;
+  /** Nhãn nút thoát ở màn kết quả, mặc định "Về bộ từ". */
+  exitLabel?: string;
+  /** Gọi khi máy chủ đã lưu kết quả phiên. */
+  onFinished?: () => void;
 }
 
 const UNAVAILABLE_CODES = new Set<string>([
@@ -165,12 +171,17 @@ export function StudyShell({
   dueOnly = false,
   header,
   onUnavailable,
+  assignmentId,
+  exitLabel,
+  onFinished,
 }: StudyShellProps) {
   const queryClient = useQueryClient();
-  const snapshotKey = backend.resumable ? studySnapshotKey(setId, mode, dueOnly) : undefined;
+  const snapshotKey = backend.resumable
+    ? studySnapshotKey(setId, mode, dueOnly, assignmentId)
+    : undefined;
   const retryCardIds = useRef<string[] | null>(null);
   const started = useQuery({
-    queryKey: studyKeys.session(setId, mode, dueOnly),
+    queryKey: studyKeys.session(setId, mode, dueOnly, assignmentId),
     queryFn: async (): Promise<ResumableSession> => {
       const cardIds = retryCardIds.current;
       retryCardIds.current = null;
@@ -178,7 +189,8 @@ export function StudyShell({
         return backend.start(setId, mode, { cardIds });
       }
       return (
-        (snapshotKey ? loadSnapshot(snapshotKey) : null) ?? backend.start(setId, mode, { dueOnly })
+        (snapshotKey ? loadSnapshot(snapshotKey) : null) ??
+        backend.start(setId, mode, assignmentId ? { dueOnly, assignmentId } : { dueOnly })
       );
     },
     // Mỗi lần tải là một phiên mới, nên chỉ tạo khi người học yêu cầu.
@@ -208,6 +220,7 @@ export function StudyShell({
     onSuccess: (sessionResult) => {
       finish(sessionResult);
       void queryClient.invalidateQueries({ queryKey: studyKeys.dueLists });
+      onFinished?.();
     },
     onError: (error) => {
       if (snapshotKey && error instanceof HttpError && STALE_SESSION_STATUSES.has(error.status)) {
@@ -295,6 +308,7 @@ export function StudyShell({
         result={result}
         questions={questions}
         exitHref={exitHref}
+        exitLabel={exitLabel}
         note={resultNote}
         onRestart={() => void started.refetch()}
         onRetryWrong={() => {

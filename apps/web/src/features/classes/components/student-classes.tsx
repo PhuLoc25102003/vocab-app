@@ -7,24 +7,12 @@ import {
   joinClassSchema,
   JOIN_CODE_LENGTH,
   STUDY_MODE_LABELS,
-  type ProgressStatus,
   type JoinClassInput,
   type JoinedClass,
   type MyAssignment,
   paginationSchema,
 } from '@vocab/shared';
-import {
-  CalendarClock,
-  ChevronRight,
-  CircleAlert,
-  CircleCheck,
-  CircleDashed,
-  CircleDot,
-  Clock,
-  LogIn,
-  LogOut,
-  type LucideIcon,
-} from 'lucide-react';
+import { CalendarClock, ChevronRight, LogIn, LogOut } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -54,18 +42,9 @@ import {
   MY_ASSIGNMENTS_PAGE_SIZE,
 } from '../api';
 import { formatDateTime } from '../format';
+import { PROGRESS_STATUS } from './status-label';
 
-const STATUS: Record<ProgressStatus, { label: string; icon: LucideIcon; className: string }> = {
-  todo: { label: 'Chưa làm', icon: CircleDashed, className: 'text-text-muted' },
-  in_progress: { label: 'Đang làm', icon: CircleDot, className: 'text-primary' },
-  submitted: { label: 'Đã nộp', icon: CircleCheck, className: 'text-success' },
-  late: { label: 'Nộp trễ', icon: Clock, className: 'text-warning' },
-  missed: { label: 'Bỏ lỡ', icon: CircleAlert, className: 'text-danger' },
-};
-
-/** Đường dẫn chế độ học trùng tên chế độ viết thường, ví dụ `MCQ` thành `mcq`. */
-const studyHref = ({ setId, mode }: MyAssignment) =>
-  `/sets/${setId}/study/${mode.toLowerCase()}` as Route;
+const assignmentHref = ({ id }: MyAssignment) => `/classes/assignments/${id}` as Route;
 
 function JoinDialog({
   open,
@@ -132,11 +111,11 @@ function JoinDialog({
 }
 
 function AssignmentRow({ item }: { item: MyAssignment }) {
-  const { label, icon: Icon, className } = STATUS[item.progressStatus];
+  const { label, icon: Icon, className } = PROGRESS_STATUS[item.progressStatus];
   return (
     <li className="border-b border-border last:border-b-0">
       <Link
-        href={studyHref(item)}
+        href={assignmentHref(item)}
         className="flex min-h-16 items-center gap-3 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:px-2"
       >
         <span

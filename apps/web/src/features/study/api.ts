@@ -1,6 +1,8 @@
 import {
   dueSetListSchema,
   finishSessionResponseSchema,
+  myAssignmentDetailResponseSchema,
+  type MyAssignmentDetail,
   startSessionResponseSchema,
   submitAnswersResponseSchema,
   type DueSetList,
@@ -18,7 +20,7 @@ export interface StudyBackend {
   start: (
     setId: string,
     mode: StudyMode,
-    options?: { dueOnly?: boolean; cardIds?: string[] },
+    options?: { dueOnly?: boolean; cardIds?: string[]; assignmentId?: string },
   ) => Promise<StartedSession>;
   submit: (sessionId: string, answers: UserAnswer[]) => Promise<void>;
   finish: (sessionId: string) => Promise<SessionResult>;
@@ -59,4 +61,10 @@ export async function listDueSets({
 }): Promise<DueSetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   return dueSetListSchema.parse(await http(`/review/due?${query}`));
+}
+
+/** Tiến độ bài giao để màn kết quả gợi ý chế độ tiếp theo. */
+export async function getAssignmentProgress(assignmentId: string): Promise<MyAssignmentDetail> {
+  const body = await http(`/classes/assignments/${encodeURIComponent(assignmentId)}`);
+  return myAssignmentDetailResponseSchema.parse(body).data;
 }

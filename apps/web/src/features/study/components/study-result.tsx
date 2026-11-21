@@ -8,6 +8,7 @@ interface StudyResultProps {
   result: SessionResult;
   questions: Question[];
   exitHref: Route;
+  exitLabel?: string;
   note?: ReactNode;
   onRestart: () => void;
   onRetryWrong: () => void;
@@ -25,6 +26,7 @@ export function StudyResult({
   result,
   questions,
   exitHref,
+  exitLabel = 'Về bộ từ',
   note,
   onRestart,
   onRetryWrong,
@@ -86,7 +88,7 @@ export function StudyResult({
           Học lại từ đầu
         </Button>
         <Button asChild variant="secondary">
-          <Link href={exitHref}>Về bộ từ</Link>
+          <Link href={exitHref}>{exitLabel}</Link>
         </Button>
       </div>
     </section>

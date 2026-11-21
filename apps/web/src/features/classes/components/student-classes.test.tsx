@@ -84,7 +84,7 @@ describe('StudentClasses', () => {
       expect.stringContaining('Đã nộp'),
     ]);
     expect(links[1]).toHaveTextContent('1/2 chế độ');
-    expect(links[1]).toHaveAttribute('href', '/sets/s2/study/write');
+    expect(links[1]).toHaveAttribute('href', '/classes/assignments/a2');
     expect(links[1]).toHaveTextContent('Luyện viết');
     expect(links[1]).toHaveTextContent('10A1');
   });
