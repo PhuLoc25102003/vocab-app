@@ -22,6 +22,7 @@ import { useCreateFolder, useFolders } from '../hooks';
 import { useFolderDrop } from './folder-dnd';
 import { FolderNameDialog } from './folder-name-form';
 import { folderHref, FOLDER_PARAM } from './folder-links';
+import { FolderSheet } from './folder-sheet';
 
 /** Nhiều thư mục hơn số này thì hiện ô lọc. */
 const FILTER_THRESHOLD = 6;
@@ -39,20 +40,20 @@ interface FolderLinkProps {
 function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLinkProps) {
   const { setNodeRef, isOver, isDragging } = useFolderDrop(dropTarget);
   return (
-    <li ref={setNodeRef} className="shrink-0 lg:shrink" data-folder-drop={dropTarget}>
+    <li ref={setNodeRef} data-folder-drop={dropTarget}>
       <Link
         href={href}
         aria-current={active ? 'page' : undefined}
         className={cn(
           'flex min-h-11 items-center gap-2 rounded-md border px-3 text-small transition-colors duration-fast ease-standard',
-          'border-border bg-surface hover:bg-primary-soft lg:border-transparent lg:bg-transparent',
-          active && 'border-primary bg-primary-soft font-semibold text-primary lg:border-primary',
-          isDragging && dropTarget && 'border-dashed border-primary lg:border-primary',
+          'border-transparent hover:bg-primary-soft',
+          active && 'border-primary bg-primary-soft font-semibold text-primary',
+          isDragging && dropTarget && 'border-dashed border-primary',
           isOver && 'bg-primary text-primary-fg hover:bg-primary',
         )}
       >
         <Icon aria-hidden className="size-4 shrink-0" />
-        <span className="min-w-0 max-w-40 truncate lg:max-w-none lg:flex-1">{label}</span>
+        <span className="min-w-0 flex-1 truncate">{label}</span>
         {count !== undefined ? (
           <span className="shrink-0 tabular-nums text-text-muted">{count}</span>
         ) : null}
@@ -63,7 +64,8 @@ function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLink
 
 /**
  * Cột thư mục bên trái trang Bộ từ, giống cây thư mục trên máy tính. Thư mục đang mở nằm trong
- * URL nên danh sách bộ từ và cột này luôn khớp nhau. Ở màn hình hẹp cột thành hàng chip cuộn ngang.
+ * URL nên danh sách bộ từ và cột này luôn khớp nhau. Dưới 1024 px cột ẩn đi, thay bằng nút mở tấm
+ * đáy chọn thư mục (`FolderSheet`, việc 5.34).
  */
 export function FolderPanel() {
   const router = useRouter();
@@ -82,21 +84,7 @@ export function FolderPanel() {
     : list;
 
   return (
-    <nav
-      aria-label="Thư mục"
-      className="flex min-w-0 flex-col gap-3 lg:sticky lg:top-20 lg:self-start"
-    >
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-h3">Thư mục</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Tạo thư mục mới"
-          onClick={() => setCreating(true)}
-        >
-          <FolderPlus aria-hidden className="size-5" />
-        </Button>
-      </div>
+    <>
       <FolderNameDialog
         open={creating}
         onOpenChange={setCreating}
@@ -110,62 +98,86 @@ export function FolderPanel() {
           router.push(folderHref(folder.id, sort));
         }}
       />
-      {list.length > FILTER_THRESHOLD ? (
-        <Input
-          type="search"
-          aria-label="Lọc thư mục"
-          placeholder="Lọc thư mục"
-          value={filter}
-          onChange={(event) => setFilter(event.target.value)}
+      <div className="lg:hidden">
+        <FolderSheet
+          folders={list}
+          current={current}
+          sort={sort}
+          onCreate={() => setCreating(true)}
         />
-      ) : null}
-      <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:max-h-[calc(100dvh-16rem)] lg:flex-col lg:gap-0.5 lg:overflow-x-visible lg:overflow-y-auto">
-        <FolderLink
-          href={folderHref('', sort)}
-          label="Tất cả bộ từ"
-          active={current === ''}
-          Icon={Library}
-        />
-        <FolderLink
-          href={folderHref(NO_FOLDER, sort)}
-          label="Chưa xếp thư mục"
-          active={current === NO_FOLDER}
-          Icon={FolderMinus}
-          dropTarget={NO_FOLDER}
-        />
-        {folders.isPending
-          ? Array.from({ length: 3 }, (_, index) => (
-              <li key={index} className="shrink-0 lg:shrink">
-                <Skeleton className="h-11 w-32 lg:w-full" />
-              </li>
-            ))
-          : shown.map(({ id, name, setCount }) => (
-              <FolderLink
-                key={id}
-                href={folderHref(id, sort)}
-                label={name}
-                count={setCount}
-                active={current === id}
-                Icon={current === id ? FolderOpen : Folder}
-                dropTarget={id}
-              />
-            ))}
-      </ul>
-      {folders.isError ? (
-        <p role="alert" className="text-small text-danger">
-          Không tải được thư mục.{' '}
-          <button
-            type="button"
-            className="min-h-11 font-medium underline underline-offset-4"
-            onClick={() => void folders.refetch()}
+      </div>
+      <nav
+        aria-label="Thư mục"
+        className="hidden min-w-0 flex-col gap-3 lg:sticky lg:top-20 lg:flex lg:self-start"
+      >
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-h3">Thư mục</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Tạo thư mục mới"
+            onClick={() => setCreating(true)}
           >
-            Thử lại
-          </button>
-        </p>
-      ) : null}
-      {keyword && shown.length === 0 ? (
-        <p className="text-small text-text-muted">Không có thư mục nào khớp.</p>
-      ) : null}
-    </nav>
+            <FolderPlus aria-hidden className="size-5" />
+          </Button>
+        </div>
+        {list.length > FILTER_THRESHOLD ? (
+          <Input
+            type="search"
+            aria-label="Lọc thư mục"
+            placeholder="Lọc thư mục"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          />
+        ) : null}
+        <ul className="flex max-h-[calc(100dvh-16rem)] flex-col gap-0.5 overflow-y-auto">
+          <FolderLink
+            href={folderHref('', sort)}
+            label="Tất cả bộ từ"
+            active={current === ''}
+            Icon={Library}
+          />
+          <FolderLink
+            href={folderHref(NO_FOLDER, sort)}
+            label="Chưa xếp thư mục"
+            active={current === NO_FOLDER}
+            Icon={FolderMinus}
+            dropTarget={NO_FOLDER}
+          />
+          {folders.isPending
+            ? Array.from({ length: 3 }, (_, index) => (
+                <li key={index}>
+                  <Skeleton className="h-11 w-full" />
+                </li>
+              ))
+            : shown.map(({ id, name, setCount }) => (
+                <FolderLink
+                  key={id}
+                  href={folderHref(id, sort)}
+                  label={name}
+                  count={setCount}
+                  active={current === id}
+                  Icon={current === id ? FolderOpen : Folder}
+                  dropTarget={id}
+                />
+              ))}
+        </ul>
+        {folders.isError ? (
+          <p role="alert" className="text-small text-danger">
+            Không tải được thư mục.{' '}
+            <button
+              type="button"
+              className="min-h-11 font-medium underline underline-offset-4"
+              onClick={() => void folders.refetch()}
+            >
+              Thử lại
+            </button>
+          </p>
+        ) : null}
+        {keyword && shown.length === 0 ? (
+          <p className="text-small text-text-muted">Không có thư mục nào khớp.</p>
+        ) : null}
+      </nav>
+    </>
   );
 }

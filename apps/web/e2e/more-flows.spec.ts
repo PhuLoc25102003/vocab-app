@@ -381,6 +381,8 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   test('tạo thư mục trên cột thư mục, chuyển và gỡ bộ từ, mở, đổi tên rồi xoá thư mục', async () => {
     const folderName = `Lớp 10 ${stamp}`;
     const folders = page.getByRole('navigation', { name: 'Thư mục' });
+    // Cột thư mục và kéo thả chỉ có từ 1024 px; màn hẹp dùng tấm đáy (việc 5.34).
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/sets');
     await folders.getByRole('button', { name: 'Tạo thư mục mới' }).click();
     const createFolder = page.getByRole('dialog', { name: 'Tạo thư mục' });
