@@ -21,6 +21,8 @@ test('đổi ngôn ngữ giữa tiếng Việt và tiếng Anh, nhớ lựa ch�
   await expect(page.getByRole('button', { name: /switch to Vietnamese/i })).toBeVisible();
 
   // 4. Kiểm tra accessibility ở cả hai ngôn ngữ
+  // Hiệu ứng hiện dần theo cuộn làm chữ mờ giữa chừng, axe sẽ báo sai về tương phản.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const view of AUDIT_VIEWS) {
     await applyAuditView(page, view);
     const enIssues = await auditPage(page, `landing en ${view.name}`);

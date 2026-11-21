@@ -99,7 +99,7 @@ export function StudyResult({
           {t('result.restart')}
         </Button>
         <Button asChild variant="secondary">
-          <Link href={exitHref}>{exitLabel}</Link>
+          <Link href={exitHref}>{exitLabel ?? t('result.backToSet')}</Link>
         </Button>
       </div>
     </section>
