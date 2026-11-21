@@ -321,7 +321,7 @@ Không tính vào tổng số việc.
 Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-va-lop-hoc.md` (góp ý ngày 2026-11-21).
 
 - [x] **5.29** `ListPanel` và `ListToolbar` dùng chung: khung, tiêu đề kèm tổng số, tab trạng thái, ô tìm co giãn, ô lọc và sắp xếp, chân "1–20 trên N" kèm phân trang, 4 trạng thái trong khung, "Xoá bộ lọc"; áp vào tab Học sinh (sửa ô tìm co lại); ghi quy tắc vào `docs/05-ui-tokens.md` (GAP-31, GAP-33, #385).
-- [ ] **5.30** API lọc bài cần làm của học sinh: `group` (`todo`, `done`, `all`), `classId`, `q` theo tên bộ, `sort` (`due`, `-createdAt`) kèm số lượng từng nhóm; `GET /classes/joined` nhận `q` (GAP-32).
+- [x] **5.30** API lọc bài cần làm của học sinh: `group` (`todo`, `done`, `all`), `classId`, `q` theo tên bộ, `sort` (`due`, `-createdAt`) kèm số lượng từng nhóm; `GET /classes/joined` nhận `q` (GAP-32, #387).
 - [ ] **5.31** Web học sinh `/classes`: khung Bài tập có tab Cần làm, Đã nộp, Tất cả, lọc lớp, tìm, sắp xếp; khung Lớp đã tham gia có tìm và phân trang; `AssignmentRow` dùng chung. Cần 5.29, 5.30 (GAP-31, GAP-32).
 - [ ] **5.32** Bài đã giao của giáo viên: API `status` (`open`, `closed`, `all`), `q`, `sort`, số đã nộp x/y; tab Bài tập dùng `ListPanel` và `AssignmentRow` cùng kiểu với học sinh. Cần 5.29, 5.31 (GAP-32).
 - [ ] **5.33** Lớp đang dạy: API `GET /classes` nhận `q`, `sort` (`-createdAt`, `name`, `-memberCount`); web dùng `ListPanel` có tìm, sắp xếp, phân trang. Cần 5.29 (GAP-33).

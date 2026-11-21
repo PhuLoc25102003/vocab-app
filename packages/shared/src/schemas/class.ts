@@ -131,7 +131,13 @@ export const classMemberListSchema = z.object({
 });
 export type ClassMemberList = z.infer<typeof classMemberListSchema>;
 
-export const joinedClassListQuerySchema = paginationSchema;
+export const LIST_SEARCH_MAX_LENGTH = 100;
+
+export const joinedClassListQuerySchema = paginationSchema.extend({
+  /** Tìm theo tên lớp, không phân biệt hoa thường (việc 5.30). */
+  q: z.string().trim().max(LIST_SEARCH_MAX_LENGTH).optional(),
+});
+export type JoinedClassListQuery = z.infer<typeof joinedClassListQuerySchema>;
 
 export const joinedClassSchema = z.object({
   id: z.string(),
@@ -208,7 +214,20 @@ export const ASSIGNMENT_STATUSES = ['pending', 'done', 'overdue'] as const;
 export const assignmentStatusSchema = z.enum(ASSIGNMENT_STATUSES);
 export type AssignmentStatus = z.infer<typeof assignmentStatusSchema>;
 
-export const myAssignmentListQuerySchema = paginationSchema;
+/** `todo`: chưa làm, đang làm, bỏ lỡ; `done`: đã nộp, nộp trễ (việc 5.30). */
+export const ASSIGNMENT_GROUPS = ['todo', 'done', 'all'] as const;
+export const assignmentGroupSchema = z.enum(ASSIGNMENT_GROUPS);
+export type AssignmentGroup = z.infer<typeof assignmentGroupSchema>;
+
+export const myAssignmentListQuerySchema = paginationSchema.extend({
+  group: assignmentGroupSchema.catch('all').default('all'),
+  classId: z.string().max(64).optional(),
+  /** Tìm theo tên bộ từ. */
+  q: z.string().trim().max(LIST_SEARCH_MAX_LENGTH).optional(),
+  /** `due`: bỏ lỡ trước rồi hạn gần nhất (mặc định); `-createdAt`: mới giao trước. */
+  sort: z.enum(['due', '-createdAt']).catch('due').default('due'),
+});
+export type MyAssignmentListQuery = z.infer<typeof myAssignmentListQuerySchema>;
 
 /**
  * Trạng thái bài của học sinh theo bài nộp (việc 5.12): chưa làm, đang làm (xong ít nhất một chế
@@ -234,6 +253,8 @@ export type MyAssignment = z.infer<typeof myAssignmentSchema>;
 export const myAssignmentListSchema = z.object({
   data: z.array(myAssignmentSchema),
   meta: paginationMetaSchema,
+  /** Số bài từng nhóm sau khi lọc lớp và tìm, để hiện trên tab. */
+  counts: z.object({ todo: z.number().int(), done: z.number().int(), all: z.number().int() }),
 });
 export type MyAssignmentList = z.infer<typeof myAssignmentListSchema>;
 
