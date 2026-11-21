@@ -32,8 +32,10 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 
 - Làm theo thứ tự từ trên xuống, trừ khi việc sau không phụ thuộc việc trước.
 - Mỗi việc tương ứng một issue và một PR. Việc quá lớn thì tách thành nhiều việc nhỏ ngay trong file này.
-- Khi bắt đầu, thêm `Đang làm: <tên nhánh>` vào cuối dòng.
-- Trong PR của việc đó, đổi `[ ]` thành `[x]`, ghi số PR, cập nhật bảng tổng quan, "Đang ở" và "Việc tiếp theo".
+- PR của một việc **chỉ sửa dòng của việc đó**: đổi `[ ]` thành `[x]` và ghi số PR. Không sửa bảng tổng quan, "Đang ở", "Việc tiếp theo" trong PR của việc, vì nhiều PR song song cùng sửa các dòng đó sẽ xung đột.
+- Bảng tổng quan tính bằng `npm run progress` (đếm `[x]` của từng giai đoạn). Chạy lệnh này, cùng với cập nhật "Đang ở" và "Việc tiếp theo", trong một PR `docs(progress): sync` khi không còn PR nào khác đang mở, ví dụ cuối một loạt việc.
+- Thêm hoặc tách việc mới thì làm một PR docs riêng và merge ngay khi CI xanh, không gộp vào PR đang code.
+- Không ghi `Đang làm: <nhánh>` vào dòng của việc: dòng đó sẽ bị sửa lại khi xong và dễ xung đột.
 - Một việc chỉ được tính là xong khi PR đã merge vào `develop`.
 - Trước khi làm, đọc use case của việc trong `docs/use-cases/`.
 
