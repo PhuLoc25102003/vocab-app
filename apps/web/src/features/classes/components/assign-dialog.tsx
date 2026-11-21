@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createAssignmentSchema,
-  MAX_ASSIGNMENT_MODES,
   STUDY_MODE_LABELS,
   studyModeSchema,
   type StudyMode,
@@ -181,9 +180,27 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
       )}
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-small font-medium">
-          Chế độ học (theo thứ tự, tối đa {MAX_ASSIGNMENT_MODES})
-        </legend>
+        <legend className="text-small font-medium">Chế độ học (theo thứ tự)</legend>
+        <div className="-mt-1 flex flex-wrap gap-1">
+          <div className="contents">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={others.every((mode) => tooFewCards(mode))}
+              onClick={() => setModes([...modes, ...others.filter((mode) => !tooFewCards(mode))])}
+            >
+              Chọn tất cả
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={modes.length === 0}
+              onClick={() => setModes([])}
+            >
+              Bỏ chọn
+            </Button>
+          </div>
+        </div>
         <ol className="flex flex-col gap-1">
           {modes.map((mode, index) => (
             <li
@@ -231,7 +248,7 @@ export function AssignDialog({ classId, open, onOpenChange }: AssignDialogProps)
                   type="checkbox"
                   className="size-5 accent-primary"
                   checked={false}
-                  disabled={modes.length >= MAX_ASSIGNMENT_MODES || tooFewCards(mode)}
+                  disabled={tooFewCards(mode)}
                   onChange={() => toggle(mode)}
                 />
                 {STUDY_MODE_LABELS[mode]}

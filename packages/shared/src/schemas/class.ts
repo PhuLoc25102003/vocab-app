@@ -115,7 +115,8 @@ export type JoinedClassList = z.infer<typeof joinedClassListSchema>;
 
 export const joinedClassResponseSchema = z.object({ data: joinedClassSchema });
 
-export const MAX_ASSIGNMENT_MODES = 5;
+/** Giao được tới tất cả chế độ (việc 5.27), mỗi chế độ một lần. */
+export const MAX_ASSIGNMENT_MODES = studyModeSchema.options.length;
 
 export const createAssignmentSchema = z
   .object({
