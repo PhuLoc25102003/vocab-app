@@ -14,6 +14,7 @@ import { hideSet, unhideSet } from '../api';
 
 // Mọi truy vấn bộ từ dùng khoá bắt đầu bằng 'sets', làm mới để thấy trạng thái ẩn.
 const SETS_QUERY_KEY = ['sets'] as const;
+export const ADMIN_STATS_QUERY_KEY = ['admin', 'stats'] as const;
 
 interface HideSetButtonProps {
   setId: string;
@@ -24,7 +25,12 @@ interface HideSetButtonProps {
 export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const refresh = () => queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
+  // Số liệu và hàng chờ rà ở Tổng quan ADMIN cũng đổi khi ẩn hoặc bỏ ẩn.
+  const refresh = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY }),
+    ]);
   const hide = useMutation({ mutationFn: (dto: HideSetDto) => hideSet(setId, dto.reason) });
   const unhide = useMutation({
     mutationFn: () => unhideSet(setId),
