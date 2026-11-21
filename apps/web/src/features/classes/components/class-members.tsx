@@ -2,19 +2,24 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Class, ClassMember, ClassMemberListQuery } from '@vocab/shared';
-import { Search, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
-import { Pagination } from '@/components/common/pagination';
+import {
+  ListFilter,
+  ListNoMatch,
+  ListPager,
+  ListPanel,
+  ListToolbar,
+} from '@/components/common/list-panel';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
@@ -215,6 +220,7 @@ export function ClassMembers({
   query,
   sort,
   hrefFor,
+  clearHref,
   onSearch,
 }: {
   klass: Class;
@@ -222,19 +228,15 @@ export function ClassMembers({
   query: string;
   sort: MemberSort;
   hrefFor: (page: number) => Route;
+  /** Bỏ tìm và sắp xếp, về trang 1 của tab Học sinh. */
+  clearHref: Route;
   onSearch: (next: { q: string; sort: MemberSort }) => void;
 }) {
-  const [draft, setDraft] = useState(query);
   const [open, setOpen] = useState<ClassMember | null>(null);
   const members = useQuery({
     queryKey: classKeys.membersQuery(klass.id, page, query, sort),
     queryFn: () => listMembers(klass.id, page, { q: query, sort }),
   });
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    onSearch({ q: draft.trim(), sort });
-  };
 
   let body;
   if (members.isPending) {
@@ -255,7 +257,7 @@ export function ClassMembers({
     );
   } else if (members.data.data.length === 0) {
     body = query ? (
-      <EmptyState title="Không có học sinh nào khớp" description={`Không tìm thấy "${query}".`} />
+      <ListNoMatch text={`Không có học sinh nào khớp "${query}".`} clearHref={clearHref} />
     ) : (
       <EmptyState
         title="Chưa có học sinh"
@@ -263,7 +265,7 @@ export function ClassMembers({
       />
     );
   } else {
-    const { data, meta } = members.data;
+    const { data } = members.data;
     body = (
       <>
         <div
@@ -282,54 +284,53 @@ export function ClassMembers({
             <MemberRow key={member.userId} member={member} onOpen={() => setOpen(member)} />
           ))}
         </ul>
-        <Pagination
-          page={meta.page}
-          pageCount={Math.ceil(meta.total / MEMBERS_PAGE_SIZE)}
-          hrefFor={hrefFor}
-        />
       </>
     );
   }
 
   return (
-    <section aria-labelledby="members-title" className="flex flex-col gap-3">
-      <h2 id="members-title" className="sr-only">
-        Học sinh
-      </h2>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <form role="search" onSubmit={submit} className="relative flex-1">
-          <Search
-            aria-hidden
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted"
-          />
-          <Input
-            type="search"
-            aria-label="Tìm học sinh theo tên"
-            placeholder="Tìm học sinh theo tên"
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            className="pl-9"
-          />
-        </form>
-        <Select
-          aria-label="Sắp xếp học sinh"
-          value={sort}
-          onChange={(event) =>
-            onSearch({ q: draft.trim(), sort: event.target.value as MemberSort })
+    <ListPanel
+      title="Học sinh"
+      count={members.data?.meta.total}
+      toolbar={
+        <ListToolbar
+          search={{
+            label: 'Tìm học sinh theo tên',
+            value: query,
+            onSearch: (q) => onSearch({ q, sort }),
+          }}
+          filters={
+            <ListFilter wide>
+              <Select
+                aria-label="Sắp xếp học sinh"
+                value={sort}
+                onChange={(event) => onSearch({ q: query, sort: event.target.value as MemberSort })}
+              >
+                {Object.entries(SORT_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </ListFilter>
           }
-          className="sm:w-52"
-        >
-          {Object.entries(SORT_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
-      </div>
+        />
+      }
+      footer={
+        members.data && members.data.meta.total > 0 ? (
+          <ListPager
+            page={members.data.meta.page}
+            pageSize={MEMBERS_PAGE_SIZE}
+            total={members.data.meta.total}
+            hrefFor={hrefFor}
+          />
+        ) : null
+      }
+    >
       {body}
       {open ? (
         <MemberProfile classId={klass.id} member={open} onClose={() => setOpen(null)} />
       ) : null}
-    </section>
+    </ListPanel>
   );
 }

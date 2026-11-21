@@ -109,7 +109,8 @@ describe('ClassDetail', () => {
       screen.getByRole('combobox', { name: 'Sắp xếp học sinh' }),
       'name',
     );
-    expect(navigation.push).toHaveBeenLastCalledWith('/classes/c1?tab=students&q=an&sort=name');
+    // URL giả không đổi sau Enter nên ô sắp xếp giữ từ khoá cũ (rỗng) của URL.
+    expect(navigation.push).toHaveBeenLastCalledWith('/classes/c1?tab=students&sort=name');
     expect(screen.getByRole('link', { name: 'Học sinh (1)' })).toHaveAttribute(
       'aria-current',
       'page',
