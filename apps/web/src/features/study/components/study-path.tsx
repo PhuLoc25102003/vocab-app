@@ -12,8 +12,8 @@ import { PATH_STEPS } from '../path-steps';
 import { StudyShell } from './study-shell';
 import { useTranslation } from 'react-i18next';
 
-const stepHref = (setId: string, index: number) =>
-  `/sets/${setId}/study/path?step=${index + 1}` as Route;
+const stepHref = (setId: string, index: number, fromExplore?: boolean) =>
+  `/sets/${setId}/study/path?step=${index + 1}${fromExplore ? '&from=explore' : ''}` as Route;
 
 function PathSteps({ current }: { current: number }) {
   const { t } = useTranslation('study');
@@ -53,20 +53,28 @@ function PathSteps({ current }: { current: number }) {
  * "Bắt đầu học": chạy lần lượt các chế độ trên cùng bộ từ. Mỗi bước là một phiên học bình
  * thường nên kết quả và lịch ôn được lưu như khi học lẻ. Bước không dùng được thì bỏ qua.
  */
-export function StudyPath({ setId, step }: { setId: string; step: number }) {
+export function StudyPath({
+  setId,
+  step,
+  fromExplore = false,
+}: {
+  setId: string;
+  step: number;
+  fromExplore?: boolean;
+}) {
   const { t } = useTranslation('study');
   const router = useRouter();
   const current = PATH_STEPS[step] ?? PATH_STEPS[0];
   const next = PATH_STEPS[step + 1];
-  const setHref = `/sets/${setId}` as Route;
+  const setHref = (fromExplore ? `/sets/${setId}?from=explore` : `/sets/${setId}`) as Route;
 
   const skip = useCallback(() => {
-    router.replace(next ? stepHref(setId, step + 1) : setHref);
-  }, [next, router, setHref, setId, step]);
+    router.replace(next ? stepHref(setId, step + 1, fromExplore) : setHref);
+  }, [fromExplore, next, router, setHref, setId, step]);
 
   const resultNote = next ? (
     <Button asChild>
-      <Link href={stepHref(setId, step + 1)}>
+      <Link href={stepHref(setId, step + 1, fromExplore)}>
         {t('path.next', { step: t(`path.${next.mode}`) })}
         <ArrowRight aria-hidden className="size-4" />
       </Link>
@@ -86,6 +94,7 @@ export function StudyPath({ setId, step }: { setId: string; step: number }) {
       setId={setId}
       mode={current?.mode ?? 'FLASHCARD'}
       exitHref={setHref}
+      exitLabel={t('result.return')}
       header={<PathSteps current={step} />}
       resultNote={resultNote}
       onUnavailable={skip}

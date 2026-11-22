@@ -12,6 +12,12 @@ export default async function StudyPathPage({
   params,
   searchParams,
 }: PageProps<'/sets/[id]/study/path'>) {
-  const [{ id }, { step }] = await Promise.all([params, searchParams]);
-  return <StudyPath setId={id} step={toPathStep(typeof step === 'string' ? step : undefined)} />;
+  const [{ id }, { step, from }] = await Promise.all([params, searchParams]);
+  return (
+    <StudyPath
+      setId={id}
+      step={toPathStep(typeof step === 'string' ? step : undefined)}
+      fromExplore={from === 'explore'}
+    />
+  );
 }

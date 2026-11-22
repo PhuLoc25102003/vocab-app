@@ -2,14 +2,12 @@
 
 import { useDraggable } from '@dnd-kit/core';
 import type { SetSummary } from '@vocab/shared';
-import { EyeOff } from 'lucide-react';
+import { Globe, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { SetCardShell, type SetCardShellProps } from '@/components/common/set-card-shell';
 import { ContextMenuItem } from '@/components/ui/context-menu';
 import { MenuItem } from '@/components/ui/menu';
-import { useAdminHideSet } from '@/features/admin/hooks/use-admin-hide-set';
-import { useAuthStore } from '@/features/auth/store';
 import { FolderDndArea } from '@/features/folders/components/folder-dnd';
 import { FolderHeader } from '@/features/folders/components/folder-header';
 import { FolderPanel } from '@/features/folders/components/folder-panel';
@@ -19,6 +17,7 @@ import {
   SetCardActionsDropdown,
   SetContextMenuContent,
 } from '@/features/sets/components/set-context-menu';
+import { useToggleVisibility } from '@/features/sets/components/toggle-visibility-button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { cn } from '@/lib/utils';
 
@@ -29,10 +28,9 @@ interface ContextMenuWrapperProps {
 
 function SetCardContextMenuWrapper({ set, folders }: ContextMenuWrapperProps) {
   const { t } = useTranslation('sets');
-  const user = useAuthStore((state) => state.user);
-  const canModerate = user?.role === 'ADMIN';
   const move = useMoveSet(set.id);
-  const admin = useAdminHideSet(set.id);
+  const toggleVisibility = useToggleVisibility(set);
+  const isGoingPrivate = toggleVisibility.nextVisibility === 'PRIVATE';
 
   const handleMove = (folderId: string | null) => {
     move.mutateAsync(folderId).then(
@@ -48,29 +46,24 @@ function SetCardContextMenuWrapper({ set, folders }: ContextMenuWrapperProps) {
       onMoveToFolder={handleMove}
       movingFolder={move.isPending}
       extraMenuItems={
-        canModerate ? (
-          <ContextMenuItem
-            danger
-            onSelect={() => {
-              setTimeout(admin.openHideDialog);
-            }}
-          >
-            <EyeOff aria-hidden className="size-4" />
-            <span>{t('actions.hide')}</span>
-          </ContextMenuItem>
-        ) : null
+        <ContextMenuItem onSelect={toggleVisibility.toggle} disabled={toggleVisibility.isPending}>
+          {isGoingPrivate ? (
+            <Lock aria-hidden className="size-4" />
+          ) : (
+            <Globe aria-hidden className="size-4" />
+          )}
+          <span>{t(isGoingPrivate ? 'actions.makePrivate' : 'actions.makePublic')}</span>
+        </ContextMenuItem>
       }
-      extraDialogs={canModerate ? admin.hideDialog : null}
     />
   );
 }
 
 function SetCardActionsDropdownWrapper({ set, folders }: ContextMenuWrapperProps) {
   const { t } = useTranslation('sets');
-  const user = useAuthStore((state) => state.user);
-  const canModerate = user?.role === 'ADMIN';
   const move = useMoveSet(set.id);
-  const admin = useAdminHideSet(set.id);
+  const toggleVisibility = useToggleVisibility(set);
+  const isGoingPrivate = toggleVisibility.nextVisibility === 'PRIVATE';
 
   const handleMove = (folderId: string | null) => {
     move.mutateAsync(folderId).then(
@@ -86,19 +79,15 @@ function SetCardActionsDropdownWrapper({ set, folders }: ContextMenuWrapperProps
       onMoveToFolder={handleMove}
       movingFolder={move.isPending}
       extraMenuItems={
-        canModerate ? (
-          <MenuItem
-            danger
-            onSelect={() => {
-              setTimeout(admin.openHideDialog);
-            }}
-          >
-            <EyeOff aria-hidden className="size-4" />
-            <span>{t('actions.hide')}</span>
-          </MenuItem>
-        ) : null
+        <MenuItem onSelect={toggleVisibility.toggle} disabled={toggleVisibility.isPending}>
+          {isGoingPrivate ? (
+            <Lock aria-hidden className="size-4" />
+          ) : (
+            <Globe aria-hidden className="size-4" />
+          )}
+          <span>{t(isGoingPrivate ? 'actions.makePrivate' : 'actions.makePublic')}</span>
+        </MenuItem>
       }
-      extraDialogs={canModerate ? admin.hideDialog : null}
     />
   );
 }

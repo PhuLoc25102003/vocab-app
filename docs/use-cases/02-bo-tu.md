@@ -48,10 +48,10 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 - **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai, ADMIN. **Trạng thái:** Đủ.
 - **Phải có:**
-  - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại.
-  - Chủ bộ: sửa, xoá, sao chép đường dẫn khi bộ công khai.
+  - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại. Người xem từ Khám phá (`?from=explore`) có nút "Quay lại Khám phá" và menu chính giữ active tab "Khám phá"; từ Bộ từ có "Quay lại Bộ từ". Khi bắt đầu học lẻ hoặc học lộ trình, cờ `?from=explore` được giữ nguyên để màn hình kết quả và nút thoát hiển thị "Trở về" (`exitLabel = t('result.return')`) quay lại đúng bộ từ ở Khám phá.
+  - Chủ bộ: sửa, xoá, sao chép liên kết (trong menu ba chấm ⋯), chuyển đổi nhanh trạng thái giữa Công khai và Riêng tư (`actions.makePublic` / `actions.makePrivate`). Bộ của chính mình không bao giờ hiện nút "Ẩn bộ từ".
   - Người khác: sao chép về tài khoản.
-  - Quản trị viên (ADMIN): nút "Ẩn bộ từ" / "Bỏ ẩn bộ từ" (icon EyeOff/Eye). Thứ tự sắp xếp nút luôn đảm bảo nút ba chấm `[...]` ở cuối cùng bên phải (`[Sửa bộ từ]` -> `[Ẩn bộ từ]` -> `[...]`), không bị kẹp menu ở giữa các nút hành động chính.
+  - Quản trị viên (ADMIN): khi xem bộ của người khác có nút "Ẩn bộ từ" / "Bỏ ẩn bộ từ" (icon EyeOff/Eye). Thứ tự sắp xếp nút luôn đảm bảo nút ba chấm `[...]` ở cuối cùng bên phải (`[Sửa bộ từ]` -> `[Chuyển thành Riêng tư/Ẩn bộ từ]` -> `[...]`), không bị kẹp menu ở giữa các nút hành động chính.
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.
 - **Ngoại lệ:** bộ không tồn tại hoặc không có quyền; bộ chưa có thẻ thì ẩn nút học và mời thêm thẻ; lỗi mạng có nút thử lại.

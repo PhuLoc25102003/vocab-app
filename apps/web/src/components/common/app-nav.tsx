@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -22,12 +22,19 @@ const NAV_ITEMS = [
   { href: '/classes', label: 'classes', icon: School },
 ] as const satisfies readonly { href: Route; label: string; icon: LucideIcon }[];
 
-function isCurrent(pathname: string, href: string): boolean {
+function isCurrent(pathname: string, href: string, fromExplore?: boolean): boolean {
+  if (fromExplore && (pathname === '/sets' || pathname.startsWith('/sets/'))) {
+    if (href === '/explore') return true;
+    if (href === '/sets') return false;
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function AppNav() {
-  return <NavLinks pathname={usePathname()} />;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fromExplore = searchParams?.get('from') === 'explore';
+  return <NavLinks pathname={pathname} fromExplore={fromExplore} />;
 }
 
 /** Hiện trong lúc chờ đường dẫn ở các route có tham số, chưa đánh dấu mục nào. */
@@ -35,7 +42,7 @@ export function AppNavFallback() {
   return <NavLinks pathname="" />;
 }
 
-function NavLinks({ pathname }: { pathname: string }) {
+function NavLinks({ pathname, fromExplore }: { pathname: string; fromExplore?: boolean }) {
   const { t } = useTranslation();
   return (
     <nav
@@ -44,7 +51,7 @@ function NavLinks({ pathname }: { pathname: string }) {
     >
       <ul className="grid grid-cols-5 md:flex md:gap-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const current = isCurrent(pathname, href);
+          const current = isCurrent(pathname, href, fromExplore);
           return (
             <li key={href}>
               <Link

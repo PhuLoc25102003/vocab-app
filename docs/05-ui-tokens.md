@@ -269,7 +269,7 @@ Dùng `ContextMenu` trong `components/ui/context-menu.tsx` (Radix Context Menu) 
   2. _Sửa bộ từ:_ Mở trang chỉnh sửa (`/sets/:id/edit`).
   3. _Chuyển vào thư mục:_ Menu con (submenu) liệt kê danh sách thư mục cá nhân kèm lựa chọn "Chưa xếp thư mục" để chuyển nhanh ngay tại chỗ.
   4. _Nhập thêm thẻ:_ Dẫn tới trang import thẻ cho bộ này (`/sets/import?setId=:id`).
-  5. _Lưu ngoại tuyến (Tải về máy / Cập nhật / Xoá bản offline):_ Lưu hoặc cập nhật dữ liệu bộ từ vào IndexedDB (`vocab-offline`) của trình duyệt để học Flashcard khi mất mạng.
+  5. _Lưu ngoại tuyến (Tải về máy / Cập nhật / Xoá bản offline):_ Lưu hoặc cập nhật dữ liệu bộ từ vào IndexedDB (`vocab-offline`) của trình duyệt để học ngoại tuyến khi mất mạng (hỗ trợ Flashcard và 8 chế độ học khác qua hộp thoại Chọn chế độ).
   6. _Sao chép liên kết:_ Lưu URL bộ từ vào clipboard kèm toast thông báo.
   7. _Tạo bản sao:_ Nhân bản bộ từ vào tài khoản cá nhân.
   8. _Xoá bộ từ:_ Mục cảnh báo màu đỏ (`danger`), bấm sẽ mở hộp thoại xác nhận xoá an toàn `ConfirmDialog`.
@@ -364,6 +364,10 @@ Số định dạng theo locale bằng `Intl.NumberFormat`.
 
 - **Kéo thả toàn bộ thẻ (`SetCardShell`):** Sử dụng `@dnd-kit/core` để kéo thẻ trực tiếp vào cây thư mục ở cột bên trái (`FolderPanel`). Toàn thẻ có con trỏ `cursor-grab active:cursor-grabbing`. Tối ưu hiệu năng cao: chỉ thẻ bản sao ảo (`DragOverlay`) được mount qua React Portal và di chuyển bằng GPU hardware acceleration (`transform: translate3d`), hoàn toàn không gây re-render hay lag layout của danh sách thẻ trong DOM. Ngưỡng kích hoạt: click chuột bình thường (< 8 px) mở chi tiết bộ từ (`Link`), giữ và rê (>= 8 px) bắt đầu kéo.
 - **Ngăn xung đột kéo thẻ:** Vùng nút ba chấm ⋯ (`actions`) có `onPointerDown={(e) => e.stopPropagation()}` để thao tác bấm mở menu trên mobile/desktop không bị kéo nhầm thẻ.
-- **Giao diện thẻ gọn gàng:** Loại bỏ nút chuyển thư mục rời rạc trên thẻ để tránh trùng lặp; thao tác chuyển thư mục được đưa hoàn toàn vào menu chuột phải và menu ba chấm ⋯.
-- **Quyền Admin trên thẻ bộ từ:** Với tài khoản Quản trị (`ADMIN`), cả menu chuột phải (`ContextMenu`) và menu ba chấm ⋯ (`DropdownMenu`) trên các thẻ ở `/sets` và `/explore` đều bổ sung lựa chọn "Ẩn bộ từ" (icon `EyeOff`, kiểu `danger`), mở hộp thoại nhập lý do vi phạm (`FormDialog`) và làm mới dữ liệu ngay khi xác nhận.
-- **Thứ tự nút hành động trên trang chi tiết:** Nút overflow menu ba chấm `[...]` luôn nằm ở ngoài cùng bên phải của thanh công cụ (`[Sửa bộ từ]` → `[Ẩn bộ từ]` → `[...]`), tuân thủ chuẩn UX phân cấp hành động từ chính đến phụ và menu mở rộng.
+- **Giao diện thẻ gọn gàng:** Loại bỏ nút chuyển thư mục rời rạc trên thẻ để tránh trùng lặp; thao tác chuyển thư mục được đưa hoàn toàn vào menu chuột phải và menu ba chấm ⋯. Bỏ nút sao chép đường dẫn riêng ở dòng meta của chi tiết bộ từ, tích hợp vào menu ba chấm ⋯ (`actions.copyLink`).
+- **Ghim thanh điều hướng (Sticky Header):** Thanh menu header được ghim cố định ở đầu trang (`sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm`) để khi cuộn trang người dùng luôn truy cập nhanh được các mục điều hướng và thông tin tài khoản.
+- **Quyền Admin và Chủ sở hữu trên thẻ và chi tiết bộ từ:**
+  - _Bộ từ của chính mình:_ Người dùng (kể cả Admin) quản lý bộ từ của mình bằng nút chuyển đổi trạng thái Công khai $\leftrightarrow$ Riêng tư (`makePublic` / `makePrivate`), không hiển thị nút "Ẩn bộ từ" vì không cần tự kiểm duyệt bộ từ của bản thân.
+  - _Bộ từ của người khác:_ Quản trị viên (`ADMIN`) có lựa chọn "Ẩn bộ từ" (icon `EyeOff`, kiểu `danger`) để xử lý các bộ từ vi phạm cộng đồng.
+- **Thứ tự nút hành động trên trang chi tiết:** Nút overflow menu ba chấm `[...]` luôn nằm ở ngoài cùng bên phải của thanh công cụ (`[Sửa bộ từ]` → `[Chuyển thành Riêng tư/Ẩn bộ từ]` → `[...]`), tuân thủ chuẩn UX phân cấp hành động từ chính đến phụ và menu mở rộng. Người xem mở từ Khám phá có nút "Quay lại Khám phá" đưa về đúng trang xuất phát.
+- **Đồng bộ khung danh sách (`ListPanel`):** Vùng thân danh sách có kích thước tối thiểu và tối đa (`min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto`). Thanh công cụ `ListToolbar` cố định ở đỉnh, phân trang `ListPager` cố định ở chân khung, chỉ danh sách dữ liệu cuộn nội bộ, tránh tình trạng cuộn trôi mất thanh công cụ và phân trang khi danh sách dài.

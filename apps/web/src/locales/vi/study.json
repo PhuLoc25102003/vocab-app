@@ -89,7 +89,9 @@
     "good": "Làm tốt lắm! Ôn thêm vài thẻ là thuộc hết.",
     "ok": "Khá ổn. Học lại các thẻ sai để nhớ chắc hơn.",
     "start": "Khởi đầu nào cũng cần thời gian. Học lại các thẻ sai nhé.",
-    "backToSet": "Về bộ từ",
+    "backToSet": "Trở về",
+    "return": "Trở về",
+    "backToExplore": "Quay lại Khám phá",
     "done": "Đã xong phiên học",
     "rate": "Tỉ lệ nhớ",
     "score": "Bạn nhớ <0>{{correct}}</0> trên <1>{{total}}</1> thẻ.",
@@ -145,6 +147,10 @@
   },
   "offline": {
     "study": "Học offline",
+    "chooseMode": "Chọn chế độ",
+    "chooseModeTitle": "Chọn chế độ học offline",
+    "chooseModeDescription": "Chọn một chế độ để ôn tập khi không có mạng. Kết quả sẽ được lưu và tự động đồng bộ khi có kết nối lại.",
+    "backToList": "Về danh sách tải về",
     "note": "Kết quả đã lưu trên máy và sẽ được gửi lên khi có mạng.",
     "synced": "Đã gửi {{count}} phiên học offline lên máy chủ",
     "notDownloaded": "Bộ từ chưa được tải về máy"

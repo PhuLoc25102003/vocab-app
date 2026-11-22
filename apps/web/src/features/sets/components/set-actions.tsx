@@ -4,7 +4,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { SetDetail } from '@vocab/shared';
-import { FileUp, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { FileUp, Link2, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,14 @@ export function SetOwnerActions({
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const offline = useOfflineMenu(set);
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/sets/${id}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => toast.success(t('actions.linkCopied')))
+      .catch(() => undefined);
+  };
 
   const openConfirm = () => {
     setError(null);
@@ -71,6 +79,10 @@ export function SetOwnerActions({
             </Link>
           </MenuItem>
           {offline.item}
+          <MenuItem onSelect={handleCopyLink}>
+            <Link2 aria-hidden className="size-4" />
+            <span>{t('actions.copyLink')}</span>
+          </MenuItem>
           <MenuSeparator />
           {/* Đợi menu đóng và trả focus về nút ba chấm, hộp thoại đóng sẽ trả focus về đó. */}
           <MenuItem danger onSelect={() => setTimeout(openConfirm)}>

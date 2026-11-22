@@ -23,10 +23,20 @@ interface ListPanelProps {
   toolbar?: ReactNode;
   /** Thường là `ListPager`. */
   footer?: ReactNode;
+  /** Tuỳ chỉnh class cho vùng thân danh sách. */
+  bodyClassName?: string;
   children: ReactNode;
 }
 
-export function ListPanel({ title, count, actions, toolbar, footer, children }: ListPanelProps) {
+export function ListPanel({
+  title,
+  count,
+  actions,
+  toolbar,
+  footer,
+  bodyClassName,
+  children,
+}: ListPanelProps) {
   const { i18n } = useTranslation();
   const titleId = useId();
   return (
@@ -48,7 +58,14 @@ export function ListPanel({ title, count, actions, toolbar, footer, children }: 
         </div>
         {toolbar}
       </div>
-      <div className="flex min-w-0 flex-col px-4 py-2">{children}</div>
+      <div
+        className={cn(
+          'flex min-w-0 flex-col px-4 py-2 min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto',
+          bodyClassName,
+        )}
+      >
+        {children}
+      </div>
       {footer ? <div className="border-t border-border px-4 py-3">{footer}</div> : null}
     </section>
   );

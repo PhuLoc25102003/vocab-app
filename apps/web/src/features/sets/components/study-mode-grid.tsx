@@ -37,16 +37,19 @@ interface StudyModeGridProps {
   setId: string;
   /** Khách học thử ở trang công khai, không có lộ trình và không lưu tiến độ. */
   guest?: boolean;
+  /** Giữ ngữ cảnh Khám phá cho các liên kết học. */
+  fromExplore?: boolean;
 }
 
 /**
  * "Bắt đầu học" chạy lộ trình nhiều kỹ năng liên tiếp. Từng chế độ, kể cả Flashcard,
  * xếp thành lưới để học lẻ. Khách thấy nút "Học thử" bằng Flashcard thay cho lộ trình.
  */
-export function StudyModeGrid({ setId, guest = false }: StudyModeGridProps) {
+export function StudyModeGrid({ setId, guest = false, fromExplore = false }: StudyModeGridProps) {
   const { t } = useTranslation('sets');
+  const query = fromExplore ? '?from=explore' : '';
   const base = guest ? `/public/sets/${setId}/study` : `/sets/${setId}/study`;
-  const href = (slug: string) => `${base}/${slug}` as Route;
+  const href = (slug: string) => `${base}/${slug}${query}` as Route;
   const main = guest
     ? {
         href: href('flashcard'),
@@ -55,7 +58,7 @@ export function StudyModeGrid({ setId, guest = false }: StudyModeGridProps) {
         hint: t('grid.guestHint'),
       }
     : {
-        href: href('path'),
+        href: `${base}/path${query}` as Route,
         icon: Route2,
         label: t('grid.pathLabel'),
         hint: t('grid.pathHint'),

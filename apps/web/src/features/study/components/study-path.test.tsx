@@ -93,4 +93,18 @@ describe('StudyPath', () => {
 
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/set1'));
   });
+
+  it('giữ query param ?from=explore khi vào từ Khám phá', async () => {
+    vi.mocked(accountStudyBackend.start).mockRejectedValue(
+      new HttpError('Không có câu hỏi', 422, ERROR_CODES.NO_QUESTIONS_FOR_MODE),
+    );
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={client}>
+        <StudyPath setId="set1" step={3} fromExplore />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/set1?from=explore'));
+  });
 });

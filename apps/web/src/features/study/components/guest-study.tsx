@@ -19,6 +19,7 @@ export function GuestStudy({ setId, mode }: { setId: string; mode: StudyMode }) 
       setId={setId}
       mode={mode}
       exitHref={`/public/sets/${setId}` as Route}
+      exitLabel={t('result.return')}
       resultNote={
         <p className="text-small text-text-muted">
           {t('guest.note')}{' '}

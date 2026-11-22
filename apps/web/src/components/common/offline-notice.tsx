@@ -1,5 +1,6 @@
 'use client';
 
+import type { SetDetail } from '@vocab/shared';
 import { WifiOff } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ export function OfflineNotice({
   renderSetAction,
 }: {
   /** Hành động cho từng bộ đã tải, ví dụ học offline. */
-  renderSetAction?: (setId: string) => ReactNode;
+  renderSetAction?: (setId: string, set?: SetDetail) => ReactNode;
 } = {}) {
   const { t, i18n } = useTranslation();
   const [sets, setSets] = useState<OfflineSet[] | null>(null);
@@ -53,7 +54,9 @@ export function OfflineNotice({
                       })}
                     </span>
                   </summary>
-                  {renderSetAction ? <div className="py-2">{renderSetAction(set.id)}</div> : null}
+                  {renderSetAction ? (
+                    <div className="py-2">{renderSetAction(set.id, set)}</div>
+                  ) : null}
                   <ol className="border-t border-border">
                     {set.cards.map((card) => (
                       <li
