@@ -46,7 +46,8 @@
     "cancel": "Cancel",
     "close": "Close",
     "retry": "Try again",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "pageActions": "Page actions"
   },
   "copyLink": {
     "done": "Link copied",

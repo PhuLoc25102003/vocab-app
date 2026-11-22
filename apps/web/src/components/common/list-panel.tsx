@@ -72,6 +72,7 @@ export function ListPanel({
 }
 
 export interface ListTab {
+  key?: string;
   label: string;
   href: Route;
   current: boolean;
@@ -103,7 +104,7 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
         <nav aria-label={t('list.statusFilter')} className="flex flex-wrap gap-1">
           {tabs.map((tab) => (
             <Link
-              key={tab.href}
+              key={tab.key ?? `${tab.label}-${tab.href}`}
               href={tab.href}
               aria-current={tab.current ? 'page' : undefined}
               className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-small font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
@@ -157,11 +158,13 @@ export function ListPager({
   pageSize,
   total,
   hrefFor,
+  onPageChange,
 }: {
   page: number;
   pageSize: number;
   total: number;
-  hrefFor: (page: number) => Route;
+  hrefFor?: (page: number) => Route;
+  onPageChange?: (page: number) => void;
 }) {
   const { t, i18n } = useTranslation();
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -172,7 +175,13 @@ export function ListPager({
       <p className="text-small text-text-muted tabular-nums">
         {t('list.range', { from, to, total: formatNum(total, i18n.language) })}
       </p>
-      {pageCount > 1 ? <Pagination page={page} pageCount={pageCount} hrefFor={hrefFor} /> : null}
+      {pageCount > 1 ? (
+        hrefFor ? (
+          <Pagination page={page} pageCount={pageCount} hrefFor={hrefFor} />
+        ) : onPageChange ? (
+          <Pagination page={page} pageCount={pageCount} onPageChange={onPageChange} />
+        ) : null
+      ) : null}
     </div>
   );
 }

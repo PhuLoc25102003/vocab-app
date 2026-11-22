@@ -2,17 +2,18 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AdminClassItem, AdminTeacherItem, AdminUnassignedStudent } from '@vocab/shared';
-import { ChevronDown, School, UserCheck, UserMinus } from 'lucide-react';
+import { ChevronDown, Lock, School, Unlock, UserCheck, UserMinus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { DataTableContainer, DataTableHeader, DataTableRow } from '@/components/common/data-table';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { ListNoMatch, ListPanel } from '@/components/common/list-panel';
+import { ListNoMatch, ListPager, ListPanel } from '@/components/common/list-panel';
 import { LoadingState } from '@/components/common/loading-state';
-import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
@@ -22,7 +23,20 @@ import { LockDialog } from './lock-dialog';
 
 const TEACHERS_PAGE_SIZE = 5;
 const UNASSIGNED_PAGE_SIZE = 10;
+
+const TEACHER_GRID =
+  'minmax(220px, 2fr) minmax(110px, 1fr) minmax(130px, 1fr) minmax(165px, 1.2fr)';
+const CLASS_GRID =
+  'minmax(180px, 1.8fr) minmax(120px, 1fr) minmax(110px, 0.9fr) minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1.2fr)';
+const CLASS_STUDENT_GRID = 'minmax(180px, 1.5fr) minmax(200px, 1.8fr) minmax(150px, 1fr)';
+const UNASSIGNED_GRID =
+  'minmax(170px, 1.4fr) minmax(190px, 1.6fr) minmax(130px, 1fr) minmax(140px, 1.1fr) minmax(110px, 0.9fr)';
+
+type TeacherFilterTab = 'all' | 'has_classes' | 'no_classes';
+type TeacherSortOption = 'name_asc' | 'most_classes' | 'most_students' | 'newest';
+
 type UnassignedStatusTab = 'all' | 'active' | 'locked';
+type UnassignedSortOption = 'newest' | 'oldest' | 'name_asc' | 'email_asc';
 
 function StatTile({
   label,
@@ -63,79 +77,131 @@ function TeacherClassRow({ item }: { item: AdminClassItem }) {
 
   return (
     <div className="rounded-md border border-border bg-surface-elevated/20 p-3">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <div className="flex min-w-0 flex-1 basis-64 flex-col gap-0.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-text wrap-anywhere">{item.name}</span>
-            <span className="rounded-sm bg-primary-soft px-2 py-0.5 text-tiny font-medium text-primary">
-              {t('classes.code')}: {item.joinCode}
-            </span>
-            {item.archivedAt ? (
-              <span className="rounded-sm bg-border px-2 py-0.5 text-tiny text-text-muted">
-                {t('classes.archived')}
-              </span>
-            ) : null}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-3 text-tiny text-text-muted">
-            <span>{t('classes.membersCount', { count: item.memberCount })}</span>
-            <span>•</span>
-            <span>{t('classes.assignmentsCount', { count: item.assignmentCount })}</span>
-          </div>
+      <div style={{ gridTemplateColumns: CLASS_GRID }} className="grid items-center gap-3">
+        {/* Tên lớp */}
+        <div className="min-w-0">
+          <span className="font-semibold text-text text-body truncate block" title={item.name}>
+            {item.name}
+          </span>
+          {item.description ? (
+            <p className="text-small text-text-muted truncate block" title={item.description}>
+              {item.description}
+            </p>
+          ) : null}
         </div>
 
-        <Button
-          variant="ghost"
-          className="gap-1.5 text-small text-primary"
-          onClick={() => setStudentsExpanded((prev) => !prev)}
-          aria-expanded={studentsExpanded}
-        >
-          <span>
-            {studentsExpanded
-              ? t('classes.hideStudents')
-              : t('classes.viewStudents', { count: item.memberCount })}
+        {/* Mã tham gia */}
+        <div>
+          <span className="rounded-sm bg-primary-soft px-2 py-0.5 font-mono text-tiny font-medium text-primary whitespace-nowrap inline-block">
+            {t('classes.code')}: {item.joinCode}
           </span>
-          <ChevronDown
-            aria-hidden
-            className={cn(
-              'size-4 transition-transform duration-fast',
-              studentsExpanded && 'rotate-180',
-            )}
-          />
-        </Button>
+        </div>
+
+        {/* Số học sinh */}
+        <div className="text-small text-text-muted text-center tabular-nums whitespace-nowrap">
+          {t('classes.membersCount', { count: item.memberCount })}
+        </div>
+
+        {/* Số bài tập */}
+        <div className="text-small text-text-muted text-center tabular-nums whitespace-nowrap">
+          {t('classes.assignmentsCount', { count: item.assignmentCount })}
+        </div>
+
+        {/* Trạng thái */}
+        <div className="text-center">
+          {item.archivedAt ? (
+            <span className="rounded-sm bg-border px-2 py-0.5 text-tiny text-text-muted whitespace-nowrap inline-block">
+              {t('classes.archived')}
+            </span>
+          ) : (
+            <span className="rounded-sm bg-success-soft px-2 py-0.5 text-tiny font-medium text-success whitespace-nowrap inline-block">
+              {t('active')}
+            </span>
+          )}
+        </div>
+
+        {/* Action: Xem học sinh */}
+        <div className="flex justify-end">
+          <Button
+            variant="ghost"
+            className="gap-1.5 text-small text-primary whitespace-nowrap h-9 px-2.5"
+            onClick={() => setStudentsExpanded((prev) => !prev)}
+            aria-expanded={studentsExpanded}
+          >
+            <Users aria-hidden className="size-4 shrink-0" />
+            <span>
+              {studentsExpanded
+                ? t('classes.hideStudents')
+                : t('classes.viewStudents', { count: item.memberCount })}
+            </span>
+            <ChevronDown
+              aria-hidden
+              className={cn(
+                'size-4 transition-transform duration-fast shrink-0',
+                studentsExpanded && 'rotate-180',
+              )}
+            />
+          </Button>
+        </div>
       </div>
 
+      {/* Danh sách học sinh bên trong lớp */}
       {studentsExpanded ? (
         <div className="mt-3 rounded-md border border-border bg-surface-elevated/40 p-3">
           <h5 className="mb-2 text-tiny font-semibold uppercase tracking-wider text-text-muted">
             {t('classes.studentList')} ({item.members.length})
           </h5>
           {item.members.length === 0 ? (
-            <p className="text-small text-text-muted">{t('classes.noStudents')}</p>
+            <p className="py-1 text-small text-text-muted">{t('classes.noStudents')}</p>
           ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {item.members.map((member) => {
-                const joinedDate = new Intl.DateTimeFormat(
-                  i18n.language === 'en' ? 'en-US' : 'vi-VN',
-                  { dateStyle: 'short' },
-                ).format(new Date(member.joinedAt));
-                return (
-                  <li
-                    key={member.id}
-                    className="flex flex-wrap items-center justify-between gap-2 py-1.5 text-small"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-success shrink-0" />
-                      <span className="font-medium text-text">{member.displayName}</span>
-                      <span className="text-text-muted">({member.email})</span>
+            <DataTableContainer minWidth="min-w-[550px]">
+              <DataTableHeader
+                gridTemplateColumns={CLASS_STUDENT_GRID}
+                columns={[
+                  { label: t('classes.thStudent') },
+                  { label: t('classes.thEmail') },
+                  { label: t('classes.thJoinedAt'), align: 'right' },
+                ]}
+              />
+              <div className="flex flex-col divide-y divide-border">
+                {item.members.map((member) => {
+                  const initial =
+                    member.displayName.trim().charAt(0).toLocaleUpperCase('vi') || '?';
+                  const joinedDate = new Intl.DateTimeFormat(
+                    i18n.language === 'en' ? 'en-US' : 'vi-VN',
+                    { dateStyle: 'short' },
+                  ).format(new Date(member.joinedAt));
+                  return (
+                    <div
+                      key={member.id}
+                      style={{ gridTemplateColumns: CLASS_STUDENT_GRID }}
+                      className="grid items-center gap-3 py-2 text-small"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span
+                          aria-hidden
+                          className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-tiny font-semibold text-primary"
+                        >
+                          {initial}
+                        </span>
+                        <span
+                          className="font-medium text-text truncate block min-w-0"
+                          title={member.displayName}
+                        >
+                          {member.displayName}
+                        </span>
+                      </div>
+                      <span className="text-text-muted truncate block min-w-0" title={member.email}>
+                        {member.email}
+                      </span>
+                      <span className="text-tiny text-text-muted text-right whitespace-nowrap">
+                        {t('classes.joinedAt', { date: joinedDate })}
+                      </span>
                     </div>
-                    <span className="text-tiny text-text-muted">
-                      {t('classes.joinedAt', { date: joinedDate })}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+                  );
+                })}
+              </div>
+            </DataTableContainer>
           )}
         </div>
       ) : null}
@@ -149,53 +215,92 @@ function TeacherRow({ teacher }: { teacher: AdminTeacherItem }) {
   const initial = teacher.displayName.trim().charAt(0).toLocaleUpperCase('vi') || '?';
 
   return (
-    <li className="flex flex-col border-b border-border py-4 last:border-b-0 sm:px-2">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-        <div className="flex items-center gap-3">
+    <li className="flex flex-col border-b border-border py-3 last:border-b-0 px-3 hover:bg-surface-elevated/20 transition-colors">
+      <div style={{ gridTemplateColumns: TEACHER_GRID }} className="grid items-center gap-4">
+        {/* Cột 1: Thông tin Giáo viên */}
+        <div className="flex items-center gap-3 min-w-0">
           <span
             aria-hidden
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary font-bold text-body"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-body font-bold text-primary"
           >
             {initial}
           </span>
-          <div className="flex flex-col">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-text text-body">{teacher.displayName}</span>
-              <span className="rounded-sm bg-primary-soft/60 px-2 py-0.5 text-tiny font-medium text-primary">
-                {t('classes.classesCount', { count: teacher.classCount })}
-              </span>
-              <span className="rounded-sm bg-surface-elevated px-2 py-0.5 text-tiny text-text-muted">
-                {t('classes.membersCount', { count: teacher.totalStudents })}
-              </span>
-            </div>
-            <span className="text-small text-text-muted">{teacher.email}</span>
+          <div className="flex flex-col min-w-0">
+            <span
+              className="font-semibold text-text text-body truncate block"
+              title={teacher.displayName}
+            >
+              {teacher.displayName}
+            </span>
+            <span className="text-small text-text-muted truncate block" title={teacher.email}>
+              {teacher.email}
+            </span>
           </div>
         </div>
 
-        <Button
-          variant="secondary"
-          className="gap-1.5 text-small"
-          onClick={() => setExpanded((prev) => !prev)}
-          aria-expanded={expanded}
-        >
-          <span>
-            {expanded
-              ? t('classes.hideClasses')
-              : t('classes.viewClasses', { count: teacher.classCount })}
+        {/* Cột 2: Số lớp học */}
+        <div className="text-small text-center whitespace-nowrap">
+          <span className="rounded-sm bg-primary-soft/60 px-2.5 py-1 text-tiny font-medium text-primary tabular-nums inline-block">
+            {t('classes.classesCount', { count: teacher.classCount })}
           </span>
-          <ChevronDown
-            aria-hidden
-            className={cn('size-4 transition-transform duration-fast', expanded && 'rotate-180')}
-          />
-        </Button>
+        </div>
+
+        {/* Cột 3: Tổng học sinh */}
+        <div className="text-small text-center whitespace-nowrap">
+          <span className="rounded-sm bg-surface-elevated px-2.5 py-1 text-tiny font-medium text-text-muted tabular-nums inline-block">
+            {t('classes.membersCount', { count: teacher.totalStudents })}
+          </span>
+        </div>
+
+        {/* Cột 4 (Action): Thao tác mở rộng */}
+        <div className="flex justify-end">
+          <Button
+            variant="secondary"
+            className="w-full gap-1.5 text-small whitespace-nowrap h-9 px-3"
+            onClick={() => setExpanded((prev) => !prev)}
+            aria-expanded={expanded}
+          >
+            <School aria-hidden className="size-4 shrink-0 text-text-muted" />
+            <span>
+              {expanded
+                ? t('classes.hideClasses')
+                : t('classes.viewClasses', { count: teacher.classCount })}
+            </span>
+            <ChevronDown
+              aria-hidden
+              className={cn(
+                'size-4 transition-transform duration-fast shrink-0',
+                expanded && 'rotate-180',
+              )}
+            />
+          </Button>
+        </div>
       </div>
 
+      {/* Danh sách lớp học dạng bảng con khi bấm mở rộng */}
       {expanded ? (
         <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-surface p-3.5">
           {teacher.classes.length === 0 ? (
-            <p className="text-small text-text-muted py-2">{t('classes.noClassesForTeacher')}</p>
+            <p className="py-2 text-small text-text-muted">{t('classes.noClassesForTeacher')}</p>
           ) : (
-            teacher.classes.map((c) => <TeacherClassRow key={c.id} item={c} />)
+            <DataTableContainer minWidth="min-w-[820px]">
+              <DataTableHeader
+                gridTemplateColumns={CLASS_GRID}
+                columns={[
+                  { label: t('classes.thClassName') },
+                  { label: t('classes.thJoinCode') },
+                  { label: t('classes.thMembers'), align: 'center' },
+                  { label: t('classes.thAssignments'), align: 'center' },
+                  { label: t('classes.thStatus'), align: 'center' },
+                  { label: t('classes.thAction'), align: 'right' },
+                ]}
+              />
+              <div className="flex flex-col gap-2 pt-2">
+                {teacher.classes.map((c) => (
+                  <TeacherClassRow key={c.id} item={c} />
+                ))}
+              </div>
+            </DataTableContainer>
           )}
         </div>
       ) : null}
@@ -229,70 +334,88 @@ function UnassignedStudentRow({
         queryClient.invalidateQueries({ queryKey: adminKeys.users }),
         queryClient.invalidateQueries({ queryKey: adminKeys.stats }),
       ]);
-      toast.success(t('classes.unlockSuccess'));
+      toast.success(t('unlocked', { email: student.email }));
       onUnlockSuccess();
     },
     onError: (error) => toast.error(formErrorMessage(error)),
   });
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-1 sm:px-2">
-      <div className="flex items-center gap-3 min-w-0 flex-1 basis-64">
+    <DataTableRow gridTemplateColumns={UNASSIGNED_GRID}>
+      {/* Cột 1: Học sinh (Avatar + Tên) */}
+      <div className="flex items-center gap-3 min-w-0">
         <span
           aria-hidden
           className={cn(
-            'flex size-10 shrink-0 items-center justify-center rounded-full font-semibold text-small',
-            isLocked ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning',
+            'flex size-11 shrink-0 items-center justify-center rounded-full font-semibold',
+            isLocked ? 'bg-danger-soft text-danger' : 'bg-primary-soft text-primary',
           )}
         >
           {initial}
         </span>
-        <div className="flex flex-col min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-text wrap-anywhere">{student.displayName}</span>
-            {isLocked ? (
-              <span className="rounded-sm bg-danger-soft px-2 py-0.5 text-tiny font-medium text-danger">
-                {t('locked')}
-              </span>
-            ) : (
-              <span className="rounded-sm bg-success-soft px-2 py-0.5 text-tiny font-medium text-success">
-                {t('active')}
-              </span>
-            )}
-          </div>
-          <span className="text-small text-text-muted truncate">{student.email}</span>
-          {isLocked && student.lockReason ? (
-            <span className="text-tiny text-danger wrap-anywhere">
-              {t('lockedReason', { reason: student.lockReason })}
-            </span>
-          ) : null}
-          <span className="text-tiny text-text-muted mt-0.5">
-            {t('classes.registeredAt', { date: createdDate })}
-          </span>
-        </div>
+        <span
+          className="font-semibold text-text text-body truncate block min-w-0"
+          title={student.displayName}
+        >
+          {student.displayName}
+        </span>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
+      {/* Cột 2: Email */}
+      <div className="text-small text-text-muted min-w-0">
+        <span className="truncate block" title={student.email}>
+          {student.email}
+        </span>
+      </div>
+
+      {/* Cột 3: Ngày đăng ký */}
+      <div className="text-small text-text-muted tabular-nums whitespace-nowrap">{createdDate}</div>
+
+      {/* Cột 4: Trạng thái (đồng bộ phong cách với trang Người dùng) */}
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-tiny font-medium w-fit whitespace-nowrap',
+            isLocked ? 'bg-danger-soft text-danger' : 'bg-success-soft text-success',
+          )}
+        >
+          <span aria-hidden className="size-1.5 rounded-full bg-current" />
+          {isLocked ? t('locked') : t('active')}
+        </span>
+        {isLocked && student.lockReason ? (
+          <span
+            className="text-tiny text-danger truncate block max-w-xs"
+            title={student.lockReason}
+          >
+            {t('lockedReason', { reason: student.lockReason })}
+          </span>
+        ) : null}
+      </div>
+
+      {/* Cột 5 (Action): Thao tác Khoá / Mở khoá (đồng bộ với trang Người dùng) */}
+      <div className="flex justify-end">
         {isLocked ? (
           <Button
             variant="secondary"
-            className="h-9 px-3 text-small"
+            className="gap-1.5 text-small whitespace-nowrap h-9 px-3"
             loading={unlock.isPending}
             onClick={() => unlock.mutate()}
           >
-            {t('classes.unlockStudent')}
+            <Unlock aria-hidden className="size-4 shrink-0 text-success" />
+            {t('unlock')}
           </Button>
         ) : (
           <Button
             variant="secondary"
-            className="h-9 px-3 text-small"
+            className="gap-1.5 text-small whitespace-nowrap h-9 px-3"
             onClick={() => onLockClick(student)}
           >
-            {t('classes.lockStudent')}
+            <Lock aria-hidden className="size-4 shrink-0 text-danger" />
+            {t('lock.button')}
           </Button>
         )}
       </div>
-    </li>
+    </DataTableRow>
   );
 }
 
@@ -312,11 +435,17 @@ export function AdminClassesLoading() {
 
 export function AdminClasses() {
   const { t } = useTranslation('admin');
+
+  // Bộ lọc bảng Giáo viên
   const [teacherFilter, setTeacherFilter] = useState('');
+  const [teacherStatusTab, setTeacherStatusTab] = useState<TeacherFilterTab>('all');
+  const [teacherSort, setTeacherSort] = useState<TeacherSortOption>('name_asc');
   const [teacherPage, setTeacherPage] = useState(1);
 
+  // Bộ lọc bảng Học sinh chưa có lớp
   const [unassignedFilter, setUnassignedFilter] = useState('');
   const [unassignedStatus, setUnassignedStatus] = useState<UnassignedStatusTab>('all');
+  const [unassignedSort, setUnassignedSort] = useState<UnassignedSortOption>('newest');
   const [unassignedPage, setUnassignedPage] = useState(1);
 
   const [lockTarget, setLockTarget] = useState<AdminUnassignedStudent | null>(null);
@@ -347,25 +476,38 @@ export function AdminClasses() {
   const data = overview.data;
   const teachers = data.teachers ?? [];
 
-  // Lọc danh sách giáo viên
+  // Lọc và sắp xếp danh sách giáo viên
   const qTeacher = teacherFilter.trim().toLowerCase();
-  const filteredTeachers = teachers.filter((teacher) => {
-    if (!qTeacher) return true;
-    const matchTeacher =
-      teacher.displayName.toLowerCase().includes(qTeacher) ||
-      teacher.email.toLowerCase().includes(qTeacher);
-    const matchClasses = teacher.classes.some(
-      (c) =>
-        c.name.toLowerCase().includes(qTeacher) ||
-        c.joinCode.toLowerCase().includes(qTeacher) ||
-        c.members.some(
-          (m) =>
-            m.displayName.toLowerCase().includes(qTeacher) ||
-            m.email.toLowerCase().includes(qTeacher),
-        ),
-    );
-    return matchTeacher || matchClasses;
-  });
+  const filteredTeachers = teachers
+    .filter((teacher) => {
+      // Lọc theo tab trạng thái lớp
+      if (teacherStatusTab === 'has_classes' && teacher.classCount === 0) return false;
+      if (teacherStatusTab === 'no_classes' && teacher.classCount > 0) return false;
+
+      // Tìm kiếm từ khoá ngập khung
+      if (!qTeacher) return true;
+      const matchTeacher =
+        teacher.displayName.toLowerCase().includes(qTeacher) ||
+        teacher.email.toLowerCase().includes(qTeacher);
+      const matchClasses = teacher.classes.some(
+        (c) =>
+          c.name.toLowerCase().includes(qTeacher) ||
+          c.joinCode.toLowerCase().includes(qTeacher) ||
+          c.members.some(
+            (m) =>
+              m.displayName.toLowerCase().includes(qTeacher) ||
+              m.email.toLowerCase().includes(qTeacher),
+          ),
+      );
+      return matchTeacher || matchClasses;
+    })
+    .sort((a, b) => {
+      if (teacherSort === 'most_classes') return b.classCount - a.classCount;
+      if (teacherSort === 'most_students') return b.totalStudents - a.totalStudents;
+      if (teacherSort === 'newest')
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return a.displayName.localeCompare(b.displayName, 'vi');
+    });
 
   const teacherPageCount = Math.max(1, Math.ceil(filteredTeachers.length / TEACHERS_PAGE_SIZE));
   const currentTeacherPage = Math.min(teacherPage, teacherPageCount);
@@ -374,17 +516,28 @@ export function AdminClasses() {
     currentTeacherPage * TEACHERS_PAGE_SIZE,
   );
 
-  // Lọc danh sách học sinh chưa có lớp
+  // Lọc và sắp xếp danh sách học sinh chưa có lớp
   const qUnassigned = unassignedFilter.trim().toLowerCase();
-  const filteredUnassigned = data.unassignedStudents.filter((student) => {
-    if (unassignedStatus === 'active' && student.lockedAt) return false;
-    if (unassignedStatus === 'locked' && !student.lockedAt) return false;
-    if (!qUnassigned) return true;
-    return (
-      student.displayName.toLowerCase().includes(qUnassigned) ||
-      student.email.toLowerCase().includes(qUnassigned)
-    );
-  });
+  const filteredUnassigned = data.unassignedStudents
+    .filter((student) => {
+      // Lọc theo tab trạng thái
+      if (unassignedStatus === 'active' && student.lockedAt) return false;
+      if (unassignedStatus === 'locked' && !student.lockedAt) return false;
+
+      // Tìm kiếm từ khoá ngập khung
+      if (!qUnassigned) return true;
+      return (
+        student.displayName.toLowerCase().includes(qUnassigned) ||
+        student.email.toLowerCase().includes(qUnassigned)
+      );
+    })
+    .sort((a, b) => {
+      if (unassignedSort === 'oldest')
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (unassignedSort === 'name_asc') return a.displayName.localeCompare(b.displayName, 'vi');
+      if (unassignedSort === 'email_asc') return a.email.localeCompare(b.email);
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
   const unassignedPageCount = Math.max(
     1,
@@ -428,35 +581,74 @@ export function AdminClasses() {
         title={t('classes.byTeacherTitle')}
         count={teachers.length}
         toolbar={
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <Input
-              type="search"
-              placeholder={t('classes.searchTeacherPlaceholder')}
-              value={teacherFilter}
-              onChange={(e) => {
-                setTeacherFilter(e.target.value);
-                setTeacherPage(1);
-              }}
-              className="max-w-md"
-            />
+          <div className="flex flex-col gap-3">
+            {/* Tabs lọc trạng thái lớp */}
+            <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-2">
+              {(['all', 'has_classes', 'no_classes'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => {
+                    setTeacherStatusTab(tab);
+                    setTeacherPage(1);
+                  }}
+                  className={cn(
+                    'rounded-md px-3 py-1.5 text-small font-medium transition-colors',
+                    teacherStatusTab === tab
+                      ? 'bg-primary text-primary-fg shadow-sm'
+                      : 'text-text-muted hover:bg-surface-elevated hover:text-text',
+                  )}
+                >
+                  {t(`classes.teacherFilterStatus.${tab}`)}
+                </button>
+              ))}
+            </div>
+
+            {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="relative w-full flex-1">
+                <Input
+                  type="search"
+                  placeholder={t('classes.searchTeacherPlaceholder')}
+                  value={teacherFilter}
+                  onChange={(e) => {
+                    setTeacherFilter(e.target.value);
+                    setTeacherPage(1);
+                  }}
+                  className="w-full"
+                />
+              </div>
+              <div className="w-full sm:w-56 shrink-0">
+                <Select
+                  aria-label={t('classes.teacherSort')}
+                  value={teacherSort}
+                  onChange={(e) => setTeacherSort(e.target.value as TeacherSortOption)}
+                >
+                  <option value="name_asc">{t('classes.teacherSorts.name_asc')}</option>
+                  <option value="most_classes">{t('classes.teacherSorts.most_classes')}</option>
+                  <option value="most_students">{t('classes.teacherSorts.most_students')}</option>
+                  <option value="newest">{t('classes.teacherSorts.newest')}</option>
+                </Select>
+              </div>
+            </div>
           </div>
         }
         footer={
-          filteredTeachers.length > TEACHERS_PAGE_SIZE ? (
-            <Pagination
-              page={currentTeacherPage}
-              pageCount={teacherPageCount}
-              onPageChange={setTeacherPage}
-            />
-          ) : null
+          <ListPager
+            page={currentTeacherPage}
+            pageSize={TEACHERS_PAGE_SIZE}
+            total={filteredTeachers.length}
+            onPageChange={setTeacherPage}
+          />
         }
       >
         {filteredTeachers.length === 0 ? (
-          teacherFilter ? (
+          teacherFilter || teacherStatusTab !== 'all' ? (
             <ListNoMatch
               text={t('classes.noTeacherMatch')}
               onClear={() => {
                 setTeacherFilter('');
+                setTeacherStatusTab('all');
                 setTeacherPage(1);
               }}
             />
@@ -467,11 +659,22 @@ export function AdminClasses() {
             />
           )
         ) : (
-          <ul aria-label={t('classes.byTeacherTitle')} className="flex flex-col">
-            {pagedTeachers.map((teacher) => (
-              <TeacherRow key={teacher.id} teacher={teacher} />
-            ))}
-          </ul>
+          <DataTableContainer minWidth="min-w-[650px]">
+            <DataTableHeader
+              gridTemplateColumns={TEACHER_GRID}
+              columns={[
+                { label: t('classes.thTeacher') },
+                { label: t('classes.thClassesCount'), align: 'center' },
+                { label: t('classes.thStudentsCount'), align: 'center' },
+                { label: t('classes.thAction'), align: 'right' },
+              ]}
+            />
+            <ul aria-label={t('classes.byTeacherTitle')} className="flex flex-col">
+              {pagedTeachers.map((teacher) => (
+                <TeacherRow key={teacher.id} teacher={teacher} />
+              ))}
+            </ul>
+          </DataTableContainer>
         )}
       </ListPanel>
 
@@ -481,6 +684,7 @@ export function AdminClasses() {
         count={data.unassignedStudents.length}
         toolbar={
           <div className="flex flex-col gap-3">
+            {/* Tabs lọc trạng thái tài khoản */}
             <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-2">
               {(['all', 'active', 'locked'] as const).map((tab) => (
                 <button
@@ -502,28 +706,42 @@ export function AdminClasses() {
               ))}
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <Input
-                type="search"
-                placeholder={t('classes.searchUnassignedPlaceholder')}
-                value={unassignedFilter}
-                onChange={(e) => {
-                  setUnassignedFilter(e.target.value);
-                  setUnassignedPage(1);
-                }}
-                className="max-w-md"
-              />
+            {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="relative w-full flex-1">
+                <Input
+                  type="search"
+                  placeholder={t('classes.searchUnassignedPlaceholder')}
+                  value={unassignedFilter}
+                  onChange={(e) => {
+                    setUnassignedFilter(e.target.value);
+                    setUnassignedPage(1);
+                  }}
+                  className="w-full"
+                />
+              </div>
+              <div className="w-full sm:w-56 shrink-0">
+                <Select
+                  aria-label={t('classes.unassignedSort')}
+                  value={unassignedSort}
+                  onChange={(e) => setUnassignedSort(e.target.value as UnassignedSortOption)}
+                >
+                  <option value="newest">{t('classes.unassignedSorts.newest')}</option>
+                  <option value="oldest">{t('classes.unassignedSorts.oldest')}</option>
+                  <option value="name_asc">{t('classes.unassignedSorts.name_asc')}</option>
+                  <option value="email_asc">{t('classes.unassignedSorts.email_asc')}</option>
+                </Select>
+              </div>
             </div>
           </div>
         }
         footer={
-          filteredUnassigned.length > UNASSIGNED_PAGE_SIZE ? (
-            <Pagination
-              page={currentUnassignedPage}
-              pageCount={unassignedPageCount}
-              onPageChange={setUnassignedPage}
-            />
-          ) : null
+          <ListPager
+            page={currentUnassignedPage}
+            pageSize={UNASSIGNED_PAGE_SIZE}
+            total={filteredUnassigned.length}
+            onPageChange={setUnassignedPage}
+          />
         }
       >
         {filteredUnassigned.length === 0 ? (
@@ -543,19 +761,28 @@ export function AdminClasses() {
             />
           )
         ) : (
-          <ul
-            aria-label={t('classes.unassignedTitle')}
-            className="flex flex-col divide-y divide-border"
-          >
-            {pagedUnassigned.map((student) => (
-              <UnassignedStudentRow
-                key={student.id}
-                student={student}
-                onLockClick={(s) => setLockTarget(s)}
-                onUnlockSuccess={() => void overview.refetch()}
-              />
-            ))}
-          </ul>
+          <DataTableContainer minWidth="min-w-[760px]">
+            <DataTableHeader
+              gridTemplateColumns={UNASSIGNED_GRID}
+              columns={[
+                { label: t('classes.thStudent') },
+                { label: t('classes.thEmail') },
+                { label: t('classes.thRegisteredAt') },
+                { label: t('classes.thStatus') },
+                { label: t('classes.thAction'), align: 'right' },
+              ]}
+            />
+            <ul aria-label={t('classes.unassignedTitle')} className="flex flex-col">
+              {pagedUnassigned.map((student) => (
+                <UnassignedStudentRow
+                  key={student.id}
+                  student={student}
+                  onLockClick={(s) => setLockTarget(s)}
+                  onUnlockSuccess={() => void overview.refetch()}
+                />
+              ))}
+            </ul>
+          </DataTableContainer>
         )}
       </ListPanel>
 

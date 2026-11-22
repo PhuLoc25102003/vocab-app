@@ -18,6 +18,12 @@ import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { ListNoMatch, ListPager, ListPanel, ListToolbar } from '@/components/common/list-panel';
+import {
+  DataTableContainer,
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell,
+} from '@/components/common/data-table';
 import { PageHeader } from '@/components/common/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
@@ -99,41 +105,59 @@ function SummaryView({ summary }: { summary: AssignmentSummary }) {
   );
 }
 
+const RESULT_GRID = 'minmax(180px, 1.2fr) 140px minmax(300px, 2fr) 180px';
+
 function ResultRow({ classId, row }: { classId: string; row: AssignmentResult }) {
   const { t } = useTranslation(['classes', 'common']);
   const { label, icon: Icon, className } = PROGRESS_STATUS[row.progressStatus];
   return (
-    <li className="grid min-h-14 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 border-b border-border/80 px-4 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft/30 last:border-b-0 sm:grid-cols-[2fr_1fr_2fr_auto]">
-      <Link
-        href={`/classes/${classId}/members/${row.userId}` as Route}
-        className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 wrap-anywhere hover:underline"
-      >
-        {row.displayName}
-      </Link>
-      <span className={cn('flex items-center gap-1.5 font-medium', className)}>
-        <Icon aria-hidden className="size-4 shrink-0" />
-        {t(label)}
-      </span>
-      <ul
-        aria-label={t('results.modeScores')}
-        className="col-span-2 flex flex-wrap gap-1.5 sm:col-span-1"
-      >
-        {row.modeScores.map(({ mode, done, score }) => (
-          <li
-            key={mode}
-            className={cn(
-              'rounded-md px-2.5 py-0.5 text-tiny font-medium transition-colors',
-              done
-                ? 'bg-primary-soft text-primary font-semibold'
-                : 'border border-border/70 bg-surface/50 text-text-muted',
-            )}
+    <DataTableRow
+      as="li"
+      gridTemplateColumns={RESULT_GRID}
+      className="items-center gap-4 py-3 hover:bg-primary-soft sm:px-3"
+    >
+      <DataTableCell className="flex min-w-0 flex-col">
+        <Link
+          href={`/classes/${classId}/members/${row.userId}` as Route}
+          className="truncate font-semibold text-primary hover:underline"
+          title={row.displayName}
+        >
+          {row.displayName}
+        </Link>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center">
+        <span className={cn('flex items-center gap-1.5 text-small font-medium', className)}>
+          <Icon aria-hidden className="size-4 shrink-0" />
+          <span>{t(label)}</span>
+        </span>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center min-w-0 overflow-hidden">
+        <div className="overflow-x-auto max-w-full py-1 scrollbar-thin">
+          <ul
+            aria-label={t('results.modeScores')}
+            className="flex items-center gap-1.5 whitespace-nowrap"
           >
-            {t(`common:modes.${mode}`)}
-            {done ? (score === null ? ' ✓' : ` ${score}%`) : ' –'}
-          </li>
-        ))}
-      </ul>
-      <span className="text-right text-small tabular-nums text-text-muted sm:text-body">
+            {row.modeScores.map(({ mode, done, score }) => (
+              <li
+                key={mode}
+                className={cn(
+                  'shrink-0 rounded-md px-2 py-0.5 text-tiny font-medium transition-colors',
+                  done
+                    ? 'bg-primary-soft text-primary font-semibold'
+                    : 'border border-border/70 bg-surface/50 text-text-muted',
+                )}
+              >
+                {t(`common:modes.${mode}`)}
+                {done ? (score === null ? ' ✓' : ` ${score}%`) : ' –'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </DataTableCell>
+
+      <DataTableCell align="right" className="text-small tabular-nums text-text-muted">
         {row.submission ? (
           <span className="font-medium text-text">
             {row.submission.score === null ? t('results.handedIn') : `${row.submission.score}%`} ·{' '}
@@ -142,10 +166,10 @@ function ResultRow({ classId, row }: { classId: string; row: AssignmentResult })
             </span>
           </span>
         ) : (
-          t('results.notSubmitted')
+          <span>{t('results.notSubmitted')}</span>
         )}
-      </span>
-    </li>
+      </DataTableCell>
+    </DataTableRow>
   );
 }
 
@@ -212,19 +236,22 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
     );
   } else {
     body = (
-      <>
-        <div className="hidden border-b border-border/80 bg-muted/20 px-4 py-2.5 text-tiny font-bold uppercase tracking-wider text-text-muted sm:grid sm:grid-cols-[2fr_1fr_2fr_auto] sm:items-center sm:gap-x-4">
-          <span>{t('results.colStudent')}</span>
-          <span>{t('results.colStatus')}</span>
-          <span>{t('results.colModeScores')}</span>
-          <span className="text-right">{t('results.colSubmission')}</span>
-        </div>
+      <DataTableContainer minWidth="min-w-[780px]">
+        <DataTableHeader
+          gridTemplateColumns={RESULT_GRID}
+          columns={[
+            { label: t('results.colStudent') },
+            { label: t('results.colStatus') },
+            { label: t('results.colModeScores') },
+            { label: t('results.colSubmission'), align: 'right' },
+          ]}
+        />
         <ul aria-label={t('results.perStudentList')} className="flex flex-col">
           {filteredData.map((row) => (
             <ResultRow key={row.userId} classId={classId} row={row} />
           ))}
         </ul>
-      </>
+      </DataTableContainer>
     );
   }
 

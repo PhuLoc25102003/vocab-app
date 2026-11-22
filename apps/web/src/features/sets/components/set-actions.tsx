@@ -58,39 +58,49 @@ export function SetOwnerActions({
 
   return (
     <>
-      <Button asChild variant="secondary">
-        <Link href={`/sets/${id}/edit` as Route}>
-          <Pencil aria-hidden className="size-4" />
-          {t('actions.edit')}
-        </Link>
-      </Button>
-      {extraActions}
-      <Menu>
-        <MenuTrigger asChild>
-          <Button variant="secondary" aria-label={t('actions.more')} className="px-3">
-            <MoreHorizontal aria-hidden className="size-5" />
-          </Button>
-        </MenuTrigger>
-        <MenuContent>
-          <MenuItem asChild>
-            <Link href={`/sets/import?setId=${id}` as Route}>
-              <FileUp aria-hidden className="size-4" />
-              {t('actions.importMore')}
-            </Link>
-          </MenuItem>
-          {offline.item}
-          <MenuItem onSelect={handleCopyLink}>
-            <Link2 aria-hidden className="size-4" />
-            <span>{t('actions.copyLink')}</span>
-          </MenuItem>
-          <MenuSeparator />
-          {/* Đợi menu đóng và trả focus về nút ba chấm, hộp thoại đóng sẽ trả focus về đó. */}
-          <MenuItem danger onSelect={() => setTimeout(openConfirm)}>
-            <Trash2 aria-hidden className="size-4" />
-            {t('actions.delete')}
-          </MenuItem>
-        </MenuContent>
-      </Menu>
+      <div className="grid grid-cols-[1fr_1fr_auto] sm:flex sm:items-center gap-2 w-full sm:w-auto">
+        <Button asChild variant="secondary" className="w-full sm:w-auto justify-center">
+          <Link href={`/sets/${id}/edit` as Route}>
+            <Pencil aria-hidden className="size-4 shrink-0" />
+            <span aria-hidden="true" className="sm:hidden">
+              {t('actions.editShort')}
+            </span>
+            <span className="sr-only sm:not-sr-only">{t('actions.edit')}</span>
+          </Link>
+        </Button>
+        {extraActions}
+        <Menu>
+          <MenuTrigger asChild>
+            <Button
+              variant="secondary"
+              aria-label={t('actions.more')}
+              size="icon"
+              className="size-9 shrink-0"
+            >
+              <MoreHorizontal aria-hidden className="size-5" />
+            </Button>
+          </MenuTrigger>
+          <MenuContent>
+            <MenuItem asChild>
+              <Link href={`/sets/import?setId=${id}` as Route}>
+                <FileUp aria-hidden className="size-4" />
+                {t('actions.importMore')}
+              </Link>
+            </MenuItem>
+            {offline.item}
+            <MenuItem onSelect={handleCopyLink}>
+              <Link2 aria-hidden className="size-4" />
+              <span>{t('actions.copyLink')}</span>
+            </MenuItem>
+            <MenuSeparator />
+            {/* Đợi menu đóng và trả focus về nút ba chấm, hộp thoại đóng sẽ trả focus về đó. */}
+            <MenuItem danger onSelect={() => setTimeout(openConfirm)}>
+              <Trash2 aria-hidden className="size-4" />
+              {t('actions.delete')}
+            </MenuItem>
+          </MenuContent>
+        </Menu>
+      </div>
       {offline.dialog}
       <ConfirmDialog
         open={confirming}

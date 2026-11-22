@@ -73,6 +73,7 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
         {/* Link phủ cả thẻ; tự nó cũng cao tối thiểu 44 px để đạt vùng bấm. */}
         <Link
           href={href}
+          title={title}
           className="line-clamp-2 min-h-11 min-w-0 flex-1 py-0.5 font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-md"
         >
           {title}
@@ -87,7 +88,9 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
         ) : null}
       </div>
       {description ? (
-        <p className="line-clamp-1 text-small wrap-anywhere text-text-muted">{description}</p>
+        <p className="line-clamp-1 text-small wrap-anywhere text-text-muted" title={description}>
+          {description}
+        </p>
       ) : null}
       <div className="mt-auto flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-small text-text-muted">
         {badge}

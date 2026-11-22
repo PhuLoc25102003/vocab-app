@@ -11,7 +11,7 @@ import {
   type ClassListItem,
   type CreateClassInput,
 } from '@vocab/shared';
-import { ChevronRight, Copy, Plus, Users } from 'lucide-react';
+import { Check, ChevronRight, Copy, Plus, Users } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -31,6 +31,12 @@ import {
   ListPanel,
   ListToolbar,
 } from '@/components/common/list-panel';
+import {
+  DataTableContainer,
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell,
+} from '@/components/common/data-table';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -130,93 +136,110 @@ export function CreateClassDialog({
   );
 }
 
-function CopyCodeButton({ code }: { code: string }) {
+function JoinCodeBadge({ code }: { code: string }) {
   const { t } = useTranslation('classes');
-  const copy = async () => {
+  const [copied, setCopied] = useState(false);
+  const copy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     try {
       await navigator.clipboard.writeText(code);
+      setCopied(true);
       toast.success(t('copy.done', { code }));
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error(t('copy.failedManual'));
     }
   };
+
   return (
-    <Button
+    <button
       type="button"
-      variant="ghost"
-      size="icon"
+      onClick={copy}
+      title={t('copy.label', { code })}
       aria-label={t('copy.label', { code })}
-      onClick={() => void copy()}
-      className="relative z-10"
+      className="relative z-20 inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary-soft px-2.5 py-1 font-mono text-tiny font-bold tracking-wider text-primary shadow-2xs transition-all hover:border-primary hover:bg-primary hover:text-primary-fg active:scale-95 cursor-pointer"
     >
-      <Copy aria-hidden className="size-4" />
-    </Button>
+      <span className="sr-only">{t('codeLabel')}</span>
+      <span>{code}</span>
+      {copied ? (
+        <Check aria-hidden className="size-3.5 shrink-0 text-success" />
+      ) : (
+        <Copy aria-hidden className="size-3.5 shrink-0 opacity-80" />
+      )}
+    </button>
   );
 }
+
+const TEACHER_CLASS_GRID = 'minmax(220px, 1.4fr) 90px 100px 140px 170px';
 
 /** Thẻ hàng: cả thẻ mở trang lớp, riêng nút sao chép mã nằm trên lớp link. */
 function ClassRow({ item }: { item: ClassListItem }) {
   const { t } = useTranslation('classes');
   const initial = item.name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
   return (
-    <li className="relative flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border py-3 transition-colors duration-fast ease-standard last:border-b-0 hover:bg-primary-soft sm:px-2">
-      <span
-        aria-hidden
-        className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft font-semibold text-primary"
-      >
-        {initial}
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col">
-        <Link
-          href={`/classes/${item.id}` as Route}
-          className="flex min-h-11 items-center font-semibold wrap-anywhere after:absolute after:inset-0"
+    <DataTableRow
+      as="li"
+      gridTemplateColumns={TEACHER_CLASS_GRID}
+      className="relative items-center gap-4 py-3 hover:bg-primary-soft sm:px-3"
+    >
+      <DataTableCell className="flex min-w-0 items-center gap-3">
+        <span
+          aria-hidden
+          className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary-soft font-semibold text-primary"
         >
-          {item.name}
-        </Link>
-        {item.description ? (
-          <span className="line-clamp-1 text-small text-text-muted">{item.description}</span>
-        ) : null}
-      </span>
-      <span className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-small text-text-muted sm:w-auto">
-        <span className="flex items-center gap-1 tabular-nums">
-          <Users aria-hidden className="size-4" />
-          {t('teacher.members', { count: item.memberCount })}
+          {initial}
         </span>
-        <span className="tabular-nums">
-          {t('teacher.openCount', { count: item.openAssignmentCount })}
+        <span className="flex min-w-0 flex-1 flex-col">
+          <Link
+            href={`/classes/${item.id}` as Route}
+            className="flex min-h-11 items-center font-semibold text-text truncate hover:text-primary hover:underline after:absolute after:inset-0"
+            title={item.name}
+          >
+            {item.name}
+          </Link>
+          {item.description ? (
+            <span className="line-clamp-1 text-small text-text-muted">{item.description}</span>
+          ) : null}
         </span>
-        <span className="flex min-w-32 items-center gap-2">
-          {item.onTimeRate === null ? (
-            <span>{t('teacher.noClosed')}</span>
-          ) : (
-            <>
-              <span
-                role="meter"
-                aria-label={t('teacher.onTimeMeter')}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={item.onTimeRate}
-                className="h-1.5 w-16 overflow-hidden rounded-full bg-border"
-              >
-                <span
-                  className="block h-full bg-primary"
-                  style={{ width: `${item.onTimeRate}%` }}
-                />
-              </span>
-              <span className="tabular-nums">{t('teacher.onTime', { rate: item.onTimeRate })}</span>
-            </>
-          )}
-        </span>
-        <span className="flex items-center">
-          <span className="rounded-sm bg-primary-soft px-2 font-mono tracking-wider text-primary">
-            <span className="sr-only">{t('codeLabel')}</span>
-            {item.joinCode}
-          </span>
-          <CopyCodeButton code={item.joinCode} />
-        </span>
-      </span>
-      <ChevronRight aria-hidden className="hidden size-5 shrink-0 text-text-muted sm:block" />
-    </li>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center gap-1.5 text-small tabular-nums text-text-muted">
+        <Users aria-hidden className="size-4 shrink-0 text-text-muted" />
+        <span>{t('teacher.members', { count: item.memberCount })}</span>
+      </DataTableCell>
+
+      <DataTableCell className="text-small tabular-nums text-text-muted">
+        {t('teacher.openCount', { count: item.openAssignmentCount })}
+      </DataTableCell>
+
+      <DataTableCell className="flex flex-col gap-1 text-small text-text-muted">
+        {item.onTimeRate === null ? (
+          <span>{t('teacher.noClosed')}</span>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span
+              role="meter"
+              aria-label={t('teacher.onTimeMeter')}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={item.onTimeRate}
+              className="h-1.5 w-14 overflow-hidden rounded-full bg-border"
+            >
+              <span className="block h-full bg-primary" style={{ width: `${item.onTimeRate}%` }} />
+            </span>
+            <span className="tabular-nums font-medium text-text">
+              {t('teacher.onTime', { rate: item.onTimeRate })}
+            </span>
+          </div>
+        )}
+      </DataTableCell>
+
+      <DataTableCell align="right" className="flex items-center justify-end gap-2 text-small">
+        <JoinCodeBadge code={item.joinCode} />
+        <ChevronRight aria-hidden className="size-4 shrink-0 text-text-muted" />
+      </DataTableCell>
+    </DataTableRow>
   );
 }
 
@@ -271,14 +294,26 @@ function ClassList({ view }: { view: ClassesView }) {
     }
   } else {
     body = (
-      <ul
-        aria-label={t(view.archived ? 'teacher.archived' : 'teacher.active')}
-        className="flex flex-col"
-      >
-        {classes.data.data.map((item) => (
-          <ClassRow key={item.id} item={item} />
-        ))}
-      </ul>
+      <DataTableContainer minWidth="min-w-[720px]">
+        <DataTableHeader
+          gridTemplateColumns={TEACHER_CLASS_GRID}
+          columns={[
+            { label: t('teacher.colClassName') },
+            { label: t('teacher.colStudents') },
+            { label: t('teacher.colOpenAssignments') },
+            { label: t('teacher.colOnTime') },
+            { label: t('teacher.colJoinCode'), align: 'right' },
+          ]}
+        />
+        <ul
+          aria-label={t(view.archived ? 'teacher.archived' : 'teacher.active')}
+          className="flex flex-col"
+        >
+          {classes.data.data.map((item) => (
+            <ClassRow key={item.id} item={item} />
+          ))}
+        </ul>
+      </DataTableContainer>
     );
   }
 
@@ -343,7 +378,6 @@ export function TeacherClasses() {
     <>
       <PageHeader
         title={t('page.title')}
-        description={t('teacher.pageDescription')}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden className="size-4" />

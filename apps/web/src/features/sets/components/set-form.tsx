@@ -48,7 +48,7 @@ interface SetDetailsFieldsProps {
 function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsProps) {
   const { t } = useTranslation('sets');
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 rounded-lg border border-border-strong bg-surface p-5 shadow-sm">
       <FormField label={t('form.title')} error={errors.title?.message} {...register('title')} />
       <TextareaField
         label={t('form.description')}

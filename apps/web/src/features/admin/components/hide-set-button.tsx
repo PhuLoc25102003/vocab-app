@@ -6,10 +6,12 @@ import { hideSetSchema, type HideSetDto } from '@vocab/shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
 import { FormDialog } from '@/components/common/form-dialog';
 import { TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
+import { cn } from '@/lib/utils';
 import { hideSet, unhideSet } from '../api';
 import { useTranslation } from 'react-i18next';
 
@@ -20,10 +22,11 @@ export const ADMIN_STATS_QUERY_KEY = ['admin', 'stats'] as const;
 interface HideSetButtonProps {
   setId: string;
   hidden: boolean;
+  className?: string;
 }
 
 /** Nút của ADMIN: ẩn bộ vi phạm kèm lý do, hoặc bỏ ẩn. */
-export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
+export function HideSetButton({ setId, hidden, className }: HideSetButtonProps) {
   const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -51,8 +54,20 @@ export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
 
   if (hidden) {
     return (
-      <Button variant="secondary" loading={unhide.isPending} onClick={() => unhide.mutate()}>
-        {t('hide.unhide')}
+      <Button
+        variant="secondary"
+        className={cn(
+          'justify-center gap-1.5 text-small whitespace-nowrap h-9 px-3',
+          className ?? 'w-full sm:w-auto',
+        )}
+        loading={unhide.isPending}
+        onClick={() => unhide.mutate()}
+      >
+        <Eye aria-hidden className="size-4 shrink-0 text-success" />
+        <span aria-hidden="true" className="sm:hidden">
+          {t('hide.unhideShort')}
+        </span>
+        <span className="sr-only sm:not-sr-only">{t('hide.unhide')}</span>
       </Button>
     );
   }
@@ -77,8 +92,19 @@ export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setOpen(true)}>
-        {t('hide.hide')}
+      <Button
+        variant="secondary"
+        className={cn(
+          'justify-center gap-1.5 text-small whitespace-nowrap h-9 px-3',
+          className ?? 'w-full sm:w-auto',
+        )}
+        onClick={() => setOpen(true)}
+      >
+        <EyeOff aria-hidden className="size-4 shrink-0 text-danger" />
+        <span aria-hidden="true" className="sm:hidden">
+          {t('hide.hideShort')}
+        </span>
+        <span className="sr-only sm:not-sr-only">{t('hide.hide')}</span>
       </Button>
       <FormDialog
         open={open}

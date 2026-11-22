@@ -38,7 +38,7 @@ export function OfflineNotice({
 
       {sets && sets.length > 0 ? (
         <section aria-labelledby="offline-sets" className="flex w-full flex-col gap-3 pt-6">
-          <h2 id="offline-sets" className="text-h2">
+          <h2 id="offline-sets" className="text-h3 font-semibold text-text">
             {t('offline.savedSets')}
           </h2>
           <ul className="flex flex-col gap-2">

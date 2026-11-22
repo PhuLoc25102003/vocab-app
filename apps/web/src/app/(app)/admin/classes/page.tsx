@@ -16,14 +16,13 @@ export default async function AdminClassesPage() {
   return (
     <>
       <BackLink href="/dashboard" label={t('pages.backToDashboard')} />
-      <PageHeader
-        title={t('pages.adminClasses')}
-        description={t('pages.adminClassesDescription')}
-      />
-      <AdminNavTabs current="classes" />
-      <Suspense fallback={<AdminClassesLoading />}>
-        <AdminClasses />
-      </Suspense>
+      <PageHeader title={t('pages.adminClasses')} />
+      <div className="flex flex-col gap-2.5">
+        <AdminNavTabs current="classes" />
+        <Suspense fallback={<AdminClassesLoading />}>
+          <AdminClasses />
+        </Suspense>
+      </div>
     </>
   );
 }

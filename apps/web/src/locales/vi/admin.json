@@ -93,13 +93,19 @@
       "all": "Tất cả",
       "active": "Đang hoạt động",
       "locked": "Đã khoá"
-    }
+    },
+    "thUser": "Người dùng",
+    "thStatus": "Trạng thái",
+    "thRole": "Vai trò",
+    "thAction": "Thao tác"
   },
   "hide": {
     "unhidden": "Đã bỏ ẩn bộ từ",
     "unhide": "Bỏ ẩn bộ từ",
+    "unhideShort": "Hiện",
     "hidden": "Đã ẩn bộ từ khỏi người khác",
     "hide": "Ẩn bộ từ",
+    "hideShort": "Ẩn",
     "title": "Ẩn bộ từ vi phạm?",
     "description": "Người khác không xem, học hay sao chép được bộ này. Chủ bộ thấy lý do bạn ghi.",
     "submit": "Ẩn khỏi người khác",
@@ -109,8 +115,11 @@
   "active": "Đang hoạt động",
   "tabs": {
     "users": "Người dùng",
+    "usersMobile": "Người dùng",
     "publicSets": "Bộ từ công khai",
-    "classes": "Lớp học & Học sinh"
+    "publicSetsMobile": "Bộ từ",
+    "classes": "Lớp học & Học sinh",
+    "classesMobile": "Lớp học"
   },
   "publicSets": {
     "title": "Quản lý bộ từ công khai",
@@ -136,7 +145,12 @@
       "hidden": "Bị ẩn"
     },
     "statusVisible": "Đang hiển thị",
-    "statusHidden": "Bị ẩn"
+    "statusHidden": "Bị ẩn",
+    "thSet": "Bộ từ",
+    "thOwner": "Tác giả",
+    "thDate": "Thời gian",
+    "thStatus": "Trạng thái",
+    "thAction": "Thao tác"
   },
   "hiddenSets": {
     "title": "Bộ từ bị ẩn",
@@ -163,7 +177,7 @@
     "teacherCount": "{{count}} giáo viên",
     "classesCount": "{{count}} lớp",
     "viewClasses": "Xem lớp học ({{count}})",
-    "hideClasses": "Thu gọn lớp học",
+    "hideClasses": "Thu gọn",
     "noClassesForTeacher": "Giáo viên này chưa tạo lớp học nào.",
     "emptyTeachersTitle": "Chưa có giáo viên nào",
     "emptyTeachersDesc": "Hệ thống chưa ghi nhận tài khoản giáo viên nào.",
@@ -185,6 +199,38 @@
     "registeredAt": "Đăng ký ngày {{date}}",
     "loading": "Đang tải dữ liệu lớp học",
     "failed": "Không tải được danh sách lớp học",
+    "thTeacher": "Giáo viên",
+    "thClassesCount": "Số lớp",
+    "thStudentsCount": "Tổng học sinh",
+    "thAction": "Thao tác",
+    "thClassName": "Lớp học",
+    "thJoinCode": "Mã tham gia",
+    "thMembers": "Học sinh",
+    "thAssignments": "Bài tập",
+    "thStatus": "Trạng thái",
+    "thStudent": "Học sinh",
+    "thEmail": "Email",
+    "thRegisteredAt": "Ngày đăng ký",
+    "thJoinedAt": "Ngày tham gia",
+    "teacherFilterStatus": {
+      "all": "Tất cả giáo viên",
+      "has_classes": "Đang có lớp",
+      "no_classes": "Chưa có lớp"
+    },
+    "teacherSort": "Sắp xếp giáo viên",
+    "teacherSorts": {
+      "name_asc": "Tên A–Z",
+      "most_classes": "Nhiều lớp nhất",
+      "most_students": "Nhiều học sinh nhất",
+      "newest": "Mới nhất"
+    },
+    "unassignedSort": "Sắp xếp học sinh",
+    "unassignedSorts": {
+      "newest": "Mới nhất",
+      "oldest": "Cũ nhất",
+      "name_asc": "Tên A–Z",
+      "email_asc": "Email A–Z"
+    },
     "lockReasonDefault": "Không xác định được danh tính",
     "lockStudent": "Khoá tài khoản",
     "unlockStudent": "Mở khoá",

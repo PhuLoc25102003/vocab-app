@@ -12,47 +12,64 @@ interface AdminTabItem {
   key: AdminTabKey;
   href: Route;
   labelKey: 'tabs.users' | 'tabs.publicSets' | 'tabs.classes';
+  mobileLabelKey: 'tabs.usersMobile' | 'tabs.publicSetsMobile' | 'tabs.classesMobile';
   icon: LucideIcon;
 }
 
 const ADMIN_TABS: AdminTabItem[] = [
-  { key: 'users', href: '/admin/users' as Route, labelKey: 'tabs.users', icon: Users },
+  {
+    key: 'users',
+    href: '/admin/users' as Route,
+    labelKey: 'tabs.users',
+    mobileLabelKey: 'tabs.usersMobile',
+    icon: Users,
+  },
   {
     key: 'hidden-sets',
     href: '/admin/hidden-sets' as Route,
     labelKey: 'tabs.publicSets',
+    mobileLabelKey: 'tabs.publicSetsMobile',
     icon: Library,
   },
-  { key: 'classes', href: '/admin/classes' as Route, labelKey: 'tabs.classes', icon: School },
+  {
+    key: 'classes',
+    href: '/admin/classes' as Route,
+    labelKey: 'tabs.classes',
+    mobileLabelKey: 'tabs.classesMobile',
+    icon: School,
+  },
 ];
 
 export function AdminNavTabs({ current }: { current: AdminTabKey }) {
   const { t } = useTranslation('admin');
 
   return (
-    <nav aria-label={t('navLabel')} className="mb-4">
-      <ul className="flex flex-wrap items-center gap-2 border-b border-border pb-2">
-        {ADMIN_TABS.map(({ key, href, labelKey, icon: Icon }) => {
-          const isActive = current === key;
-          return (
-            <li key={key}>
-              <Link
-                href={href}
-                aria-current={isActive ? 'page' : undefined}
-                className={cn(
-                  'inline-flex min-h-11 items-center gap-2 rounded-md px-3.5 py-2 text-small font-medium transition-colors duration-fast ease-standard',
-                  isActive
-                    ? 'bg-primary text-primary-fg shadow-sm'
-                    : 'text-text-muted hover:bg-surface hover:text-text',
-                )}
-              >
-                <Icon aria-hidden className="size-4 shrink-0" />
-                <span>{t(labelKey)}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav aria-label={t('navLabel')}>
+      <div className="w-full rounded-lg border border-border-strong/70 bg-surface/80 p-1 shadow-2xs backdrop-blur-sm">
+        <ul className="grid grid-cols-3 gap-1">
+          {ADMIN_TABS.map(({ key, href, labelKey, mobileLabelKey, icon: Icon }) => {
+            const isActive = current === key;
+            return (
+              <li key={key} className="min-w-0">
+                <Link
+                  href={href}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn(
+                    'flex min-h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-md px-1.5 sm:px-3 py-1.5 sm:py-2 text-tiny sm:text-small font-medium transition-all duration-fast ease-standard text-center truncate',
+                    isActive
+                      ? 'bg-primary text-primary-fg shadow-xs font-semibold'
+                      : 'text-text-muted hover:bg-primary-soft hover:text-text',
+                  )}
+                >
+                  <Icon aria-hidden className="size-3.5 sm:size-4 shrink-0" />
+                  <span className="sm:hidden truncate">{t(mobileLabelKey)}</span>
+                  <span className="hidden sm:inline truncate">{t(labelKey)}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }

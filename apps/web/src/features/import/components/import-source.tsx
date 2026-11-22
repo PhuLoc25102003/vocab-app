@@ -220,7 +220,10 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   return (
     <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
       {preview.error ? <FormError>{formErrorMessage(preview.error)}</FormError> : null}
-      <section aria-labelledby="template-title" className="flex flex-col gap-2">
+      <section
+        aria-labelledby="template-title"
+        className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-5 shadow-sm"
+      >
         <StepTitle id="template-title" step={1}>
           {t('import.templateTitle')}{' '}
           <span className="font-normal text-text-muted">{t('import.optional')}</span>
@@ -237,7 +240,10 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         </div>
         {templateError ? <FormError>{templateError}</FormError> : null}
       </section>
-      <section aria-labelledby="source-title" className="flex flex-col gap-2">
+      <section
+        aria-labelledby="source-title"
+        className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-5 shadow-sm"
+      >
         <StepTitle id="source-title" step={2}>
           {t('import.sourceTitle')}
         </StepTitle>
@@ -280,7 +286,10 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
         </p>
       </section>
 
-      <section aria-labelledby="options-title" className="flex flex-col gap-3">
+      <section
+        aria-labelledby="options-title"
+        className="flex flex-col gap-4 rounded-lg border border-border-strong bg-surface p-5 shadow-sm"
+      >
         <StepTitle id="options-title" step={3}>
           {t('import.optionsTitle')}
         </StepTitle>

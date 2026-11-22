@@ -92,13 +92,19 @@
       "all": "All",
       "active": "Active",
       "locked": "Locked"
-    }
+    },
+    "thUser": "User",
+    "thStatus": "Status",
+    "thRole": "Role",
+    "thAction": "Action"
   },
   "hide": {
     "unhidden": "Set unhidden",
     "unhide": "Unhide set",
+    "unhideShort": "Unhide",
     "hidden": "Set hidden from others",
     "hide": "Hide set",
+    "hideShort": "Hide",
     "title": "Hide this set?",
     "description": "Others cannot view, study or copy this set. The owner sees your reason.",
     "submit": "Hide from others",
@@ -109,8 +115,11 @@
   "navLabel": "Admin management",
   "tabs": {
     "users": "Users",
+    "usersMobile": "Users",
     "publicSets": "Public sets",
-    "classes": "Classes & Students"
+    "publicSetsMobile": "Sets",
+    "classes": "Classes & Students",
+    "classesMobile": "Classes"
   },
   "publicSets": {
     "title": "Public sets management",
@@ -136,7 +145,12 @@
       "hidden": "Hidden"
     },
     "statusVisible": "Visible",
-    "statusHidden": "Hidden"
+    "statusHidden": "Hidden",
+    "thSet": "Set",
+    "thOwner": "Owner",
+    "thDate": "Date",
+    "thStatus": "Status",
+    "thAction": "Action"
   },
   "hiddenSets": {
     "title": "Hidden sets",
@@ -163,7 +177,7 @@
     "teacherCount": "{{count}} teachers",
     "classesCount": "{{count}} classes",
     "viewClasses": "View classes ({{count}})",
-    "hideClasses": "Hide classes",
+    "hideClasses": "Hide",
     "noClassesForTeacher": "This teacher has not created any classes yet.",
     "emptyTeachersTitle": "No teachers yet",
     "emptyTeachersDesc": "No teacher accounts found in the system.",
@@ -185,6 +199,38 @@
     "registeredAt": "Registered on {{date}}",
     "loading": "Loading classes data",
     "failed": "Could not load classes list",
+    "thTeacher": "Teacher",
+    "thClassesCount": "Classes",
+    "thStudentsCount": "Total students",
+    "thAction": "Action",
+    "thClassName": "Class",
+    "thJoinCode": "Join code",
+    "thMembers": "Students",
+    "thAssignments": "Assignments",
+    "thStatus": "Status",
+    "thStudent": "Student",
+    "thEmail": "Email",
+    "thRegisteredAt": "Registered date",
+    "thJoinedAt": "Joined date",
+    "teacherFilterStatus": {
+      "all": "All teachers",
+      "has_classes": "With classes",
+      "no_classes": "No classes"
+    },
+    "teacherSort": "Sort teachers",
+    "teacherSorts": {
+      "name_asc": "Name A–Z",
+      "most_classes": "Most classes",
+      "most_students": "Most students",
+      "newest": "Newest"
+    },
+    "unassignedSort": "Sort students",
+    "unassignedSorts": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "name_asc": "Name A–Z",
+      "email_asc": "Email A–Z"
+    },
     "lockReasonDefault": "Unverified identity",
     "lockStudent": "Lock account",
     "unlockStudent": "Unlock",

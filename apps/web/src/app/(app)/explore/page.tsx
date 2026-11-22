@@ -14,7 +14,7 @@ export default async function ExplorePage() {
   const t = await getT('common');
   return (
     <>
-      <PageHeader title={t('pages.explore')} description={t('pages.exploreDescription')} />
+      <PageHeader title={t('pages.explore')} />
       <Suspense fallback={<SetCardsLoading count={6} />}>
         <ExploreScreen />
       </Suspense>

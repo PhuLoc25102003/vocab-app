@@ -46,7 +46,8 @@
     "cancel": "Huỷ",
     "close": "Đóng",
     "retry": "Thử lại",
-    "clearFilters": "Xoá bộ lọc"
+    "clearFilters": "Xoá bộ lọc",
+    "pageActions": "Tuỳ chọn trang"
   },
   "copyLink": {
     "done": "Đã sao chép đường dẫn",

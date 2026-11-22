@@ -19,14 +19,13 @@ export default async function AdminHiddenSetsPage() {
   return (
     <>
       <BackLink href="/dashboard" label={t('pages.backToDashboard')} />
-      <PageHeader
-        title={t('pages.adminHiddenSets')}
-        description={t('pages.adminHiddenSetsDescription')}
-      />
-      <AdminNavTabs current="hidden-sets" />
-      <Suspense fallback={<AdminHiddenSetsLoading />}>
-        <AdminHiddenSets />
-      </Suspense>
+      <PageHeader title={t('pages.adminHiddenSets')} />
+      <div className="flex flex-col gap-2.5">
+        <AdminNavTabs current="hidden-sets" />
+        <Suspense fallback={<AdminHiddenSetsLoading />}>
+          <AdminHiddenSets />
+        </Suspense>
+      </div>
     </>
   );
 }

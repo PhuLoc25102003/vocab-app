@@ -199,9 +199,16 @@ function ClassHeader({ klass }: { klass: Class }) {
   const openLater = (next: Dialogs) => () => setTimeout(() => setDialog(next));
 
   return (
-    <header className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h1 className="min-w-0 text-h1 wrap-anywhere">{klass.name}</h1>
+    <header className="flex flex-col gap-3 rounded-lg border border-border-strong/70 bg-surface/80 px-4 py-2.5 sm:px-5 sm:py-3.5 shadow-sm shadow-primary/5 backdrop-blur-md">
+      <div className="flex min-h-[44px] flex-wrap items-center justify-between gap-3">
+        <div className="flex max-w-[65ch] min-w-0 flex-col gap-0.5">
+          <h1 className="text-[1.65rem] font-bold text-text wrap-anywhere tracking-tight leading-tight sm:text-[1.85rem]">
+            {klass.name}
+          </h1>
+          {klass.description ? (
+            <p className="wrap-anywhere text-small text-text-muted">{klass.description}</p>
+          ) : null}
+        </div>
         <div className="flex items-center gap-1">
           <Button variant="secondary" onClick={() => setDialog('invite')}>
             <UserPlus aria-hidden className="size-4" />
@@ -249,17 +256,13 @@ function ClassHeader({ klass }: { klass: Class }) {
           </Menu>
         </div>
       </div>
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-text-muted">
-        {klass.description ? (
-          <>
-            <span className="min-w-0 wrap-anywhere">{klass.description}</span>
-            <span aria-hidden>·</span>
-          </>
-        ) : null}
-        <span className="tabular-nums">{t('detail.members', { count: klass.memberCount })}</span>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border pt-2.5 text-small text-text-muted">
+        <span className="tabular-nums font-medium text-text">
+          {t('detail.members', { count: klass.memberCount })}
+        </span>
         <span aria-hidden>·</span>
-        <span className="flex items-center">
-          <span className="rounded-sm bg-primary-soft px-2 font-mono tracking-wider text-primary">
+        <span className="flex items-center gap-1">
+          <span className="rounded-sm bg-primary-soft px-2 py-0.5 font-mono text-tiny font-bold tracking-wider text-primary">
             <span className="sr-only">{t('codeLabel')}</span>
             {klass.joinCode}
           </span>
@@ -268,19 +271,20 @@ function ClassHeader({ klass }: { klass: Class }) {
             size="icon"
             aria-label={t('copy.label', { code: klass.joinCode })}
             onClick={() => void copyCode(klass.joinCode)}
+            className="size-7 text-text-muted hover:text-primary"
           >
-            <Copy aria-hidden className="size-4" />
+            <Copy aria-hidden className="size-3.5" />
           </Button>
         </span>
-      </p>
-      {archived ? (
-        <p
-          role="status"
-          className="max-w-[65ch] border-l-4 border-border-strong pl-3 text-text-muted"
-        >
-          {t('detail.archivedOn', { date: formatDate(klass.archivedAt ?? '') })}
-        </p>
-      ) : null}
+        {archived ? (
+          <>
+            <span aria-hidden>·</span>
+            <span className="font-medium text-danger">
+              {t('detail.archivedOn', { date: formatDate(klass.archivedAt ?? '') })}
+            </span>
+          </>
+        ) : null}
+      </div>
 
       <InviteDialog
         klass={klass}

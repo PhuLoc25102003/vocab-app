@@ -6,12 +6,14 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { DataTableContainer, DataTableHeader, DataTableRow } from '@/components/common/data-table';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { ListNoMatch, ListPager, ListPanel, ListToolbar } from '@/components/common/list-panel';
 import { LoadingState } from '@/components/common/loading-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
+import { cn } from '@/lib/utils';
 import { adminKeys, ADMIN_SETS_PAGE_SIZE, listPublicSets, type AdminSetsView } from '../api';
 import { HideSetButton } from './hide-set-button';
 
@@ -36,6 +38,9 @@ function readView(params: URLSearchParams): AdminSetsView {
   return { q, status, page };
 }
 
+const SET_GRID =
+  'minmax(200px, 1.8fr) minmax(180px, 1.4fr) minmax(140px, 1fr) minmax(140px, 1.1fr) minmax(110px, 0.9fr)';
+
 function SetRow({ item }: { item: AdminSetItem }) {
   const { t, i18n } = useTranslation('admin');
 
@@ -52,52 +57,71 @@ function SetRow({ item }: { item: AdminSetItem }) {
   const isHidden = Boolean(item.hiddenAt);
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border py-3 last:border-b-0 sm:px-2">
-      <div className="flex min-w-0 flex-1 basis-64 flex-col gap-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/sets/${item.id}` as Route}
-            className="font-semibold text-primary hover:underline wrap-anywhere"
-          >
-            {item.title}
-          </Link>
-          <span className="rounded-sm bg-surface-elevated px-2 py-0.5 text-tiny text-text-muted">
-            {t('publicSets.cardsCount', { count: item.cardCount })}
-          </span>
-          {isHidden ? (
-            <span className="rounded-sm bg-danger-soft px-2 py-0.5 text-tiny font-medium text-danger">
-              {t('publicSets.statusHidden')}
-            </span>
-          ) : (
-            <span className="rounded-sm bg-success-soft px-2 py-0.5 text-tiny font-medium text-success">
-              {t('publicSets.statusVisible')}
-            </span>
-          )}
-        </div>
-
-        <p className="text-small text-text-muted">
-          {t('publicSets.owner')}:{' '}
-          <span className="font-medium text-text">{item.owner.displayName}</span> (
-          {item.owner.email})
-        </p>
-
-        {isHidden && item.hiddenReason ? (
-          <p className="text-small text-danger bg-danger-soft/40 px-2 py-1 rounded-sm wrap-anywhere">
-            <span className="font-medium">{t('publicSets.reason')}:</span> {item.hiddenReason}
-          </p>
-        ) : null}
-
-        <p className="text-tiny text-text-muted">
-          {isHidden
-            ? `${t('publicSets.hiddenAt')}: ${hiddenDate}${item.hiddenBy ? ` • ${t('publicSets.by')}: ${item.hiddenBy.displayName}` : ''}`
-            : `${t('publicSets.createdAt')}: ${createdDate}`}
-        </p>
+    <DataTableRow gridTemplateColumns={SET_GRID}>
+      {/* Cột 1: Bộ từ */}
+      <div className="flex flex-col gap-1 min-w-0">
+        <Link
+          href={`/sets/${item.id}` as Route}
+          className="font-semibold text-primary hover:underline truncate block"
+          title={item.title}
+        >
+          {item.title}
+        </Link>
+        <span className="rounded-sm bg-surface-elevated px-2 py-0.5 text-tiny text-text-muted whitespace-nowrap w-fit">
+          {t('publicSets.cardsCount', { count: item.cardCount })}
+        </span>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
+      {/* Cột 2: Tác giả */}
+      <div className="flex flex-col min-w-0">
+        <span
+          className="font-medium text-text text-small truncate block"
+          title={item.owner.displayName}
+        >
+          {item.owner.displayName}
+        </span>
+        <span className="text-small text-text-muted truncate block" title={item.owner.email}>
+          {item.owner.email}
+        </span>
+      </div>
+
+      {/* Cột 3: Thời gian */}
+      <div className="flex flex-col text-small text-text-muted min-w-0">
+        <span className="tabular-nums whitespace-nowrap">
+          {isHidden ? hiddenDate : createdDate}
+        </span>
+        {isHidden && item.hiddenBy ? (
+          <span
+            className="text-tiny text-text-muted truncate block"
+            title={item.hiddenBy.displayName}
+          >
+            {t('publicSets.by')}: {item.hiddenBy.displayName}
+          </span>
+        ) : null}
+      </div>
+
+      {/* Cột 4: Trạng thái */}
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <span
+          className={cn(
+            'rounded-sm px-2 py-0.5 text-tiny font-medium w-fit whitespace-nowrap',
+            isHidden ? 'bg-danger-soft text-danger' : 'bg-success-soft text-success',
+          )}
+        >
+          {isHidden ? t('publicSets.statusHidden') : t('publicSets.statusVisible')}
+        </span>
+        {isHidden && item.hiddenReason ? (
+          <span className="text-tiny text-danger truncate block" title={item.hiddenReason}>
+            {item.hiddenReason}
+          </span>
+        ) : null}
+      </div>
+
+      {/* Cột 5: Thao tác (căn phải) */}
+      <div className="flex justify-end">
         <HideSetButton setId={item.id} hidden={isHidden} />
       </div>
-    </li>
+    </DataTableRow>
   );
 }
 
@@ -155,11 +179,23 @@ export function AdminHiddenSets() {
     );
   } else {
     body = (
-      <ul aria-label={t('publicSets.list')} className="flex flex-col">
-        {sets.data.data.map((item) => (
-          <SetRow key={item.id} item={item} />
-        ))}
-      </ul>
+      <DataTableContainer minWidth="min-w-[780px]">
+        <DataTableHeader
+          gridTemplateColumns={SET_GRID}
+          columns={[
+            { label: t('publicSets.thSet') },
+            { label: t('publicSets.thOwner') },
+            { label: t('publicSets.thDate') },
+            { label: t('publicSets.thStatus') },
+            { label: t('publicSets.thAction'), align: 'right' },
+          ]}
+        />
+        <ul aria-label={t('publicSets.list')} className="flex flex-col">
+          {sets.data.data.map((item) => (
+            <SetRow key={item.id} item={item} />
+          ))}
+        </ul>
+      </DataTableContainer>
     );
   }
 

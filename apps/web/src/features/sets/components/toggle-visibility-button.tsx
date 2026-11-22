@@ -40,13 +40,23 @@ export function ToggleVisibilityButton({
   const isGoingPrivate = nextVisibility === 'PRIVATE';
 
   return (
-    <Button variant="secondary" loading={isPending} onClick={toggle}>
+    <Button
+      variant="secondary"
+      loading={isPending}
+      onClick={toggle}
+      className="w-full sm:w-auto justify-center"
+    >
       {isGoingPrivate ? (
-        <Lock aria-hidden className="size-4" />
+        <Lock aria-hidden className="size-4 shrink-0" />
       ) : (
-        <Globe aria-hidden className="size-4" />
+        <Globe aria-hidden className="size-4 shrink-0" />
       )}
-      {t(isGoingPrivate ? 'actions.makePrivate' : 'actions.makePublic')}
+      <span aria-hidden="true" className="sm:hidden">
+        {t(isGoingPrivate ? 'actions.makePrivateShort' : 'actions.makePublicShort')}
+      </span>
+      <span className="sr-only sm:not-sr-only">
+        {t(isGoingPrivate ? 'actions.makePrivate' : 'actions.makePublic')}
+      </span>
     </Button>
   );
 }

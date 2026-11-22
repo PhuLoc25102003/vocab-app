@@ -74,6 +74,21 @@ describe('MySets', () => {
     expect(navigation.push).toHaveBeenCalledWith('/sets?q=t%C3%A1o&sort=title');
   });
 
+  it('lọc theo phạm vi hiển thị và đẩy tham số vào URL', async () => {
+    navigation.params = new URLSearchParams('visibility=PUBLIC');
+    vi.mocked(listMySets).mockResolvedValue(list([set], 1));
+    renderWithQuery(<MySets />);
+
+    expect(listMySets).toHaveBeenCalledWith({
+      page: 1,
+      limit: SETS_PAGE_SIZE,
+      visibility: 'PUBLIC',
+    });
+    const filter = await screen.findByRole('combobox', { name: 'Lọc phạm vi' });
+    await userEvent.selectOptions(filter, 'PRIVATE');
+    expect(navigation.push).toHaveBeenCalledWith('/sets?visibility=PRIVATE');
+  });
+
   it('đổi cách sắp xếp và về trang đầu', async () => {
     navigation.params = new URLSearchParams('page=3');
     vi.mocked(listMySets).mockResolvedValue(list([set], 80, 3));

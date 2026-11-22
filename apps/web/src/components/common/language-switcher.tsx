@@ -50,7 +50,10 @@ export function LanguageSettings() {
   const { t } = useTranslation('common');
   const { current, change } = useSwitchLocale();
   return (
-    <section aria-labelledby="language-title" className="flex flex-col gap-3">
+    <section
+      aria-labelledby="language-title"
+      className="flex w-full flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5 shadow-2xs"
+    >
       <div className="flex flex-col gap-1">
         <h2 id="language-title" className="text-h3">
           {t('language.label')}

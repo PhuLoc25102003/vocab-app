@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ASSIGNMENT_WINDOWS, type AssignmentWindow, type ClassAssignment } from '@vocab/shared';
 import {
   CalendarClock,
+  ChevronRight,
   CircleCheck,
   CircleDashed,
   ClipboardList,
@@ -12,6 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import type { Route } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -26,10 +28,17 @@ import {
   ListToolbar,
 } from '@/components/common/list-panel';
 import { LoadingState } from '@/components/common/loading-state';
+import {
+  DataTableContainer,
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell,
+} from '@/components/common/data-table';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
+import { cn } from '@/lib/utils';
 import {
   type AssignmentFilter,
   ASSIGNMENTS_PAGE_SIZE,
@@ -39,7 +48,6 @@ import {
 } from '../api';
 import { formatDateTime } from '../format';
 import { AssignDialog } from './assign-dialog';
-import { AssignmentRow } from './assignment-row';
 import { useTranslation } from 'react-i18next';
 
 type AssignmentSort = NonNullable<AssignmentFilter['sort']>;
@@ -70,6 +78,8 @@ const ROW_STATUS = {
   closed: { label: 'assignments.closed', icon: CircleCheck, className: 'text-text-muted' },
 } as const;
 
+const ASSIGNMENT_GRID = 'minmax(200px, 1.8fr) 130px 110px 170px 110px 70px';
+
 function TeacherAssignmentRow({
   classId,
   item,
@@ -88,59 +98,84 @@ function TeacherAssignmentRow({
   if (item.dueAt)
     status = new Date(item.dueAt).getTime() < now ? ROW_STATUS.closed : ROW_STATUS.open;
 
+  const StatusIcon = status.icon;
+
   return (
-    <AssignmentRow
-      href={`/classes/${classId}/assignments/${item.id}` as Route}
-      status={{ ...status, label: t(status.label) }}
-      title={item.setTitle}
-      action={
-        <>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t('assignments.cancelLabel', { title: item.setTitle })}
-            onClick={() => setConfirming(true)}
-          >
-            <Trash2 aria-hidden className="size-5" />
-          </Button>
-          <ConfirmDialog
-            open={confirming}
-            onOpenChange={setConfirming}
-            title={t('assignments.cancelTitle', { title: item.setTitle })}
-            description={t('assignments.cancelDescription')}
-            confirmLabel={t('assignments.cancel')}
-            cancelLabel={t('assignments.keep')}
-            pending={remove.isPending}
-            error={remove.error ? formErrorMessage(remove.error) : null}
-            onConfirm={() =>
-              remove.mutate(undefined, {
-                onSuccess: async () => {
-                  await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
-                  setConfirming(false);
-                  toast.success(t('assignments.cancelled'));
-                },
-              })
-            }
-          />
-        </>
-      }
+    <DataTableRow
+      as="li"
+      gridTemplateColumns={ASSIGNMENT_GRID}
+      className="relative items-center gap-4 py-3 hover:bg-primary-soft sm:px-3"
     >
-      <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-        {t(`common:modes.${modes[0] ?? item.mode}`)}
-        {modes.length > 1 ? ` +${modes.length - 1}` : ''}
-      </span>
-      <span className="flex items-center gap-1">
-        <CalendarClock aria-hidden className="size-4" />
-        {item.dueAt ? t('dueAt', { date: formatDateTime(item.dueAt) }) : t('due.none')}
-      </span>
-      <span className="flex items-center gap-1 tabular-nums">
-        <Users aria-hidden className="size-4" />
-        {t('assignments.submittedCount', {
-          submitted: item.submittedCount,
-          total: item.memberCount,
-        })}
-      </span>
-    </AssignmentRow>
+      <DataTableCell className="flex min-w-0 flex-col">
+        <Link
+          href={`/classes/${classId}/assignments/${item.id}` as Route}
+          className="truncate font-medium text-text hover:text-primary hover:underline after:absolute after:inset-0"
+          title={item.setTitle}
+        >
+          {item.setTitle}
+        </Link>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center">
+        <span className="rounded-sm bg-primary-soft px-2 py-0.5 text-tiny font-medium text-primary whitespace-nowrap">
+          {t(`common:modes.${modes[0] ?? item.mode}`)}
+          {modes.length > 1 ? ` +${modes.length - 1}` : ''}
+        </span>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center">
+        <span className={cn('flex items-center gap-1.5 text-small font-medium', status.className)}>
+          <StatusIcon aria-hidden className="size-4 shrink-0" />
+          <span>{t(status.label)}</span>
+        </span>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center gap-1.5 text-small text-text-muted">
+        <CalendarClock aria-hidden className="size-4 shrink-0 text-text-muted" />
+        <span>{item.dueAt ? t('dueAt', { date: formatDateTime(item.dueAt) }) : t('due.none')}</span>
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center gap-1.5 text-small tabular-nums text-text-muted">
+        <Users aria-hidden className="size-4 shrink-0 text-text-muted" />
+        <span>
+          {t('assignments.submittedCount', {
+            submitted: item.submittedCount,
+            total: item.memberCount,
+          })}
+        </span>
+      </DataTableCell>
+
+      <DataTableCell align="right" className="relative z-10 flex items-center justify-end gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={t('assignments.cancelLabel', { title: item.setTitle })}
+          onClick={() => setConfirming(true)}
+        >
+          <Trash2 aria-hidden className="size-5" />
+        </Button>
+        <ConfirmDialog
+          open={confirming}
+          onOpenChange={setConfirming}
+          title={t('assignments.cancelTitle', { title: item.setTitle })}
+          description={t('assignments.cancelDescription')}
+          confirmLabel={t('assignments.cancel')}
+          cancelLabel={t('assignments.keep')}
+          pending={remove.isPending}
+          error={remove.error ? formErrorMessage(remove.error) : null}
+          onConfirm={() =>
+            remove.mutate(undefined, {
+              onSuccess: async () => {
+                await queryClient.invalidateQueries({ queryKey: classKeys.assignments(classId) });
+                setConfirming(false);
+                toast.success(t('assignments.cancelled'));
+              },
+            })
+          }
+        />
+        <ChevronRight aria-hidden className="size-4 shrink-0 text-text-muted" />
+      </DataTableCell>
+    </DataTableRow>
   );
 }
 
@@ -208,11 +243,24 @@ export function ClassAssignments({
     }
   } else {
     body = (
-      <ul aria-label={t('assignments.title')} className="flex flex-col">
-        {assignments.data.data.map((item) => (
-          <TeacherAssignmentRow key={item.id} classId={classId} item={item} now={now} />
-        ))}
-      </ul>
+      <DataTableContainer minWidth="min-w-[720px]">
+        <DataTableHeader
+          gridTemplateColumns={ASSIGNMENT_GRID}
+          columns={[
+            { label: t('assignments.colSetTitle') },
+            { label: t('assignments.colMode') },
+            { label: t('assignments.colStatus') },
+            { label: t('assignments.colDue') },
+            { label: t('assignments.colSubmitted') },
+            { label: t('assignments.colAction'), align: 'right' },
+          ]}
+        />
+        <ul aria-label={t('assignments.title')} className="flex flex-col">
+          {assignments.data.data.map((item) => (
+            <TeacherAssignmentRow key={item.id} classId={classId} item={item} now={now} />
+          ))}
+        </ul>
+      </DataTableContainer>
     );
   }
 

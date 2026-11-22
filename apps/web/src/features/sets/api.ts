@@ -20,6 +20,7 @@ export interface SetListParams {
   sort?: string;
   /** Id thư mục, hoặc `none` cho bộ chưa vào thư mục. */
   folderId?: string;
+  visibility?: string;
 }
 
 export interface PublicSetListParams extends SetListParams {
@@ -32,6 +33,7 @@ export async function listMySets({
   q,
   sort,
   folderId,
+  visibility,
 }: SetListParams): Promise<SetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (q) {
@@ -42,6 +44,9 @@ export async function listMySets({
   }
   if (folderId) {
     query.set('folderId', folderId);
+  }
+  if (visibility) {
+    query.set('visibility', visibility);
   }
   return setListSchema.parse(await http(`/sets?${query}`));
 }

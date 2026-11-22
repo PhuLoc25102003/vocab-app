@@ -110,7 +110,7 @@ export function FolderPanel() {
       </div>
       <nav
         aria-label={t('folders.title')}
-        className="hidden min-w-0 flex-col gap-3 lg:sticky lg:top-20 lg:flex lg:self-start"
+        className="hidden min-w-0 flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 shadow-sm lg:sticky lg:top-20 lg:flex lg:self-start"
       >
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-h3">{t('folders.title')}</h2>

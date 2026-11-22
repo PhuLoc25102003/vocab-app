@@ -135,6 +135,7 @@ export type PublicSetQuery = z.infer<typeof publicSetQuerySchema>;
 /** `folderId` là id thư mục, hoặc `none` để lấy bộ chưa vào thư mục nào. */
 export const mySetQuerySchema = publicSetQuerySchema.extend({
   folderId: z.string().min(1).max(64).optional(),
+  visibility: visibilitySchema.optional(),
 });
 export type MySetQuery = z.infer<typeof mySetQuerySchema>;
 

@@ -65,7 +65,7 @@ describe('AccountMenu', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /^Tài khoản:\s*Nguyễn An$/ }));
 
-    expect(await screen.findByRole('menuitem', { name: 'Quản lý người dùng' })).toHaveAttribute(
+    expect(await screen.findByRole('menuitem', { name: 'Trang quản lý' })).toHaveAttribute(
       'href',
       '/admin/users',
     );

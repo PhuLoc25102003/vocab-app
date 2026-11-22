@@ -131,7 +131,7 @@ describe('AdminClasses', () => {
     // Học sinh chưa có lớp
     expect(screen.getByText('Trần Thị C')).toBeInTheDocument();
     expect(screen.getByText('s3@example.com')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Khoá tài khoản/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Khoá' })).toBeInTheDocument();
   });
 
   it('mở rộng danh sách lớp học và học sinh của giáo viên', async () => {

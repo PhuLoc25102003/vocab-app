@@ -37,7 +37,9 @@ export function AssignmentRow({
           {label}
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="font-medium wrap-anywhere">{title}</span>
+          <span className="font-medium truncate block" title={title}>
+            {title}
+          </span>
           {children ? (
             <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-text-muted">
               {children}

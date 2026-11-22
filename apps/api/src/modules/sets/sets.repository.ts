@@ -131,11 +131,12 @@ export class SetsRepository extends BaseRepository {
     super(prisma);
   }
 
-  findByOwner(ownerId: string, { q, folderId, ...query }: MySetQuery) {
+  findByOwner(ownerId: string, { q, folderId, visibility, ...query }: MySetQuery) {
     const where: Prisma.StudySetWhereInput = {
       ownerId,
       deletedAt: null,
       ...(folderId ? { folderId: folderId === NO_FOLDER ? null : folderId } : {}),
+      ...(visibility ? { visibility } : {}),
       ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
     };
     return Promise.all([

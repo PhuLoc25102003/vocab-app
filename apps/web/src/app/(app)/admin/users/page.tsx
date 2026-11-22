@@ -16,11 +16,13 @@ export default async function AdminUsersPage() {
   return (
     <>
       <BackLink href="/dashboard" label={t('pages.backToDashboard')} />
-      <PageHeader title={t('pages.adminUsers')} description={t('pages.adminUsersDescription')} />
-      <AdminNavTabs current="users" />
-      <Suspense fallback={<AdminUsersLoading />}>
-        <AdminUsers />
-      </Suspense>
+      <PageHeader title={t('pages.adminUsers')} />
+      <div className="flex flex-col gap-2.5">
+        <AdminNavTabs current="users" />
+        <Suspense fallback={<AdminUsersLoading />}>
+          <AdminUsers />
+        </Suspense>
+      </div>
     </>
   );
 }

@@ -17,7 +17,6 @@ export default async function SetsPage() {
     <>
       <PageHeader
         title={t('pages.sets')}
-        description={t('pages.setsDescription')}
         actions={
           <Suspense>
             <SetsHeaderActions />

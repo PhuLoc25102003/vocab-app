@@ -158,7 +158,7 @@ function EmptyClasses({ onCreate }: { onCreate: () => void }) {
       aria-label={t('overview.startLabel')}
       className="flex flex-col gap-4 rounded-lg border border-border-strong bg-surface p-6"
     >
-      <h2 className="text-h2">{t('overview.startTitle')}</h2>
+      <h2 className="text-h3 font-semibold text-text">{t('overview.startTitle')}</h2>
       <ol className="flex flex-col gap-3">
         {steps.map((step, index) => (
           <li key={step} className="flex items-start gap-3">

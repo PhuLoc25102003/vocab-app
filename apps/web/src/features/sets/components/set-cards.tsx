@@ -48,7 +48,9 @@ function OwnerLine({ name }: { name: string }) {
       >
         {initial}
       </span>
-      <span className="truncate">{name}</span>
+      <span className="truncate" title={name}>
+        {name}
+      </span>
     </span>
   );
 }

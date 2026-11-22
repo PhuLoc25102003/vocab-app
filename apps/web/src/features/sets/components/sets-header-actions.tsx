@@ -1,5 +1,6 @@
 'use client';
 
+import { FileUp, Plus } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -18,10 +19,16 @@ export function SetsHeaderActions() {
   return (
     <>
       <Button asChild variant="secondary">
-        <Link href={importHref}>{t('pages.importFromFile')}</Link>
+        <Link href={importHref} className="flex items-center gap-1.5">
+          <FileUp aria-hidden className="size-4 shrink-0" />
+          <span>{t('pages.importFromFile')}</span>
+        </Link>
       </Button>
       <Button asChild>
-        <Link href={newSetHref}>{t('pages.createSet')}</Link>
+        <Link href={newSetHref} className="flex items-center gap-1.5">
+          <Plus aria-hidden className="size-4 shrink-0" />
+          <span>{t('pages.createSet')}</span>
+        </Link>
       </Button>
     </>
   );

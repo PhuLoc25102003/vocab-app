@@ -10,6 +10,12 @@ import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { ListNoMatch, ListPager, ListPanel, ListToolbar } from '@/components/common/list-panel';
+import {
+  DataTableContainer,
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell,
+} from '@/components/common/data-table';
 import { PageHeader } from '@/components/common/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
@@ -20,14 +26,21 @@ import { useTranslation } from 'react-i18next';
 
 export const MEMBER_RESULTS_PAGE_SIZE = 10;
 
+const MEMBER_RESULT_GRID = 'minmax(200px, 1.5fr) 130px 180px 140px';
+
 function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
   const { t } = useTranslation(['classes', 'common']);
   return (
-    <li className="grid min-h-16 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 border-b border-border/80 px-4 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft/30 last:border-b-0 sm:grid-cols-[2fr_1fr_1fr_1fr]">
-      <span className="flex min-w-0 flex-col">
+    <DataTableRow
+      as="li"
+      gridTemplateColumns={MEMBER_RESULT_GRID}
+      className="items-center gap-4 py-3 hover:bg-primary-soft sm:px-3"
+    >
+      <DataTableCell className="flex min-w-0 flex-col">
         <Link
           href={`/classes/${classId}/assignments/${row.id}` as Route}
-          className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 wrap-anywhere hover:underline"
+          className="truncate font-semibold text-primary hover:underline"
+          title={row.setTitle}
         >
           {row.setTitle}
         </Link>
@@ -35,19 +48,24 @@ function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
           {t(`common:modes.${row.mode}`)}
           {row.dueAt ? t('memberResults.dueSuffix', { date: formatDateTime(row.dueAt) }) : ''}
         </span>
-      </span>
-      <StatusLabel status={row.status} />
-      <span className="text-small text-text-muted">
+      </DataTableCell>
+
+      <DataTableCell className="flex items-center">
+        <StatusLabel status={row.status} />
+      </DataTableCell>
+
+      <DataTableCell className="text-small text-text-muted">
         {row.completedAt
           ? t('memberResults.doneAt', { date: formatDateTime(row.completedAt) })
           : '—'}
-      </span>
-      <span className="text-right text-small font-medium tabular-nums sm:text-body">
+      </DataTableCell>
+
+      <DataTableCell align="right" className="text-small font-medium tabular-nums text-text-muted">
         {row.correct !== null && row.total !== null
           ? `${row.correct}/${row.total} (${percent(row.correct, row.total)}%)`
           : t('memberResults.noScore')}
-      </span>
-    </li>
+      </DataTableCell>
+    </DataTableRow>
   );
 }
 
@@ -161,19 +179,22 @@ export function MemberResults({ classId, userId }: { classId: string; userId: st
     );
   } else {
     listContent = (
-      <>
-        <div className="hidden border-b border-border/80 bg-muted/20 px-4 py-2.5 text-tiny font-bold uppercase tracking-wider text-text-muted sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr] sm:items-center sm:gap-x-4">
-          <span>{t('memberResults.colAssignment')}</span>
-          <span>{t('memberResults.colStatus')}</span>
-          <span>{t('memberResults.colCompletedAt')}</span>
-          <span className="text-right">{t('memberResults.colScore')}</span>
-        </div>
+      <DataTableContainer minWidth="min-w-[650px]">
+        <DataTableHeader
+          gridTemplateColumns={MEMBER_RESULT_GRID}
+          columns={[
+            { label: t('memberResults.colAssignment') },
+            { label: t('memberResults.colStatus') },
+            { label: t('memberResults.colCompletedAt') },
+            { label: t('memberResults.colScore'), align: 'right' },
+          ]}
+        />
         <ul aria-label={t('memberResults.list')} className="flex flex-col">
           {paged.map((row) => (
             <ResultRow key={row.id} classId={classId} row={row} />
           ))}
         </ul>
-      </>
+      </DataTableContainer>
     );
   }
 
