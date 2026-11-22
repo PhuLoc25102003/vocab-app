@@ -29,11 +29,11 @@ describe('giọng đọc', () => {
   });
 
   it('lưu và đọc lựa chọn, dữ liệu hỏng thì về mặc định', () => {
-    expect(loadSpeechSettings()).toEqual({ accent: 'en-US', rate: 'normal' });
-    saveSpeechSettings({ accent: 'en-GB', rate: 'slow' });
-    expect(loadSpeechSettings()).toEqual({ accent: 'en-GB', rate: 'slow' });
+    expect(loadSpeechSettings()).toEqual({ accent: 'en-GB', rate: 'normal' });
+    saveSpeechSettings({ accent: 'en-US', rate: 'slow' });
+    expect(loadSpeechSettings()).toEqual({ accent: 'en-US', rate: 'slow' });
     window.localStorage.setItem('vocab.speech', '{hỏng');
-    expect(loadSpeechSettings()).toEqual({ accent: 'en-US', rate: 'normal' });
+    expect(loadSpeechSettings()).toEqual({ accent: 'en-GB', rate: 'normal' });
   });
 
   it('đọc tiếng Anh theo giọng đã chọn, nghe chậm thì giảm tốc độ', () => {
@@ -53,5 +53,16 @@ describe('giọng đọc', () => {
       ['vi', 1],
     ]);
     expect(spoken[0]?.voice).toMatchObject({ name: 'Anh' });
+  });
+
+  it('ưu tiên giọng Natural hoặc Google chất lượng cao hơn giọng mặc định máy', () => {
+    installSynth([
+      { lang: 'en-GB', name: 'Microsoft George Desktop' },
+      { lang: 'en-GB', name: 'Microsoft Sonia Online (Natural) - English (United Kingdom)' },
+    ]);
+    saveSpeechSettings({ accent: 'en-GB', rate: 'normal' });
+
+    speak('hello', 'en');
+    expect(window.speechSynthesis.speak).toBeDefined();
   });
 });

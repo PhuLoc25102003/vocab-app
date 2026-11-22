@@ -72,8 +72,8 @@ export function SpeechSettings() {
             value={settings.accent}
             onChange={(event) => update({ accent: event.target.value as Accent })}
           >
-            <option value="en-US">{t('speech.us')}</option>
             <option value="en-GB">{t('speech.gb')}</option>
+            <option value="en-US">{t('speech.us')}</option>
           </Select>
         </label>
         <label className="flex flex-col gap-1 text-small font-medium">
