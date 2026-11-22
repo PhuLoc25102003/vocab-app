@@ -1,10 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { MemberResult } from '@vocab/shared';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
 import { getMember, listMemberResults } from '../api';
 import { MemberResults } from './member-results';
+
+const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => navigation.params,
+  useRouter: () => ({ push: navigation.push }),
+}));
 
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
@@ -39,6 +46,7 @@ function renderPage() {
 describe('MemberResults', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    navigation.params = new URLSearchParams();
     vi.mocked(getMember).mockResolvedValue({
       userId: 'u1',
       displayName: 'An',
@@ -80,6 +88,29 @@ describe('MemberResults', () => {
     expect(items[1]).toHaveTextContent('Quá hạn');
     expect(items[1]).toHaveTextContent('Luyện viết');
     expect(items[1]).toHaveTextContent('Chưa có điểm');
+  });
+
+  it('lọc danh sách bài đã giao theo tab trạng thái qua URL', async () => {
+    navigation.params = new URLSearchParams('status=overdue');
+    renderPage();
+
+    expect(
+      await screen.findByRole('link', { name: /Quá hạn/, current: 'page' }),
+    ).toBeInTheDocument();
+    const items = within(screen.getByRole('list', { name: 'Kết quả các bài' })).getAllByRole(
+      'listitem',
+    );
+    expect(items).toHaveLength(1);
+    expect(items[0]).toHaveTextContent('Unit 2');
+  });
+
+  it('tìm kiếm bài đã giao theo tên bộ từ', async () => {
+    renderPage();
+
+    const searchInput = await screen.findByRole('searchbox', { name: 'Tìm bài theo tên bộ từ' });
+    await userEvent.type(searchInput, 'Unit 1{enter}');
+
+    expect(navigation.push).toHaveBeenCalledWith('/classes/c1/members/u1?q=Unit+1');
   });
 
   it('lớp chưa giao bài thì báo trống', async () => {

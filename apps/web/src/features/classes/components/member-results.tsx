@@ -4,10 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import type { MemberResult } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { BackLink } from '@/components/common/back-link';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
+import { ListNoMatch, ListPager, ListPanel, ListToolbar } from '@/components/common/list-panel';
 import { PageHeader } from '@/components/common/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
@@ -16,14 +18,16 @@ import { formatDate, formatDateTime } from '../format';
 import { percent, StatusLabel } from './status-label';
 import { useTranslation } from 'react-i18next';
 
+export const MEMBER_RESULTS_PAGE_SIZE = 10;
+
 function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
   const { t } = useTranslation(['classes', 'common']);
   return (
-    <li className="grid min-h-16 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 border-b border-border py-2 last:border-b-0 sm:grid-cols-[2fr_1fr_1fr_1fr]">
+    <li className="grid min-h-16 grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 border-b border-border/80 px-4 py-3 transition-colors duration-fast ease-standard hover:bg-primary-soft/30 last:border-b-0 sm:grid-cols-[2fr_1fr_1fr_1fr]">
       <span className="flex min-w-0 flex-col">
         <Link
           href={`/classes/${classId}/assignments/${row.id}` as Route}
-          className="inline-flex min-h-11 items-center font-medium text-primary underline-offset-4 wrap-anywhere hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 wrap-anywhere hover:underline"
         >
           {row.setTitle}
         </Link>
@@ -38,7 +42,7 @@ function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
           ? t('memberResults.doneAt', { date: formatDateTime(row.completedAt) })
           : '—'}
       </span>
-      <span className="text-right text-small tabular-nums sm:text-body">
+      <span className="text-right text-small font-medium tabular-nums sm:text-body">
         {row.correct !== null && row.total !== null
           ? `${row.correct}/${row.total} (${percent(row.correct, row.total)}%)`
           : t('memberResults.noScore')}
@@ -48,8 +52,11 @@ function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
 }
 
 export function MemberResults({ classId, userId }: { classId: string; userId: string }) {
-  const { t } = useTranslation('classes');
+  const { t } = useTranslation(['classes', 'common']);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const backHref = `/classes/${classId}` as Route;
+
   const member = useQuery({
     queryKey: classKeys.member(classId, userId),
     queryFn: () => getMember(classId, userId),
@@ -58,6 +65,36 @@ export function MemberResults({ classId, userId }: { classId: string; userId: st
     queryKey: classKeys.memberResults(classId, userId),
     queryFn: () => listMemberResults(classId, userId),
   });
+
+  const base = `/classes/${classId}/members/${userId}`;
+  const pageParam = Number.parseInt(searchParams?.get('page') ?? '1', 10);
+  const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
+  const rawStatus = searchParams?.get('status');
+  const status =
+    rawStatus === 'pending' || rawStatus === 'done' || rawStatus === 'overdue'
+      ? rawStatus
+      : undefined;
+  const q = searchParams?.get('q')?.trim() ?? '';
+
+  const hrefFor = (next: {
+    status?: 'pending' | 'done' | 'overdue';
+    q?: string;
+    page?: number;
+  }): Route => {
+    const params = new URLSearchParams();
+    const nextStatus = 'status' in next ? next.status : status;
+    const nextQ = 'q' in next ? next.q : q;
+    const nextPage = next.page ?? 1;
+    if (nextStatus) params.set('status', nextStatus);
+    if (nextQ) params.set('q', nextQ);
+    if (nextPage > 1) params.set('page', String(nextPage));
+    const query = params.toString();
+    return `${base}${query ? `?${query}` : ''}` as Route;
+  };
+
+  const go = (patch: { status?: 'pending' | 'done' | 'overdue'; q?: string; page?: number }) => {
+    router.push(hrefFor({ page: 1, ...patch }));
+  };
 
   if (member.isPending || results.isPending) {
     return (
@@ -100,6 +137,46 @@ export function MemberResults({ classId, userId }: { classId: string; userId: st
   const rows = results.data.data;
   const done = rows.filter(({ status }) => status === 'done').length;
   const overdue = rows.filter(({ status }) => status === 'overdue').length;
+  const pending = rows.filter(({ status }) => status === 'pending').length;
+
+  const filtered = rows.filter((item) => {
+    if (status && item.status !== status) return false;
+    if (q && !item.setTitle.toLowerCase().includes(q.toLowerCase())) return false;
+    return true;
+  });
+
+  const total = filtered.length;
+  const paged = filtered.slice(
+    (page - 1) * MEMBER_RESULTS_PAGE_SIZE,
+    page * MEMBER_RESULTS_PAGE_SIZE,
+  );
+
+  let listContent;
+  if (filtered.length === 0) {
+    listContent = (
+      <ListNoMatch
+        text={t('memberResults.noMatch', { q })}
+        clearHref={hrefFor({ status: undefined, q: '', page: 1 })}
+      />
+    );
+  } else {
+    listContent = (
+      <>
+        <div className="hidden border-b border-border/80 bg-muted/20 px-4 py-2.5 text-tiny font-bold uppercase tracking-wider text-text-muted sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr] sm:items-center sm:gap-x-4">
+          <span>{t('memberResults.colAssignment')}</span>
+          <span>{t('memberResults.colStatus')}</span>
+          <span>{t('memberResults.colCompletedAt')}</span>
+          <span className="text-right">{t('memberResults.colScore')}</span>
+        </div>
+        <ul aria-label={t('memberResults.list')} className="flex flex-col">
+          {paged.map((row) => (
+            <ResultRow key={row.id} classId={classId} row={row} />
+          ))}
+        </ul>
+      </>
+    );
+  }
+
   return (
     <>
       <BackLink href={backHref} label={t('backToClass')} />
@@ -110,21 +187,65 @@ export function MemberResults({ classId, userId }: { classId: string; userId: st
       {rows.length === 0 ? (
         <EmptyState title={t('memberResults.empty')} description={t('memberResults.emptyHint')} />
       ) : (
-        <section aria-labelledby="member-results-title" className="flex flex-col gap-2">
-          <h2 id="member-results-title" className="text-h2">
-            {t('memberResults.title')}
-          </h2>
-          <p className="text-text-muted">
+        <div className="flex flex-col gap-4">
+          <p className="text-body text-text-muted">
             {overdue
               ? t('memberResults.summaryOverdue', { done, total: rows.length, overdue })
               : t('memberResults.summary', { done, total: rows.length })}
           </p>
-          <ul aria-label={t('memberResults.list')} className="flex flex-col">
-            {rows.map((row) => (
-              <ResultRow key={row.id} classId={classId} row={row} />
-            ))}
-          </ul>
-        </section>
+          <ListPanel
+            title={t('memberResults.title')}
+            count={rows.length}
+            toolbar={
+              <ListToolbar
+                key={q}
+                tabs={[
+                  {
+                    label: t('memberResults.all'),
+                    href: hrefFor({ status: undefined, page: 1 }),
+                    current: !status,
+                    count: rows.length,
+                  },
+                  {
+                    label: t('memberResults.pending'),
+                    href: hrefFor({ status: 'pending', page: 1 }),
+                    current: status === 'pending',
+                    count: pending,
+                  },
+                  {
+                    label: t('memberResults.done'),
+                    href: hrefFor({ status: 'done', page: 1 }),
+                    current: status === 'done',
+                    count: done,
+                  },
+                  {
+                    label: t('memberResults.overdue'),
+                    href: hrefFor({ status: 'overdue', page: 1 }),
+                    current: status === 'overdue',
+                    count: overdue,
+                  },
+                ]}
+                search={{
+                  label: t('memberResults.searchPlaceholder'),
+                  value: q,
+                  onSearch: (newQ) => go({ q: newQ }),
+                }}
+              />
+            }
+            footer={
+              total > 0 ? (
+                <ListPager
+                  page={page}
+                  pageSize={MEMBER_RESULTS_PAGE_SIZE}
+                  total={total}
+                  hrefFor={(p) => hrefFor({ page: p })}
+                />
+              ) : null
+            }
+          >
+            {listContent}
+          </ListPanel>
+        </div>
       )}
     </>
   );
