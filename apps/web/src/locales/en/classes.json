@@ -213,7 +213,13 @@
     "failed": "Could not load results",
     "dueLower": "due {{date}}",
     "noDueLower": "no due date",
-    "perStudent": "Per student"
+    "perStudent": "Per student",
+    "searchStudent": "Search student by name",
+    "colStudent": "Student",
+    "colStatus": "Status",
+    "colModeScores": "Mode scores",
+    "colSubmission": "Submission / Time",
+    "noMatch": "No students match \"{{q}}\"."
   },
   "backToClass": "Back to the class",
   "submit": {
@@ -352,7 +358,17 @@
     "title": "Assignments",
     "summary": "Did {{done}}/{{total}}.",
     "summaryOverdue": "Did {{done}}/{{total}}, {{overdue}} overdue and not done.",
-    "list": "Results per assignment"
+    "list": "Results per assignment",
+    "searchPlaceholder": "Search by set title",
+    "colAssignment": "Assignment",
+    "colStatus": "Status",
+    "colCompletedAt": "Completed",
+    "colScore": "Score",
+    "all": "All",
+    "pending": "To do",
+    "done": "Done",
+    "overdue": "Overdue",
+    "noMatch": "No assignments match \"{{q}}\"."
   },
   "dueLabel": "Due"
 }

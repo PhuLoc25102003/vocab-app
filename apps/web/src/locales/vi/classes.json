@@ -213,7 +213,13 @@
     "failed": "Không tải được kết quả",
     "dueLower": "hạn {{date}}",
     "noDueLower": "không có hạn",
-    "perStudent": "Từng học sinh"
+    "perStudent": "Từng học sinh",
+    "searchStudent": "Tìm học sinh theo tên",
+    "colStudent": "Học sinh",
+    "colStatus": "Trạng thái",
+    "colModeScores": "Điểm từng chế độ",
+    "colSubmission": "Bài nộp / Thời gian",
+    "noMatch": "Không có học sinh nào khớp \"{{q}}\"."
   },
   "backToClass": "Quay lại lớp",
   "submit": {
@@ -352,7 +358,17 @@
     "title": "Bài đã giao",
     "summary": "Đã làm {{done}}/{{total}} bài.",
     "summaryOverdue": "Đã làm {{done}}/{{total}} bài, {{overdue}} bài quá hạn chưa làm.",
-    "list": "Kết quả các bài"
+    "list": "Kết quả các bài",
+    "searchPlaceholder": "Tìm bài theo tên bộ từ",
+    "colAssignment": "Bài giao",
+    "colStatus": "Trạng thái",
+    "colCompletedAt": "Hoàn thành",
+    "colScore": "Điểm số",
+    "all": "Tất cả",
+    "pending": "Chưa làm",
+    "done": "Đã làm",
+    "overdue": "Quá hạn",
+    "noMatch": "Không có bài nào khớp \"{{q}}\"."
   },
   "dueLabel": "Hạn"
 }
