@@ -164,38 +164,40 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
       aria-labelledby="review-summary"
       className="flex flex-col gap-6 rounded-2xl border border-board-muted/20 bg-board p-5 sm:p-6 text-board-fg shadow-raised lg:flex-row lg:items-center lg:justify-between"
     >
-      <div className="flex flex-col gap-3 sm:min-w-[220px]">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5 text-board-muted">
-            <CalendarClock aria-hidden className="size-4 text-board-muted" />
+      <div className="flex flex-col gap-3.5 sm:min-w-[240px]">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-board-fg/90">
+            <CalendarClock aria-hidden className="size-4.5 text-board-fg" />
             <h2
               id="review-summary"
-              className="text-tiny font-bold uppercase tracking-wider text-board-muted"
+              className="text-small font-bold uppercase tracking-wider text-board-fg"
             >
               {t('review.dueToday')}
             </h2>
           </div>
-          <p className="flex items-baseline gap-2">
-            <span className="text-4xl sm:text-5xl font-extrabold tabular-nums tracking-tight text-board-fg">
+          <p className="flex items-baseline gap-2.5">
+            <span className="text-5xl sm:text-6xl font-black tabular-nums tracking-tight text-white drop-shadow-xs">
               {dueCards}
             </span>
-            <span className="text-body font-semibold text-board-muted">{t('review.cards')}</span>
+            <span className="text-xl sm:text-2xl font-bold text-board-fg/90">
+              {t('review.cards')}
+            </span>
           </p>
-          <p className="text-small text-board-muted">
+          <p className="text-body text-board-fg/85 leading-snug">
             <Trans
               t={t}
               i18nKey="review.inSets"
               values={{ count: setCount }}
-              components={[<span key="c" className="tabular-nums font-semibold text-board-fg" />]}
+              components={[<span key="c" className="tabular-nums font-bold text-white" />]}
             />
           </p>
         </div>
 
         {first ? (
-          <div className="pt-1">
+          <div className="pt-1.5">
             <Button
               asChild
-              className="h-11 w-full sm:w-auto rounded-xl bg-board-fg px-5 font-bold text-board shadow-sm hover:bg-surface motion-safe:active:scale-[0.98]"
+              className="h-11 w-full sm:w-auto rounded-xl bg-board-fg px-5 font-bold text-board shadow-sm hover:bg-white hover:text-board motion-safe:active:scale-[0.98]"
             >
               <Link href={reviewHref(first.setId, modes)}>
                 <Play aria-hidden className="size-4 fill-current" />
