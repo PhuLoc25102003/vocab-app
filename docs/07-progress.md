@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-22
 
-**Đang ở:** Giai đoạn 2 đến 6 đã xong toàn bộ mã nguồn trong repo. Đã sửa layout mobile 360 px và chống nhảy layout ôn tập (5.36), đăng nhập Google kẹt màn hình trắng trên mobile (5.37). Việc 6.8 và 6.9 (#415) gom các chỉnh sửa UX xác thực, đa ngôn ngữ, thẻ thống kê 3 vai trò, ôn nối tiếp nhiều chế độ và vùng bấm 44 px ở Ôn hôm nay vào một PR. Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Đã hoàn thành các việc 6.10, 6.11 (ảnh minh hoạ và đồng bộ thẻ câu hỏi), 6.12 (cân đối banner ôn tập #419), 6.13 (đồng bộ bảng chi tiết học sinh và bài giao #420), 6.14 (đồng bộ import xem trước, context menu chuột phải, kéo thả toàn thẻ #421), và 6.15 (sticky header, public/private toggle, học offline 9 chế độ chống đơ giao diện). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -23,8 +23,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      11 |      11 | Xong       |
-| **Toàn dự án**          |                                            | **176** | **180** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      17 |      17 | Xong       |
+| **Toàn dự án**          |                                            | **182** | **186** | **98%**    |
 
 ## Cách cập nhật
 
@@ -349,6 +349,29 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
   - **Dàn đều chiều cao lưới chế độ học (`StudyModeGrid`)**: Thêm `auto-rows-fr`, `h-full w-full min-h-[84px]` giúp 9 thẻ chế độ học luôn thẳng hàng tăm tắp, không bị lệch chiều cao giữa các hàng/cột khi đổi sang tiếng Anh.
   - **Chuẩn hoá bo góc và đổ bóng (`globals.css`)**: Bổ sung đầy đủ thang đo `--radius-*` và `--shadow-*` cho Tailwind v4; căn chỉnh độ bo góc vừa phải, thanh lịch (8px cho input/button/select/textarea, 12px cho ảnh/card con, 14px cho khung lớn).
   - **Chuẩn hoá kiến trúc**: Xoá file re-export thừa `apps/web/src/features/sets/components/image-search-dialog.tsx`, chuyển test sang `components/common/image-search-dialog.test.tsx` và trỏ trực tiếp toàn bộ import về `@/components/common/image-search-dialog`.
+- [x] **6.12** Cân đối banner ôn tập và rút gọn tên menu (#419): Cân đối banner Ôn hôm nay (`due-sets.tsx`), phóng to số thẻ cần ôn và tăng độ nổi bật; rút gọn tên hiển thị trên header menu (`account-menu.tsx`) tránh tràn layout ở mọi kích thước màn hình.
+- [x] **6.13** Đồng bộ thiết kế bảng, bộ lọc và phân trang cho chi tiết học sinh và chi tiết bài giao (#420):
+  - Bảng danh sách bài đã giao của học sinh tại `/classes/:id/members/:userId` dùng `ListPanel`, bộ lọc trạng thái (Tất cả, Đã nộp, Chưa làm, Quá hạn), tìm kiếm theo tên bài, sắp xếp và phân trang `Pagination`.
+  - Bảng kết quả từng học sinh tại `/classes/:id/assignments/:assignmentId` dùng `ListPanel`, bộ lọc trạng thái (Tất cả, Đã nộp, Chưa làm, Nộp trễ, Quá hạn), tìm kiếm học sinh, sắp xếp và phân trang.
+- [x] **6.14** Đồng bộ Import xem trước, kéo thả toàn thẻ, menu ngữ cảnh chuột phải và phân quyền Admin (#421):
+  - **Đồng bộ Import xem trước với form Tạo bộ từ**: Bỏ bảng tĩnh cũ, tích hợp form tạo bộ từ (`SetEditor`) đầy đủ tính năng: danh sách thẻ có thể sửa/xoá/thêm trực tiếp, cuộn riêng, tìm ảnh minh hoạ trực tuyến, giao diện chuẩn chỉ.
+  - **Tối ưu mặc định Import**: Lược bỏ trường chọn ngôn ngữ (mặc định từ là `en`, nghĩa là `vi` cho app học tiếng Anh); cấu hình sẵn cách đọc 4 cột: `Từ \t Nghĩa \t Phiên âm \t Ví dụ`; cập nhật placeholder form dán.
+  - **Menu ngữ cảnh chuột phải (`ContextMenu`)**: Tích hợp trên desktop cho thẻ bộ từ ở cả Thư viện (`/sets`) và Khám phá (`/explore`); trên mobile hiển thị nút ba chấm ⋯.
+  - **Tạo bộ từ theo ngữ cảnh thư mục (`?folder=...`)**: Đang đứng ở thư mục nào thì tạo bộ hoặc import sẽ tự động gán vào thư mục đó, huỷ quay lại đúng thư mục.
+  - **Kéo thả toàn bộ thẻ (Whole-card Drag & Drop)**: Kéo cả thẻ thả vào thư mục trên cột thư mục; bỏ nút thư mục bị trùng lặp.
+  - **Bộ lọc Khám phá & Quyền Admin**: Bộ lọc sắp xếp và tìm kiếm trên Khám phá; menu chuột phải có chức năng Ẩn bộ từ cho Admin khi xem bộ của người khác.
+- [x] **6.15** Hoàn thiện UX bộ từ (sticky header, public/private toggle, luồng Khám phá liền mạch, đồng bộ khung danh sách) và học offline đa chế độ:
+  - **Ghim thanh menu (Sticky Header)**: Cố định header điều hướng trên cùng khi cuộn trang (`sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm`) ở cả layout ứng dụng `(app)` và trang công khai `(public)`.
+  - **Luồng Khám phá liền mạch (Explore Journey Continuity)**:
+    - Khi xem bộ từ từ Khám phá (`/sets/:id?from=explore`), thanh điều hướng `AppNav` giữ active mục **Khám phá** (không bị nhảy sang mục "Bộ từ"), nút quay lại trên đầu trang trỏ về `/explore`.
+    - Khi bấm "Bắt đầu học" hoặc chọn bất kỳ chế độ học nào trong lưới `StudyModeGrid`, cờ `?from=explore` được truyền tiếp xuyên suốt vào trang học đơn lẻ và lộ trình `StudyPath`.
+    - Tại màn hình kết quả học (`StudyResult`), thay nút "Về bộ từ" dễ gây hiểu lầm thành nút **"Trở về"** (`exitLabel = t('result.return')`), đưa người học quay lại đúng trang bộ từ ở Khám phá (`/sets/:id?from=explore`), từ đó có thể học tiếp chế độ khác hoặc nhấn `< Quay lại Khám phá`.
+  - **Gọn gàng trang chi tiết bộ từ**: Chuyển "Sao chép liên kết" vào menu ba chấm, gỡ nút độc lập trên hàng thông tin.
+  - **Phân định Public ↔ Private và Ẩn bộ từ**: Bộ từ của chính mình hiển thị nút và menu chuyển trạng thái Công khai ↔ Riêng tư (`ToggleVisibilityButton`); nút "Ẩn bộ từ" của Admin chỉ hiển thị khi kiểm duyệt bộ từ của người khác.
+  - **Đồng bộ khung danh sách quản lý (`ListPanel`)**: Vùng thân danh sách có chiều cao tối thiểu và tối đa (`min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto`), toolbar và phân trang giữ cố định để người dùng không phải cuộn tràn cả trang khi danh sách dài.
+  - **Học offline đa chế độ & Chống đơ giao diện**:
+    - Bổ sung nút "Chọn chế độ" trên trang `/offline` mở hộp thoại chọn 9 chế độ học ngoại tuyến (Flashcard, Học kỹ, Luyện viết, Nghe viết, Trắc nghiệm, Điền từ, Ghép cặp, Kiểm tra, Luyện nói), lưu kết quả vào IndexedDB để tự động đồng bộ khi có mạng.
+    - Sửa triệt để lỗi đơ giao diện khi bấm "Về bộ từ": trang `/offline` hỗ trợ callback `onExit` cho `StudyShell` và `StudyResult` để đóng giao diện học và quay lại danh sách ngoại tuyến sạch sẽ mà không bị kẹt lại màn hình kết quả do router Next.js trùng URL.
 
 ## Quyết định cần chốt
 

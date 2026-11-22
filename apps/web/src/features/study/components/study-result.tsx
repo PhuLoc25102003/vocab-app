@@ -12,6 +12,7 @@ interface StudyResultProps {
   questions: Question[];
   exitHref: Route;
   exitLabel?: string;
+  onExit?: () => void;
   note?: ReactNode;
   onRestart: () => void;
   onRetryWrong: () => void;
@@ -30,6 +31,7 @@ export function StudyResult({
   questions,
   exitHref,
   exitLabel,
+  onExit,
   note,
   onRestart,
   onRetryWrong,
@@ -98,9 +100,15 @@ export function StudyResult({
         <Button variant={wrong.length > 0 ? 'secondary' : 'primary'} onClick={onRestart}>
           {t('result.restart')}
         </Button>
-        <Button asChild variant="secondary">
-          <Link href={exitHref}>{exitLabel ?? t('result.backToSet')}</Link>
-        </Button>
+        {onExit ? (
+          <Button variant="secondary" onClick={onExit}>
+            {exitLabel ?? t('result.backToSet')}
+          </Button>
+        ) : (
+          <Button asChild variant="secondary">
+            <Link href={exitHref}>{exitLabel ?? t('result.backToSet')}</Link>
+          </Button>
+        )}
       </div>
     </section>
   );

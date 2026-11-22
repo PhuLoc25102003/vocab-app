@@ -71,7 +71,7 @@ describe('ExploreSets', () => {
 
     expect(await screen.findByRole('link', { name: 'Trái cây' })).toHaveAttribute(
       'href',
-      '/sets/s1',
+      '/sets/s1?from=explore',
     );
     expect(screen.getByText('Lan')).toBeInTheDocument();
   });

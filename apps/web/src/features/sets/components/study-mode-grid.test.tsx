@@ -18,4 +18,15 @@ describe('StudyModeGrid', () => {
     );
     expect(screen.getByText('Ghép từ với nghĩa thật nhanh')).toBeInTheDocument();
   });
+
+  it('giữ query param ?from=explore khi xem từ Khám phá', () => {
+    render(<StudyModeGrid setId="s1" fromExplore />);
+
+    const start = screen.getByRole('link', { name: 'Bắt đầu học' });
+    expect(start).toHaveAttribute('href', '/sets/s1/study/path?from=explore');
+    expect(screen.getByRole('link', { name: /^Flashcard/ })).toHaveAttribute(
+      'href',
+      '/sets/s1/study/flashcard?from=explore',
+    );
+  });
 });

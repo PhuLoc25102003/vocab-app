@@ -2,7 +2,6 @@
 
 import type { SetDetail as SetDetailData } from '@vocab/shared';
 import type { ReactNode } from 'react';
-import { CopyLinkButton } from '@/components/common/copy-link-button';
 import { EmptyState } from '@/components/common/empty-state';
 import { PageHeader } from '@/components/common/page-header';
 import { useSet } from '../hooks/use-set';
@@ -15,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 interface SetDetailProps {
   id: string;
+  fromExplore?: boolean;
   /** Nút theo quyền của người xem, do tầng trang ghép vào. */
   renderActions: (set: SetDetailData) => ReactNode;
   /** Chủ bộ từ và người xem từ Khám phá quay về hai nơi khác nhau. */
@@ -31,6 +31,7 @@ interface SetDetailProps {
 
 export function SetDetail({
   id,
+  fromExplore,
   renderActions,
   renderBack,
   renderMeta,
@@ -48,8 +49,7 @@ export function SetDetail({
     return <SetLoadFailure error={set.error} onRetry={() => void set.refetch()} />;
   }
 
-  const { title, description, visibility, cards, termLang, defLang, hiddenAt, hiddenReason } =
-    set.data;
+  const { title, description, cards, termLang, defLang, hiddenAt, hiddenReason } = set.data;
 
   return (
     <>
@@ -64,14 +64,11 @@ export function SetDetail({
           {t('detail.hidden', { reason: hiddenReason })}
         </p>
       ) : null}
-      <SetMeta set={set.data}>
-        {renderMeta?.(set.data)}
-        {visibility === 'PUBLIC' ? <CopyLinkButton path={`/public/sets/${id}`} /> : null}
-      </SetMeta>
+      <SetMeta set={set.data}>{renderMeta?.(set.data)}</SetMeta>
       {cards.length > 0 ? (
         <>
           {renderProgress?.(set.data)}
-          <StudyModeGrid setId={id} />
+          <StudyModeGrid setId={id} fromExplore={fromExplore} />
           <CardList
             cards={cards}
             termLang={termLang}

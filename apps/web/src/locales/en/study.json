@@ -89,7 +89,9 @@
     "good": "Well done! Review a few more cards and you have them all.",
     "ok": "Not bad. Study the missed cards again to lock them in.",
     "start": "Every start takes time. Study the missed cards again.",
-    "backToSet": "Back to the set",
+    "backToSet": "Return",
+    "return": "Return",
+    "backToExplore": "Back to Explore",
     "done": "Session complete",
     "rate": "Recall rate",
     "score": "You remembered <0>{{correct}}</0> of <1>{{total}}</1> cards.",
@@ -145,6 +147,10 @@
   },
   "offline": {
     "study": "Study offline",
+    "chooseMode": "Choose mode",
+    "chooseModeTitle": "Choose offline study mode",
+    "chooseModeDescription": "Choose a mode to study while offline. Results will be saved and synced automatically when reconnected.",
+    "backToList": "Back to downloaded sets",
     "note": "Results are saved on this device and sent when you are back online.",
     "synced": "Sent {{count}} offline sessions to the server",
     "notDownloaded": "Vocabulary set has not been downloaded"

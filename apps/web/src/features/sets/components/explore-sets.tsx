@@ -22,7 +22,7 @@ export const EXPLORE_PAGE_SIZE = 20;
 type ExploreAudience = 'member' | 'guest';
 
 const AUDIENCE_PATHS: Record<ExploreAudience, { list: string; set: (id: string) => Route }> = {
-  member: { list: '/explore', set: (id) => `/sets/${id}` as Route },
+  member: { list: '/explore', set: (id) => `/sets/${id}?from=explore` as Route },
   guest: { list: '/public/explore', set: (id) => `/public/sets/${id}` as Route },
 };
 

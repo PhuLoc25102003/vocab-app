@@ -46,6 +46,8 @@ interface StudyShellProps {
   assignmentId?: string;
   /** Nhãn nút thoát ở màn kết quả, mặc định "Về bộ từ". */
   exitLabel?: string;
+  /** Thoát phiên học (ví dụ học offline đóng modal quay lại danh sách). */
+  onExit?: () => void;
   /** Gọi khi máy chủ đã lưu kết quả phiên. */
   onFinished?: () => void;
   /** Chỉ học các thẻ này ngay từ đầu, ví dụ chế độ thứ hai khi ôn nhiều chế độ. Không khôi phục phiên dở. */
@@ -59,12 +61,14 @@ const UNAVAILABLE_CODES = new Set<string>([
 
 function StudyFrame({
   exitHref,
+  onExit,
   position,
   total,
   header,
   children,
 }: {
   exitHref: Route;
+  onExit?: () => void;
   position: number;
   total: number;
   header?: ReactNode;
@@ -74,11 +78,17 @@ function StudyFrame({
   return (
     <div className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-bg">
       <header className="mx-auto flex w-full max-w-[720px] items-center gap-3 px-4 py-2">
-        <Button asChild variant="ghost" size="icon">
-          <Link href={exitHref} aria-label={t('shell.exit')}>
+        {onExit ? (
+          <Button variant="ghost" size="icon" onClick={onExit} aria-label={t('shell.exit')}>
             <X aria-hidden className="size-5" />
-          </Link>
-        </Button>
+          </Button>
+        ) : (
+          <Button asChild variant="ghost" size="icon">
+            <Link href={exitHref} aria-label={t('shell.exit')}>
+              <X aria-hidden className="size-5" />
+            </Link>
+          </Button>
+        )}
         <div
           role="progressbar"
           aria-label={t('shell.progress')}
@@ -107,24 +117,32 @@ function StudyFrame({
 function StartFailure({
   error,
   exitHref,
+  onExit,
   onRetry,
 }: {
   error: unknown;
   exitHref: Route;
+  onExit?: () => void;
   onRetry: () => void;
 }) {
   const { t } = useTranslation('study');
   const code = error instanceof HttpError ? error.code : null;
+  const exitAction = onExit ? (
+    <Button variant="secondary" onClick={onExit}>
+      {t('shell.back')}
+    </Button>
+  ) : (
+    <Button asChild variant="secondary">
+      <Link href={exitHref}>{t('shell.back')}</Link>
+    </Button>
+  );
+
   if (code === ERROR_CODES.NO_CARDS_DUE) {
     return (
       <EmptyState
         title={t('shell.allReviewed')}
         description={t('shell.allReviewedHint')}
-        action={
-          <Button asChild variant="secondary">
-            <Link href={exitHref}>{t('shell.back')}</Link>
-          </Button>
-        }
+        action={exitAction}
       />
     );
   }
@@ -133,11 +151,7 @@ function StartFailure({
       <EmptyState
         title={t('shell.noCloze')}
         description={t('shell.noClozeHint')}
-        action={
-          <Button asChild variant="secondary">
-            <Link href={exitHref}>{t('shell.back')}</Link>
-          </Button>
-        }
+        action={exitAction}
       />
     );
   }
@@ -148,20 +162,19 @@ function StartFailure({
         description={
           code === ERROR_CODES.SET_HAS_NO_CARDS ? t('shell.noCardsHint') : t('shell.notFoundHint')
         }
-        action={
-          <Button asChild variant="secondary">
-            <Link href={exitHref}>{t('shell.back')}</Link>
-          </Button>
-        }
+        action={exitAction}
       />
     );
   }
   return (
-    <ErrorState
-      title={t('shell.startFailed')}
-      description={t('shell.checkNetwork')}
-      onRetry={onRetry}
-    />
+    <div className="flex flex-col gap-4">
+      <ErrorState
+        title={t('shell.startFailed')}
+        description={t('shell.checkNetwork')}
+        onRetry={onRetry}
+      />
+      <div>{exitAction}</div>
+    </div>
   );
 }
 
@@ -176,6 +189,7 @@ export function StudyShell({
   onUnavailable,
   assignmentId,
   exitLabel,
+  onExit,
   onFinished,
   cardIds: initialCardIds,
 }: StudyShellProps) {
@@ -280,10 +294,17 @@ export function StudyShell({
     }
   }, [isUnavailable, onUnavailable]);
 
+  useEffect(() => {
+    return () => {
+      useStudyStore.setState({ session: null, result: null, questions: [], position: 0 });
+    };
+  }, []);
+
   const total = ready ? questions.length : 0;
   const frame = (children: ReactNode) => (
     <StudyFrame
       exitHref={exitHref}
+      onExit={onExit}
       position={Math.min(position, total)}
       total={total}
       header={header}
@@ -297,6 +318,7 @@ export function StudyShell({
       <StartFailure
         error={started.error}
         exitHref={exitHref}
+        onExit={onExit}
         onRetry={() => void started.refetch()}
       />,
     );
@@ -315,6 +337,7 @@ export function StudyShell({
         questions={questions}
         exitHref={exitHref}
         exitLabel={exitLabel}
+        onExit={onExit}
         note={resultNote}
         onRestart={() => void started.refetch()}
         onRetryWrong={() => {

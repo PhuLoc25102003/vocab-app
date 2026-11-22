@@ -15,7 +15,7 @@ export default async function StudyPage({
   params,
   searchParams,
 }: PageProps<'/sets/[id]/study/[mode]'>) {
-  const [{ id, mode: modeParam }, { due, assignment, next, review }] = await Promise.all([
+  const [{ id, mode: modeParam }, { due, assignment, next, review, from }] = await Promise.all([
     params,
     searchParams,
   ]);
@@ -33,6 +33,7 @@ export default async function StudyPage({
       mode={mode}
       dueOnly={due === '1'}
       review={review === '1'}
+      fromExplore={from === 'explore'}
       next={parseModeList(typeof next === 'string' ? next : undefined).filter(
         (item) => item !== mode,
       )}

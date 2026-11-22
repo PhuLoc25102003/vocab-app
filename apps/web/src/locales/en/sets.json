@@ -188,7 +188,11 @@
     "duplicate": "Make a copy",
     "downloading": "Downloading to device...",
     "hide": "Hide set",
-    "unhide": "Unhide set"
+    "unhide": "Unhide set",
+    "makePublic": "Make public",
+    "makePrivate": "Make private",
+    "madePublic": "Set is now public",
+    "madePrivate": "Set is now private"
   },
   "cardCount": "{{count}} cards",
   "summaryCount": "Set of {{count}} cards",

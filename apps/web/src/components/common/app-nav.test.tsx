@@ -1,9 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import { AppNav } from './app-nav';
 
-vi.mock('next/navigation', () => ({ usePathname: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  usePathname: vi.fn(),
+  useSearchParams: vi.fn(() => new URLSearchParams() as never),
+}));
 
 describe('AppNav', () => {
   it('có liên kết tới các khu vực chính', () => {
@@ -28,6 +31,15 @@ describe('AppNav', () => {
     vi.mocked(usePathname).mockReturnValue('/sets-archive');
     render(<AppNav />);
 
+    expect(screen.getByRole('link', { name: 'Bộ từ' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('đánh dấu mục Khám phá khi xem bộ từ từ Khám phá (?from=explore)', () => {
+    vi.mocked(usePathname).mockReturnValue('/sets/abc');
+    vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams('from=explore') as never);
+    render(<AppNav />);
+
+    expect(screen.getByRole('link', { name: 'Khám phá' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Bộ từ' })).not.toHaveAttribute('aria-current');
   });
 

@@ -35,6 +35,8 @@ interface AccountStudyProps {
   next?: StudyMode[];
   /** Chế độ thứ hai trở đi khi ôn nhiều chế độ: học lại đúng các thẻ của phiên đầu. */
   review?: boolean;
+  /** Đến từ trang Khám phá. */
+  fromExplore?: boolean;
 }
 
 /** Thanh bước trên đầu phiên học khi ôn nhiều chế độ nối tiếp (UC-L10). */
@@ -121,6 +123,7 @@ export function AccountStudy({
   dueOnly,
   next = [],
   review = false,
+  fromExplore = false,
 }: AccountStudyProps) {
   const { t } = useTranslation(['study', 'common']);
   const router = useRouter();
@@ -193,8 +196,14 @@ export function AccountStudy({
       mode={mode}
       dueOnly={dueOnly || (review && !cardIds)}
       cardIds={cardIds}
-      exitHref={(fromReview ? '/review' : `/sets/${setId}`) as Route}
-      exitLabel={fromReview ? t('chain.backToReview') : undefined}
+      exitHref={
+        (fromReview
+          ? '/review'
+          : fromExplore
+            ? `/sets/${setId}?from=explore`
+            : `/sets/${setId}`) as Route
+      }
+      exitLabel={fromReview ? t('chain.backToReview') : t('result.return')}
       header={chain && chain.length > 1 ? <ReviewSteps chain={chain} current={mode} /> : undefined}
       resultNote={resultNote}
       onFinished={handleFinished}
