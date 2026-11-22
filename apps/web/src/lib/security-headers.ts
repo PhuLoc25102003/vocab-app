@@ -19,8 +19,8 @@ export function buildContentSecurityPolicy({ apiUrl, isDev }: SecurityHeaderOpti
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/client${isDev ? " 'unsafe-eval'" : ''}`,
     `style-src 'self' 'unsafe-inline' ${GOOGLE_IDENTITY_URL}/style`,
-    // Ảnh của thẻ nằm ở R2: đọc qua địa chỉ công khai `*.r2.dev`, tải lên bằng URL ký sẵn.
-    `img-src 'self' data: blob: ${R2_PUBLIC_ORIGIN}`,
+    // Ảnh của thẻ nằm ở R2 (đọc qua `*.r2.dev`) hoặc các nguồn ảnh trực tuyến (Unsplash, Pixabay).
+    `img-src 'self' data: blob: ${R2_PUBLIC_ORIGIN} https://images.unsplash.com https://pixabay.com https://cdn.pixabay.com`,
     "font-src 'self'",
     [
       'connect-src',

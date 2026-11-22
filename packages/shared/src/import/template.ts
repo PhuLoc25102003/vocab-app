@@ -25,17 +25,21 @@ export interface TemplateColumns {
   definitionColumn: number;
   phoneticColumn?: number;
   exampleColumn?: number;
+  imageColumn?: number;
 }
 
 const normalizeHeader = (value: string) =>
   value.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('vi');
 
-const HEADER_KEYS = {
+const HEADER_KEYS: Record<string, keyof Omit<TemplateColumns, 'delimiter' | 'hasHeader'>> = {
   [normalizeHeader('Từ')]: 'termColumn',
   [normalizeHeader('Nghĩa')]: 'definitionColumn',
   [normalizeHeader('Phiên âm')]: 'phoneticColumn',
   [normalizeHeader('Ví dụ')]: 'exampleColumn',
-} as const;
+  [normalizeHeader('Hình ảnh')]: 'imageColumn',
+  [normalizeHeader('Ảnh')]: 'imageColumn',
+  [normalizeHeader('Image')]: 'imageColumn',
+};
 
 /**
  * Nếu dòng đầu là tiêu đề của file mẫu thì trả cách đọc tương ứng, cột có thể đổi thứ tự.
@@ -52,7 +56,7 @@ export function detectTemplateHeader(content: string): TemplateColumns | null {
     if (!key || found[key] !== undefined) return null;
     found[key] = index + 1;
   }
-  const { termColumn, definitionColumn, phoneticColumn, exampleColumn } = found;
+  const { termColumn, definitionColumn, phoneticColumn, exampleColumn, imageColumn } = found;
   if (termColumn === undefined || definitionColumn === undefined) return null;
   return {
     delimiter,
@@ -61,5 +65,6 @@ export function detectTemplateHeader(content: string): TemplateColumns | null {
     definitionColumn,
     ...(phoneticColumn === undefined ? {} : { phoneticColumn }),
     ...(exampleColumn === undefined ? {} : { exampleColumn }),
+    ...(imageColumn === undefined ? {} : { imageColumn }),
   };
 }

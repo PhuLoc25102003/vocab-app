@@ -34,6 +34,7 @@
     "definitionColumnSame": "Cột nghĩa phải khác cột từ",
     "phoneticColumnSame": "Cột phiên âm phải khác cột từ và cột nghĩa",
     "exampleColumnSame": "Cột ví dụ phải khác các cột đã chọn",
+    "imageColumnSame": "Cột hình ảnh phải khác các cột đã chọn",
     "importTextRequired": "Hãy dán nội dung hoặc chọn file",
     "importTextTooLong": "Nội dung tối đa 2 MB",
     "importNoCards": "Chưa có thẻ nào để nhập",

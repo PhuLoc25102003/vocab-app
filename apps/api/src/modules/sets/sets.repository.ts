@@ -379,13 +379,14 @@ export class SetsRepository extends BaseRepository {
         const last = await tx.card.aggregate({ where: { setId }, _max: { position: true } });
         const start = (last._max.position ?? -1) + 1;
         await tx.card.createMany({
-          data: cards.map(({ term, definition, phonetic, example }, index) => ({
+          data: cards.map(({ term, definition, phonetic, example, imageUrl }, index) => ({
             setId,
             position: start + index,
             term,
             definition,
             phonetic: phonetic ?? null,
             example: example ?? null,
+            imageUrl: imageUrl ?? null,
           })),
         });
         const set = await tx.studySet.findUniqueOrThrow({

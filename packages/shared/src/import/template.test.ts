@@ -36,6 +36,18 @@ describe('detectTemplateHeader', () => {
     });
   });
 
+  it('nhận ra cột Hình ảnh trong tiêu đề', () => {
+    expect(detectTemplateHeader('Từ\tNghĩa\tPhiên âm\tVí dụ\tHình ảnh')).toEqual({
+      delimiter: 'tab',
+      hasHeader: true,
+      termColumn: 1,
+      definitionColumn: 2,
+      phoneticColumn: 3,
+      exampleColumn: 4,
+      imageColumn: 5,
+    });
+  });
+
   it.each([['apple\tquả táo'], ['Từ\tPhiên âm'], ['Từ\tNghĩa\tGhi chú'], ['Từ\tNghĩa\tTừ'], ['']])(
     'không coi %j là tiêu đề mẫu',
     (content) => {

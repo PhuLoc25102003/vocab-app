@@ -24,10 +24,12 @@ describe('buildContentSecurityPolicy', () => {
     );
   });
 
-  it('chỉ hiện ảnh của app và ảnh thẻ trên R2', () => {
+  it('chỉ hiện ảnh của app, ảnh thẻ trên R2 và nguồn ảnh Unsplash/Pixabay', () => {
     const policy = buildContentSecurityPolicy({ apiUrl, isDev: false });
 
-    expect(directive(policy, 'img-src')).toBe("img-src 'self' data: blob: https://*.r2.dev");
+    expect(directive(policy, 'img-src')).toBe(
+      "img-src 'self' data: blob: https://*.r2.dev https://images.unsplash.com https://pixabay.com https://cdn.pixabay.com",
+    );
   });
 
   it('dùng API local khi chưa cấu hình', () => {

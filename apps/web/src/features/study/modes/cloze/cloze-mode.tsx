@@ -2,6 +2,7 @@
 
 import { CLOZE_BLANK } from '@vocab/shared';
 import { Fragment } from 'react';
+import { CardImage } from '@/components/common/card-image';
 import { TypedAnswer } from '../typed/typed-answer';
 import type { StudyModeProps } from '../views';
 import { useTranslation } from 'react-i18next';
@@ -37,13 +38,22 @@ export function ClozeModeView(props: StudyModeProps) {
       {...props}
       inputLabel={t('cloze.input')}
       prompt={
-        <div className="flex flex-col gap-2">
-          <Sentence text={question.prompt} lang={languages.term} />
-          {question.hint ? (
-            <p lang={languages.definition} className="text-text-muted break-words">
-              {t('cloze.hint', { hint: question.hint })}
-            </p>
+        <div className="flex flex-col gap-3">
+          {question.imageUrl ? (
+            <CardImage
+              src={question.imageUrl}
+              alt={t('cloze.imageAlt')}
+              className="aspect-[4/3] w-40"
+            />
           ) : null}
+          <div className="flex flex-col gap-2">
+            <Sentence text={question.prompt} lang={languages.term} />
+            {question.hint ? (
+              <p lang={languages.definition} className="text-text-muted break-words">
+                {t('cloze.hint', { hint: question.hint })}
+              </p>
+            ) : null}
+          </div>
         </div>
       }
     />

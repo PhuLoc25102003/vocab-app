@@ -34,10 +34,20 @@ export class ClozeMode implements StudyModeStrategy {
   readonly mode = 'CLOZE' as const;
 
   buildQuestions(cards: StudyCard[], { limit }: StudyOptions): Question[] {
-    const questions = cards.flatMap(({ id, term, definition, example }) => {
+    const questions = cards.flatMap(({ id, term, definition, example, imageUrl }) => {
       const prompt = example ? makeCloze(example, term) : null;
       return prompt
-        ? [{ id, cardId: id, mode: this.mode, prompt, expected: term, hint: definition }]
+        ? [
+            {
+              id,
+              cardId: id,
+              mode: this.mode,
+              prompt,
+              expected: term,
+              hint: definition,
+              ...(imageUrl ? { imageUrl } : {}),
+            },
+          ]
         : [];
     });
     return questions.slice(0, limit ?? questions.length);

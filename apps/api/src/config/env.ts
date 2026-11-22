@@ -52,6 +52,10 @@ const envSchema = z.object({
     .trim()
     .pipe(z.union([z.literal(''), z.url()]))
     .default(''),
+  /** Khoá API Unsplash để tìm ảnh trực tuyến cho thẻ. */
+  UNSPLASH_ACCESS_KEY: z.string().trim().default(''),
+  /** Khoá API Pixabay để tìm ảnh trực tuyến cho thẻ. */
+  PIXABAY_API_KEY: z.string().trim().default(''),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 

@@ -57,6 +57,7 @@ describe('tải ảnh của thẻ', () => {
     const config = await call(app).get('/uploads/config').expect(200);
     expect(config.body.data).toEqual({
       images: true,
+      imageSearch: false,
       maxBytes: 1024 * 1024,
       contentTypes: ['image/png', 'image/jpeg', 'image/webp'],
     });
@@ -147,5 +148,22 @@ describe('tải ảnh của thẻ', () => {
     expect((await prisma.card.findUniqueOrThrow({ where: { id: cardId } })).imageUrl).toBe(
       replaced,
     );
+
+    // Chấp nhận ảnh từ Unsplash và Pixabay
+    const unsplashUrl = 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=800';
+    await call(app)
+      .put(`/sets/${setId}/cards`)
+      .send({
+        cards: [{ id: cardId, term: 'apple', definition: 'quả táo', imageUrl: unsplashUrl }],
+      })
+      .expect(200);
+    expect((await prisma.card.findUniqueOrThrow({ where: { id: cardId } })).imageUrl).toBe(
+      unsplashUrl,
+    );
+  });
+
+  it('GET /uploads/search-images trả mảng rỗng khi query trống hoặc chưa có key', async () => {
+    const res = await call(app).get('/uploads/search-images?query=').expect(200);
+    expect(res.body.data).toEqual([]);
   });
 });

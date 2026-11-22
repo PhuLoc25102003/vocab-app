@@ -11,7 +11,7 @@ const ROWS: ImportRow[] = [
   { line: 4, term: 'cat', definition: 'con mèo', errors: [] },
 ];
 
-const NO_EXTRA = { phonetic: false, example: false };
+const NO_EXTRA = { phonetic: false, example: false, image: false };
 
 function Harness({ initial = ROWS, columns = NO_EXTRA }: HarnessProps) {
   const [rows, setRows] = useState(initial);
@@ -20,7 +20,7 @@ function Harness({ initial = ROWS, columns = NO_EXTRA }: HarnessProps) {
 
 interface HarnessProps {
   initial?: ImportRow[];
-  columns?: { phonetic: boolean; example: boolean };
+  columns?: { phonetic: boolean; example: boolean; image: boolean };
 }
 
 describe('ImportPreview', () => {
@@ -55,9 +55,10 @@ describe('ImportPreview', () => {
     expect(screen.queryByLabelText('Phiên âm')).not.toBeInTheDocument();
     unmount();
 
-    render(<Harness initial={rows} columns={{ phonetic: true, example: false }} />);
+    render(<Harness initial={rows} columns={{ phonetic: true, example: false, image: false }} />);
     const phonetic = screen.getByLabelText('Phiên âm');
     expect(screen.queryByLabelText('Ví dụ')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Hình ảnh (URL)')).not.toBeInTheDocument();
 
     await userEvent.click(phonetic);
     await userEvent.paste('a'.repeat(201));
@@ -65,6 +66,27 @@ describe('ImportPreview', () => {
 
     await userEvent.clear(phonetic);
     expect(screen.getByText('Mọi dòng đều hợp lệ.')).toBeInTheDocument();
+  });
+
+  it('hiện ô hình ảnh khi chọn cột ảnh và hiển thị ảnh xem trước', async () => {
+    const rows = [
+      {
+        line: 1,
+        term: 'apple',
+        definition: 'quả táo',
+        imageUrl: 'https://images.unsplash.com/apple.jpg',
+        errors: [],
+      },
+    ];
+    render(<Harness initial={rows} columns={{ phonetic: false, example: false, image: true }} />);
+
+    expect(screen.getByLabelText('Hình ảnh (URL)')).toHaveValue(
+      'https://images.unsplash.com/apple.jpg',
+    );
+    expect(screen.getByRole('img', { name: 'apple' })).toHaveAttribute(
+      'src',
+      'https://images.unsplash.com/apple.jpg',
+    );
   });
 
   it('bỏ dòng khỏi danh sách', async () => {

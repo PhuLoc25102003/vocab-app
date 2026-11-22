@@ -26,6 +26,25 @@ Các việc này chưa bắt đầu. Trước khi làm, viết chi tiết thêm 
 - **Test đã có:** `sigv4.test`, `uploads.integration` (ký URL, quyền, loại và dung lượng ảnh, ảnh ngoài kho), `card-image-field.test` (chọn, tải lên, xem trước, gỡ, lỗi), `security-headers.test`; E2E chạy với khoá R2 giả để audit trình sửa có ô ảnh.
 - **Còn thiếu:** E2E tải ảnh thật lên R2 cần tài khoản Cloudflare.
 
+### UC-X3b. Tìm và chọn ảnh minh hoạ trực tuyến qua Unsplash API
+
+- **Việc:** 2.5d. **Người dùng:** người tạo và sửa bộ từ. **Trạng thái:** Kế hoạch thực hiện.
+- **Mục tiêu:** Giúp người dùng gắn ảnh minh hoạ cho từ vựng nhanh chóng chỉ với 1-click mà không cần tải ảnh thủ công từ máy tính cá nhân lên hay phải cấu hình kho Cloudflare R2 trước.
+- **Đăng ký & tích hợp:**
+  - Người dùng đăng ký tài khoản Unsplash Developers (miễn phí, không cần thẻ tín dụng), tạo ứng dụng để nhận `UNSPLASH_ACCESS_KEY`.
+  - Cấu hình biến môi trường: `UNSPLASH_ACCESS_KEY` trên API/Web; CSP cho phép nạp ảnh từ `images.unsplash.com`.
+- **Giao diện & Luồng sử dụng:**
+  - **Trình soạn thẻ (Card Form):** Thêm nút "Tìm ảnh" (kèm icon tìm kiếm/ảnh) ngay bên cạnh ô từ vựng. Bấm vào sẽ mở popup/modal hiển thị lưới ảnh thumbnail tìm tự động theo từ vựng (`term`), kèm ô tìm kiếm để người dùng có thể đổi từ khoá nếu muốn. Bấm chọn 1 ảnh -> tự động điền URL ảnh (`imageUrl`) vào thẻ và lưu thông tin tác giả theo điều khoản Unsplash.
+  - **Trang Import bộ từ (`/sets/import`):** Bổ sung cột "Hình ảnh (URL)" vào file mẫu Excel/CSV; đồng thời cung cấp tuỳ chọn "Tự động tìm ảnh minh hoạ" cho danh sách từ vừa nhập.
+- **Hiển thị ở các chế độ học tập (Study Modes):**
+  - **Flashcard:** Mặt sau (nghĩa) có ảnh minh hoạ lớn, trực quan.
+  - **Học kỹ (Learn):** Hiển thị ảnh minh hoạ ở giai đoạn học nghĩa và giai đoạn gõ từ để liên tưởng trực quan ngữ nghĩa.
+  - **Luyện viết (Write):** Ảnh minh hoạ đặt cạnh định nghĩa giúp gợi ý ngữ nghĩa cho từ cần viết.
+  - **Trắc nghiệm (MCQ):** Hiển thị ảnh kèm câu hỏi (dạng câu hỏi nhìn ảnh chọn từ hoặc gợi ý ngữ cảnh).
+  - **Điền từ (Cloze):** Ảnh minh hoạ cho câu ví dụ để người học hiểu tình huống thực tế của từ vựng.
+  - **Nghe viết (Dictation):** Ảnh minh hoạ làm gợi ý phụ (hint) khi người học bấm nút yêu cầu trợ giúp.
+- **Ngoại lệ:** Hết hạn mức API Unsplash (50 req/giờ ở chế độ Demo) thì báo lỗi nhẹ nhàng và cho phép nhập URL ảnh hoặc tải tệp lên thủ công; từ khoá không tìm thấy ảnh thì thông báo gợi ý đổi từ khoá.
+
 ### UC-X4. Bốn chế độ học mới
 
 | Việc      | Chế độ   | Phải có                                                                                                                                                                                      | Test chính                                                                                            |

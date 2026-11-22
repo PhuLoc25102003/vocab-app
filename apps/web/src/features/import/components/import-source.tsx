@@ -56,6 +56,7 @@ const DEFAULT_VALUES: ImportPreviewInput = {
     definitionColumn: 2,
     phoneticColumn: '',
     exampleColumn: '',
+    imageColumn: '',
   },
 };
 
@@ -63,6 +64,7 @@ const DEFAULT_VALUES: ImportPreviewInput = {
 export interface ImportExtraColumns {
   phonetic: boolean;
   example: boolean;
+  image: boolean;
 }
 
 interface ImportSourceProps {
@@ -105,6 +107,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     setValue('options.definitionColumn', detected.definitionColumn, options);
     setValue('options.phoneticColumn', detected.phoneticColumn ?? '', options);
     setValue('options.exampleColumn', detected.exampleColumn ?? '', options);
+    setValue('options.imageColumn', detected.imageColumn ?? '', options);
   };
 
   const pasteContent = (event: ClipboardEvent<HTMLTextAreaElement>) => {
@@ -150,6 +153,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
       onPreview(result, {
         phonetic: values.options.phoneticColumn !== undefined,
         example: values.options.exampleColumn !== undefined,
+        image: values.options.imageColumn !== undefined,
       });
     } catch {
       // Lỗi hiện qua `preview.error`.
@@ -165,6 +169,7 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
     definitionColumn: watched?.definitionColumn ?? 2,
     phoneticColumn: watched?.phoneticColumn,
     exampleColumn: watched?.exampleColumn,
+    imageColumn: watched?.imageColumn,
   };
   const { detected, fields } = readFirstRow(content, options.delimiter);
   const singleColumn = detected !== null && fields.length < 2;
@@ -378,6 +383,13 @@ function OptionsFields({
         label={t('import.exampleColumn')}
         error={errors.options?.exampleColumn?.message}
         {...register('options.exampleColumn')}
+      >
+        {optionalColumnOptions}
+      </SelectField>
+      <SelectField
+        label={t('import.imageColumn')}
+        error={errors.options?.imageColumn?.message}
+        {...register('options.imageColumn')}
       >
         {optionalColumnOptions}
       </SelectField>

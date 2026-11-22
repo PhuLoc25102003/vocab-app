@@ -65,4 +65,12 @@ describe('ClozeMode', () => {
       expected: 'apple',
     });
   });
+
+  it('gắn imageUrl khi thẻ có ảnh', () => {
+    const [question] = mode.buildQuestions(
+      [{ ...cards[0]!, imageUrl: 'https://images.unsplash.com/photo-1' }],
+      {},
+    );
+    expect(question?.imageUrl).toBe('https://images.unsplash.com/photo-1');
+  });
 });

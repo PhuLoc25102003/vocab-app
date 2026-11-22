@@ -108,6 +108,7 @@ export class SetsService {
   }
 
   async importCards(id: string, { cards }: ImportCardsDto) {
+    this.uploads.assertCardImages(cards);
     const result = await this.sets.appendCards(id, cards);
     if (result.status === 'not_found') {
       throw setNotFound();

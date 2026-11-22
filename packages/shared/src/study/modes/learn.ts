@@ -53,12 +53,13 @@ export class LearnMode implements StudyModeStrategy {
         choices,
       };
     });
-    const recall = selected.map(({ id, term, definition }): Question => ({
+    const recall = selected.map(({ id, term, definition, imageUrl }): Question => ({
       id: `${id}${WRITE_SUFFIX}`,
       cardId: id,
       mode: this.mode,
       prompt: definition,
       expected: term,
+      ...(imageUrl ? { imageUrl } : {}),
     }));
     return [...recognition, ...recall];
   }
