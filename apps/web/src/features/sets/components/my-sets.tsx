@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { useMySets } from '../hooks/use-my-sets';
 import { SetCardGrid, SetCardsLoading } from './set-cards';
+import type { SetCardShellProps } from '@/components/common/set-card-shell';
 import { QUERY_FIELD, SetSearchForm, toQuery } from './set-search-form';
 import { useTranslation } from 'react-i18next';
 
@@ -56,10 +57,12 @@ interface MySetsProps {
   renderCardActions?: (set: SetSummary) => ReactNode;
   /** Menu chuột phải trên từng thẻ */
   renderContextMenu?: (set: SetSummary) => ReactNode;
+  /** Tuỳ biến render thẻ, ví dụ để gắn kéo thả */
+  renderCard?: (set: SetSummary, props: SetCardShellProps) => ReactNode;
 }
 
 /** Thư mục đang mở nằm trong URL (`?folder=`), cột thư mục cũng đọc và đổi tham số này. */
-export function MySets({ renderCardActions, renderContextMenu }: MySetsProps = {}) {
+export function MySets({ renderCardActions, renderContextMenu, renderCard }: MySetsProps = {}) {
   const { t } = useTranslation('sets');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -110,6 +113,7 @@ export function MySets({ renderCardActions, renderContextMenu }: MySetsProps = {
         state={state}
         renderCardActions={renderCardActions}
         renderContextMenu={renderContextMenu}
+        renderCard={renderCard}
       />
     </>
   );
@@ -120,11 +124,13 @@ function MySetsResults({
   state,
   renderCardActions,
   renderContextMenu,
+  renderCard,
 }: {
   sets: ReturnType<typeof useMySets>;
   state: ListState;
   renderCardActions?: MySetsProps['renderCardActions'];
   renderContextMenu?: MySetsProps['renderContextMenu'];
+  renderCard?: MySetsProps['renderCard'];
 }) {
   const { t } = useTranslation('sets');
   const { q, folder } = state;
@@ -191,6 +197,7 @@ function MySetsResults({
         sets={data}
         renderActions={renderCardActions}
         renderContextMenu={renderContextMenu}
+        renderCard={renderCard}
       />
       <Pagination
         page={meta.page}

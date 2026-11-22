@@ -186,7 +186,9 @@
     "copyLink": "Sao chép liên kết",
     "linkCopied": "Đã sao chép liên kết bộ từ",
     "duplicate": "Tạo bản sao",
-    "downloading": "Đang tải về máy..."
+    "downloading": "Đang tải về máy...",
+    "hide": "Ẩn bộ từ",
+    "unhide": "Bỏ ẩn bộ từ"
   },
   "cardCount": "{{count}} thẻ",
   "summaryCount": "Bộ từ gồm {{count}} thẻ",

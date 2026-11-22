@@ -46,8 +46,14 @@ export function SetDetailScreen({ id }: { id: string }) {
       }
       renderProgress={(set) => <SetProgressSummary setId={set.id} />}
       renderCardExtra={(cardId) => <CardMasteryBadge setId={id} cardId={cardId} />}
-      renderActions={(set) => (
-        <>
+      renderActions={(set) => {
+        const adminAction = (
+          <Can action="moderate-content">
+            <HideSetButton setId={set.id} hidden={Boolean(set.hiddenAt)} />
+          </Can>
+        );
+
+        return (
           <Can
             action="update"
             resource={set}
@@ -55,16 +61,14 @@ export function SetDetailScreen({ id }: { id: string }) {
               <>
                 <DuplicateSetButton id={set.id} />
                 <OfflineToggle set={set} />
+                {adminAction}
               </>
             }
           >
-            <SetOwnerActions set={set} />
+            <SetOwnerActions set={set} extraActions={adminAction} />
           </Can>
-          <Can action="moderate-content">
-            <HideSetButton setId={set.id} hidden={Boolean(set.hiddenAt)} />
-          </Can>
-        </>
-      )}
+        );
+      }}
     />
   );
 }

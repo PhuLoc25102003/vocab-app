@@ -1,8 +1,9 @@
 import type { Route } from 'next';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
+import { cn } from '@/lib/utils';
 import { LoadingState } from './loading-state';
 
 /**
@@ -20,7 +21,7 @@ export function SetCardList({ children }: { children: ReactNode }) {
   );
 }
 
-interface SetCardShellProps {
+export interface SetCardShellProps extends Omit<ComponentPropsWithoutRef<'li'>, 'contextMenu'> {
   href: Route;
   title: string;
   /** Đầu hàng thông tin cuối thẻ, ví dụ nhãn phạm vi hoặc "Đến hạn". */
@@ -42,21 +43,31 @@ interface SetCardShellProps {
  * Khung thẻ bộ từ dùng chung để bộ từ trông giống nhau ở Bộ từ, Khám phá, Tổng quan và Ôn hôm nay.
  * Cả thẻ bấm được nhờ link phủ toàn thẻ.
  */
-export function SetCardShell({
-  href,
-  title,
-  badge,
-  count,
-  description,
-  footer,
-  actions,
-  contextMenu,
-  itemProps,
-}: SetCardShellProps) {
+export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(function SetCardShell(
+  {
+    href,
+    title,
+    badge,
+    count,
+    description,
+    footer,
+    actions,
+    contextMenu,
+    itemProps,
+    className,
+    ...rest
+  },
+  ref,
+) {
   const card = (
     <li
+      ref={ref}
+      {...rest}
       {...itemProps}
-      className="relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
+      className={cn(
+        'relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft',
+        className,
+      )}
     >
       <div className="flex items-start gap-2">
         {/* Link phủ cả thẻ; tự nó cũng cao tối thiểu 44 px để đạt vùng bấm. */}
@@ -67,7 +78,10 @@ export function SetCardShell({
           {title}
         </Link>
         {actions ? (
-          <div className="relative z-10 -mt-1.5 -mr-1.5 flex shrink-0 items-center gap-1">
+          <div
+            onPointerDown={(e) => e.stopPropagation()}
+            className="relative z-10 -mt-1.5 -mr-1.5 flex shrink-0 items-center gap-1"
+          >
             {actions}
           </div>
         ) : null}
@@ -93,7 +107,7 @@ export function SetCardShell({
   }
 
   return card;
-}
+});
 
 export function SetCardsSkeleton({ count, label }: { count: number; label: string }) {
   return (

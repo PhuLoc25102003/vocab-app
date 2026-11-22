@@ -3,8 +3,13 @@
 import type { PublicSetSummary, SetSummary } from '@vocab/shared';
 import { Layers } from 'lucide-react';
 import type { Route } from 'next';
-import type { ReactNode } from 'react';
-import { SetCardList, SetCardShell, SetCardsSkeleton } from '@/components/common/set-card-shell';
+import { Fragment, type ReactNode } from 'react';
+import {
+  SetCardList,
+  SetCardShell,
+  SetCardsSkeleton,
+  type SetCardShellProps,
+} from '@/components/common/set-card-shell';
 import { useTranslation } from 'react-i18next';
 
 const formatSetDate = (dateStr: string, locale: string) =>
@@ -16,7 +21,7 @@ const formatSetDate = (dateStr: string, locale: string) =>
 
 export type SetCardData = SetSummary & Partial<Pick<PublicSetSummary, 'owner'>>;
 
-interface SetCardGridProps<T extends SetCardData> {
+export interface SetCardGridProps<T extends SetCardData> {
   sets: T[];
   /** `library`: bộ của mình, hiện phạm vi và ngày cập nhật. `community`: hiện tác giả. */
   variant?: 'library' | 'community';
@@ -25,6 +30,8 @@ interface SetCardGridProps<T extends SetCardData> {
   renderActions?: (set: T) => ReactNode;
   /** Menu chuột phải trên từng thẻ */
   renderContextMenu?: (set: T) => ReactNode;
+  /** Tuỳ biến render thẻ, ví dụ để bọc Draggable */
+  renderCard?: (set: T, props: SetCardShellProps) => ReactNode;
   /** Gắn thêm thuộc tính cho từng thẻ, ví dụ để kéo thả. */
   itemProps?: (set: T) => Record<string, unknown>;
 }
@@ -53,6 +60,7 @@ export function SetCardGrid<T extends SetCardData>({
   hrefFor = memberSetHref,
   renderActions,
   renderContextMenu,
+  renderCard,
   itemProps,
 }: SetCardGridProps<T>) {
   const { t, i18n } = useTranslation(['sets', 'common']);
@@ -60,40 +68,41 @@ export function SetCardGrid<T extends SetCardData>({
     <SetCardList>
       {sets.map((set) => {
         const { id, title, description, cardCount, visibility, updatedAt, owner } = set;
-        return (
-          <SetCardShell
-            key={id}
-            href={hrefFor(id)}
-            title={title}
-            description={description}
-            itemProps={itemProps?.(set)}
-            badge={
-              variant === 'library' ? (
-                <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
-                  {t(`common:visibility.${visibility}`)}
-                </span>
-              ) : undefined
-            }
-            count={
-              <>
-                <Layers aria-hidden className="size-4" />
-                {t('cardCount', { count: cardCount })}
-              </>
-            }
-            footer={
-              variant === 'community' && owner ? (
-                <OwnerLine name={owner.displayName} />
-              ) : (
-                <span title={t('updated')}>
-                  <span className="sr-only">{t('updated')} </span>
-                  <time dateTime={updatedAt}>{formatSetDate(updatedAt, i18n.language)}</time>
-                </span>
-              )
-            }
-            actions={renderActions?.(set)}
-            contextMenu={renderContextMenu?.(set)}
-          />
-        );
+        const cardProps: SetCardShellProps = {
+          href: hrefFor(id),
+          title,
+          description,
+          itemProps: itemProps?.(set),
+          badge:
+            variant === 'library' ? (
+              <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
+                {t(`common:visibility.${visibility}`)}
+              </span>
+            ) : undefined,
+          count: (
+            <>
+              <Layers aria-hidden className="size-4" />
+              {t('cardCount', { count: cardCount })}
+            </>
+          ),
+          footer:
+            variant === 'community' && owner ? (
+              <OwnerLine name={owner.displayName} />
+            ) : (
+              <span title={t('updated')}>
+                <span className="sr-only">{t('updated')} </span>
+                <time dateTime={updatedAt}>{formatSetDate(updatedAt, i18n.language)}</time>
+              </span>
+            ),
+          actions: renderActions?.(set),
+          contextMenu: renderContextMenu?.(set),
+        };
+
+        if (renderCard) {
+          return <Fragment key={id}>{renderCard(set, cardProps)}</Fragment>;
+        }
+
+        return <SetCardShell key={id} {...cardProps} />;
       })}
     </SetCardList>
   );

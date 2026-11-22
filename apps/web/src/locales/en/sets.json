@@ -186,7 +186,9 @@
     "copyLink": "Copy link",
     "linkCopied": "Set link copied",
     "duplicate": "Make a copy",
-    "downloading": "Downloading to device..."
+    "downloading": "Downloading to device...",
+    "hide": "Hide set",
+    "unhide": "Unhide set"
   },
   "cardCount": "{{count}} cards",
   "summaryCount": "Set of {{count}} cards",

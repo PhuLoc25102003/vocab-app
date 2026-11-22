@@ -359,3 +359,11 @@ Số định dạng theo locale bằng `Intl.NumberFormat`.
 - Nút "Ôn bộ đầu tiên": `rounded-full min-h-11 px-5 font-semibold bg-board-fg text-board shadow-sm hover:bg-surface`, icon `Play` đặc `size-3.5 fill-current`. Hiệu ứng nhấn `motion-safe:active:scale-[0.98]` tắt khi giảm chuyển động.
 - Thanh bước (`ReviewSteps`) truyền vào prop `header` của `StudyShell`, cùng kiểu với `PathSteps` của lộ trình: pill `rounded-full border px-2.5 py-0.5 text-small`. Đã xong `border-primary bg-primary-soft text-primary` kèm icon `Check` và chữ ẩn "đã xong", đang học `border-primary bg-primary font-semibold text-primary-fg` với `aria-current="step"`, chưa tới `border-border text-text-muted`.
 - Màn kết quả chế độ cuối: dòng `ReviewFinished` `rounded-md border border-primary bg-primary-soft p-3 font-medium text-primary` kèm icon `PartyPopper`.
+
+## Thao tác thẻ bộ từ và quyền quản trị (Admin)
+
+- **Kéo thả toàn bộ thẻ (`SetCardShell`):** Sử dụng `@dnd-kit/core` để kéo thẻ trực tiếp vào cây thư mục ở cột bên trái (`FolderPanel`). Toàn thẻ có con trỏ `cursor-grab active:cursor-grabbing`. Tối ưu hiệu năng cao: chỉ thẻ bản sao ảo (`DragOverlay`) được mount qua React Portal và di chuyển bằng GPU hardware acceleration (`transform: translate3d`), hoàn toàn không gây re-render hay lag layout của danh sách thẻ trong DOM. Ngưỡng kích hoạt: click chuột bình thường (< 8 px) mở chi tiết bộ từ (`Link`), giữ và rê (>= 8 px) bắt đầu kéo.
+- **Ngăn xung đột kéo thẻ:** Vùng nút ba chấm ⋯ (`actions`) có `onPointerDown={(e) => e.stopPropagation()}` để thao tác bấm mở menu trên mobile/desktop không bị kéo nhầm thẻ.
+- **Giao diện thẻ gọn gàng:** Loại bỏ nút chuyển thư mục rời rạc trên thẻ để tránh trùng lặp; thao tác chuyển thư mục được đưa hoàn toàn vào menu chuột phải và menu ba chấm ⋯.
+- **Quyền Admin trên thẻ bộ từ:** Với tài khoản Quản trị (`ADMIN`), cả menu chuột phải (`ContextMenu`) và menu ba chấm ⋯ (`DropdownMenu`) trên các thẻ ở `/sets` và `/explore` đều bổ sung lựa chọn "Ẩn bộ từ" (icon `EyeOff`, kiểu `danger`), mở hộp thoại nhập lý do vi phạm (`FormDialog`) và làm mới dữ liệu ngay khi xác nhận.
+- **Thứ tự nút hành động trên trang chi tiết:** Nút overflow menu ba chấm `[...]` luôn nằm ở ngoài cùng bên phải của thanh công cụ (`[Sửa bộ từ]` → `[Ẩn bộ từ]` → `[...]`), tuân thủ chuẩn UX phân cấp hành động từ chính đến phụ và menu mở rộng.

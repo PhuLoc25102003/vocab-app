@@ -5,7 +5,8 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 ## UC-S1. Xem danh sách bộ từ của tôi
 
 - **Việc:** 1.7, 1.10, 1.43. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
-- **Phải có:** danh sách dạng thẻ với tên, số thẻ, phạm vi, ngày cập nhật; phân trang trên URL; nút tạo bộ; ô tìm theo tên; chọn cách sắp xếp; thao tác chuột phải (desktop) và nút ba chấm ⋯ (mobile) tích hợp đầy đủ: Bắt đầu học, Sửa, Chuyển thư mục, Nhập thêm thẻ, Lưu ngoại tuyến, Sao chép liên kết, Tạo bản sao, Xoá.
+- **Phải có:** danh sách dạng thẻ với tên, số thẻ, phạm vi, ngày cập nhật; phân trang trên URL; nút tạo bộ; ô tìm theo tên; chọn cách sắp xếp; thao tác chuột phải (desktop) và nút ba chấm ⋯ (mobile) tích hợp đầy đủ: Bắt đầu học, Sửa, Chuyển thư mục, Nhập thêm thẻ, Lưu ngoại tuyến, Sao chép liên kết, Tạo bản sao, Xoá, và Ẩn bộ từ (dành cho Admin).
+- **Kéo thả và thao tác nhanh:** Toàn bộ thẻ bộ từ có thể kéo thả trực tiếp (`@dnd-kit/core`) vào các thư mục ở cột bên trái; cơ chế dùng GPU hardware acceleration và `DragOverlay` mount qua React Portal nên hoàn toàn không gây re-render các thẻ khác trong danh sách; chuột click bình thường (< 8px) mở bộ từ, giữ và rê (>= 8px) kích hoạt kéo. Bỏ icon chuyển thư mục rời rạc trên thẻ để tránh lặp với menu.
 - **Luồng chính:** mở `/sets`, thấy bộ mới sửa ở đầu, tìm hoặc sắp xếp, mở một bộ, quay lại vẫn đúng trang và từ khoá.
 - **Ngoại lệ:** chưa có bộ nào; không có kết quả tìm kiếm; số trang vượt quá; lỗi mạng có nút thử lại.
 - **Test đã có:** `sets.integration`, `my-sets.test`, `set-context-menu.test`.
@@ -45,11 +46,12 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S5. Xem chi tiết bộ từ
 
-- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Đủ.
+- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai, ADMIN. **Trạng thái:** Đủ.
 - **Phải có:**
   - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại.
   - Chủ bộ: sửa, xoá, sao chép đường dẫn khi bộ công khai.
   - Người khác: sao chép về tài khoản.
+  - Quản trị viên (ADMIN): nút "Ẩn bộ từ" / "Bỏ ẩn bộ từ" (icon EyeOff/Eye). Thứ tự sắp xếp nút luôn đảm bảo nút ba chấm `[...]` ở cuối cùng bên phải (`[Sửa bộ từ]` -> `[Ẩn bộ từ]` -> `[...]`), không bị kẹp menu ở giữa các nút hành động chính.
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.
 - **Ngoại lệ:** bộ không tồn tại hoặc không có quyền; bộ chưa có thẻ thì ẩn nút học và mời thêm thẻ; lỗi mạng có nút thử lại.

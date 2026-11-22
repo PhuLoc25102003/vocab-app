@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Trash2,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
@@ -67,6 +68,8 @@ export interface SetContextMenuProps {
   folders?: SetFolderOption[];
   onMoveToFolder?: (folderId: string | null) => void;
   movingFolder?: boolean;
+  extraMenuItems?: ReactNode;
+  extraDialogs?: ReactNode;
 }
 
 type OfflineState = 'missing' | 'saved' | 'outdated';
@@ -188,6 +191,8 @@ export function SetContextMenuContent({
   folders,
   onMoveToFolder,
   movingFolder,
+  extraMenuItems,
+  extraDialogs,
 }: SetContextMenuProps) {
   const {
     t,
@@ -314,7 +319,11 @@ export function SetContextMenuContent({
           <Trash2 aria-hidden className="size-4" />
           <span>{t('actions.delete')}</span>
         </ContextMenuItem>
+
+        {extraMenuItems}
       </ContextMenuContent>
+
+      {extraDialogs}
 
       <ConfirmDialog
         open={confirmingDelete}
@@ -336,6 +345,8 @@ export function SetCardActionsDropdown({
   folders,
   onMoveToFolder,
   movingFolder,
+  extraMenuItems,
+  extraDialogs,
 }: SetContextMenuProps) {
   const {
     t,
@@ -473,8 +484,12 @@ export function SetCardActionsDropdown({
             <Trash2 aria-hidden className="size-4" />
             <span>{t('actions.delete')}</span>
           </MenuItem>
+
+          {extraMenuItems}
         </MenuContent>
       </Menu>
+
+      {extraDialogs}
 
       <ConfirmDialog
         open={confirmingDelete}

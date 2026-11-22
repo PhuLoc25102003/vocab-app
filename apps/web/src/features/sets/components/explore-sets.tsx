@@ -3,6 +3,8 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { ReactNode } from 'react';
+import type { PublicSetSummary } from '@vocab/shared';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { Pagination } from '@/components/common/pagination';
@@ -45,7 +47,17 @@ function exploreHref(list: string, q: string, sort: string, page = 1): Route {
   return (query ? `${list}?${query}` : list) as Route;
 }
 
-export function ExploreSets({ audience = 'member' }: { audience?: ExploreAudience }) {
+export interface ExploreSetsProps {
+  audience?: ExploreAudience;
+  renderActions?: (set: PublicSetSummary) => ReactNode;
+  renderContextMenu?: (set: PublicSetSummary) => ReactNode;
+}
+
+export function ExploreSets({
+  audience = 'member',
+  renderActions,
+  renderContextMenu,
+}: ExploreSetsProps) {
   const { t } = useTranslation('sets');
   const paths = AUDIENCE_PATHS[audience];
   const router = useRouter();
@@ -78,7 +90,14 @@ export function ExploreSets({ audience = 'member' }: { audience?: ExploreAudienc
           </Select>
         </div>
       </div>
-      <ExploreResults q={q} sort={sort} page={page} audience={audience} />
+      <ExploreResults
+        q={q}
+        sort={sort}
+        page={page}
+        audience={audience}
+        renderActions={renderActions}
+        renderContextMenu={renderContextMenu}
+      />
     </>
   );
 }
@@ -88,11 +107,15 @@ function ExploreResults({
   sort,
   page,
   audience,
+  renderActions,
+  renderContextMenu,
 }: {
   q: string;
   sort: string;
   page: number;
   audience: ExploreAudience;
+  renderActions?: ExploreSetsProps['renderActions'];
+  renderContextMenu?: ExploreSetsProps['renderContextMenu'];
 }) {
   const { t } = useTranslation('sets');
   const paths = AUDIENCE_PATHS[audience];
@@ -147,12 +170,18 @@ function ExploreResults({
         sets={data}
         variant="community"
         hrefFor={paths.set}
-        renderActions={(set) => (
-          <ExploreCardActionsDropdown set={set} href={paths.set(set.id)} audience={audience} />
-        )}
-        renderContextMenu={(set) => (
-          <ExploreContextMenuContent set={set} href={paths.set(set.id)} audience={audience} />
-        )}
+        renderActions={
+          renderActions ??
+          ((set) => (
+            <ExploreCardActionsDropdown set={set} href={paths.set(set.id)} audience={audience} />
+          ))
+        }
+        renderContextMenu={
+          renderContextMenu ??
+          ((set) => (
+            <ExploreContextMenuContent set={set} href={paths.set(set.id)} audience={audience} />
+          ))
+        }
       />
       <Pagination
         page={meta.page}

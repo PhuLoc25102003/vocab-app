@@ -1,12 +1,18 @@
 'use client';
 
+import { useDraggable } from '@dnd-kit/core';
 import type { SetSummary } from '@vocab/shared';
+import { EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { FolderDndArea, SetDragHandle } from '@/features/folders/components/folder-dnd';
+import { SetCardShell, type SetCardShellProps } from '@/components/common/set-card-shell';
+import { ContextMenuItem } from '@/components/ui/context-menu';
+import { MenuItem } from '@/components/ui/menu';
+import { useAdminHideSet } from '@/features/admin/hooks/use-admin-hide-set';
+import { useAuthStore } from '@/features/auth/store';
+import { FolderDndArea } from '@/features/folders/components/folder-dnd';
 import { FolderHeader } from '@/features/folders/components/folder-header';
 import { FolderPanel } from '@/features/folders/components/folder-panel';
-import { SetFolderPicker } from '@/features/folders/components/set-folder-picker';
 import { useFolders, useMoveSet } from '@/features/folders/hooks';
 import { MySets } from '@/features/sets/components/my-sets';
 import {
@@ -14,6 +20,7 @@ import {
   SetContextMenuContent,
 } from '@/features/sets/components/set-context-menu';
 import { formErrorMessage } from '@/lib/form-errors';
+import { cn } from '@/lib/utils';
 
 interface ContextMenuWrapperProps {
   set: SetSummary;
@@ -22,7 +29,10 @@ interface ContextMenuWrapperProps {
 
 function SetCardContextMenuWrapper({ set, folders }: ContextMenuWrapperProps) {
   const { t } = useTranslation('sets');
+  const user = useAuthStore((state) => state.user);
+  const canModerate = user?.role === 'ADMIN';
   const move = useMoveSet(set.id);
+  const admin = useAdminHideSet(set.id);
 
   const handleMove = (folderId: string | null) => {
     move.mutateAsync(folderId).then(
@@ -37,13 +47,30 @@ function SetCardContextMenuWrapper({ set, folders }: ContextMenuWrapperProps) {
       folders={folders}
       onMoveToFolder={handleMove}
       movingFolder={move.isPending}
+      extraMenuItems={
+        canModerate ? (
+          <ContextMenuItem
+            danger
+            onSelect={() => {
+              setTimeout(admin.openHideDialog);
+            }}
+          >
+            <EyeOff aria-hidden className="size-4" />
+            <span>{t('actions.hide')}</span>
+          </ContextMenuItem>
+        ) : null
+      }
+      extraDialogs={canModerate ? admin.hideDialog : null}
     />
   );
 }
 
 function SetCardActionsDropdownWrapper({ set, folders }: ContextMenuWrapperProps) {
   const { t } = useTranslation('sets');
+  const user = useAuthStore((state) => state.user);
+  const canModerate = user?.role === 'ADMIN';
   const move = useMoveSet(set.id);
+  const admin = useAdminHideSet(set.id);
 
   const handleMove = (folderId: string | null) => {
     move.mutateAsync(folderId).then(
@@ -58,6 +85,37 @@ function SetCardActionsDropdownWrapper({ set, folders }: ContextMenuWrapperProps
       folders={folders}
       onMoveToFolder={handleMove}
       movingFolder={move.isPending}
+      extraMenuItems={
+        canModerate ? (
+          <MenuItem
+            danger
+            onSelect={() => {
+              setTimeout(admin.openHideDialog);
+            }}
+          >
+            <EyeOff aria-hidden className="size-4" />
+            <span>{t('actions.hide')}</span>
+          </MenuItem>
+        ) : null
+      }
+      extraDialogs={canModerate ? admin.hideDialog : null}
+    />
+  );
+}
+
+function DraggableMySetCard({ set, ...props }: { set: SetSummary } & SetCardShellProps) {
+  const { setNodeRef, listeners, attributes, isDragging } = useDraggable({
+    id: set.id,
+    data: { title: set.title, folderId: set.folderId ?? null },
+  });
+
+  return (
+    <SetCardShell
+      ref={setNodeRef}
+      {...props}
+      {...listeners}
+      {...attributes}
+      className={cn('cursor-grab active:cursor-grabbing', isDragging && 'opacity-40 shadow-raised')}
     />
   );
 }
@@ -75,20 +133,12 @@ export function MySetsScreen() {
           <FolderHeader />
           <MySets
             renderCardActions={(set) => (
-              <>
-                <SetDragHandle setId={set.id} title={set.title} folderId={set.folderId ?? null} />
-                <SetFolderPicker
-                  variant="icon"
-                  setId={set.id}
-                  setTitle={set.title}
-                  folderId={set.folderId ?? null}
-                />
-                <SetCardActionsDropdownWrapper set={set} folders={foldersList} />
-              </>
+              <SetCardActionsDropdownWrapper set={set} folders={foldersList} />
             )}
             renderContextMenu={(set) => (
               <SetCardContextMenuWrapper set={set} folders={foldersList} />
             )}
+            renderCard={(set, props) => <DraggableMySetCard key={set.id} set={set} {...props} />}
           />
         </div>
       </div>
