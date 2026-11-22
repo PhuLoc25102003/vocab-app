@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { signOut } from '../session';
 import { useAuthStore } from '../store';
-import { AccountMenu } from './account-menu';
+import { AccountMenu, formatShortName } from './account-menu';
 
 vi.mock('../session', () => ({ signOut: vi.fn() }));
 
@@ -69,5 +69,29 @@ describe('AccountMenu', () => {
       'href',
       '/admin/users',
     );
+  });
+
+  it('formatShortName chỉ giữ lại tên đệm và tên chính khi tên có từ 3 từ trở lên', () => {
+    expect(formatShortName('Đặng Phú Lộc')).toBe('Phú Lộc');
+    expect(formatShortName('Nguyễn Văn An')).toBe('Văn An');
+    expect(formatShortName('Trần Thị Mai Phương')).toBe('Mai Phương');
+    expect(formatShortName('Nguyễn An')).toBe('Nguyễn An');
+    expect(formatShortName('Admin')).toBe('Admin');
+    expect(formatShortName('')).toBe('');
+  });
+
+  it('tên dài (từ 3 từ trở lên) chỉ hiện tên đệm và tên chính trên thanh điều hướng để không vỡ layout', async () => {
+    useAuthStore.getState().setSession({
+      user: { id: 'u2', email: 'loc@example.com', displayName: 'Đặng Phú Lộc', role: 'STUDENT' },
+      accessToken: 'token',
+    });
+    render(<AccountMenu />);
+
+    // Nút hiển thị "Phú Lộc" thay vì toàn bộ "Đặng Phú Lộc"
+    expect(screen.getByRole('button', { name: /^Tài khoản:\s*Phú Lộc$/ })).toBeInTheDocument();
+
+    // Mở menu thì vẫn hiện đầy đủ họ và tên
+    await userEvent.click(screen.getByRole('button', { name: /^Tài khoản:\s*Phú Lộc$/ }));
+    expect(screen.getByText('Đặng Phú Lộc')).toBeInTheDocument();
   });
 });

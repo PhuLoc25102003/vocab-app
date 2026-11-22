@@ -12,6 +12,21 @@ import { useTranslation } from 'react-i18next';
 const ITEM_CLASS =
   'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:opacity-50';
 
+/**
+ * Rút gọn tên hiển thị trên thanh điều hướng nếu tên dài (từ 3 từ trở lên),
+ * chỉ lấy tên đệm/tên lót và tên chính (2 từ cuối, ví dụ "Đặng Phú Lộc" -> "Phú Lộc")
+ * để tránh tràn hoặc đẩy layout thanh điều hướng.
+ */
+export function formatShortName(fullName: string): string {
+  const trimmed = fullName.trim();
+  if (!trimmed) return '';
+  const parts = trimmed.split(/\s+/);
+  if (parts.length > 2) {
+    return parts.slice(-2).join(' ');
+  }
+  return trimmed;
+}
+
 /** Ảnh đại diện kèm tên hiển thị, mở menu tài khoản. Tên ẩn trên màn hình hẹp. */
 export function AccountMenu() {
   const { t } = useTranslation('account');
@@ -21,6 +36,7 @@ export function AccountMenu() {
   const [leavingUser, setLeavingUser] = useState<typeof user>(null);
   const leaving = user !== null && leavingUser === user;
   const name = user?.displayName ?? t('title');
+  const shortName = formatShortName(name);
   const initial = name.trim().charAt(0).toLocaleUpperCase('vi') || '?';
 
   return (
@@ -34,8 +50,8 @@ export function AccountMenu() {
         </span>
         {/* Tên đọc được là "Tài khoản: <tên>", phần chữ hiện trên nút nằm trong đó. */}
         <span className="sr-only">{t('menuLabel')}</span>
-        <span className="sr-only max-w-40 truncate text-small font-medium sm:not-sr-only">
-          {name}
+        <span className="sr-only max-w-32 truncate text-small font-medium sm:not-sr-only sm:max-w-36">
+          {shortName}
         </span>
         <ChevronDown aria-hidden className="hidden size-4 text-text-muted sm:inline" />
       </DropdownMenu.Trigger>
