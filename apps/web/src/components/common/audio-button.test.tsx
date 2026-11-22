@@ -27,7 +27,7 @@ describe('AudioButton', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Nghe apple' }));
 
-    expect(speak).toHaveBeenCalledWith(expect.objectContaining({ text: 'apple', lang: 'en-US' }));
+    expect(speak).toHaveBeenCalledWith(expect.objectContaining({ text: 'apple', lang: 'en-GB' }));
   });
 
   it('ẩn khi trình duyệt không hỗ trợ', () => {
