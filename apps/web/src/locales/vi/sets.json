@@ -178,7 +178,12 @@
     "deleteTitle": "Xoá bộ từ \"{{title}}\"?",
     "deleteDescription": "Bộ từ, các thẻ và tiến độ học của bộ này sẽ bị xoá. Bạn không khôi phục được.",
     "copied": "Đã sao chép bộ từ",
-    "copy": "Sao chép bộ từ"
+    "copy": "Sao chép bộ từ",
+    "startStudy": "Bắt đầu học",
+    "copyLink": "Sao chép liên kết",
+    "linkCopied": "Đã sao chép liên kết bộ từ",
+    "duplicate": "Tạo bản sao",
+    "downloading": "Đang tải về máy..."
   },
   "cardCount": "{{count}} thẻ",
   "summaryCount": "Bộ từ gồm {{count}} thẻ",

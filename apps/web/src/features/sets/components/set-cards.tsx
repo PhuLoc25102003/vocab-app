@@ -23,6 +23,8 @@ interface SetCardGridProps<T extends SetCardData> {
   hrefFor?: (id: string) => Route;
   /** Thao tác trên từng thẻ, ví dụ menu thư mục. Nằm trên lớp link nên bấm được riêng. */
   renderActions?: (set: T) => ReactNode;
+  /** Menu chuột phải trên từng thẻ */
+  renderContextMenu?: (set: T) => ReactNode;
   /** Gắn thêm thuộc tính cho từng thẻ, ví dụ để kéo thả. */
   itemProps?: (set: T) => Record<string, unknown>;
 }
@@ -50,6 +52,7 @@ export function SetCardGrid<T extends SetCardData>({
   variant = 'library',
   hrefFor = memberSetHref,
   renderActions,
+  renderContextMenu,
   itemProps,
 }: SetCardGridProps<T>) {
   const { t, i18n } = useTranslation(['sets', 'common']);
@@ -88,6 +91,7 @@ export function SetCardGrid<T extends SetCardData>({
               )
             }
             actions={renderActions?.(set)}
+            contextMenu={renderContextMenu?.(set)}
           />
         );
       })}

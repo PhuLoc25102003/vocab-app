@@ -178,7 +178,12 @@
     "deleteTitle": "Delete the set \"{{title}}\"?",
     "deleteDescription": "The set, its cards and your progress will be deleted. This cannot be undone.",
     "copied": "Set copied",
-    "copy": "Copy set"
+    "copy": "Copy set",
+    "startStudy": "Start study",
+    "copyLink": "Copy link",
+    "linkCopied": "Set link copied",
+    "duplicate": "Make a copy",
+    "downloading": "Downloading to device..."
   },
   "cardCount": "{{count}} cards",
   "summaryCount": "Set of {{count}} cards",

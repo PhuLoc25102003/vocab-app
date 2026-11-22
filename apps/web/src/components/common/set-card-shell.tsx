@@ -2,6 +2,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { LoadingState } from './loading-state';
 
 /**
@@ -31,6 +32,8 @@ interface SetCardShellProps {
   footer?: ReactNode;
   /** Góc trên bên phải cạnh tên, nằm trên lớp link nên bấm được riêng. */
   actions?: ReactNode;
+  /** Menu chuột phải nổi khi thao tác trên thẻ. */
+  contextMenu?: ReactNode;
   /** Thuộc tính thêm cho thẻ, ví dụ để kéo thả. */
   itemProps?: Record<string, unknown>;
 }
@@ -47,9 +50,10 @@ export function SetCardShell({
   description,
   footer,
   actions,
+  contextMenu,
   itemProps,
 }: SetCardShellProps) {
-  return (
+  const card = (
     <li
       {...itemProps}
       className="relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
@@ -78,6 +82,17 @@ export function SetCardShell({
       </div>
     </li>
   );
+
+  if (contextMenu) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{card}</ContextMenuTrigger>
+        {contextMenu}
+      </ContextMenu>
+    );
+  }
+
+  return card;
 }
 
 export function SetCardsSkeleton({ count, label }: { count: number; label: string }) {

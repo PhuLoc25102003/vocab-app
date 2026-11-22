@@ -54,10 +54,12 @@ function listHref({ q, sort, folder }: ListState, page = 1): Route {
 interface MySetsProps {
   /** Thao tác trên từng thẻ, ví dụ menu thư mục, do tầng trang ghép từ feature thư mục. */
   renderCardActions?: (set: SetSummary) => ReactNode;
+  /** Menu chuột phải trên từng thẻ */
+  renderContextMenu?: (set: SetSummary) => ReactNode;
 }
 
 /** Thư mục đang mở nằm trong URL (`?folder=`), cột thư mục cũng đọc và đổi tham số này. */
-export function MySets({ renderCardActions }: MySetsProps = {}) {
+export function MySets({ renderCardActions, renderContextMenu }: MySetsProps = {}) {
   const { t } = useTranslation('sets');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -103,7 +105,12 @@ export function MySets({ renderCardActions }: MySetsProps = {}) {
           </div>
         </div>
       ) : null}
-      <MySetsResults sets={sets} state={state} renderCardActions={renderCardActions} />
+      <MySetsResults
+        sets={sets}
+        state={state}
+        renderCardActions={renderCardActions}
+        renderContextMenu={renderContextMenu}
+      />
     </>
   );
 }
@@ -112,10 +119,12 @@ function MySetsResults({
   sets,
   state,
   renderCardActions,
+  renderContextMenu,
 }: {
   sets: ReturnType<typeof useMySets>;
   state: ListState;
   renderCardActions?: MySetsProps['renderCardActions'];
+  renderContextMenu?: MySetsProps['renderContextMenu'];
 }) {
   const { t } = useTranslation('sets');
   const { q, folder } = state;
@@ -178,7 +187,11 @@ function MySetsResults({
 
   return (
     <>
-      <SetCardGrid sets={data} renderActions={renderCardActions} />
+      <SetCardGrid
+        sets={data}
+        renderActions={renderCardActions}
+        renderContextMenu={renderContextMenu}
+      />
       <Pagination
         page={meta.page}
         pageCount={Math.ceil(meta.total / meta.limit)}
