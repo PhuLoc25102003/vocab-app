@@ -277,7 +277,7 @@
       "dash": "gạch ngang"
     },
     "delimiterField": "Từ và nghĩa cách nhau bằng",
-    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nMỗi dòng một thẻ, từ và nghĩa cách nhau bằng tab, dấu phẩy hoặc \" - \".",
+    "placeholder": "apple\tquả táo\t/ˈæp.əl/\tI eat an apple every day.\nbanana\tquả chuối\t/bəˈnæn.ə/\tBananas are rich in potassium.\n\nMỗi dòng một thẻ (từ, nghĩa, phiên âm, ví dụ), các cột cách nhau bằng tab.",
     "templateFailed": "Không tạo được file mẫu. Hãy thử lại.",
     "readFailed": "Không đọc được file.",
     "columnSample": "Cột {{column}}: {{sample}}",

@@ -277,7 +277,7 @@
       "dash": "dash"
     },
     "delimiterField": "Terms and definitions are separated by",
-    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nOne card per line, term and definition separated by a tab, a comma or \" - \".",
+    "placeholder": "apple\tquả táo\t/ˈæp.əl/\tI eat an apple every day.\nbanana\tquả chuối\t/bəˈnæn.ə/\tBananas are rich in potassium.\n\nOne card per line (term, definition, phonetic, example), separated by tabs.",
     "templateFailed": "Could not create the template. Try again.",
     "readFailed": "Could not read the file.",
     "columnSample": "Column {{column}}: {{sample}}",
