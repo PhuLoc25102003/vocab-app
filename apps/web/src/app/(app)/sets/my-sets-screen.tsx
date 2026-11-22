@@ -9,16 +9,18 @@ import { FolderPanel } from '@/features/folders/components/folder-panel';
 import { SetFolderPicker } from '@/features/folders/components/set-folder-picker';
 import { useFolders, useMoveSet } from '@/features/folders/hooks';
 import { MySets } from '@/features/sets/components/my-sets';
-import { SetContextMenuContent } from '@/features/sets/components/set-context-menu';
+import {
+  SetCardActionsDropdown,
+  SetContextMenuContent,
+} from '@/features/sets/components/set-context-menu';
 import { formErrorMessage } from '@/lib/form-errors';
 
-function SetCardContextMenuWrapper({
-  set,
-  folders,
-}: {
+interface ContextMenuWrapperProps {
   set: SetSummary;
   folders: Array<{ id: string; name: string }>;
-}) {
+}
+
+function SetCardContextMenuWrapper({ set, folders }: ContextMenuWrapperProps) {
   const { t } = useTranslation('sets');
   const move = useMoveSet(set.id);
 
@@ -31,6 +33,27 @@ function SetCardContextMenuWrapper({
 
   return (
     <SetContextMenuContent
+      set={set}
+      folders={folders}
+      onMoveToFolder={handleMove}
+      movingFolder={move.isPending}
+    />
+  );
+}
+
+function SetCardActionsDropdownWrapper({ set, folders }: ContextMenuWrapperProps) {
+  const { t } = useTranslation('sets');
+  const move = useMoveSet(set.id);
+
+  const handleMove = (folderId: string | null) => {
+    move.mutateAsync(folderId).then(
+      () => toast.success(t(folderId ? 'folders.movedShort' : 'folders.unfiled')),
+      (error: unknown) => toast.error(formErrorMessage(error)),
+    );
+  };
+
+  return (
+    <SetCardActionsDropdown
       set={set}
       folders={folders}
       onMoveToFolder={handleMove}
@@ -60,6 +83,7 @@ export function MySetsScreen() {
                   setTitle={set.title}
                   folderId={set.folderId ?? null}
                 />
+                <SetCardActionsDropdownWrapper set={set} folders={foldersList} />
               </>
             )}
             renderContextMenu={(set) => (

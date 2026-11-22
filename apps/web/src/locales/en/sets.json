@@ -120,7 +120,9 @@
     "noMatch": "No public set matches \"{{q}}\" yet.",
     "empty": "No public sets yet",
     "emptyHint": "Sets made public will appear here.",
-    "pageEmptyHint": "The list is shorter than this page."
+    "pageEmptyHint": "The list is shorter than this page.",
+    "sort": "Sort public sets",
+    "sortCards": "Most cards"
   },
   "seeAll": "See all",
   "pageEmpty": "This page has no sets",
@@ -179,6 +181,7 @@
     "deleteDescription": "The set, its cards and your progress will be deleted. This cannot be undone.",
     "copied": "Set copied",
     "copy": "Copy set",
+    "copyToLibrary": "Copy to your library",
     "startStudy": "Start study",
     "copyLink": "Copy link",
     "linkCopied": "Set link copied",

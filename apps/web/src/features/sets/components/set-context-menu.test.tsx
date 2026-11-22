@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
-import { SetContextMenuContent } from './set-context-menu';
+import { SetCardActionsDropdown, SetContextMenuContent } from './set-context-menu';
 import * as api from '../api';
 import * as offlineStore from '@/lib/offline-store';
 import { toast } from 'sonner';
@@ -55,10 +55,10 @@ function renderContextMenu(
   );
 }
 
-describe('SetContextMenuContent', () => {
+describe('SetContextMenuContent & SetCardActionsDropdown', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(offlineStore.getOfflineSet).mockResolvedValue(undefined);
+    vi.mocked(offlineStore.getOfflineSet).mockResolvedValue(null);
   });
 
   it('mở menu khi chuột phải và hiện đầy đủ các chức năng', async () => {
@@ -76,6 +76,23 @@ describe('SetContextMenuContent', () => {
     expect(screen.getByRole('menuitem', { name: /Sao chép liên kết/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Tạo bản sao/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Xoá bộ từ/i })).toBeInTheDocument();
+  });
+
+  it('mở menu từ nút ba chấm (tối ưu cho mobile)', async () => {
+    const user = userEvent.setup();
+    const client = new QueryClient();
+
+    render(
+      <QueryClientProvider client={client}>
+        <SetCardActionsDropdown set={dummySet} />
+      </QueryClientProvider>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Thao tác khác/i });
+    await user.click(trigger);
+
+    expect(await screen.findByRole('menuitem', { name: /Bắt đầu học/i })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Sửa bộ từ/i })).toBeInTheDocument();
   });
 
   it('sao chép liên kết bộ từ vào clipboard', async () => {
@@ -116,8 +133,12 @@ describe('SetContextMenuContent', () => {
 
   it('tải về máy khi chọn Lưu ngoại tuyến', async () => {
     const user = userEvent.setup();
-    vi.mocked(api.getSet).mockResolvedValue({ ...dummySet, cards: [] });
-    vi.mocked(offlineStore.saveOfflineSet).mockResolvedValue();
+    vi.mocked(api.getSet).mockResolvedValue({
+      ...dummySet,
+      cards: [],
+      owner: { displayName: 'Lộc' },
+    });
+    vi.mocked(offlineStore.saveOfflineSet).mockResolvedValue(undefined as never);
 
     renderContextMenu(<div />);
     const target = screen.getByTestId('target-card');

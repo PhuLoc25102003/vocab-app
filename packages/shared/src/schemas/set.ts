@@ -56,6 +56,7 @@ export const createSetSchema = z.object({
   termLang: languageSchema.default('en'),
   defLang: languageSchema.default('vi'),
   visibility: visibilitySchema.default('PRIVATE'),
+  folderId: z.string().min(1).max(64).nullable().optional(),
   cards: z
     .array(cardInputSchema)
     .max(MAX_CARDS_PER_SET, vm('tooManyCards', { max: MAX_CARDS_PER_SET }))

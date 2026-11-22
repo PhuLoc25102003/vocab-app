@@ -40,6 +40,7 @@ export async function getImportTarget(id: string): Promise<ImportTarget> {
 export interface NewSetInput {
   title: string;
   visibility: Visibility;
+  folderId?: string;
   cards: CardInput[];
 }
 

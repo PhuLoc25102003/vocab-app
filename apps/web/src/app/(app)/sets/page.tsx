@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { PageHeader } from '@/components/common/page-header';
-import { Button } from '@/components/ui/button';
 import { SetCardsLoading } from '@/features/sets/components/set-cards';
+import { SetsHeaderActions } from '@/features/sets/components/sets-header-actions';
 import { MySetsScreen } from './my-sets-screen';
 import { getT } from '@/lib/i18n/server';
 
@@ -20,14 +19,9 @@ export default async function SetsPage() {
         title={t('pages.sets')}
         description={t('pages.setsDescription')}
         actions={
-          <>
-            <Button asChild variant="secondary">
-              <Link href="/sets/import">{t('pages.importFromFile')}</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/sets/new">{t('pages.createSet')}</Link>
-            </Button>
-          </>
+          <Suspense>
+            <SetsHeaderActions />
+          </Suspense>
         }
       />
       <Suspense fallback={<SetCardsLoading count={6} />}>

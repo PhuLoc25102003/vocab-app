@@ -50,10 +50,14 @@ export async function listPublicSets({
   page,
   limit,
   q,
+  sort,
 }: PublicSetListParams): Promise<PublicSetList> {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (q) {
     query.set('q', q);
+  }
+  if (sort) {
+    query.set('sort', sort);
   }
   return publicSetListSchema.parse(await http(`/sets/public?${query}`, { skipAuth: true }));
 }

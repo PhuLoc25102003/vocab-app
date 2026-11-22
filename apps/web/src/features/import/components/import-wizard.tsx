@@ -109,9 +109,10 @@ function ImportIntoSet({ setId, targetNote, initialCards, onRestart }: ImportInt
 interface ImportWizardProps {
   /** Có thì thêm thẻ vào bộ này, không có thì tạo bộ mới. */
   setId?: string;
+  folderId?: string;
 }
 
-export function ImportWizard({ setId }: ImportWizardProps) {
+export function ImportWizard({ setId, folderId }: ImportWizardProps) {
   const { t } = useTranslation('sets');
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<ImportRow[] | null>(null);
@@ -214,7 +215,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   return (
     <SetForm
-      cancelHref="/sets"
+      cancelHref={(folderId ? `/sets?folder=${folderId}` : '/sets') as Route}
       defaultValues={{
         title: suggestedTitle,
         description: '',
@@ -229,6 +230,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
         const id = await importAsNewSet({
           title: values.title,
           visibility: values.visibility,
+          folderId,
           cards: values.cards.map(({ id: _id, ...card }) => card),
         });
         await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });

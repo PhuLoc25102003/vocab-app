@@ -12,21 +12,25 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ImportPage({ searchParams }: PageProps<'/sets/import'>) {
   const t = await getT('common');
-  const { setId } = await searchParams;
+  const { setId, folder } = await searchParams;
   const id = typeof setId === 'string' && setId ? setId : undefined;
+  const folderId = typeof folder === 'string' && folder && folder !== 'none' ? folder : undefined;
 
   return (
     <PageContainer width="wide">
       {id ? (
         <BackLink href={`/sets/${id}` as Route} label={t('pages.backToSet')} />
       ) : (
-        <BackLink href="/sets" label={t('pages.backToList')} />
+        <BackLink
+          href={(folderId ? `/sets?folder=${folderId}` : '/sets') as Route}
+          label={t('pages.backToList')}
+        />
       )}
       <PageHeader
         title={t(id ? 'pages.importMore' : 'pages.importList')}
         description={t('pages.importDescription')}
       />
-      <ImportWizard key={id ?? 'new'} setId={id} />
+      <ImportWizard key={id ?? 'new'} setId={id} folderId={folderId} />
     </PageContainer>
   );
 }

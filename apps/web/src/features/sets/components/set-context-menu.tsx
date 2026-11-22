@@ -13,6 +13,7 @@ import {
   FolderMinus,
   GraduationCap,
   Link2,
+  MoreHorizontal,
   Pencil,
   RefreshCw,
   Trash2,
@@ -20,6 +21,7 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
+import { Button } from '@/components/ui/button';
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -31,6 +33,19 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
 } from '@/components/ui/context-menu';
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuLabel,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuSub,
+  MenuSubContent,
+  MenuSubTrigger,
+  MenuTrigger,
+} from '@/components/ui/menu';
 import { formErrorMessage } from '@/lib/form-errors';
 import {
   getOfflineSet,
@@ -56,15 +71,10 @@ export interface SetContextMenuProps {
 
 type OfflineState = 'missing' | 'saved' | 'outdated';
 
-export function SetContextMenuContent({
-  set,
-  folders,
-  onMoveToFolder,
-  movingFolder,
-}: SetContextMenuProps) {
+function useSetActionsLogic(set: SetSummary) {
   const { t } = useTranslation('sets');
   const router = useRouter();
-  const { id, title, folderId } = set;
+  const { id, title } = set;
   const deleteSet = useDeleteSet(id);
   const duplicateSet = useDuplicateSet(id);
 
@@ -152,6 +162,52 @@ export function SetContextMenuContent({
     });
   };
 
+  return {
+    t,
+    id,
+    title,
+    deleteSet,
+    duplicateSet,
+    confirmingDelete,
+    setConfirmingDelete,
+    deleteError,
+    setDeleteError,
+    offlineState,
+    offlineBusy,
+    handleCopyLink,
+    handleDuplicate,
+    handleSaveOffline,
+    handleRemoveOffline,
+    confirmDelete,
+  };
+}
+
+/** Menu chuột phải nổi trên thẻ bộ từ. */
+export function SetContextMenuContent({
+  set,
+  folders,
+  onMoveToFolder,
+  movingFolder,
+}: SetContextMenuProps) {
+  const {
+    t,
+    id,
+    title,
+    deleteSet,
+    duplicateSet,
+    confirmingDelete,
+    setConfirmingDelete,
+    deleteError,
+    setDeleteError,
+    offlineState,
+    offlineBusy,
+    handleCopyLink,
+    handleDuplicate,
+    handleSaveOffline,
+    handleRemoveOffline,
+    confirmDelete,
+  } = useSetActionsLogic(set);
+
   return (
     <>
       <ContextMenuContent>
@@ -181,7 +237,7 @@ export function SetContextMenuContent({
             <ContextMenuSubContent className="max-w-72">
               <ContextMenuLabel>{t('folders.choose')}</ContextMenuLabel>
               <ContextMenuRadioGroup
-                value={folderId ?? ''}
+                value={set.folderId ?? ''}
                 onValueChange={(val) => onMoveToFolder(val === '' ? null : val)}
               >
                 <ContextMenuRadioItem value="">
@@ -259,6 +315,166 @@ export function SetContextMenuContent({
           <span>{t('actions.delete')}</span>
         </ContextMenuItem>
       </ContextMenuContent>
+
+      <ConfirmDialog
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        title={t('actions.deleteTitle', { title })}
+        description={t('actions.deleteDescription')}
+        confirmLabel={t('actions.delete')}
+        pending={deleteSet.isPending}
+        error={deleteError}
+        onConfirm={confirmDelete}
+      />
+    </>
+  );
+}
+
+/** Nút ba chấm trên thẻ bộ từ, tối ưu cho mobile và thao tác chạm. */
+export function SetCardActionsDropdown({
+  set,
+  folders,
+  onMoveToFolder,
+  movingFolder,
+}: SetContextMenuProps) {
+  const {
+    t,
+    id,
+    title,
+    deleteSet,
+    duplicateSet,
+    confirmingDelete,
+    setConfirmingDelete,
+    deleteError,
+    setDeleteError,
+    offlineState,
+    offlineBusy,
+    handleCopyLink,
+    handleDuplicate,
+    handleSaveOffline,
+    handleRemoveOffline,
+    confirmDelete,
+  } = useSetActionsLogic(set);
+
+  return (
+    <>
+      <Menu>
+        <MenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t('actions.more')}
+            className="size-9 text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary"
+          >
+            <MoreHorizontal aria-hidden className="size-5" />
+          </Button>
+        </MenuTrigger>
+        <MenuContent>
+          {/* Bắt đầu học */}
+          <MenuItem asChild>
+            <Link href={`/sets/${id}` as Route}>
+              <GraduationCap aria-hidden className="size-4" />
+              <span>{t('actions.startStudy')}</span>
+            </Link>
+          </MenuItem>
+
+          {/* Sửa bộ từ */}
+          <MenuItem asChild>
+            <Link href={`/sets/${id}/edit` as Route}>
+              <Pencil aria-hidden className="size-4" />
+              <span>{t('actions.edit')}</span>
+            </Link>
+          </MenuItem>
+
+          {/* Chuyển vào thư mục */}
+          {onMoveToFolder && folders && folders.length > 0 ? (
+            <MenuSub>
+              <MenuSubTrigger disabled={movingFolder}>
+                <FolderInput aria-hidden className="size-4" />
+                <span>{t('folders.moveTo')}</span>
+              </MenuSubTrigger>
+              <MenuSubContent className="max-w-72">
+                <MenuLabel>{t('folders.choose')}</MenuLabel>
+                <MenuRadioGroup
+                  value={set.folderId ?? ''}
+                  onValueChange={(val) => onMoveToFolder(val === '' ? null : val)}
+                >
+                  <MenuRadioItem value="">
+                    <span className="flex items-center gap-2">
+                      <FolderMinus aria-hidden className="size-4 text-text-muted" />
+                      <span>{t('folders.none')}</span>
+                    </span>
+                  </MenuRadioItem>
+                  {folders.map((f) => (
+                    <MenuRadioItem key={f.id} value={f.id}>
+                      <span className="flex items-center gap-2">
+                        <Folder aria-hidden className="size-4 text-primary" />
+                        <span className="truncate">{f.name}</span>
+                      </span>
+                    </MenuRadioItem>
+                  ))}
+                </MenuRadioGroup>
+              </MenuSubContent>
+            </MenuSub>
+          ) : null}
+
+          {/* Nhập thêm thẻ */}
+          <MenuItem asChild>
+            <Link href={`/sets/import?setId=${id}` as Route}>
+              <FileUp aria-hidden className="size-4" />
+              <span>{t('actions.importMore')}</span>
+            </Link>
+          </MenuItem>
+
+          <MenuSeparator />
+
+          {/* Tải về máy / Lưu ngoại tuyến */}
+          {offlineState === 'saved' ? (
+            <MenuItem onSelect={handleRemoveOffline} disabled={offlineBusy}>
+              <Trash2 aria-hidden className="size-4" />
+              <span>{t('offline.saved')}</span>
+            </MenuItem>
+          ) : offlineState === 'outdated' ? (
+            <MenuItem onSelect={handleSaveOffline} disabled={offlineBusy}>
+              <RefreshCw aria-hidden className="size-4" />
+              <span>{t('offline.outdated')}</span>
+            </MenuItem>
+          ) : (
+            <MenuItem onSelect={handleSaveOffline} disabled={offlineBusy}>
+              <Download aria-hidden className="size-4" />
+              <span>{t('offline.missing')}</span>
+            </MenuItem>
+          )}
+
+          {/* Sao chép liên kết */}
+          <MenuItem onSelect={handleCopyLink}>
+            <Link2 aria-hidden className="size-4" />
+            <span>{t('actions.copyLink')}</span>
+          </MenuItem>
+
+          {/* Tạo bản sao */}
+          <MenuItem onSelect={handleDuplicate} disabled={duplicateSet.isPending}>
+            <Copy aria-hidden className="size-4" />
+            <span>{t('actions.duplicate')}</span>
+          </MenuItem>
+
+          <MenuSeparator />
+
+          {/* Xoá bộ từ */}
+          <MenuItem
+            danger
+            onSelect={() => {
+              setTimeout(() => {
+                setDeleteError(null);
+                setConfirmingDelete(true);
+              });
+            }}
+          >
+            <Trash2 aria-hidden className="size-4" />
+            <span>{t('actions.delete')}</span>
+          </MenuItem>
+        </MenuContent>
+      </Menu>
 
       <ConfirmDialog
         open={confirmingDelete}

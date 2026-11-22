@@ -1,7 +1,7 @@
 'use client';
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Check } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 import type { ComponentPropsWithoutRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,7 @@ const ITEM_CLASS =
 export const Menu = DropdownMenu.Root;
 export const MenuTrigger = DropdownMenu.Trigger;
 export const MenuRadioGroup = DropdownMenu.RadioGroup;
+export const MenuSub = DropdownMenu.Sub;
 
 /** Danh sách nổi của menu: viền, nền surface, đổ bóng như dialog. */
 export function MenuContent({
@@ -22,6 +23,41 @@ export function MenuContent({
     <DropdownMenu.Portal>
       <DropdownMenu.Content
         align={align}
+        sideOffset={8}
+        collisionPadding={16}
+        className={cn(
+          'z-40 max-h-(--radix-dropdown-menu-content-available-height) min-w-56 overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-raised',
+          className,
+        )}
+        {...props}
+      />
+    </DropdownMenu.Portal>
+  );
+}
+
+export function MenuSubTrigger({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof DropdownMenu.SubTrigger>) {
+  return (
+    <DropdownMenu.SubTrigger
+      className={cn(ITEM_CLASS, 'justify-between data-[state=open]:bg-primary-soft', className)}
+      {...props}
+    >
+      <span className="flex items-center gap-3">{children}</span>
+      <ChevronRight aria-hidden className="size-4 text-text-muted" />
+    </DropdownMenu.SubTrigger>
+  );
+}
+
+export function MenuSubContent({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof DropdownMenu.SubContent>) {
+  return (
+    <DropdownMenu.Portal>
+      <DropdownMenu.SubContent
         sideOffset={8}
         collisionPadding={16}
         className={cn(

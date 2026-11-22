@@ -120,7 +120,9 @@
     "noMatch": "Chưa có bộ từ công khai nào khớp với \"{{q}}\".",
     "empty": "Chưa có bộ từ công khai",
     "emptyHint": "Bộ từ được đặt ở chế độ công khai sẽ hiện ở đây.",
-    "pageEmptyHint": "Danh sách ngắn hơn số trang này."
+    "pageEmptyHint": "Danh sách ngắn hơn số trang này.",
+    "sort": "Sắp xếp bộ từ công khai",
+    "sortCards": "Nhiều thẻ nhất"
   },
   "seeAll": "Xem tất cả",
   "pageEmpty": "Trang này không có bộ từ",
@@ -179,6 +181,7 @@
     "deleteDescription": "Bộ từ, các thẻ và tiến độ học của bộ này sẽ bị xoá. Bạn không khôi phục được.",
     "copied": "Đã sao chép bộ từ",
     "copy": "Sao chép bộ từ",
+    "copyToLibrary": "Sao chép về thư viện",
     "startStudy": "Bắt đầu học",
     "copyLink": "Sao chép liên kết",
     "linkCopied": "Đã sao chép liên kết bộ từ",
