@@ -56,10 +56,10 @@ const SCHEDULE_STEPS = ['wrong', 'first', 'second', 'later'] as const;
 function ScheduleNote() {
   const { t } = useTranslation(['study', 'common']);
   return (
-    <details className="group rounded-md border border-border-strong bg-surface">
-      <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-md px-4 font-medium transition-colors duration-fast ease-standard hover:bg-primary-soft [&::-webkit-details-marker]:hidden">
+    <details className="group rounded-xl border border-border/80 bg-surface shadow-2xs">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-xl px-4 font-medium transition-colors duration-fast ease-standard hover:bg-primary-soft [&::-webkit-details-marker]:hidden">
         <Info aria-hidden className="size-5 shrink-0 text-primary" />
-        <span className="flex-1">{t('review.whenDue')}</span>
+        <span className="flex-1 text-text">{t('review.whenDue')}</span>
         <span className="hidden text-small font-normal text-text-muted group-open:hidden sm:inline">
           {t('review.howItWorks')}
         </span>
@@ -68,10 +68,10 @@ function ScheduleNote() {
           className="size-5 shrink-0 text-text-muted transition-transform duration-fast ease-standard group-open:rotate-180 motion-reduce:transition-none"
         />
       </summary>
-      <ol className="grid gap-3 border-t border-border p-4 text-small sm:grid-cols-2">
+      <ol className="grid gap-3 border-t border-border/60 p-4 text-small sm:grid-cols-2">
         {SCHEDULE_STEPS.map((step) => (
           <li key={step} className="flex flex-col gap-0.5">
-            <span className="font-medium">{t(`review.schedule.${step}.when`)}</span>
+            <span className="font-semibold text-text">{t(`review.schedule.${step}.when`)}</span>
             <span className="text-text-muted">{t(`review.schedule.${step}.then`)}</span>
           </li>
         ))}
@@ -88,8 +88,7 @@ interface ReviewSummaryProps {
   first: { setId: string; title: string } | undefined;
 }
 
-/** Khối tóm tắt nền bảng xanh: số thẻ cần ôn cỡ lớn, chọn chế độ và nút ôn ngay. */
-/** Chọn một, nhiều hoặc tất cả chế độ; số thứ tự là thứ tự ôn (việc 5.28). */
+/** Khối tóm tắt: số thẻ cần ôn cỡ lớn, chọn chế độ và nút ôn ngay. */
 function ReviewModePicker({
   modes,
   onModesChange,
@@ -108,14 +107,16 @@ function ReviewModePicker({
     );
   const all = modes.length === REVIEW_MODES.length;
   return (
-    <fieldset className="flex flex-col gap-2">
+    <fieldset className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <legend className="text-small font-medium text-board-fg">{t('review.modesLegend')}</legend>
+        <legend className="text-small font-semibold text-board-fg">
+          {t('review.modesLegend')}
+        </legend>
         <button
           type="button"
           aria-pressed={all}
           onClick={() => onModesChange(all ? ['FLASHCARD'] : [...REVIEW_MODES])}
-          className="inline-flex min-h-11 items-center gap-1 text-tiny font-medium text-board-fg/80 underline underline-offset-4 transition-colors hover:text-board-fg"
+          className="inline-flex min-h-8 items-center gap-1.5 text-tiny font-medium text-board-fg/80 underline underline-offset-4 transition-colors hover:text-board-fg"
         >
           {all ? null : <Check aria-hidden className="size-3.5" />}
           {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
@@ -132,20 +133,17 @@ function ReviewModePicker({
               aria-pressed={on}
               onClick={() => toggle(mode)}
               className={cn(
-                // Chip cao 36 px cho gọn ở 360 px; lớp ::after nới vùng bấm lên 44 px, khít với khoảng cách hàng 8 px.
-                "relative inline-flex h-9 min-h-9 items-center gap-2 rounded-full border px-3 text-small font-medium transition-colors duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-full after:content-['']",
+                "relative inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-small font-medium transition-all duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-lg after:content-['']",
                 on
-                  ? 'border-board-fg bg-board-fg text-board shadow-xs'
-                  : 'border-board-muted/60 text-board-fg hover:border-board-fg hover:bg-board-muted/20',
+                  ? 'border-board-fg bg-board-fg font-semibold text-board shadow-xs'
+                  : 'border-board-muted/40 bg-board-muted/10 text-board-fg/90 hover:border-board-fg/80 hover:bg-board-muted/20',
               )}
             >
               <span
                 aria-hidden
                 className={cn(
-                  'flex size-5 shrink-0 items-center justify-center rounded-full text-tiny tabular-nums transition-colors',
-                  on
-                    ? 'bg-board font-bold text-board-fg'
-                    : 'border border-board-muted/50 text-transparent',
+                  'flex size-5 shrink-0 items-center justify-center rounded-md text-tiny tabular-nums font-bold transition-colors',
+                  on ? 'bg-board text-board-fg' : 'border border-board-muted/50 text-transparent',
                 )}
               >
                 {on ? order + 1 : ''}
@@ -164,45 +162,52 @@ function ReviewSummary({ dueCards, setCount, modes, onModesChange, first }: Revi
   return (
     <section
       aria-labelledby="review-summary"
-      className="flex flex-col gap-4 rounded-lg bg-board p-4 text-board-fg sm:p-5 md:flex-row md:items-center md:justify-between"
+      className="flex flex-col gap-6 rounded-2xl border border-board-muted/20 bg-board p-5 sm:p-6 text-board-fg shadow-raised lg:flex-row lg:items-center lg:justify-between"
     >
-      <div className="flex flex-col gap-0.5 sm:min-w-[160px]">
-        <h2
-          id="review-summary"
-          className="text-tiny font-medium uppercase tracking-wider text-board-muted"
-        >
-          {t('review.dueToday')}
-        </h2>
-        <p className="flex items-baseline gap-2">
-          <span className="text-h1 font-bold tabular-nums leading-none text-board-fg">
-            {dueCards}
-          </span>
-          <span className="text-small font-medium text-board-muted">{t('review.cards')}</span>
-        </p>
-        <p className="text-small text-board-muted">
-          <Trans
-            t={t}
-            i18nKey="review.inSets"
-            values={{ count: setCount }}
-            components={[<span key="c" className="tabular-nums font-medium text-board-fg" />]}
-          />
-        </p>
-      </div>
-      <div className="flex flex-1 flex-col gap-3 md:max-w-[580px]">
-        <ReviewModePicker modes={modes} onModesChange={onModesChange} />
+      <div className="flex flex-col gap-3 sm:min-w-[220px]">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5 text-board-muted">
+            <CalendarClock aria-hidden className="size-4 text-board-muted" />
+            <h2
+              id="review-summary"
+              className="text-tiny font-bold uppercase tracking-wider text-board-muted"
+            >
+              {t('review.dueToday')}
+            </h2>
+          </div>
+          <p className="flex items-baseline gap-2">
+            <span className="text-4xl sm:text-5xl font-extrabold tabular-nums tracking-tight text-board-fg">
+              {dueCards}
+            </span>
+            <span className="text-body font-semibold text-board-muted">{t('review.cards')}</span>
+          </p>
+          <p className="text-small text-board-muted">
+            <Trans
+              t={t}
+              i18nKey="review.inSets"
+              values={{ count: setCount }}
+              components={[<span key="c" className="tabular-nums font-semibold text-board-fg" />]}
+            />
+          </p>
+        </div>
+
         {first ? (
-          <div className="flex items-center pt-0.5">
+          <div className="pt-1">
             <Button
               asChild
-              className="min-h-11 rounded-full bg-board-fg px-5 font-semibold text-board shadow-sm hover:bg-surface motion-safe:active:scale-[0.98]"
+              className="h-11 w-full sm:w-auto rounded-xl bg-board-fg px-5 font-bold text-board shadow-sm hover:bg-surface motion-safe:active:scale-[0.98]"
             >
               <Link href={reviewHref(first.setId, modes)}>
-                <Play aria-hidden className="size-3.5 fill-current" />
+                <Play aria-hidden className="size-4 fill-current" />
                 {t('review.startFirst')}
               </Link>
             </Button>
           </div>
         ) : null}
+      </div>
+
+      <div className="flex flex-1 flex-col gap-3 lg:max-w-[560px] lg:border-l lg:border-board-muted/20 lg:pl-6">
+        <ReviewModePicker modes={modes} onModesChange={onModesChange} />
       </div>
     </section>
   );
