@@ -14,7 +14,7 @@ export default async function EditSetPage({ params }: PageProps<'/sets/[id]/edit
   const t = await getT('common');
   const { id } = await params;
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="wide">
       <BackLink href={`/sets/${id}` as Route} label={t('pages.backToSet')} />
       <PageHeader title={t('pages.editSet')} />
       <EditSet id={id} />

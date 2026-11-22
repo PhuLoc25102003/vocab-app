@@ -16,7 +16,7 @@ export default async function ImportPage({ searchParams }: PageProps<'/sets/impo
   const id = typeof setId === 'string' && setId ? setId : undefined;
 
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="wide">
       {id ? (
         <BackLink href={`/sets/${id}` as Route} label={t('pages.backToSet')} />
       ) : (

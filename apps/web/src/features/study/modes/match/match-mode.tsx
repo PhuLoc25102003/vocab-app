@@ -35,7 +35,7 @@ function formatElapsed(ms: number): string {
 }
 
 const tileClass =
-  'flex min-h-11 w-full items-center gap-2 rounded-md border border-border-strong bg-surface p-3 text-left break-words transition-colors duration-fast ease-standard enabled:hover:bg-primary-soft aria-pressed:border-primary aria-pressed:bg-primary-soft disabled:border-success disabled:bg-success-soft disabled:text-success';
+  'flex min-h-12 w-full items-center gap-2 rounded-lg border border-border/80 bg-bg/50 p-3.5 text-left break-words transition-all duration-fast ease-standard enabled:hover:border-primary/50 enabled:hover:bg-primary-soft aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:ring-1 aria-pressed:ring-primary disabled:border-success/60 disabled:bg-success-soft disabled:text-success shadow-2xs';
 
 /**
  * Ghép từ với nghĩa trong một vòng. Lần ghép đầu của mỗi từ quyết định đúng sai.
@@ -116,62 +116,73 @@ export function MatchModeView({ question, round, languages, onAnswer }: StudyMod
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-h2">{t('match.title')}</h1>
-        <p className="text-small text-text-muted tabular-nums">
-          <span className="sr-only">{t('match.time')}</span>
-          {formatElapsed(elapsed)}
+    <div className="flex flex-1 flex-col gap-6">
+      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-4">
+          <h1 className="text-h2 font-bold text-text">{t('match.title')}</h1>
+          <div className="flex items-center gap-1.5 rounded-xl bg-primary-soft px-3 py-1.5 text-small font-semibold text-primary">
+            <span className="sr-only">{t('match.time')}</span>
+            <span className="tabular-nums">{formatElapsed(elapsed)}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <ul ref={termList} aria-label={t('match.terms')} className="flex flex-col gap-2.5">
+            {items.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  lang={languages.term}
+                  aria-pressed={selected === item.id}
+                  disabled={matched.has(item.id)}
+                  onClick={() => {
+                    setSelected(item.id);
+                    setFeedback('');
+                  }}
+                  className={cn(tileClass, 'font-card')}
+                >
+                  <span className="min-w-0 flex-1 wrap-anywhere font-medium">{item.prompt}</span>
+                  {matched.has(item.id) ? (
+                    <Check
+                      aria-label={t('match.matched')}
+                      className="size-4 shrink-0 text-success"
+                    />
+                  ) : null}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ul aria-label={t('match.meanings')} className="flex flex-col gap-2.5">
+            {tiles.map((tile) => (
+              <li key={tile.id}>
+                <button
+                  type="button"
+                  lang={languages.definition}
+                  disabled={usedTiles.has(tile.id)}
+                  onClick={() => pickTile(tile)}
+                  className={tileClass}
+                >
+                  <span className="min-w-0 flex-1 wrap-anywhere">{tile.text}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p
+          role="status"
+          className={cn(
+            'min-h-6 text-small font-medium transition-colors',
+            done ? 'text-success' : 'text-text-muted',
+          )}
+        >
+          {done ? t('match.done', { time: formatElapsed(elapsed) }) : feedback}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <ul ref={termList} aria-label={t('match.terms')} className="flex flex-col gap-2">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                lang={languages.term}
-                aria-pressed={selected === item.id}
-                disabled={matched.has(item.id)}
-                onClick={() => {
-                  setSelected(item.id);
-                  setFeedback('');
-                }}
-                className={cn(tileClass, 'font-card')}
-              >
-                <span className="min-w-0 flex-1 wrap-anywhere">{item.prompt}</span>
-                {matched.has(item.id) ? (
-                  <Check aria-label={t('match.matched')} className="size-4 shrink-0" />
-                ) : null}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <ul aria-label={t('match.meanings')} className="flex flex-col gap-2">
-          {tiles.map((tile) => (
-            <li key={tile.id}>
-              <button
-                type="button"
-                lang={languages.definition}
-                disabled={usedTiles.has(tile.id)}
-                onClick={() => pickTile(tile)}
-                className={tileClass}
-              >
-                <span className="min-w-0 flex-1 wrap-anywhere">{tile.text}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <p role="status" className="min-h-6 text-small">
-        {done ? t('match.done', { time: formatElapsed(elapsed) }) : feedback}
-      </p>
-
       {done ? (
         <div className="mt-auto flex flex-col">
-          <Button autoFocus onClick={finishRound}>
+          <Button autoFocus onClick={finishRound} className="h-11 font-medium">
             {t('match.continue')}
           </Button>
         </div>

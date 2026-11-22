@@ -89,6 +89,25 @@ describe('ImportPreview', () => {
     );
   });
 
+  it('cho phép tìm ảnh và gỡ ảnh trong danh sách xem trước', async () => {
+    const rows = [
+      {
+        line: 1,
+        term: 'banana',
+        definition: 'quả chuối',
+        imageUrl: 'https://images.unsplash.com/banana.jpg',
+        errors: [],
+      },
+    ];
+    render(<Harness initial={rows} />);
+
+    expect(screen.getByRole('button', { name: 'Tìm ảnh khác cho thẻ 1' })).toBeInTheDocument();
+    const removeBtn = screen.getByRole('button', { name: 'Gỡ ảnh khỏi thẻ 1' });
+    await userEvent.click(removeBtn);
+
+    expect(screen.getByRole('button', { name: 'Tìm ảnh cho thẻ 1' })).toBeInTheDocument();
+  });
+
   it('bỏ dòng khỏi danh sách', async () => {
     render(<Harness />);
 

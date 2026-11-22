@@ -80,21 +80,25 @@ export function StudyModeGrid({ setId, guest = false }: StudyModeGridProps) {
           </Link>
         </Button>
       </div>
-      <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid auto-rows-fr gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {STUDY_ENTRIES.map(({ slug }) => {
           const Icon = ICONS[slug];
           return (
-            <li key={slug}>
+            <li key={slug} className="flex">
               <Link
                 href={href(slug)}
-                className="group flex min-h-16 items-start gap-3 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
+                className="group flex h-full w-full min-h-[84px] items-start gap-3.5 rounded-xl border border-border/80 bg-surface p-3.5 transition-all duration-fast ease-standard hover:border-primary hover:bg-primary-soft shadow-2xs"
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary group-hover:bg-surface">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary group-hover:bg-surface border border-primary/20">
                   <Icon aria-hidden className="size-5" />
                 </span>
-                <span className="flex min-w-0 flex-col">
-                  <span className="font-medium">{t(`modes.${slug}.label`)}</span>
-                  <span className="text-small text-text-muted">{t(`modes.${slug}.hint`)}</span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="font-semibold text-body text-text group-hover:text-primary transition-colors">
+                    {t(`modes.${slug}.label`)}
+                  </span>
+                  <span className="text-small text-text-muted leading-snug">
+                    {t(`modes.${slug}.hint`)}
+                  </span>
                 </span>
               </Link>
             </li>

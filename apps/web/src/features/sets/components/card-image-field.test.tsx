@@ -4,11 +4,13 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
-import { getSet, getUploadConfig, replaceCards, updateSet, uploadCardImage } from '../api';
+import { getSet, replaceCards, updateSet } from '../api';
+import { getUploadConfig, uploadCardImage } from '@/lib/uploads';
 import { EditSet } from './edit-set';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: vi.fn() }) }));
 vi.mock('../api');
+vi.mock('@/lib/uploads');
 
 const IMAGE = 'https://pub.r2.dev/cards/u1/tao.png';
 const card = (id: string, term: string, imageUrl: string | null): Card => ({

@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NewSetPage() {
   const t = await getT('common');
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="wide">
       <BackLink href="/sets" label={t('pages.backToList')} />
       <PageHeader title={t('pages.newSet')} />
       <CreateSet />

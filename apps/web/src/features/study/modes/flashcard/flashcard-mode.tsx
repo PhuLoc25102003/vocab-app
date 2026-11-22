@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const LONG_TEXT_LENGTH = 24;
 const FACE =
-  'col-start-1 row-start-1 flex min-h-72 items-center justify-center rounded-lg p-6 text-center backface-hidden';
+  'col-start-1 row-start-1 flex min-h-72 items-center justify-center rounded-2xl p-6 sm:p-8 text-center backface-hidden';
 
 const textSize = (text: string) =>
   text.length > LONG_TEXT_LENGTH ? 'text-card-long' : 'text-card';

@@ -44,4 +44,10 @@ describe('SpeakMode', () => {
     expect(mode.grade(question!, answer('apples')).isCorrect).toBe(false);
     expect(mode.grade(question!, answer('')).isCorrect).toBe(false);
   });
+
+  it('gắn imageUrl khi thẻ có ảnh minh hoạ', () => {
+    const withImage = [{ ...cards[0]!, imageUrl: 'https://images.example.com/apple.jpg' }];
+    const [question] = mode.buildQuestions(withImage, {});
+    expect(question?.imageUrl).toBe('https://images.example.com/apple.jpg');
+  });
 });

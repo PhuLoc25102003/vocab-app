@@ -7,5 +7,4 @@ export const setKeys = {
   publicList: (params: PublicSetListParams) => ['sets', 'public', params] as const,
   detail: (id: string) => ['sets', 'detail', id] as const,
   editor: (id: string) => ['sets', 'editor', id] as const,
-  uploadConfig: ['uploads', 'config'] as const,
 };
