@@ -85,8 +85,12 @@ export function usesGoogleRedirect(): boolean {
 }
 
 function redirectLoginUri(): string {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
-  return new URL(`${apiUrl}/auth/google/redirect`, window.location.origin).href;
+  const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL?.trim() || '/api/v1').replace(/\/+$/, '');
+  if (/^https?:\/\//i.test(rawApiUrl)) {
+    return `${rawApiUrl}/auth/google/redirect`;
+  }
+  const cleanPath = `/${rawApiUrl.replace(/^\/+/, '')}/auth/google/redirect`.replace(/\/+/g, '/');
+  return new URL(cleanPath, window.location.origin).href;
 }
 
 /** API so nonce trong ID token với cookie này, trang lạ không đặt được nên không giả được form. */
