@@ -11,6 +11,8 @@ import { resetDatabase } from './support/database';
 // ConfigModule đọc env khi nạp AppModule, nên phải đặt trước mọi import.
 const { PUBLIC_URL } = vi.hoisted(() => {
   process.env.R2_PUBLIC_URL = 'https://pub.r2.dev';
+  process.env.UNSPLASH_ACCESS_KEY = '';
+  process.env.PIXABAY_API_KEY = '';
   return { PUBLIC_URL: 'https://pub.r2.dev' };
 });
 

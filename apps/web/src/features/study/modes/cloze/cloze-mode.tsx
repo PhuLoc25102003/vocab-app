@@ -38,15 +38,19 @@ export function ClozeModeView(props: StudyModeProps) {
       {...props}
       inputLabel={t('cloze.input')}
       prompt={
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-5">
           {question.imageUrl ? (
-            <CardImage
-              src={question.imageUrl}
-              alt={t('cloze.imageAlt')}
-              className="aspect-[4/3] w-40"
-            />
+            <div className="flex justify-center">
+              <div className="w-full max-w-[480px] overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-2xs">
+                <CardImage
+                  src={question.imageUrl}
+                  alt={t('cloze.imageAlt')}
+                  className="h-52 sm:h-64 w-full object-cover"
+                />
+              </div>
+            </div>
           ) : null}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 border-b border-border/50 pb-4">
             <Sentence text={question.prompt} lang={languages.term} />
             {question.hint ? (
               <p lang={languages.definition} className="text-text-muted break-words">

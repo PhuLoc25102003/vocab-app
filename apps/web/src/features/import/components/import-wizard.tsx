@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
+import { getUploadConfig, uploadKeys } from '@/lib/uploads';
 import { getImportTarget, importAsNewSet, importIntoSet } from '../api';
 import { ImportPreview } from './import-preview';
 import { ImportSource, type ImportExtraColumns } from './import-source';
@@ -49,6 +50,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     image: false,
   });
   const hasMounted = useRef(false);
+  const uploads = useQuery({
+    queryKey: uploadKeys.config,
+    queryFn: getUploadConfig,
+    staleTime: 5 * 60_000,
+  });
+  const canSearch = uploads.data?.imageSearch === true;
   const target = useQuery({
     queryKey: [...SETS_QUERY_KEY, 'import-target', setId],
     queryFn: () => getImportTarget(setId ?? ''),
@@ -159,7 +166,7 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   return (
     <div className="flex w-full flex-col gap-6">
       {guard.dialog}
-      <ImportPreview rows={rows} columns={columns} onChange={setRows} />
+      <ImportPreview rows={rows} columns={columns} onChange={setRows} canSearch={canSearch} />
       <form
         onSubmit={submit}
         noValidate

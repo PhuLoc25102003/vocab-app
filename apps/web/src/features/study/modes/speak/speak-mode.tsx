@@ -4,6 +4,7 @@ import { getMode, gradeText, type GradeResult, type UserAnswer } from '@vocab/sh
 import { Check, Mic, Square, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
+import { CardImage } from '@/components/common/card-image';
 import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { isRecognitionSupported, ListenError, listenOnce } from '@/lib/speech-recognition';
@@ -100,46 +101,60 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
-          <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
-            {question.prompt}
-          </h1>
-          <AudioButton text={question.prompt} lang={languages.term} label={t('speak.sample')} />
-        </div>
-        {question.hint ? (
-          <p lang={languages.definition} className="text-text-muted break-words">
-            {question.hint}
-          </p>
+      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+        {question.imageUrl ? (
+          <div className="flex justify-center">
+            <div className="w-full max-w-[480px] overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-2xs">
+              <CardImage
+                src={question.imageUrl}
+                alt={t('speak.imageAlt')}
+                className="h-52 sm:h-64 w-full object-cover"
+              />
+            </div>
+          </div>
         ) : null}
-      </div>
 
-      {heard !== null && result ? (
-        <div
-          role="status"
-          className={cn(
-            'flex items-center gap-2',
-            result.isCorrect ? 'feedback-correct text-success' : 'feedback-wrong text-danger',
-          )}
-        >
-          {result.isCorrect ? (
-            <Check aria-hidden className="size-5 shrink-0" />
-          ) : (
-            <X aria-hidden className="size-5 shrink-0" />
-          )}
-          <p className="min-w-0 break-words">
-            {t(result.isCorrect ? 'correct' : 'wrong')}. {t('speak.youSaid')}{' '}
-            <span lang={languages.term} className="font-card">
-              {heard}
-            </span>
-          </p>
+        <div className="flex flex-col gap-2 border-b border-border/50 pb-4">
+          <div className="flex items-start justify-between gap-2">
+            <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
+              {question.prompt}
+            </h1>
+            <AudioButton text={question.prompt} lang={languages.term} label={t('speak.sample')} />
+          </div>
+          {question.hint ? (
+            <p lang={languages.definition} className="text-text-muted break-words">
+              {question.hint}
+            </p>
+          ) : null}
         </div>
-      ) : null}
-      {failure ? <FormError>{t(FAILURE_MESSAGES[failure])}</FormError> : null}
 
-      <div className="mt-auto flex flex-col gap-4">
+        {heard !== null && result ? (
+          <div
+            role="status"
+            className={cn(
+              'flex items-center gap-2 rounded-lg p-4 font-medium',
+              result.isCorrect
+                ? 'feedback-correct bg-success-soft text-success'
+                : 'feedback-wrong bg-danger-soft text-danger',
+            )}
+          >
+            {result.isCorrect ? (
+              <Check aria-hidden className="size-5 shrink-0" />
+            ) : (
+              <X aria-hidden className="size-5 shrink-0" />
+            )}
+            <p className="min-w-0 break-words">
+              {t(result.isCorrect ? 'correct' : 'wrong')}. {t('speak.youSaid')}{' '}
+              <span lang={languages.term} className="font-card">
+                {heard}
+              </span>
+            </p>
+          </div>
+        ) : null}
+        {failure ? <FormError>{t(FAILURE_MESSAGES[failure])}</FormError> : null}
+
         {supported && !result?.isCorrect ? (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 pt-2">
             {/* Một nút duy nhất đổi vai trò Nói, Dừng nên focus bàn phím không bị mất. */}
             <button
               type="button"
@@ -174,7 +189,14 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
             </p>
           </div>
         ) : null}
-        <Button variant={result?.isCorrect ? 'primary' : 'secondary'} onClick={next}>
+      </div>
+
+      <div className="mt-auto flex flex-col">
+        <Button
+          variant={result?.isCorrect ? 'primary' : 'secondary'}
+          onClick={next}
+          className="h-11 font-medium"
+        >
           {t(heard !== null ? 'nextQuestion' : 'speak.skip')}
         </Button>
       </div>

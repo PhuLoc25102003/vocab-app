@@ -10,8 +10,8 @@ import type {
 } from '../types';
 import { McqMode } from './mcq';
 
-/** Số câu mỗi phần của bài kiểm tra, người học nộp một lần cho mỗi phần. */
-export const TEST_ROUND_SIZE = 20;
+/** Số câu tối đa một phần của bài kiểm tra, gom thành một đề trọn vẹn để người học nộp một lần. */
+export const TEST_ROUND_SIZE = 100;
 
 /** Dạng câu cố định theo id thẻ, để API dựng lại đề khi chấm vẫn ra đúng câu đó. */
 export function testQuestionKind(cardId: string): 'choice' | 'write' {
@@ -32,13 +32,30 @@ export class TestMode implements StudyModeStrategy {
     const choiceById = new Map(
       this.choices.buildQuestions(cards, { random }).map((question) => [question.id, question]),
     );
-    return cards.slice(0, limit ?? cards.length).map(({ id, term, definition }): Question => {
-      if (testQuestionKind(id) === 'choice') {
-        const { prompt, expected, choices } = choiceById.get(id)!;
-        return { id: `${id}:choice`, cardId: id, mode: this.mode, prompt, expected, choices };
-      }
-      return { id: `${id}:write`, cardId: id, mode: this.mode, prompt: definition, expected: term };
-    });
+    return cards
+      .slice(0, limit ?? cards.length)
+      .map(({ id, term, definition, imageUrl }): Question => {
+        if (testQuestionKind(id) === 'choice') {
+          const { prompt, expected, choices } = choiceById.get(id)!;
+          return {
+            id: `${id}:choice`,
+            cardId: id,
+            mode: this.mode,
+            prompt,
+            expected,
+            choices,
+            ...(imageUrl ? { imageUrl } : {}),
+          };
+        }
+        return {
+          id: `${id}:write`,
+          cardId: id,
+          mode: this.mode,
+          prompt: definition,
+          expected: term,
+          ...(imageUrl ? { imageUrl } : {}),
+        };
+      });
   }
 
   grade(question: Question, answer: UserAnswer): GradeResult {

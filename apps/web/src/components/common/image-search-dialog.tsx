@@ -6,9 +6,9 @@ import { useId, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { searchImages } from '../api';
+import { searchImages } from '@/lib/uploads';
 
-interface ImageSearchDialogProps {
+export interface ImageSearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialQuery?: string;

@@ -46,4 +46,23 @@ describe('CardList', () => {
     expect(screen.queryByRole('navigation', { name: 'Phân trang' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
   });
+
+  it('thẻ có hình ảnh thì hiển thị ảnh minh hoạ', () => {
+    const cardsWithImage: Card[] = [
+      {
+        id: 'c1',
+        position: 0,
+        term: 'apple',
+        definition: 'quả táo',
+        phonetic: null,
+        example: null,
+        imageUrl: 'https://images.unsplash.com/test.jpg',
+        audioUrl: null,
+      },
+    ];
+    render(<CardList cards={cardsWithImage} termLang="en" defLang="vi" />);
+
+    const img = screen.getByRole('img', { name: /Ảnh minh hoạ cho apple/ });
+    expect(img).toHaveAttribute('src', 'https://images.unsplash.com/test.jpg');
+  });
 });

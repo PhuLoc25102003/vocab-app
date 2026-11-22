@@ -15,16 +15,23 @@ export function WriteModeView(props: StudyModeProps) {
       {...props}
       inputLabel={t('typeTerm')}
       prompt={
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-5">
           {question.imageUrl ? (
-            <CardImage
-              src={question.imageUrl}
-              alt={t('write.imageAlt')}
-              className="aspect-[4/3] w-40"
-            />
+            <div className="flex justify-center">
+              <div className="w-full max-w-[480px] overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-2xs">
+                <CardImage
+                  src={question.imageUrl}
+                  alt={t('write.imageAlt')}
+                  className="h-52 sm:h-64 w-full object-cover"
+                />
+              </div>
+            </div>
           ) : null}
-          <div className="flex items-start justify-between gap-2">
-            <p lang={languages.definition} className="min-w-0 text-h1 break-words">
+          <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-4">
+            <p
+              lang={languages.definition}
+              className="min-w-0 text-h1 font-bold break-words text-text"
+            >
               {question.prompt}
             </p>
             <AudioButton

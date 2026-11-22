@@ -50,6 +50,7 @@
     "imageAlt": "Illustration"
   },
   "speak": {
+    "imageAlt": "Illustration",
     "unsupported": "This browser cannot recognize speech. Use Chrome or Edge, or skip.",
     "denied": "Microphone access is blocked. Allow the microphone for this page and try again.",
     "noSpeech": "Nothing was heard. Speak more clearly and try again.",
@@ -66,12 +67,19 @@
   },
   "test": {
     "intro": "Answer everything, then submit. It is graded only after you submit.",
-    "question": "Question {{number}}.",
+    "question": "Question {{number}}",
     "chooseFor": "Choose the meaning for question {{number}}",
     "typeFor": "Type the term for question {{number}}",
     "blank": "{{count}} questions are unanswered. They count as wrong if you submit anyway.",
     "submitAnyway": "Submit anyway",
-    "submit": "Submit"
+    "submit": "Submit",
+    "badgeChoice": "Multiple choice",
+    "badgeWrite": "Written",
+    "answeredCount": "Answered {{answered}}/{{total}} questions",
+    "inputPlaceholder": "Type the corresponding term…",
+    "jumpTo": "Questions",
+    "imageAlt": "Illustration",
+    "allAnswered": "All questions answered!"
   },
   "write": {
     "imageAlt": "Illustration for the meaning"

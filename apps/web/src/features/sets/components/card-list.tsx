@@ -3,6 +3,7 @@
 import type { Card } from '@vocab/shared';
 import { useRef, useState, type ReactNode } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
+import { CardImage } from '@/components/common/card-image';
 import { Pagination } from '@/components/common/pagination';
 import { useTranslation } from 'react-i18next';
 
@@ -48,41 +49,46 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
         {visible.map(({ id, term, definition, phonetic, example, imageUrl }) => (
           <li
             key={id}
-            className="grid gap-x-6 gap-y-1 border-b border-border py-4 [contain-intrinsic-size:auto_80px] [content-visibility:auto] sm:grid-cols-2"
+            className="border-b border-border py-4 [contain-intrinsic-size:auto_80px] [content-visibility:auto]"
           >
-            <div className="min-w-0">
-              <div className="flex items-center gap-1">
-                <p lang={termLang} className="min-w-0 font-card text-h3 break-words">
-                  {term}
-                </p>
-                <AudioButton text={term} lang={termLang} label={t('list.listen', { term })} />
+            <div className="flex items-start justify-between gap-4 sm:items-center sm:gap-6">
+              <div className="grid flex-1 gap-x-6 gap-y-1 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <p lang={termLang} className="min-w-0 font-card text-h3 break-words">
+                      {term}
+                    </p>
+                    <AudioButton text={term} lang={termLang} label={t('list.listen', { term })} />
+                    {phonetic ? (
+                      <span className="font-phonetic text-small break-words text-text-muted">
+                        {phonetic}
+                      </span>
+                    ) : null}
+                  </div>
+                  {renderCardExtra?.(id)}
+                </div>
+                <div className="min-w-0">
+                  <p lang={defLang} className="break-words whitespace-pre-line">
+                    {definition}
+                  </p>
+                  {example ? (
+                    <p
+                      lang={termLang}
+                      className="text-small break-words whitespace-pre-line text-text-muted"
+                    >
+                      {example}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              {phonetic ? (
-                <p className="font-phonetic text-small break-words text-text-muted">{phonetic}</p>
-              ) : null}
-              {renderCardExtra?.(id)}
               {imageUrl ? (
-                // Ảnh nằm ở kho ảnh ngoài, không qua bộ tối ưu ảnh của Next.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imageUrl}
-                  alt={t('list.imageAlt', { term })}
-                  loading="lazy"
-                  className="mt-2 aspect-[4/3] w-32 rounded-md border border-border bg-bg object-cover"
-                />
-              ) : null}
-            </div>
-            <div className="min-w-0">
-              <p lang={defLang} className="break-words whitespace-pre-line">
-                {definition}
-              </p>
-              {example ? (
-                <p
-                  lang={termLang}
-                  className="text-small break-words whitespace-pre-line text-text-muted"
-                >
-                  {example}
-                </p>
+                <div className="shrink-0">
+                  <CardImage
+                    src={imageUrl}
+                    alt={t('list.imageAlt', { term })}
+                    className="aspect-[4/3] w-20 rounded-md sm:w-28"
+                  />
+                </div>
               ) : null}
             </div>
           </li>

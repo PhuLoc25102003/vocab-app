@@ -3,10 +3,10 @@ import type { ImageSearchResultItem } from '@vocab/shared';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { searchImages } from '../api';
+import { searchImages } from '@/lib/uploads';
 import { ImageSearchDialog } from './image-search-dialog';
 
-vi.mock('../api');
+vi.mock('@/lib/uploads');
 
 const mockPhotos: ImageSearchResultItem[] = [
   {

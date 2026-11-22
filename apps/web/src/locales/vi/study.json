@@ -50,6 +50,7 @@
     "imageAlt": "Ảnh minh hoạ"
   },
   "speak": {
+    "imageAlt": "Ảnh minh hoạ",
     "unsupported": "Trình duyệt này chưa nhận được giọng nói. Hãy dùng Chrome hoặc Edge, hoặc bỏ qua.",
     "denied": "Bạn chưa cho phép dùng micro. Hãy bật quyền micro cho trang này rồi thử lại.",
     "noSpeech": "Chưa nghe thấy gì. Hãy nói rõ hơn rồi thử lại.",
@@ -66,12 +67,19 @@
   },
   "test": {
     "intro": "Trả lời hết rồi nộp bài. Bài chỉ được chấm sau khi nộp.",
-    "question": "Câu {{number}}.",
+    "question": "Câu {{number}}",
     "chooseFor": "Chọn nghĩa cho câu {{number}}",
     "typeFor": "Nhập từ cho câu {{number}}",
     "blank": "Còn {{count}} câu chưa trả lời. Các câu này sẽ tính là sai nếu bạn vẫn nộp bài.",
     "submitAnyway": "Vẫn nộp bài",
-    "submit": "Nộp bài"
+    "submit": "Nộp bài",
+    "badgeChoice": "Trắc nghiệm",
+    "badgeWrite": "Tự luận",
+    "answeredCount": "Đã trả lời {{answered}}/{{total}} câu",
+    "inputPlaceholder": "Nhập từ tương ứng…",
+    "jumpTo": "Câu hỏi",
+    "imageAlt": "Ảnh minh hoạ",
+    "allAnswered": "Đã trả lời tất cả các câu!"
   },
   "write": {
     "imageAlt": "Ảnh minh hoạ cho nghĩa"

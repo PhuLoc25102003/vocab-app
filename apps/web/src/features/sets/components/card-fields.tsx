@@ -19,8 +19,7 @@ import {
 import { FormField, TextareaField } from '@/components/common/form-field';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
-import { getUploadConfig } from '../api';
-import { setKeys } from '../query-keys';
+import { getUploadConfig, uploadKeys } from '@/lib/uploads';
 import { CardImageField } from './card-image-field';
 import { translateValidation } from '@/lib/validation-message';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +47,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
   });
   // Cấu hình tải ảnh lên và tìm ảnh trực tuyến.
   const uploads = useQuery({
-    queryKey: setKeys.uploadConfig,
+    queryKey: uploadKeys.config,
     queryFn: getUploadConfig,
     staleTime: 5 * 60_000,
   });

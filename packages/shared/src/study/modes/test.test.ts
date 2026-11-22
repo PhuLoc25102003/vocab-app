@@ -54,4 +54,10 @@ describe('TestMode', () => {
       expect(mode.grade(question, answer(question.id, '')).isCorrect).toBe(false);
     }
   });
+
+  it('gắn imageUrl khi thẻ có ảnh minh hoạ', () => {
+    const withImage = [{ ...cards[0]!, imageUrl: 'https://images.example.com/photo.jpg' }];
+    const [question] = mode.buildQuestions(withImage, { random });
+    expect(question?.imageUrl).toBe('https://images.example.com/photo.jpg');
+  });
 });

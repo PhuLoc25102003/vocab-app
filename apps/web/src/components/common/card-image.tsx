@@ -14,7 +14,7 @@ export function CardImage({ src, alt, className }: CardImageProps) {
       src={src}
       alt={alt}
       loading="lazy"
-      className={cn('rounded-md border border-border bg-bg object-cover', className)}
+      className={cn('rounded-lg border border-border bg-bg object-cover', className)}
     />
   );
 }

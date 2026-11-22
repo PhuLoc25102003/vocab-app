@@ -12,8 +12,8 @@ import { useController, useWatch, type Control } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import { uploadCardImage } from '../api';
-import { ImageSearchDialog } from './image-search-dialog';
+import { uploadCardImage } from '@/lib/uploads';
+import { ImageSearchDialog } from '@/components/common/image-search-dialog';
 import { useTranslation } from 'react-i18next';
 
 interface CardImageFieldProps {
@@ -74,89 +74,113 @@ export function CardImageField({
   };
 
   return (
-    <div className="flex flex-col gap-2 sm:col-span-2">
+    <div className="flex flex-col gap-2.5 sm:col-span-2">
       <span className="text-small font-medium">{t('image.label')}</span>
-      <div className="flex flex-wrap items-center gap-2">
-        {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imageUrl}
-            alt={t('image.alt', { number })}
-            className="size-20 rounded-md border border-border bg-bg object-cover"
-          />
-        ) : null}
 
-        {canUpload ? (
-          <input
-            ref={inputRef}
-            type="file"
-            accept={IMAGE_CONTENT_TYPES.join(',')}
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden
-            onChange={(event) => void onSelect(event)}
-          />
-        ) : null}
+      {canUpload ? (
+        <input
+          ref={inputRef}
+          type="file"
+          accept={IMAGE_CONTENT_TYPES.join(',')}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden
+          onChange={(event) => void onSelect(event)}
+        />
+      ) : null}
 
-        {canSearch ? (
-          <Button
-            type="button"
-            variant={imageUrl ? 'ghost' : 'secondary'}
-            aria-label={t(imageUrl ? 'image.searchAnotherFor' : 'image.searchFor', {
-              number,
-            })}
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search aria-hidden className="size-4" />
-            {t(imageUrl ? 'image.searchAnother' : 'image.searchOnline')}
-          </Button>
-        ) : null}
+      {imageUrl ? (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 rounded-xl border border-border/80 bg-surface/50 p-3 shadow-2xs">
+          <div className="relative group overflow-hidden rounded-lg border border-border bg-muted/20 shrink-0 w-32 h-24 sm:w-36 sm:h-24 shadow-2xs">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt={t('image.alt', { number })}
+              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+            />
+          </div>
 
-        {canUpload ? (
-          <Button
-            type="button"
-            variant="ghost"
-            loading={uploading}
-            aria-label={t(
-              canSearch ? 'image.uploadFor' : imageUrl ? 'image.changeFor' : 'image.addFor',
-              { number },
-            )}
-            onClick={() => inputRef.current?.click()}
-          >
-            {imageUrl ? (
-              <RefreshCw aria-hidden className="size-4" />
-            ) : (
-              <ImagePlus aria-hidden className="size-4" />
-            )}
-            {t(
-              uploading
-                ? 'image.uploading'
-                : canSearch
-                  ? imageUrl
-                    ? 'image.uploadFromDevice'
-                    : 'image.uploadFile'
-                  : imageUrl
-                    ? 'image.change'
-                    : 'image.add',
-            )}
-          </Button>
-        ) : null}
+          <div className="flex flex-wrap items-center gap-2">
+            {canSearch ? (
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-9 gap-1.5 border border-border font-medium hover:border-primary/50"
+                aria-label={t('image.searchAnotherFor', { number })}
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search aria-hidden className="size-4 text-primary" />
+                {t('image.searchAnother')}
+              </Button>
+            ) : null}
 
-        {imageUrl && !uploading ? (
-          <Button
-            type="button"
-            variant="ghost"
-            aria-label={t('image.removeFor', { number })}
-            onClick={() => {
-              setUploadError(null);
-              field.onChange(null);
-            }}
-          >
-            <X aria-hidden className="size-4" />
-            {t('image.remove')}
-          </Button>
-        ) : null}
-      </div>
+            {canUpload ? (
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-9 gap-1.5 border border-border font-medium"
+                loading={uploading}
+                aria-label={t(canSearch ? 'image.uploadFor' : 'image.changeFor', { number })}
+                onClick={() => inputRef.current?.click()}
+              >
+                <RefreshCw aria-hidden className="size-4 text-text-muted" />
+                {t(
+                  uploading
+                    ? 'image.uploading'
+                    : canSearch
+                      ? 'image.uploadFromDevice'
+                      : 'image.change',
+                )}
+              </Button>
+            ) : null}
+
+            {!uploading ? (
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-9 gap-1.5 border border-border font-medium text-danger hover:border-danger/40 hover:bg-danger-soft hover:text-danger"
+                aria-label={t('image.removeFor', { number })}
+                onClick={() => {
+                  setUploadError(null);
+                  field.onChange(null);
+                }}
+              >
+                <X aria-hidden className="size-4" />
+                {t('image.remove')}
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2.5">
+          {canSearch ? (
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-9.5 gap-2 border border-border font-medium shadow-2xs hover:border-primary/60 hover:bg-primary-soft/40"
+              aria-label={t('image.searchFor', { number })}
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search aria-hidden className="size-4 text-primary" />
+              {t('image.searchOnline')}
+            </Button>
+          ) : null}
+
+          {canUpload ? (
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-9.5 gap-2 border border-border font-medium shadow-2xs hover:border-border-strong"
+              loading={uploading}
+              aria-label={t(canSearch ? 'image.uploadFor' : 'image.addFor', { number })}
+              onClick={() => inputRef.current?.click()}
+            >
+              <ImagePlus aria-hidden className="size-4 text-text-muted" />
+              {t(uploading ? 'image.uploading' : canSearch ? 'image.uploadFile' : 'image.add')}
+            </Button>
+          ) : null}
+        </div>
+      )}
 
       {message ? (
         <p role="alert" className="text-small text-danger">

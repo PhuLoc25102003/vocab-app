@@ -66,60 +66,69 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex items-start justify-between gap-2">
-        <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
-          {question.prompt}
-        </h1>
-        <AudioButton text={question.prompt} lang={languages.term} label={t('listenTerm')} />
+      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+        <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-4">
+          <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
+            {question.prompt}
+          </h1>
+          <AudioButton text={question.prompt} lang={languages.term} label={t('listenTerm')} />
+        </div>
+
+        <ul className="flex flex-col gap-3">
+          {choices.map((choice, index) => {
+            const isExpected = result !== null && choice === result.expected;
+            const isWrongPick = result !== null && choice === selected && !result.isCorrect;
+            return (
+              <li key={choice}>
+                <button
+                  type="button"
+                  disabled={result !== null}
+                  onClick={() => choose(choice)}
+                  className={cn(
+                    'flex min-h-12 w-full items-center gap-3 rounded-xl border border-border bg-bg/50 px-4 py-3 text-left transition-all duration-fast ease-standard enabled:hover:border-primary/50 enabled:hover:bg-primary-soft',
+                    isExpected && 'border-success bg-success-soft font-medium text-success',
+                    isWrongPick && 'border-danger bg-danger-soft text-danger',
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-surface text-tiny font-bold text-text-muted"
+                  >
+                    {index + 1}
+                  </span>
+                  <span
+                    lang={languages.definition}
+                    className="min-w-0 flex-1 break-words font-medium"
+                  >
+                    {choice}
+                  </span>
+                  {isExpected ? (
+                    <Check aria-label={t('expected')} className="size-5 shrink-0 text-success" />
+                  ) : null}
+                  {isWrongPick ? (
+                    <X aria-label={t('mcq.yourChoice')} className="size-5 shrink-0 text-danger" />
+                  ) : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <p
+          role="status"
+          className={cn(
+            'text-body font-medium',
+            result?.isCorrect ? 'feedback-correct text-success' : 'text-danger',
+            result && !result.isCorrect && 'feedback-wrong',
+          )}
+        >
+          {result ? t(result.isCorrect ? 'correct' : 'wrong') : ''}
+        </p>
       </div>
-
-      <ul className="flex flex-col gap-2">
-        {choices.map((choice, index) => {
-          const isExpected = result !== null && choice === result.expected;
-          const isWrongPick = result !== null && choice === selected && !result.isCorrect;
-          return (
-            <li key={choice}>
-              <button
-                type="button"
-                disabled={result !== null}
-                onClick={() => choose(choice)}
-                className={cn(
-                  'flex min-h-11 w-full items-center gap-3 rounded-md border border-border-strong bg-surface p-3 text-left transition-colors duration-fast ease-standard enabled:hover:bg-primary-soft',
-                  isExpected && 'border-success bg-success-soft',
-                  isWrongPick && 'border-danger bg-danger-soft',
-                )}
-              >
-                <kbd className="hidden text-tiny text-text-muted pointer-fine:inline">
-                  {index + 1}
-                </kbd>
-                <span lang={languages.definition} className="min-w-0 flex-1 break-words">
-                  {choice}
-                </span>
-                {isExpected ? (
-                  <Check aria-label={t('expected')} className="size-5 shrink-0 text-success" />
-                ) : null}
-                {isWrongPick ? (
-                  <X aria-label={t('mcq.yourChoice')} className="size-5 shrink-0 text-danger" />
-                ) : null}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-
-      <p
-        role="status"
-        className={cn(
-          result?.isCorrect ? 'feedback-correct text-success' : 'text-danger',
-          result && !result.isCorrect && 'feedback-wrong',
-        )}
-      >
-        {result ? t(result.isCorrect ? 'correct' : 'wrong') : ''}
-      </p>
 
       {result ? (
         <div className="mt-auto flex flex-col">
-          <Button ref={nextRef} onClick={next}>
+          <Button ref={nextRef} onClick={next} className="h-11 font-medium">
             {t('nextQuestion')}
           </Button>
         </div>

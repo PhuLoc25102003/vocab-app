@@ -78,56 +78,59 @@ export function TypedAnswer({
 
   return (
     <form onSubmit={submit} className="flex flex-1 flex-col gap-6">
-      {prompt}
+      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+        {prompt}
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="study-answer" className="text-small font-medium">
-          {inputLabel}
-        </label>
-        <Input
-          ref={inputRef}
-          id="study-answer"
-          lang={languages.term}
-          value={value}
-          maxLength={MAX_ANSWER_LENGTH}
-          readOnly={result !== null}
-          autoComplete="off"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck={false}
-          onChange={(event) => setValue(event.target.value)}
-        />
-      </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="study-answer" className="text-small font-medium text-text-muted">
+            {inputLabel}
+          </label>
+          <Input
+            ref={inputRef}
+            id="study-answer"
+            lang={languages.term}
+            value={value}
+            maxLength={MAX_ANSWER_LENGTH}
+            readOnly={result !== null}
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            onChange={(event) => setValue(event.target.value)}
+            className="h-12 text-body"
+          />
+        </div>
 
-      <div role="status">
-        {result?.isCorrect ? (
-          <p className="feedback-correct flex items-center gap-2 rounded-md bg-success-soft p-3 text-success">
-            <Check aria-hidden className="size-5 shrink-0" />
-            {t('correct')}
-          </p>
-        ) : null}
-        {result && !result.isCorrect ? (
-          <div className="feedback-wrong flex flex-col gap-2 rounded-md bg-danger-soft p-3">
-            <p className="flex items-center gap-2 text-danger">
-              <X aria-hidden className="size-5 shrink-0" />
-              {t('wrong')}
+        <div role="status">
+          {result?.isCorrect ? (
+            <p className="feedback-correct flex items-center gap-2 rounded-lg bg-success-soft p-4 font-medium text-success">
+              <Check aria-hidden className="size-5 shrink-0" />
+              {t('correct')}
             </p>
-            <WrongAnswer value={value} expected={result.expected} />
-            <p className="text-small text-text-muted">{t('expected')}</p>
-            <p lang={languages.term} className="font-card text-h3 break-words text-success">
-              {result.expected}
-            </p>
-          </div>
-        ) : null}
+          ) : null}
+          {result && !result.isCorrect ? (
+            <div className="feedback-wrong flex flex-col gap-2 rounded-lg bg-danger-soft p-4">
+              <p className="flex items-center gap-2 font-medium text-danger">
+                <X aria-hidden className="size-5 shrink-0" />
+                {t('wrong')}
+              </p>
+              <WrongAnswer value={value} expected={result.expected} />
+              <p className="text-small text-text-muted">{t('expected')}</p>
+              <p lang={languages.term} className="font-card text-h3 break-words text-success">
+                {result.expected}
+              </p>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="mt-auto flex flex-col">
         {result ? (
-          <Button ref={nextRef} type="submit">
+          <Button ref={nextRef} type="submit" className="h-11 font-medium">
             {t('nextQuestion')}
           </Button>
         ) : (
-          <Button type="submit" disabled={!value.trim()}>
+          <Button type="submit" disabled={!value.trim()} className="h-11 font-medium">
             {t('check')}
           </Button>
         )}

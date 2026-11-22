@@ -17,13 +17,14 @@ export class SpeakMode implements StudyModeStrategy {
   readonly mode = 'SPEAK' as const;
 
   buildQuestions(cards: StudyCard[], { limit }: StudyOptions): Question[] {
-    return cards.slice(0, limit ?? cards.length).map(({ id, term, definition }) => ({
+    return cards.slice(0, limit ?? cards.length).map(({ id, term, definition, imageUrl }) => ({
       id,
       cardId: id,
       mode: this.mode,
       prompt: term,
       expected: term,
       hint: definition,
+      ...(imageUrl ? { imageUrl } : {}),
     }));
   }
 
