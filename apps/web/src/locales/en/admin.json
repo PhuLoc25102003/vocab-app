@@ -104,5 +104,54 @@
     "submit": "Hide from others",
     "reason": "Reason for hiding"
   },
-  "locked": "Locked"
+  "locked": "Locked",
+  "navLabel": "Admin management",
+  "tabs": {
+    "users": "Users",
+    "hiddenSets": "Hidden sets",
+    "classes": "Classes & Students"
+  },
+  "hiddenSets": {
+    "title": "Hidden sets",
+    "loading": "Loading hidden sets",
+    "failed": "Could not load hidden sets",
+    "search": "Search by set title or owner",
+    "noMatch": "No sets matching “{{q}}”.",
+    "emptyTitle": "No hidden sets",
+    "emptyDescription": "When inappropriate sets are hidden by moderation, they will appear here for review and restoration.",
+    "list": "Hidden sets list",
+    "cardsCount": "{{count}} cards",
+    "owner": "Owner",
+    "reason": "Reason",
+    "hiddenAt": "Hidden date",
+    "by": "By",
+    "unhide": "Unhide",
+    "unhideSuccess": "Unhid set “{{title}}”."
+  },
+  "classes": {
+    "totalClasses": "Total classes",
+    "totalStudentsInClasses": "Students in classes",
+    "totalUnassignedStudents": "Unassigned students",
+    "byTeacherTitle": "All classes by teacher",
+    "searchPlaceholder": "Search by class name, join code, or teacher...",
+    "emptyClassesTitle": "No classes yet",
+    "emptyClassesDesc": "No classes have been created by teachers yet.",
+    "code": "Code",
+    "archived": "Archived",
+    "teacher": "Teacher",
+    "membersCount": "{{count}} students",
+    "assignmentsCount": "{{count}} assignments",
+    "viewStudents": "View students",
+    "hideStudents": "Hide students",
+    "studentList": "Student list",
+    "noStudents": "No students have joined this class yet.",
+    "joinedAt": "Joined {{date}}",
+    "unassignedTitle": "Students not enrolled in any class",
+    "searchUnassignedPlaceholder": "Search students by name or email...",
+    "emptyUnassignedTitle": "All students have a class",
+    "emptyUnassignedDesc": "Currently all students are enrolled in at least one class.",
+    "registeredAt": "Registered on {{date}}",
+    "loading": "Loading classes data",
+    "failed": "Could not load classes list"
+  }
 }

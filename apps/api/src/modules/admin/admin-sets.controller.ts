@@ -1,6 +1,11 @@
-import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { hideSetSchema, type HideSetDto } from '@vocab/shared';
+import {
+  adminHiddenSetQuerySchema,
+  hideSetSchema,
+  type AdminHiddenSetQuery,
+  type HideSetDto,
+} from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
@@ -14,6 +19,12 @@ import { AdminSetsService } from './admin-sets.service';
 @Controller('admin/sets')
 export class AdminSetsController {
   constructor(private readonly sets: AdminSetsService) {}
+
+  @Get('hidden')
+  @ApiOperation({ summary: 'Danh sách bộ từ bị ẩn' })
+  listHidden(@Query(new ZodValidationPipe(adminHiddenSetQuerySchema)) query: AdminHiddenSetQuery) {
+    return this.sets.listHidden(query);
+  }
 
   @Patch(':id/hide')
   @ApiOperation({ summary: 'Ẩn bộ từ vi phạm khỏi người khác' })

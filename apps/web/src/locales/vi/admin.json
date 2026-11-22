@@ -104,5 +104,54 @@
     "submit": "Ẩn khỏi người khác",
     "reason": "Lý do ẩn"
   },
-  "locked": "Đã khoá"
+  "locked": "Đã khoá",
+  "navLabel": "Quản trị hệ thống",
+  "tabs": {
+    "users": "Người dùng",
+    "hiddenSets": "Bộ từ bị ẩn",
+    "classes": "Lớp học & Học sinh"
+  },
+  "hiddenSets": {
+    "title": "Bộ từ bị ẩn",
+    "loading": "Đang tải bộ từ bị ẩn",
+    "failed": "Không tải được danh sách bộ từ bị ẩn",
+    "search": "Tìm theo tên bộ từ hoặc tác giả",
+    "noMatch": "Không có bộ từ nào khớp với “{{q}}”.",
+    "emptyTitle": "Chưa có bộ từ nào bị ẩn",
+    "emptyDescription": "Khi có bộ từ vi phạm bị kiểm duyệt ẩn đi, chúng sẽ xuất hiện ở đây để bạn theo dõi và khôi phục.",
+    "list": "Danh sách bộ từ bị ẩn",
+    "cardsCount": "{{count}} thẻ",
+    "owner": "Tác giả",
+    "reason": "Lý do ẩn",
+    "hiddenAt": "Ẩn ngày",
+    "by": "Bởi",
+    "unhide": "Bỏ ẩn",
+    "unhideSuccess": "Đã bỏ ẩn bộ từ “{{title}}”."
+  },
+  "classes": {
+    "totalClasses": "Tổng số lớp học",
+    "totalStudentsInClasses": "Học sinh trong lớp",
+    "totalUnassignedStudents": "Học sinh chưa có lớp",
+    "byTeacherTitle": "Toàn bộ lớp học theo giáo viên",
+    "searchPlaceholder": "Tìm theo tên lớp, mã lớp hoặc giáo viên...",
+    "emptyClassesTitle": "Chưa có lớp học nào",
+    "emptyClassesDesc": "Hệ thống chưa ghi nhận lớp học nào được tạo bởi giáo viên.",
+    "code": "Mã",
+    "archived": "Đã lưu trữ",
+    "teacher": "Giáo viên",
+    "membersCount": "{{count}} học sinh",
+    "assignmentsCount": "{{count}} bài tập",
+    "viewStudents": "Xem học sinh",
+    "hideStudents": "Thu gọn",
+    "studentList": "Danh sách học sinh",
+    "noStudents": "Chưa có học sinh nào tham gia lớp này.",
+    "joinedAt": "Tham gia {{date}}",
+    "unassignedTitle": "Học sinh chưa tham gia lớp học nào",
+    "searchUnassignedPlaceholder": "Tìm học sinh theo tên hoặc email...",
+    "emptyUnassignedTitle": "Tất cả học sinh đều đã có lớp",
+    "emptyUnassignedDesc": "Hiện không có học sinh nào chưa tham gia lớp học.",
+    "registeredAt": "Đăng ký ngày {{date}}",
+    "loading": "Đang tải dữ liệu lớp học",
+    "failed": "Không tải được danh sách lớp học"
+  }
 }

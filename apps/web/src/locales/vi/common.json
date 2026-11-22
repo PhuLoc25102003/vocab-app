@@ -36,6 +36,12 @@
     "open": "Mở danh sách {{label}}",
     "options": "Lựa chọn {{label}}"
   },
+  "dashboard": {
+    "teacherAndStudentView": "Giao diện Giáo viên & Học sinh",
+    "teacherAndStudentViewHint": "Bấm để mở xem tổng quan các lớp bạn đang dạy, bài tập và việc học cá nhân",
+    "myLearningHint": "Bấm để xem thống kê học tập và các bộ từ gần đây",
+    "clickToExpand": "Bấm để mở"
+  },
   "actions": {
     "cancel": "Huỷ",
     "close": "Đóng",
@@ -180,7 +186,11 @@
     "globalErrorTitle": "Đã có lỗi xảy ra",
     "globalErrorDesc": "Hãy thử lại. Nếu vẫn lỗi, tải lại trang sau ít phút.",
     "backToDashboard": "Quay lại Tổng quan",
-    "adminUsersDescription": "Tìm, đổi vai trò, khoá hoặc mở khoá tài khoản."
+    "adminUsersDescription": "Tìm, đổi vai trò, khoá hoặc mở khoá tài khoản.",
+    "adminHiddenSets": "Bộ từ bị ẩn",
+    "adminHiddenSetsDescription": "Danh sách các bộ từ công khai đã bị ẩn kiểm duyệt. Khôi phục lại nếu cần.",
+    "adminClasses": "Lớp học & Học sinh",
+    "adminClassesDescription": "Quản lý toàn bộ lớp học của từng giáo viên và học sinh chưa tham gia lớp."
   },
   "session": {
     "login": "Đăng nhập",

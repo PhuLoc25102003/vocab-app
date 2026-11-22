@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-22
 
-**Đang ở:** Đã hoàn thành các việc 6.10, 6.11 (ảnh minh hoạ và đồng bộ thẻ câu hỏi), 6.12 (cân đối banner ôn tập #419), 6.13 (đồng bộ bảng chi tiết học sinh và bài giao #420), 6.14 (đồng bộ import xem trước, context menu chuột phải, kéo thả toàn thẻ #421), và 6.15 (sticky header, public/private toggle, học offline 9 chế độ chống đơ giao diện). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.16 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, và trung tâm quản trị toàn diện 6.16). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -23,8 +23,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      17 |      17 | Xong       |
-| **Toàn dự án**          |                                            | **182** | **186** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      18 |      18 | Xong       |
+| **Toàn dự án**          |                                            | **183** | **187** | **98%**    |
 
 ## Cách cập nhật
 
@@ -372,6 +372,16 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
   - **Học offline đa chế độ & Chống đơ giao diện**:
     - Bổ sung nút "Chọn chế độ" trên trang `/offline` mở hộp thoại chọn 9 chế độ học ngoại tuyến (Flashcard, Học kỹ, Luyện viết, Nghe viết, Trắc nghiệm, Điền từ, Ghép cặp, Kiểm tra, Luyện nói), lưu kết quả vào IndexedDB để tự động đồng bộ khi có mạng.
     - Sửa triệt để lỗi đơ giao diện khi bấm "Về bộ từ": trang `/offline` hỗ trợ callback `onExit` cho `StudyShell` và `StudyResult` để đóng giao diện học và quay lại danh sách ngoại tuyến sạch sẽ mà không bị kẹt lại màn hình kết quả do router Next.js trùng URL.
+- [x] **6.16** Trung tâm Quản trị hệ thống (Admin Management Hub), phân cấp Dashboard theo vai trò và sửa lỗi tràn layout menu mobile:
+  - **Phân cấp Dashboard cho ADMIN (Role-based Dashboard Hierarchy)**: Đưa `AdminOverview` lên vị trí trên cùng; bên dưới là thẻ thu gọn/mở rộng trực quan, nổi bật (`details/summary`) mang icon Mũ tốt nghiệp và tiêu đề "Giao diện Giáo viên & Học sinh", có chú thích rõ ràng kèm chevron quay chỉ dẫn giúp người dùng dễ dàng nhận biết bấm mở để xem tổng quan lớp đang dạy (`TeacherOverview`), bài tập (`ClassWork`), thống kê cá nhân (`StatsOverview`) và các bộ từ gần đây (`RecentSets`).
+  - **Sửa lỗi tràn bố cục menu thao tác trên mobile (Mobile Menu Layout Overflow Fix)**: Thay thế submenu ngang (`MenuSubContent`) trong nút ba chấm của thẻ bộ từ (`SetCardActionsDropdown`) bằng hộp thoại chọn thư mục `MoveToFolderDialog` dạng tấm đáy (`layout="sheet"`), loại bỏ triệt để tình trạng submenu bay ngang sang trái bị cắt mép màn hình trên thiết bị di động (< 640px).
+  - **Thanh tab điều hướng Quản trị hợp nhất (`AdminNavTabs`)**: Đồng bộ 3 tab quản trị trực quan với đầy đủ icon và trạng thái active: Người dùng (`/admin/users`), Bộ từ bị ẩn (`/admin/hidden-sets`), Lớp học & Học sinh (`/admin/classes`).
+  - **Quản lý bộ từ bị ẩn (`/admin/hidden-sets`)**:
+    - Backend: Bổ sung endpoint `GET /admin/sets/hidden` hỗ trợ phân trang và tìm kiếm theo tên bộ từ hoặc tác giả.
+    - Web: Giao diện `ListPanel` hiển thị danh sách các bộ từ công khai đã bị ẩn kèm thông tin tác giả, số thẻ, thời gian ẩn, lý do ẩn và người kiểm duyệt; nút hành động "Bỏ ẩn" giúp khôi phục nhanh chóng bộ từ khi cần.
+  - **Quản lý Lớp học theo giáo viên & Học sinh chưa có lớp (`/admin/classes`)**:
+    - Backend: Endpoint `GET /admin/classes/overview` tổng hợp toàn bộ các lớp học theo giáo viên, số học sinh, bài tập, danh sách học sinh từng lớp và danh sách các học sinh chưa tham gia lớp học nào.
+    - Web: 3 thẻ thống kê tổng quan (Tổng số lớp, Học sinh trong lớp, Học sinh chưa có lớp); bảng danh sách lớp học theo từng giáo viên kèm khả năng mở rộng/thu gọn danh sách học sinh (`ClassRow`); bảng danh sách học sinh chưa có lớp học hỗ trợ tìm kiếm và hiển thị ngày đăng ký tài khoản.
 
 ## Quyết định cần chốt
 

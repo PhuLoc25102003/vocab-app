@@ -36,6 +36,12 @@
     "open": "Open the {{label}} list",
     "options": "{{label}} options"
   },
+  "dashboard": {
+    "teacherAndStudentView": "Teacher & Student workspace",
+    "teacherAndStudentViewHint": "Click to expand your teaching classes, assignments, and personal learning",
+    "myLearningHint": "Click to expand your learning statistics and recent sets",
+    "clickToExpand": "Click to expand"
+  },
   "actions": {
     "cancel": "Cancel",
     "close": "Close",
@@ -180,7 +186,11 @@
     "globalErrorTitle": "An error occurred",
     "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes.",
     "backToDashboard": "Back to Dashboard",
-    "adminUsersDescription": "Find accounts, change roles, lock or unlock them."
+    "adminUsersDescription": "Find accounts, change roles, lock or unlock them.",
+    "adminHiddenSets": "Hidden sets",
+    "adminHiddenSetsDescription": "List of public sets hidden by moderation. Unhide if needed.",
+    "adminClasses": "Classes & Students",
+    "adminClassesDescription": "Manage all classes by teacher and unassigned students."
   },
   "session": {
     "login": "Sign in",

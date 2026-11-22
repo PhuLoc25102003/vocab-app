@@ -288,6 +288,8 @@ export function AdminOverview() {
             <TodoRow
               icon={<EyeOff className="size-4" />}
               text={t('todo.hidden', { count: data.hiddenSets })}
+              href="/admin/hidden-sets"
+              action={t('todo.view')}
             />
             <TodoRow
               icon={<ListChecks className="size-4" />}

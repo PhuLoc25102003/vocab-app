@@ -45,6 +45,95 @@ export const hiddenSetSchema = z.object({
 export type HiddenSet = z.infer<typeof hiddenSetSchema>;
 export const hiddenSetResponseSchema = z.object({ data: hiddenSetSchema });
 
+/** Bộ lọc danh sách bộ từ bị ẩn của ADMIN. */
+export const adminHiddenSetQuerySchema = paginationSchema.extend({
+  q: z
+    .string()
+    .trim()
+    .max(100, vm('keywordTooLong', { max: 100 }))
+    .optional(),
+});
+export type AdminHiddenSetQuery = z.infer<typeof adminHiddenSetQuerySchema>;
+
+/** Thông tin chi tiết một bộ từ bị ẩn trong trang quản trị. */
+export const adminHiddenSetItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  cardCount: z.number().int(),
+  hiddenAt: z.coerce.date(),
+  hiddenReason: z.string().nullable(),
+  owner: z.object({
+    id: z.string(),
+    displayName: z.string(),
+    email: z.string(),
+  }),
+  hiddenBy: z
+    .object({
+      id: z.string(),
+      displayName: z.string(),
+    })
+    .nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
+export type AdminHiddenSetItem = z.infer<typeof adminHiddenSetItemSchema>;
+
+export const adminHiddenSetListResponseSchema = z.object({
+  data: z.array(adminHiddenSetItemSchema),
+  meta: paginationMetaSchema,
+});
+export type AdminHiddenSetList = z.infer<typeof adminHiddenSetListResponseSchema>;
+
+/** Thành viên học sinh trong lớp học cho góc nhìn quản trị. */
+export const adminClassMemberSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  email: z.string(),
+  joinedAt: z.coerce.date(),
+});
+export type AdminClassMember = z.infer<typeof adminClassMemberSchema>;
+
+/** Thông tin lớp học do giáo viên quản lý cho góc nhìn quản trị. */
+export const adminClassItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  joinCode: z.string(),
+  archivedAt: z.coerce.date().nullable(),
+  createdAt: z.coerce.date(),
+  teacher: z.object({
+    id: z.string(),
+    displayName: z.string(),
+    email: z.string(),
+  }),
+  memberCount: z.number().int(),
+  assignmentCount: z.number().int(),
+  members: z.array(adminClassMemberSchema),
+});
+export type AdminClassItem = z.infer<typeof adminClassItemSchema>;
+
+/** Học sinh chưa tham gia bất kỳ lớp học nào. */
+export const adminUnassignedStudentSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  email: z.string(),
+  createdAt: z.coerce.date(),
+});
+export type AdminUnassignedStudent = z.infer<typeof adminUnassignedStudentSchema>;
+
+/** Tổng quan toàn bộ lớp học của từng giáo viên và học sinh chưa có lớp. */
+export const adminClassesOverviewResponseSchema = z.object({
+  data: z.object({
+    classes: z.array(adminClassItemSchema),
+    unassignedStudents: z.array(adminUnassignedStudentSchema),
+    totalClasses: z.number().int(),
+    totalStudentsInClasses: z.number().int(),
+    totalUnassignedStudents: z.number().int(),
+  }),
+});
+export type AdminClassesOverview = z.infer<typeof adminClassesOverviewResponseSchema>['data'];
+
 export const lockUserSchema = z.object({
   reason: z
     .string(vm('required', { field: 'lockReason' }))
