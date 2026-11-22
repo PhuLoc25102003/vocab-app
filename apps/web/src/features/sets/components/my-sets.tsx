@@ -1,6 +1,6 @@
 'use client';
 
-import { NO_FOLDER, paginationSchema, type SetSummary } from '@vocab/shared';
+import { NO_FOLDER, paginationSchema, type SetSummary, type Visibility } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -35,18 +35,32 @@ function toSort(value: string | null): string {
 }
 
 export const FOLDER_FIELD = 'folder';
+export const VISIBILITY_FIELD = 'visibility';
+
+const VISIBILITY_OPTIONS = [
+  { value: '', label: 'mine.allVisibilities' },
+  { value: 'PRIVATE', label: 'mine.visibilityPrivate' },
+  { value: 'PUBLIC', label: 'mine.visibilityPublic' },
+  { value: 'CLASS', label: 'mine.visibilityClass' },
+] as const;
+
+function toVisibility(value: string | null): string {
+  return VISIBILITY_OPTIONS.some((option) => option.value === value) ? (value as string) : '';
+}
 
 interface ListState {
   q: string;
   sort: string;
   folder: string;
+  visibility: string;
 }
 
-function listHref({ q, sort, folder }: ListState, page = 1): Route {
+function listHref({ q, sort, folder, visibility }: ListState, page = 1): Route {
   const params = new URLSearchParams();
   if (q) params.set(QUERY_FIELD, q);
   if (sort !== DEFAULT_SORT) params.set('sort', sort);
   if (folder) params.set(FOLDER_FIELD, folder);
+  if (visibility) params.set(VISIBILITY_FIELD, visibility);
   if (page > 1) params.set('page', String(page));
   const query = params.toString();
   return (query ? `/sets?${query}` : '/sets') as Route;
@@ -70,7 +84,8 @@ export function MySets({ renderCardActions, renderContextMenu, renderCard }: MyS
   const q = toQuery(searchParams.get(QUERY_FIELD));
   const sort = toSort(searchParams.get('sort'));
   const folder = searchParams.get(FOLDER_FIELD)?.slice(0, 64) ?? '';
-  const state: ListState = { q, sort, folder };
+  const visibility = toVisibility(searchParams.get(VISIBILITY_FIELD));
+  const state: ListState = { q, sort, folder, visibility };
   const isCustomSort = sort !== DEFAULT_SORT;
   const sets = useMySets({
     page,
@@ -78,9 +93,14 @@ export function MySets({ renderCardActions, renderContextMenu, renderCard }: MyS
     ...(q ? { q } : {}),
     ...(isCustomSort ? { sort } : {}),
     ...(folder ? { folderId: folder } : {}),
+    ...(visibility ? { visibility: visibility as Visibility } : {}),
   });
   const hasTools =
-    Boolean(q) || Boolean(folder) || isCustomSort || (sets.data?.meta.total ?? 0) > 0;
+    Boolean(q) ||
+    Boolean(folder) ||
+    Boolean(visibility) ||
+    isCustomSort ||
+    (sets.data?.meta.total ?? 0) > 0;
 
   return (
     <>
@@ -93,7 +113,22 @@ export function MySets({ renderCardActions, renderContextMenu, renderCard }: MyS
               onSearch={(value) => router.push(listHref({ ...state, q: value }))}
             />
           </div>
-          <div className="w-full sm:w-48">
+          <div className="w-full sm:w-44">
+            <Select
+              aria-label={t('mine.filterVisibility')}
+              value={visibility}
+              onChange={(event) =>
+                router.push(listHref({ ...state, visibility: event.target.value }))
+              }
+            >
+              {VISIBILITY_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {t(label)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="w-full sm:w-44">
             <Select
               aria-label={t('mine.sort')}
               value={sort}

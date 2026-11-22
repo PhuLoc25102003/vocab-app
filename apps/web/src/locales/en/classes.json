@@ -94,6 +94,11 @@
     "activeTab": "Teaching",
     "search": "Search classes by name",
     "sort": "Sort classes",
+    "colClassName": "Class name",
+    "colStudents": "Students",
+    "colOpenAssignments": "Open assignments",
+    "colOnTime": "On time",
+    "colJoinCode": "Join code",
     "pageDescription": "Classes you teach. Students join with the class code."
   },
   "copy": {
@@ -152,6 +157,9 @@
     "noClasses": "You have not joined a class",
     "noClassesHint": "Use Join a class at the top and enter the code from your teacher.",
     "joinedTitle": "Your classes",
+    "colClass": "Class",
+    "colTeacher": "Teacher",
+    "colAction": "Action",
     "pageDescription": "Join classes with a code and do the work your teacher assigns."
   },
   "sort": {
@@ -259,6 +267,12 @@
     "keep": "Keep",
     "cancelled": "Assignment cancelled",
     "submittedCount": "{{submitted}}/{{total}} submitted",
+    "colSetTitle": "Assignment",
+    "colMode": "Mode",
+    "colStatus": "Status",
+    "colDue": "Due date",
+    "colSubmitted": "Submitted",
+    "colAction": "Action",
     "loading": "Loading assignments",
     "failed": "Could not load assignments",
     "noMatch": "No assignment matches \"{{q}}\".",

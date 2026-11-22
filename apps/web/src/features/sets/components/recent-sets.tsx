@@ -46,7 +46,7 @@ export function RecentSets() {
   return (
     <section aria-labelledby="recent-sets" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-x-4">
-        <h2 id="recent-sets" className="text-h2">
+        <h2 id="recent-sets" className="text-h3 font-semibold text-text">
           {t('recent.title')}
         </h2>
         {meta.total > data.length ? (

@@ -2,7 +2,7 @@
 
 Cập nhật lần cuối: 2026-11-22
 
-**Đang ở:** Đã hoàn thành các việc 6.10, 6.11 (ảnh minh hoạ và đồng bộ thẻ câu hỏi), 6.12 (cân đối banner ôn tập #419), 6.13 (đồng bộ bảng chi tiết học sinh và bài giao #420), 6.14 (đồng bộ import xem trước, context menu chuột phải, kéo thả toàn thẻ #421), và 6.15 (sticky header, public/private toggle, học offline 9 chế độ chống đơ giao diện). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.16 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, và trung tâm quản trị toàn diện 6.16). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -23,8 +23,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      17 |      17 | Xong       |
-| **Toàn dự án**          |                                            | **182** | **186** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      18 |      18 | Xong       |
+| **Toàn dự án**          |                                            | **183** | **187** | **98%**    |
 
 ## Cách cập nhật
 
@@ -372,6 +372,67 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
   - **Học offline đa chế độ & Chống đơ giao diện**:
     - Bổ sung nút "Chọn chế độ" trên trang `/offline` mở hộp thoại chọn 9 chế độ học ngoại tuyến (Flashcard, Học kỹ, Luyện viết, Nghe viết, Trắc nghiệm, Điền từ, Ghép cặp, Kiểm tra, Luyện nói), lưu kết quả vào IndexedDB để tự động đồng bộ khi có mạng.
     - Sửa triệt để lỗi đơ giao diện khi bấm "Về bộ từ": trang `/offline` hỗ trợ callback `onExit` cho `StudyShell` và `StudyResult` để đóng giao diện học và quay lại danh sách ngoại tuyến sạch sẽ mà không bị kẹt lại màn hình kết quả do router Next.js trùng URL.
+- [x] **6.16** Trung tâm Quản trị hệ thống (Admin Management Hub), phân cấp Dashboard theo vai trò, quản lý bộ từ công khai & kiểm duyệt, cấu trúc Lớp học theo giáo viên và khoá học sinh chưa có lớp:
+  - **Phân cấp Dashboard cho ADMIN (Role-based Dashboard Hierarchy)**: Đưa `AdminOverview` lên vị trí trên cùng; nút dẫn sang khu vực quản trị dịch chuẩn là **"Trang quản lý"** (`manageUsers`). Bên dưới là thẻ thu gọn/mở rộng trực quan, nổi bật (`details/summary`) mang icon Mũ tốt nghiệp và tiêu đề "Giao diện Giáo viên & Học sinh", có chú thích rõ ràng kèm chevron quay chỉ dẫn giúp người dùng dễ dàng nhận biết bấm mở để xem tổng quan lớp đang dạy (`TeacherOverview`), bài tập (`ClassWork`), thống kê cá nhân (`StatsOverview`) và các bộ từ gần đây (`RecentSets`).
+  - **Sửa lỗi tràn bố cục menu thao tác trên mobile (Mobile Menu Layout Overflow Fix)**: Thay thế submenu ngang (`MenuSubContent`) trong nút ba chấm của thẻ bộ từ (`SetCardActionsDropdown`) bằng hộp thoại chọn thư mục `MoveToFolderDialog` dạng tấm đáy (`layout="sheet"`), loại bỏ triệt để tình trạng submenu bay ngang sang trái bị cắt mép màn hình trên thiết bị di động (< 640px).
+  - **Thanh tab điều hướng Quản trị hợp nhất (`AdminNavTabs`)**: Đồng bộ 3 tab quản trị trực quan với đầy đủ icon và trạng thái active: Người dùng (`/admin/users`), Bộ từ công khai (`/admin/hidden-sets`), Lớp học & Học sinh (`/admin/classes`).
+  - **Quản lý Bộ từ công khai & Kiểm duyệt nội dung (`/admin/hidden-sets`)**:
+    - Backend: Bổ sung endpoint `GET /admin/sets` hỗ trợ lọc theo trạng thái (`status: all | visible | hidden`), tìm kiếm theo tên bộ từ hoặc tác giả (`q`), phân trang `limit/page`. Giữ endpoint `GET /admin/sets/hidden` để tương thích ngược.
+    - Web: Giao diện `ListPanel` với 3 tab lọc trạng thái (Tất cả, Đang hiển thị, Bị ẩn), ô tìm kiếm `ListToolbar`, badge trạng thái màu sắc rõ ràng (Đang hiển thị - xanh lá, Bị ẩn - đỏ kèm lý do), thông tin tác giả, số thẻ và ngày cập nhật; tích hợp nút hành động trực tiếp: "Ẩn bộ từ" (mở `FormDialog` nhập lý do) và "Bỏ ẩn" (khôi phục tức thì).
+  - **Quản lý Lớp học theo Giáo viên & Học sinh chưa có lớp (`/admin/classes`)**:
+    - Backend: Endpoint `GET /admin/classes/overview` phân cấp dữ liệu cao nhất theo danh sách **Giáo viên** (`teachers: AdminTeacherItem[]`), mỗi giáo viên chứa danh sách các lớp học phụ trách (`classes`) và học sinh trong từng lớp (`members`); đồng thời bổ sung thông tin trạng thái khoá (`lockedAt`, `lockReason`) cho danh sách học sinh chưa có lớp (`unassignedStudents`).
+    - Web:
+      - 3 thẻ thống kê tổng quan (Tổng số lớp, Học sinh trong lớp, Học sinh chưa có lớp).
+      - Bảng **Toàn bộ lớp học theo giáo viên**: Phân cấp Giáo viên -> Lớp học -> Học sinh. Mỗi giáo viên hiển thị avatar, tên, email, tổng số lớp, tổng số học sinh; mở rộng xem từng lớp học (tên lớp, mã tham gia, số học sinh, số bài tập); mở rộng tiếp bên trong lớp để xem danh sách học sinh tham gia (tên, email, ngày tham gia); hỗ trợ tìm kiếm giáo viên/lớp học và phân trang `Pagination`.
+      - Bảng **Học sinh chưa tham gia lớp học nào**: Tab lọc trạng thái (Tất cả, Đang hoạt động, Đã khoá), tìm kiếm học sinh theo tên/email, phân trang `Pagination`; hiển thị badge trạng thái; cung cấp hành động **Khoá tài khoản** qua `LockDialog` (với lý do mặc định _"Không xác định được danh tính"_) và nút **Mở khoá** trực tiếp.
+  - **Đồng bộ toàn bộ bảng danh sách quản trị (`ListPanel`)**: Toàn bộ bảng danh sách người dùng, bộ từ công khai, giáo viên & lớp học, học sinh chưa có lớp đều tuân thủ kích thước tối thiểu và tối đa chuẩn (`min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto`), toolbar tìm kiếm/lọc cố định trên đầu và phân trang `Pagination` / `ListPager` cố định dưới chân.
+  - **Tối ưu kích thước cột, cỡ chữ & Cuộn ngang an toàn (`AdminClasses`)**:
+    - Chuẩn hóa layout bảng dạng Grid có tiêu đề cột rõ ràng và cột Thao tác (Action) căn phải, bọc trong container `overflow-x-auto` với chiều rộng tối thiểu chuẩn (`min-w-[700px]`) giúp bảng không bao giờ bị co rúm, méo mó trên màn hình nhỏ.
+    - Cân đối tỷ lệ các cột và áp dụng `whitespace-nowrap` tuyệt đối cho các nút hành động ("Thu gọn", "Xem học sinh", "Khoá", "Mở khoá") và badge trạng thái (`• Đang hoạt động`, `• Đã khoá`, `Lưu trữ`), loại bỏ hoàn toàn hiện tượng chữ bị bẻ thành 2 dòng.
+    - Kéo dài thanh tìm kiếm ngập khung (`w-full`) kèm menu Select sắp xếp cho cả bảng Giáo viên và Học sinh chưa có lớp.
+  - **Tách component Bảng dùng chung (`DataTable`) & Chuẩn hóa tiêu đề bảng toàn bộ trang Quản trị**:
+    - Xây dựng component bảng tái sử dụng `DataTable` (`DataTableContainer`, `DataTableHeader`, `DataTableRow`, `DataTableCell` tại `@/components/common/data-table`), đóng gói sẵn tính năng cuộn ngang an toàn, layout CSS Grid thẳng hàng từng cột, typography tiêu đề in hoa chuẩn chỉnh và hover effect.
+    - Cân đối lại tỷ lệ cột cho bảng Giáo viên, bảng con Lớp học và Học sinh chưa có lớp: điều chỉnh cột Tên không còn chiếm quá nhiều khoảng trống mênh mông, tăng chiều rộng cột Bài tập kèm `whitespace-nowrap`, triệt tiêu hoàn toàn lỗi rớt chữ (`ASSIGNMENT\nS`).
+    - Chuẩn hóa tiêu đề bảng (Table Header) cho cả **Quản lý người dùng** (`NGƯỜI DÙNG`, `TRẠNG THÁI`, `VAI TRÒ`, `THAO TÁC`) và **Quản lý bộ từ công khai** (`BỘ TỪ`, `TÁC GIẢ`, `THỜI GIAN`, `TRẠNG THÁI`, `THAO TÁC`), các cột dữ liệu và hành động được phân chia rành mạch, ngay ngắn.
+    - **Badge vai trò (`RoleBadge`) & Cụm Action trực quan có icon**:
+      - Cột Vai trò chuyển sang hiển thị `RoleBadge` thanh lịch với icon nhận diện đặc trưng: `ShieldCheck` (Quản trị), `GraduationCap` (Giáo viên), `User` (Học sinh).
+      - Đưa ô `Select` đổi vai trò sang nằm trong cột Thao tác (Action) cạnh nút Khoá/Mở khoá, giữ cột thẳng hàng ngay ngắn.
+      - Bổ sung icon trực quan cho toàn bộ nút thao tác trong các bảng quản trị: `Lock` (Khoá), `Unlock` (Mở khoá), `EyeOff` (Ẩn bộ từ), `Eye` (Bỏ ẩn), `School` (Xem lớp học), `Users` (Xem học sinh).
+    - **Đồng bộ phân trang (Pagination & Range Display) 100%**: Nâng cấp `ListPager` hỗ trợ callback `onPageChange` cho client-side pagination; giúp bảng Giáo viên và Học sinh chưa có lớp luôn hiển thị dải số `1–2 trên 2`, `1–4 trên 4` ở chân bảng đồng bộ như Người dùng và Bộ từ công khai, tự động bật nút chuyển trang khi vượt kích thước phân trang.
+  - **Hệ thống Tooltip & Truncate đồng bộ toàn diện trên toàn bộ website**:
+    - Đồng bộ hiển thị văn bản dài với cơ chế dấu chấm lửng (`truncate`) và tooltip native (`title={...}`) cho tất cả các màn hình danh sách: Quản lý người dùng (`AdminUsers`), Quản lý bộ từ công khai (`AdminHiddenSets`), Quản lý Lớp học & Học sinh (`AdminClasses`), Danh sách thành viên lớp (`ClassMembers`), Dòng bài tập (`AssignmentRow`), và Thẻ bộ từ chung (`SetCardShell`, `SetCardGrid`). Khi tên người dùng, email, tiêu đề bộ từ, mô tả lớp học hay lý do khoá/ẩn quá dài, giao diện giữ nguyên sự gọn gàng và người dùng có thể rê chuột để đọc trọn vẹn thông tin.
+  - **Khối Card bo viền & Nâng cấp Thẩm mỹ Khung Thư mục, Tạo bộ từ & Import danh sách từ**:
+    - **Khối Thư mục (`FolderPanel`)**: Bao bọc toàn bộ cột danh sách thư mục bên trái trang `/sets` trong một khối thẻ (`rounded-lg border border-border-strong bg-surface p-4 shadow-sm`), tạo điểm nhấn nổi bật, tách bạch rõ ràng giữa khối Thư mục và danh sách Bộ từ.
+    - **Khối Tạo & Sửa bộ từ (`SetForm`, `CardFields`)**: Bọc vùng thông tin cơ bản bộ từ (`SetDetailsFields`) và từng thẻ từ vựng (`CardFields`) thành các khối card bo viền (`rounded-lg border border-border-strong bg-surface p-4/p-5 shadow-sm`), giúp giao diện tạo/sửa thẻ từ vựng trực quan, ngăn nắp.
+    - **Khối Nhập từ file (`ImportSource`)**: Bọc từng bước quy trình nhập từ file (Bước 1: Lấy file mẫu, Bước 2: Đưa danh sách vào, Bước 3: Kiểm tra cách đọc) thành từng thẻ card bo viền độc lập (`rounded-lg border border-border-strong bg-surface p-5 shadow-sm`).
+  - **Bộ lọc Phạm vi hiển thị cho Bộ từ (`MySets`)**:
+    - Bổ sung bộ lọc phạm vi hiển thị (`visibility: PRIVATE | PUBLIC | CLASS`) tại trang Bộ từ của tôi (`/sets`), hỗ trợ đồng thời cả backend query (`findByOwner`) và query params URL (`?visibility=`), đồng bộ dropdown "Lọc phạm vi" (Tất cả phạm vi, Bộ riêng tư, Bộ công khai, Bộ cho lớp học) bên cạnh thanh tìm kiếm và menu sắp xếp.
+  - **Đồng bộ Table cho Menu Lớp học của Giáo viên & Học sinh (`TeacherClasses`, `StudentClasses`)**:
+    - **Giáo viên (`TeacherClasses`)**: Chuẩn hóa danh sách lớp sang component `DataTable` dùng chung (`DataTableContainer minWidth="min-w-[720px]"`), đầy đủ dòng tiêu đề cột in hoa (`TÊN LỚP`, `HỌC SINH`, `BÀI ĐANG MỞ`, `TỶ LỆ ĐÚNG HẠN`, `MÃ THAM GIA / THAO TÁC`), avatar chữ cái đầu, tên lớp link trực tiếp, thanh meter tỷ lệ nộp đúng hạn và cụm sao chép mã lớp.
+    - **Học sinh (`StudentClasses`)**: Chuẩn hóa bảng Lớp đã tham gia (`JoinedClasses`) sang dạng `DataTable` (`LỚP HỌC`, `GIÁO VIÊN`, `THAO TÁC`), hiển thị rõ ràng tên giáo viên phụ trách và nút thao tác Rời lớp (`Button` variant="ghost" có icon `LogOut`).
+  - **Trải nghiệm Menu, Mã lớp, Header & Responsive Mobile toàn diện**:
+    - **Trạng thái Menu nổi bật (`AppNav`)**: Chuyển trạng thái active của menu chính từ chỉ đổi màu chữ sang nền pill nổi bật `bg-primary-soft`, chữ tím đậm `text-primary`, `font-semibold` và đổ bóng nhẹ trên desktop, bo góc mềm mại trên mobile.
+    - **Cụm Sao chép Mã lớp độc lập (`JoinCodeBadge`)**: Tách mã lớp thành component nút tương tác riêng (`relative z-20`, `e.stopPropagation()`, `e.preventDefault()`, viền `border-primary/25`, nền `bg-primary-soft`, hover chuyển màu primary rõ rệt, đổi icon `Copy` -> `Check` khi sao chép kèm toast thông báo), loại bỏ triệt để hiện tượng hover/click nhầm vào link chuyển tới trang chi tiết lớp học.
+    - **Icon trực quan cho nút tạo & nhập**: Bổ sung icon `FileUp` cho nút "Nhập từ file" và `Plus` cho nút "Tạo bộ từ" tại trang Bộ từ `/sets`, đồng bộ nhận diện với nút "+ Tạo lớp".
+    - **Chuẩn hóa Header & Cỡ chữ Tiêu đề**: Thu gọn padding `PageHeader` và `AdminOverview` mỏng nhẹ (`px-4 py-2.5 sm:px-5 sm:py-3.5`); lấy cỡ tiêu đề Quản trị làm chuẩn và tăng lên 1 size cân đối (`text-xl sm:text-[1.65rem] font-bold tracking-tight leading-tight`), áp dụng thống nhất cho toàn bộ các trang.
+    - **Menu hành động 3 chấm & Tối ưu Sticky trên Mobile**:
+      - Sửa lỗi thanh menu chính bị dính đỉnh trang trên mobile (`relative md:sticky md:top-0`), giúp cuộn trang mượt mà tự nhiên trên điện thoại và chỉ sticky trên màn hình máy tính.
+      - Trên mobile, các nút hành động của `PageHeader` tự động thu gọn vào nút 3 chấm (`MoreVertical`), mở `Menu` dropdown trực quan và `PageHeader` sticky ở `top-2` trên mobile giúp người dùng dễ dàng thao tác nhanh bất kể vị trí cuộn trang.
+    - **Đồng bộ Bảng Kết quả Học sinh (`AssignmentResults` & `MemberResults`)**: Di chuyển toàn bộ bảng kết quả sang hệ thống `DataTableContainer`, định nghĩa grid template cố định (`RESULT_GRID`, `MEMBER_RESULT_GRID`), giải quyết triệt để lỗi tính toán độ rộng cột khiến tiêu đề bảng và dữ liệu dòng bị lệch nhau.
+    - **Đóng khung Cài đặt Ngôn ngữ, Chi tiết Lớp học & Đồng bộ Khung Header**:
+      - Sửa lỗi thanh menu sticky che khuất thẻ tóm tắt người dùng bên trái trang Cài đặt (`AccountSettings`) bằng cách nâng offset từ `top-6` lên `lg:top-20` (80px), đảm bảo khoảng thở 16px phía dưới thanh điều hướng khi cuộn.
+      - Đóng khung phần **Ngôn ngữ** (`LanguageSettings`) thành khối thẻ chuẩn (`rounded-lg border border-border bg-surface p-4 sm:p-5 shadow-2xs`), đồng bộ hoàn toàn với các phần Mật khẩu, Phiên đăng nhập và Giọng đọc.
+      - Đóng khung tiêu đề lớp học (`ClassHeader` trong `/classes/[id]`) thành card bo viền chuẩn (`rounded-lg border border-border-strong bg-surface px-4 py-2.5 sm:px-5 sm:py-3.5 shadow-sm`), đồng bộ cỡ chữ tiêu đề tên lớp (`text-xl sm:text-[1.65rem] font-bold`) và đường kẻ ngăn cách thông tin thành viên / mã lớp.
+      - Đồng bộ kích thước font và padding cho khung chi tiết bộ từ (`SetDetail`) và chi tiết bài giao (`PageHeader` trong `AssignmentResults`).
+  - **Đóng khung Chế độ học, Danh sách Từ vựng & Tối ưu UI Chi tiết Bộ từ (`/sets/[id]`)**:
+    - **Khung Chọn cách học (`StudyModeGrid`)**: Bao bọc toàn bộ 9 chế độ học trong khung card kính mờ chuẩn (`rounded-xl border border-border-strong/70 bg-surface/80 p-4 sm:p-5 shadow-2xs backdrop-blur-sm`).
+    - **Khung Từ vựng trong bộ (`CardList`)**: Bao bọc toàn bộ danh sách thẻ từ trong khung card kính mờ chuẩn, bổ sung tiêu đề rõ ràng `Thẻ (số lượng)`, dải phân trang và phân cách thẻ bằng `divide-y divide-border`.
+    - **Tiến độ học 3 thẻ stat nhỏ (`SetProgressSummary`)**: Chuyển đổi 3 chỉ số _"Đã thuộc"_, _"Đang học"_, _"Chưa học"_ thành 3 thẻ stat nhỏ gọn vừa khít **1 hàng trên mobile** (`grid-cols-3 gap-2`) và dãn đều trên PC, bao bọc trong khung kính mờ kèm phần giải thích bên dưới.
+    - **Cân đối Nút Thao tác trên Mobile (`SetOwnerActions`)**: Sắp xếp lưới `grid-cols-[1fr_1fr_auto]` chia đều 50/50 cho nút "Sửa" và "Công khai / Riêng tư", nút ba chấm góc phải, nằm trên **1 dòng duy nhất**, không rớt dòng.
+  - **Tối ưu Danh sách Chế độ học trong Bảng Kết quả (`AssignmentResults`)**:
+    - Khi giáo viên giao nhiều chế độ học (4-9 chế độ), cụm điểm từng chế độ được đưa vào container cuộn ngang mượt mà (`overflow-x-auto whitespace-nowrap scrollbar-thin`), các badge giữ `shrink-0` giúp chiều cao các dòng dữ liệu luôn đồng đều, không bị phình to làm vỡ layout.
+  - **Căn chỉnh Nút Thao tác trong Bảng Dashboard Quản trị (`AdminOverview`)**:
+    - Sửa lỗi nút "Ẩn" (`HideSetButton`) trong danh sách "Bộ công khai mới" bị rớt dòng và kéo dãn 100% chiều rộng trên màn hình nhỏ; chuyển sang layout `flex items-center justify-between` với tiêu đề thu gọn `truncate` và nút căn phải gọn gàng (`className="w-auto"`).
 
 ## Quyết định cần chốt
 

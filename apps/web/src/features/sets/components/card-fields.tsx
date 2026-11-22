@@ -103,7 +103,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
   return (
     <section aria-labelledby="cards-title" className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <h2 id="cards-title" className="text-h2">
+        <h2 id="cards-title" className="text-h3 font-semibold text-text">
           {t('cards.title')} <span className="tabular-nums">({fields.length})</span>
         </h2>
         <p className="text-small text-text-muted">{t('cards.hint')}</p>
@@ -118,9 +118,9 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
         role="region"
         aria-label={t('cards.list')}
         tabIndex={0}
-        className="max-h-[60dvh] min-h-48 overflow-y-auto overscroll-contain rounded-md border border-border bg-surface px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="max-h-[60dvh] min-h-48 overflow-y-auto overscroll-contain rounded-lg border border-border bg-surface/50 p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
-        <ol ref={listRef}>
+        <ol ref={listRef} className="flex flex-col gap-4">
           {fields.map((field, index) => {
             const number = index + 1;
             const cardErrors = errors?.[index];
@@ -130,7 +130,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                 key={field.key}
                 data-card={index}
                 aria-labelledby={titleId}
-                className="flex flex-col gap-3 border-b border-border px-1 py-4 [contain-intrinsic-size:auto_260px] [content-visibility:auto] last:border-b-0"
+                className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 shadow-sm [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 id={titleId} className="text-h3 tabular-nums">

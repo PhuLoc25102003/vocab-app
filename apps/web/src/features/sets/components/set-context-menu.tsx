@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { SetSummary } from '@vocab/shared';
 import {
+  Check,
   Copy,
   Download,
   FileUp,
@@ -19,10 +20,12 @@ import {
   Trash2,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -34,19 +37,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
 } from '@/components/ui/context-menu';
-import {
-  Menu,
-  MenuContent,
-  MenuItem,
-  MenuLabel,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuSub,
-  MenuSubContent,
-  MenuSubTrigger,
-  MenuTrigger,
-} from '@/components/ui/menu';
+import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { formErrorMessage } from '@/lib/form-errors';
 import {
   getOfflineSet,
@@ -366,6 +357,7 @@ export function SetCardActionsDropdown({
     handleRemoveOffline,
     confirmDelete,
   } = useSetActionsLogic(set);
+  const [movingFolderDialogOpen, setMovingFolderDialogOpen] = useState(false);
 
   return (
     <>
@@ -397,36 +389,17 @@ export function SetCardActionsDropdown({
             </Link>
           </MenuItem>
 
-          {/* Chuyển vào thư mục */}
+          {/* Chuyển vào thư mục: Dùng hộp thoại thay vì submenu ngang để tránh tràn màn hình mobile */}
           {onMoveToFolder && folders && folders.length > 0 ? (
-            <MenuSub>
-              <MenuSubTrigger disabled={movingFolder}>
-                <FolderInput aria-hidden className="size-4" />
-                <span>{t('folders.moveTo')}</span>
-              </MenuSubTrigger>
-              <MenuSubContent className="max-w-72">
-                <MenuLabel>{t('folders.choose')}</MenuLabel>
-                <MenuRadioGroup
-                  value={set.folderId ?? ''}
-                  onValueChange={(val) => onMoveToFolder(val === '' ? null : val)}
-                >
-                  <MenuRadioItem value="">
-                    <span className="flex items-center gap-2">
-                      <FolderMinus aria-hidden className="size-4 text-text-muted" />
-                      <span>{t('folders.none')}</span>
-                    </span>
-                  </MenuRadioItem>
-                  {folders.map((f) => (
-                    <MenuRadioItem key={f.id} value={f.id}>
-                      <span className="flex items-center gap-2">
-                        <Folder aria-hidden className="size-4 text-primary" />
-                        <span className="truncate">{f.name}</span>
-                      </span>
-                    </MenuRadioItem>
-                  ))}
-                </MenuRadioGroup>
-              </MenuSubContent>
-            </MenuSub>
+            <MenuItem
+              disabled={movingFolder}
+              onSelect={() => {
+                setTimeout(() => setMovingFolderDialogOpen(true), 0);
+              }}
+            >
+              <FolderInput aria-hidden className="size-4" />
+              <span>{t('folders.moveTo')}</span>
+            </MenuItem>
           ) : null}
 
           {/* Nhập thêm thẻ */}
@@ -491,6 +464,18 @@ export function SetCardActionsDropdown({
 
       {extraDialogs}
 
+      {onMoveToFolder && folders && folders.length > 0 ? (
+        <MoveToFolderDialog
+          open={movingFolderDialogOpen}
+          onOpenChange={setMovingFolderDialogOpen}
+          setTitle={title}
+          folders={folders}
+          currentFolderId={set.folderId ?? null}
+          movingFolder={movingFolder}
+          onMoveToFolder={onMoveToFolder}
+        />
+      ) : null}
+
       <ConfirmDialog
         open={confirmingDelete}
         onOpenChange={setConfirmingDelete}
@@ -502,5 +487,119 @@ export function SetCardActionsDropdown({
         onConfirm={confirmDelete}
       />
     </>
+  );
+}
+
+export interface MoveToFolderDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  setTitle: string;
+  folders: SetFolderOption[];
+  currentFolderId: string | null;
+  movingFolder?: boolean;
+  onMoveToFolder: (folderId: string | null) => void;
+}
+
+/** Hộp thoại chuyển thư mục dạng bottom sheet trên mobile, tránh tràn màn hình. */
+export function MoveToFolderDialog({
+  open,
+  onOpenChange,
+  setTitle,
+  folders,
+  currentFolderId,
+  movingFolder,
+  onMoveToFolder,
+}: MoveToFolderDialogProps) {
+  const { t } = useTranslation(['sets', 'common']);
+  const titleId = useId();
+  const descriptionId = useId();
+
+  const handleSelect = (folderId: string | null) => {
+    onMoveToFolder(folderId);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onRequestClose={() => {
+        if (!movingFolder) onOpenChange(false);
+      }}
+      labelledBy={titleId}
+      describedBy={descriptionId}
+      layout="sheet"
+      className="p-6"
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start gap-3">
+          <span
+            aria-hidden
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"
+          >
+            <FolderInput className="size-5" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-1">
+            <h2 id={titleId} className="text-h3 wrap-anywhere">
+              {t('folders.moveTo')}
+            </h2>
+            <p id={descriptionId} className="truncate text-small text-text-muted">
+              {setTitle}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-h-60 divide-y divide-border overflow-y-auto rounded-md border border-border">
+          <button
+            type="button"
+            onClick={() => handleSelect(null)}
+            disabled={movingFolder}
+            className={cn(
+              'flex w-full items-center justify-between px-3 py-2.5 text-left text-small transition-colors hover:bg-surface-elevated',
+              currentFolderId === null && 'bg-primary-soft/40 font-medium text-primary',
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <FolderMinus aria-hidden className="size-4 text-text-muted" />
+              <span>{t('folders.none')}</span>
+            </span>
+            {currentFolderId === null ? (
+              <Check aria-hidden className="size-4 shrink-0 text-primary" />
+            ) : null}
+          </button>
+          {folders.map((f) => {
+            const isSelected = currentFolderId === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => handleSelect(f.id)}
+                disabled={movingFolder}
+                className={cn(
+                  'flex w-full items-center justify-between px-3 py-2.5 text-left text-small transition-colors hover:bg-surface-elevated',
+                  isSelected && 'bg-primary-soft/40 font-medium text-primary',
+                )}
+              >
+                <span className="flex min-w-0 items-center gap-2">
+                  <Folder aria-hidden className="size-4 shrink-0 text-primary" />
+                  <span className="truncate">{f.name}</span>
+                </span>
+                {isSelected ? <Check aria-hidden className="size-4 shrink-0 text-primary" /> : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => onOpenChange(false)}
+            disabled={movingFolder}
+          >
+            {t('common:actions.close')}
+          </Button>
+        </div>
+      </div>
+    </Dialog>
   );
 }

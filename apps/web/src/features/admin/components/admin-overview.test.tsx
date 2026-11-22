@@ -72,7 +72,7 @@ describe('AdminOverview', () => {
       '/sets/s1',
     );
     expect(within(review).getByRole('button', { name: /Ẩn/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Quản lý người dùng' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Trang quản lý' })).toHaveAttribute(
       'href',
       '/admin/users',
     );

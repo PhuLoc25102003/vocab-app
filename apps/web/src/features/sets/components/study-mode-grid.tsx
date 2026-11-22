@@ -66,10 +66,13 @@ export function StudyModeGrid({ setId, guest = false, fromExplore = false }: Stu
   const MainIcon = main.icon;
 
   return (
-    <section aria-labelledby="study-modes-title" className="flex flex-col gap-4">
+    <section
+      aria-labelledby="study-modes-title"
+      className="flex flex-col gap-4 rounded-xl border border-border-strong/70 bg-surface/80 p-4 sm:p-5 shadow-2xs backdrop-blur-sm"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 id="study-modes-title" className="text-h2">
+          <h2 id="study-modes-title" className="text-h3 font-semibold text-text">
             {t('grid.title')}
           </h2>
           <p id="study-path-hint" className="text-small text-text-muted">

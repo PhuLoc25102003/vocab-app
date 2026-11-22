@@ -35,7 +35,20 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <section
+      aria-labelledby="card-list-title"
+      className="flex flex-col gap-4 rounded-xl border border-border-strong/70 bg-surface/80 p-4 sm:p-5 shadow-2xs backdrop-blur-sm"
+    >
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <h2 id="card-list-title" className="text-h3 font-semibold text-text">
+          {t('cards.title')} ({cards.length})
+        </h2>
+        {pageCount > 1 ? (
+          <span className="text-small text-text-muted">
+            {t('list.range', { from: first + 1, to: first + visible.length, total: cards.length })}
+          </span>
+        ) : null}
+      </div>
       <ol
         ref={listRef}
         start={first + 1}
@@ -44,12 +57,12 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
             ? t('list.range', { from: first + 1, to: first + visible.length, total: cards.length })
             : undefined
         }
-        className="scroll-mt-20 border-t border-border"
+        className="scroll-mt-20 divide-y divide-border"
       >
         {visible.map(({ id, term, definition, phonetic, example, imageUrl }) => (
           <li
             key={id}
-            className="border-b border-border py-4 [contain-intrinsic-size:auto_80px] [content-visibility:auto]"
+            className="py-4 first:pt-0 last:pb-0 [contain-intrinsic-size:auto_80px] [content-visibility:auto]"
           >
             <div className="flex items-start justify-between gap-4 sm:items-center sm:gap-6">
               <div className="grid flex-1 gap-x-6 gap-y-1 sm:grid-cols-2">
@@ -95,6 +108,6 @@ export function CardList({ cards, termLang, defLang, renderCardExtra }: CardList
         ))}
       </ol>
       <Pagination page={page} pageCount={pageCount} onPageChange={goTo} />
-    </div>
+    </section>
   );
 }

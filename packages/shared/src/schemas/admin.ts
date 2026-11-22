@@ -45,6 +45,136 @@ export const hiddenSetSchema = z.object({
 export type HiddenSet = z.infer<typeof hiddenSetSchema>;
 export const hiddenSetResponseSchema = z.object({ data: hiddenSetSchema });
 
+/** Lọc theo trạng thái kiểm duyệt bộ từ công khai ở trang quản trị. */
+export const adminSetStatusSchema = z.enum(['all', 'visible', 'hidden']);
+export type AdminSetStatus = z.infer<typeof adminSetStatusSchema>;
+
+/** Bộ lọc danh sách bộ từ công khai của ADMIN. */
+export const adminSetQuerySchema = paginationSchema.extend({
+  q: z
+    .string()
+    .trim()
+    .max(100, vm('keywordTooLong', { max: 100 }))
+    .optional(),
+  status: adminSetStatusSchema.default('all'),
+});
+export type AdminSetQuery = z.infer<typeof adminSetQuerySchema>;
+
+/** Bộ lọc danh sách bộ từ bị ẩn của ADMIN (tương thích ngược). */
+export const adminHiddenSetQuerySchema = paginationSchema.extend({
+  q: z
+    .string()
+    .trim()
+    .max(100, vm('keywordTooLong', { max: 100 }))
+    .optional(),
+});
+export type AdminHiddenSetQuery = z.infer<typeof adminHiddenSetQuerySchema>;
+
+/** Thông tin chi tiết một bộ từ công khai trong trang quản trị. */
+export const adminSetItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  cardCount: z.number().int(),
+  visibility: z.string(),
+  hiddenAt: z.coerce.date().nullable(),
+  hiddenReason: z.string().nullable(),
+  owner: z.object({
+    id: z.string(),
+    displayName: z.string(),
+    email: z.string(),
+  }),
+  hiddenBy: z
+    .object({
+      id: z.string(),
+      displayName: z.string(),
+    })
+    .nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+});
+export type AdminSetItem = z.infer<typeof adminSetItemSchema>;
+
+export const adminSetListResponseSchema = z.object({
+  data: z.array(adminSetItemSchema),
+  meta: paginationMetaSchema,
+});
+export type AdminSetList = z.infer<typeof adminSetListResponseSchema>;
+
+/** Thông tin chi tiết một bộ từ bị ẩn (tương thích ngược). */
+export const adminHiddenSetItemSchema = adminSetItemSchema;
+export type AdminHiddenSetItem = z.infer<typeof adminHiddenSetItemSchema>;
+
+export const adminHiddenSetListResponseSchema = adminSetListResponseSchema;
+export type AdminHiddenSetList = z.infer<typeof adminHiddenSetListResponseSchema>;
+
+/** Thành viên học sinh trong lớp học cho góc nhìn quản trị. */
+export const adminClassMemberSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  email: z.string(),
+  joinedAt: z.coerce.date(),
+});
+export type AdminClassMember = z.infer<typeof adminClassMemberSchema>;
+
+/** Thông tin lớp học do giáo viên quản lý cho góc nhìn quản trị. */
+export const adminClassItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  joinCode: z.string(),
+  archivedAt: z.coerce.date().nullable(),
+  createdAt: z.coerce.date(),
+  teacher: z
+    .object({
+      id: z.string(),
+      displayName: z.string(),
+      email: z.string(),
+    })
+    .optional(),
+  memberCount: z.number().int(),
+  assignmentCount: z.number().int(),
+  members: z.array(adminClassMemberSchema),
+});
+export type AdminClassItem = z.infer<typeof adminClassItemSchema>;
+
+/** Thông tin giáo viên cùng các lớp học phụ trách cho góc nhìn quản trị. */
+export const adminTeacherItemSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  email: z.string(),
+  createdAt: z.coerce.date(),
+  classCount: z.number().int(),
+  totalStudents: z.number().int(),
+  classes: z.array(adminClassItemSchema),
+});
+export type AdminTeacherItem = z.infer<typeof adminTeacherItemSchema>;
+
+/** Học sinh chưa tham gia bất kỳ lớp học nào, kèm trạng thái khoá tài khoản. */
+export const adminUnassignedStudentSchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  email: z.string(),
+  createdAt: z.coerce.date(),
+  lockedAt: z.coerce.date().nullable(),
+  lockReason: z.string().nullable(),
+});
+export type AdminUnassignedStudent = z.infer<typeof adminUnassignedStudentSchema>;
+
+/** Tổng quan toàn bộ lớp học của từng giáo viên và học sinh chưa có lớp. */
+export const adminClassesOverviewResponseSchema = z.object({
+  data: z.object({
+    teachers: z.array(adminTeacherItemSchema),
+    classes: z.array(adminClassItemSchema).optional(),
+    unassignedStudents: z.array(adminUnassignedStudentSchema),
+    totalTeachers: z.number().int(),
+    totalClasses: z.number().int(),
+    totalStudentsInClasses: z.number().int(),
+    totalUnassignedStudents: z.number().int(),
+  }),
+});
+export type AdminClassesOverview = z.infer<typeof adminClassesOverviewResponseSchema>['data'];
+
 export const lockUserSchema = z.object({
   reason: z
     .string(vm('required', { field: 'lockReason' }))

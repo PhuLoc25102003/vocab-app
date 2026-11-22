@@ -377,7 +377,7 @@ export function AccountSettings({ children }: { children?: ReactNode }) {
     <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
       <aside
         aria-label={t('profile')}
-        className="flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-5 text-center lg:sticky lg:top-6"
+        className="flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-5 text-center lg:sticky lg:top-20"
       >
         <span
           aria-hidden

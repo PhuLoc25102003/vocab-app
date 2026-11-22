@@ -121,4 +121,40 @@ describe('ẩn bộ từ vi phạm', () => {
     expect(body.data.daily.at(-1).signups).toBe(3);
     expect(body.data.recentUsers).toHaveLength(3);
   });
+
+  it('GET /admin/sets/hidden trả danh sách bộ từ bị ẩn phân trang và tìm kiếm cho ADMIN', async () => {
+    const getHidden = (token: string | null, query = '') => {
+      const call = server().get(`/api/v1/admin/sets/hidden${query}`);
+      return token ? call.set('Authorization', `Bearer ${token}`) : call;
+    };
+
+    await getHidden(null).expect(401);
+    await getHidden(owner.token).expect(403);
+
+    // Chưa ẩn bộ nào
+    const emptyRes = await getHidden(admin.token).expect(200);
+    expect(emptyRes.body.data).toEqual([]);
+    expect(emptyRes.body.meta.total).toBe(0);
+
+    // Ẩn bộ setId
+    await patch(admin.token, `${setId}/hide`, { reason: 'Nội dung phản cảm' }).expect(200);
+
+    const hiddenRes = await getHidden(admin.token).expect(200);
+    expect(hiddenRes.body.data).toHaveLength(1);
+    expect(hiddenRes.body.data[0]).toMatchObject({
+      id: setId,
+      title: 'Bộ vi phạm',
+      hiddenReason: 'Nội dung phản cảm',
+      owner: { id: owner.id, email: 'owner@example.com' },
+      hiddenBy: { id: admin.id, displayName: 'admin@example.com' },
+    });
+    expect(hiddenRes.body.meta.total).toBe(1);
+
+    // Tìm kiếm khớp và không khớp
+    const match = await getHidden(admin.token, '?q=vi phạm').expect(200);
+    expect(match.body.data).toHaveLength(1);
+
+    const noMatch = await getHidden(admin.token, '?q=không khớp').expect(200);
+    expect(noMatch.body.data).toHaveLength(0);
+  });
 });

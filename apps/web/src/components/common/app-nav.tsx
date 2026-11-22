@@ -58,8 +58,10 @@ function NavLinks({ pathname, fromExplore }: { pathname: string; fromExplore?: b
                 href={href}
                 aria-current={current ? 'page' : undefined}
                 className={cn(
-                  'flex min-h-16 flex-col items-center justify-center gap-1 text-tiny transition-colors duration-fast ease-standard hover:bg-primary-soft md:min-h-11 md:flex-row md:gap-2 md:rounded-md md:px-3 md:text-small',
-                  current ? 'font-semibold text-primary' : 'text-text-muted',
+                  'flex min-h-16 flex-col items-center justify-center gap-1 text-tiny transition-colors duration-fast ease-standard md:min-h-10 md:flex-row md:gap-2 md:rounded-md md:px-3 md:text-small',
+                  current
+                    ? 'bg-primary-soft/70 font-semibold text-primary md:bg-primary-soft md:text-primary md:shadow-2xs'
+                    : 'text-text-muted hover:bg-primary-soft/50 hover:text-text font-medium',
                 )}
               >
                 <Icon aria-hidden className="size-5 shrink-0" />

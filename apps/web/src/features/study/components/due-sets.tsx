@@ -281,7 +281,7 @@ export function DueSets() {
       />
       <ScheduleNote />
       <section aria-labelledby="due-sets" className="flex flex-col gap-4">
-        <h2 id="due-sets" className="text-h2">
+        <h2 id="due-sets" className="text-h3 font-semibold text-text">
           {t('review.setsWithDue')}
         </h2>
         <SetCardList>

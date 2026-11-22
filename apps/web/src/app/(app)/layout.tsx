@@ -18,12 +18,14 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       >
         {t('nav.skipToContent')}
       </a>
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm">
+      <header className="relative md:sticky md:top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm">
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
           <Logo href="/dashboard" />
-          <Suspense fallback={<AppNavFallback />}>
-            <AppNav />
-          </Suspense>
+          <div className="hidden md:flex">
+            <Suspense fallback={<AppNavFallback />}>
+              <AppNav />
+            </Suspense>
+          </div>
           <div className="ml-auto flex items-center gap-1">
             <LanguageToggle />
             <ThemeToggle />
@@ -31,6 +33,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+      <div className="md:hidden">
+        <Suspense fallback={<AppNavFallback />}>
+          <AppNav />
+        </Suspense>
+      </div>
       <main
         id="main-content"
         tabIndex={-1}

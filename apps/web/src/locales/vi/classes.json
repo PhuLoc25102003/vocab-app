@@ -94,6 +94,11 @@
     "activeTab": "Đang dạy",
     "search": "Tìm lớp theo tên",
     "sort": "Sắp xếp lớp",
+    "colClassName": "Tên lớp",
+    "colStudents": "Học sinh",
+    "colOpenAssignments": "Bài đang mở",
+    "colOnTime": "Đúng hạn",
+    "colJoinCode": "Mã tham gia",
     "pageDescription": "Lớp bạn đang dạy. Học sinh tham gia bằng mã lớp."
   },
   "copy": {
@@ -152,6 +157,9 @@
     "noClasses": "Bạn chưa vào lớp nào",
     "noClassesHint": "Bấm Tham gia lớp ở đầu trang rồi nhập mã giáo viên gửi.",
     "joinedTitle": "Lớp đã tham gia",
+    "colClass": "Lớp học",
+    "colTeacher": "Giáo viên",
+    "colAction": "Thao tác",
     "pageDescription": "Tham gia lớp bằng mã và làm bài giáo viên giao."
   },
   "sort": {
@@ -259,6 +267,12 @@
     "keep": "Giữ lại",
     "cancelled": "Đã huỷ bài giao",
     "submittedCount": "{{submitted}}/{{total}} đã nộp",
+    "colSetTitle": "Bài tập",
+    "colMode": "Chế độ",
+    "colStatus": "Trạng thái",
+    "colDue": "Hạn nộp",
+    "colSubmitted": "Đã nộp",
+    "colAction": "Thao tác",
     "loading": "Đang tải bài đã giao",
     "failed": "Không tải được bài đã giao",
     "noMatch": "Không có bài nào khớp \"{{q}}\".",

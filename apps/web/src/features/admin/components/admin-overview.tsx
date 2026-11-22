@@ -9,6 +9,7 @@ import {
   Library,
   ListChecks,
   Lock,
+  ShieldCheck,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -17,6 +18,7 @@ import Link from 'next/link';
 import { useId, useState, type ReactNode } from 'react';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
+import { PageHeader } from '@/components/common/page-header';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -221,14 +223,19 @@ export function AdminOverview() {
 
   return (
     <section aria-labelledby="admin-overview-title" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="admin-overview-title" className="text-h2">
-          {t('title')}
-        </h2>
-        <Button asChild variant="secondary">
-          <Link href="/admin/users">{t('manageUsers')}</Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={t('title')}
+        headingTag="h2"
+        headingId="admin-overview-title"
+        actions={
+          <Button asChild>
+            <Link href="/admin/users" className="flex items-center gap-2">
+              <ShieldCheck aria-hidden className="size-4" />
+              <span>{t('manageUsers')}</span>
+            </Link>
+          </Button>
+        }
+      />
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Tile
           label={t('tiles.users')}
@@ -288,6 +295,8 @@ export function AdminOverview() {
             <TodoRow
               icon={<EyeOff className="size-4" />}
               text={t('todo.hidden', { count: data.hiddenSets })}
+              href="/admin/hidden-sets"
+              action={t('todo.view')}
             />
             <TodoRow
               icon={<ListChecks className="size-4" />}
@@ -345,20 +354,23 @@ export function AdminOverview() {
               {data.newPublicSets.map((set) => (
                 <li
                   key={set.id}
-                  className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border py-2 text-small last:border-b-0"
+                  className="flex items-center justify-between gap-3 border-b border-border py-2.5 text-small last:border-b-0"
                 >
                   <span className="flex min-w-0 flex-1 flex-col">
                     <Link
                       href={`/sets/${set.id}` as Route}
-                      className="font-medium text-primary wrap-anywhere hover:underline"
+                      className="font-medium text-primary truncate hover:underline"
+                      title={set.title}
                     >
                       {set.title}
                     </Link>
-                    <span className="text-text-muted">
+                    <span className="text-text-muted truncate">
                       {t('setMeta', { owner: set.ownerName, count: set.cardCount })}
                     </span>
                   </span>
-                  <HideSetButton setId={set.id} hidden={false} />
+                  <div className="shrink-0">
+                    <HideSetButton setId={set.id} hidden={false} className="w-auto" />
+                  </div>
                 </li>
               ))}
             </ul>

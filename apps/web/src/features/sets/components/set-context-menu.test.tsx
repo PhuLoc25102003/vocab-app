@@ -95,6 +95,37 @@ describe('SetContextMenuContent & SetCardActionsDropdown', () => {
     expect(screen.getByRole('menuitem', { name: /Sửa bộ từ/i })).toBeInTheDocument();
   });
 
+  it('mở hộp thoại chuyển thư mục dạng sheet từ nút ba chấm tránh tràn layout mobile', async () => {
+    const user = userEvent.setup();
+    const client = new QueryClient();
+    const onMove = vi.fn();
+    const folders = [
+      { id: 'f1', name: 'Tiếng Anh lớp 7' },
+      { id: 'f2', name: 'Tiếng Anh lớp 8' },
+    ];
+
+    render(
+      <QueryClientProvider client={client}>
+        <SetCardActionsDropdown set={dummySet} folders={folders} onMoveToFolder={onMove} />
+      </QueryClientProvider>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Thao tác khác/i });
+    await user.click(trigger);
+
+    const moveItem = await screen.findByRole('menuitem', { name: /Chuyển vào thư mục/i });
+    await user.click(moveItem);
+
+    // Hộp thoại xuất hiện
+    expect(await screen.findByRole('heading', { name: /Chuyển vào thư mục/i })).toBeInTheDocument();
+    expect(screen.getByText('Tiếng Anh lớp 7')).toBeInTheDocument();
+    expect(screen.getByText('Tiếng Anh lớp 8')).toBeInTheDocument();
+
+    // Chọn thư mục Tiếng Anh lớp 7
+    await user.click(screen.getByText('Tiếng Anh lớp 7'));
+    expect(onMove).toHaveBeenCalledWith('f1');
+  });
+
   it('sao chép liên kết bộ từ vào clipboard', async () => {
     const user = userEvent.setup();
     const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();

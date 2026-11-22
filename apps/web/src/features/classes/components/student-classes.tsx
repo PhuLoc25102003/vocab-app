@@ -36,6 +36,12 @@ import {
   ListPanel,
   ListToolbar,
 } from '@/components/common/list-panel';
+import {
+  DataTableContainer,
+  DataTableHeader,
+  DataTableRow,
+  DataTableCell,
+} from '@/components/common/data-table';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -329,6 +335,8 @@ function MyAssignments({ view }: { view: ClassesView }) {
   );
 }
 
+const JOINED_CLASS_GRID = 'minmax(220px, 1.5fr) minmax(180px, 1fr) 120px';
+
 function JoinedRow({ item }: { item: JoinedClass }) {
   const { t } = useTranslation('classes');
   const queryClient = useQueryClient();
@@ -336,21 +344,34 @@ function JoinedRow({ item }: { item: JoinedClass }) {
   const leave = useMutation({ mutationFn: () => leaveClass(item.id) });
 
   return (
-    <li className="flex min-h-16 items-center justify-between gap-3 border-b border-border py-2 last:border-b-0">
-      <span className="flex min-w-0 flex-col">
-        <span className="font-medium wrap-anywhere">{item.name}</span>
-        <span className="text-small wrap-anywhere text-text-muted">
-          {t('student.teacher', { name: item.teacherName })}
+    <DataTableRow
+      as="li"
+      gridTemplateColumns={JOINED_CLASS_GRID}
+      className="items-center gap-4 py-3 sm:px-3"
+    >
+      <DataTableCell className="flex min-w-0 flex-col">
+        <span className="font-medium text-text truncate" title={item.name}>
+          {item.name}
         </span>
-      </span>
-      <Button
-        variant="ghost"
-        aria-label={t('student.leaveLabel', { name: item.name })}
-        onClick={() => setConfirming(true)}
-      >
-        <LogOut aria-hidden className="size-4" />
-        {t('student.leave')}
-      </Button>
+        {item.description ? (
+          <span className="line-clamp-1 text-small text-text-muted">{item.description}</span>
+        ) : null}
+      </DataTableCell>
+
+      <DataTableCell className="text-small text-text-muted truncate">
+        {t('student.teacher', { name: item.teacherName })}
+      </DataTableCell>
+
+      <DataTableCell align="right">
+        <Button
+          variant="ghost"
+          aria-label={t('student.leaveLabel', { name: item.name })}
+          onClick={() => setConfirming(true)}
+        >
+          <LogOut aria-hidden className="size-4" />
+          {t('student.leave')}
+        </Button>
+      </DataTableCell>
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
@@ -370,7 +391,7 @@ function JoinedRow({ item }: { item: JoinedClass }) {
           })
         }
       />
-    </li>
+    </DataTableRow>
   );
 }
 
@@ -408,11 +429,21 @@ function JoinedClasses({ view }: { view: ClassesView }) {
     );
   } else {
     body = (
-      <ul aria-label={t('student.joinedTitle')} className="flex flex-col">
-        {joined.data.data.map((item) => (
-          <JoinedRow key={item.id} item={item} />
-        ))}
-      </ul>
+      <DataTableContainer minWidth="min-w-[500px]">
+        <DataTableHeader
+          gridTemplateColumns={JOINED_CLASS_GRID}
+          columns={[
+            { label: t('student.colClass') },
+            { label: t('student.colTeacher') },
+            { label: t('student.colAction'), align: 'right' },
+          ]}
+        />
+        <ul aria-label={t('student.joinedTitle')} className="flex flex-col">
+          {joined.data.data.map((item) => (
+            <JoinedRow key={item.id} item={item} />
+          ))}
+        </ul>
+      </DataTableContainer>
     );
   }
 
@@ -454,7 +485,6 @@ export function StudentClasses() {
     <>
       <PageHeader
         title={t('page.title')}
-        description={t('student.pageDescription')}
         actions={
           <Button onClick={() => setJoining(true)}>
             <LogIn aria-hidden className="size-4" />
