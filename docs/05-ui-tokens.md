@@ -258,13 +258,33 @@ Quy chuẩn chọn chế độ ôn tập (chống nhảy layout - zero layout sh
 
 Dưới đó "Khi nào thẻ đến hạn ôn?" là `details` trông như nút: viền `border-strong`, icon thông tin màu `primary`, chữ "Xem cách tính" và mũi tên xoay 180° khi mở, nền `primary-soft` khi rê chuột; nội dung là bốn bước lịch ôn xếp hai cột. Bộ đến hạn dùng `SetCardShell` với nhãn "Đến hạn", số thẻ đến hạn và nút "Ôn ngay".
 
+## Thao tác thẻ bộ từ và Context Menu
+
+Dùng `ContextMenu` trong `components/ui/context-menu.tsx` (Radix Context Menu) cho thao tác chuột phải trên desktop và `Menu` trong `components/ui/menu.tsx` (Radix Dropdown Menu) qua nút ba chấm ⋯ trên thẻ:
+
+- **Trên desktop:** Người dùng chuột phải vào bất kỳ vị trí nào trên thẻ bộ từ để mở menu ngữ cảnh nổi tại toạ độ con trỏ chuột.
+- **Trên mobile / thiết bị cảm ứng:** Vì màn hình cảm ứng không có chuột phải và thao tác ấn giữ (long-press) khó khám phá, mỗi thẻ luôn có nút biểu tượng ba chấm ⋯ (`MoreHorizontal`, vùng bấm 44 px) ở góc trên bên phải cạnh tên thẻ. Chạm vào nút ⋯ mở menu dạng dropdown chứa trọn vẹn toàn bộ các thao tác như chuột phải.
+- **Thẻ tại trang Bộ từ (`/sets`):** Danh mục thao tác gồm:
+  1. _Bắt đầu học:_ Chuyển nhanh vào lộ trình học của bộ từ (`/sets/:id`).
+  2. _Sửa bộ từ:_ Mở trang chỉnh sửa (`/sets/:id/edit`).
+  3. _Chuyển vào thư mục:_ Menu con (submenu) liệt kê danh sách thư mục cá nhân kèm lựa chọn "Chưa xếp thư mục" để chuyển nhanh ngay tại chỗ.
+  4. _Nhập thêm thẻ:_ Dẫn tới trang import thẻ cho bộ này (`/sets/import?setId=:id`).
+  5. _Lưu ngoại tuyến (Tải về máy / Cập nhật / Xoá bản offline):_ Lưu hoặc cập nhật dữ liệu bộ từ vào IndexedDB (`vocab-offline`) của trình duyệt để học Flashcard khi mất mạng.
+  6. _Sao chép liên kết:_ Lưu URL bộ từ vào clipboard kèm toast thông báo.
+  7. _Tạo bản sao:_ Nhân bản bộ từ vào tài khoản cá nhân.
+  8. _Xoá bộ từ:_ Mục cảnh báo màu đỏ (`danger`), bấm sẽ mở hộp thoại xác nhận xoá an toàn `ConfirmDialog`.
+- **Thẻ tại trang Khám phá (`/explore`):** Cả chuột phải và nút ⋯ cung cấp: Bắt đầu học (Học thử nếu là khách), Sao chép về thư viện, Sao chép liên kết.
+
 ## Thư mục trên trang Bộ từ
 
 Trang Bộ từ chia hai cột từ 1024 px: cột thư mục rộng 240 px dính khi cuộn (`FolderPanel`) và danh sách bộ từ. Cột thư mục có "Tất cả bộ từ", "Chưa xếp thư mục" và từng thư mục kèm số bộ; danh sách cuộn riêng, cao tối đa vừa màn hình; có ô lọc khi hơn 6 thư mục; nút biểu tượng tạo thư mục mở ô đặt tên ngay trên cột. Thư mục đang mở có viền và nền `primary`, icon thư mục mở, `aria-current="page"`. Dưới 1024 px cột thành hàng chip cuộn ngang trên danh sách.
 
-Khi mở một thư mục, phía trên danh sách có thanh `FolderHeader`: đường dẫn "Bộ từ › tên thư mục" kèm số bộ, menu ba chấm (đổi tên tại chỗ, xoá qua hộp thoại) và nút đóng về Tất cả. Thư mục đang mở nằm trong URL (`?folder=`). Mỗi thẻ bộ từ có nút biểu tượng thư mục mở menu chọn thư mục và mục "Gỡ khỏi thư mục".
+Khi mở một thư mục, phía trên danh sách có thanh `FolderHeader`: đường dẫn "Bộ từ › tên thư mục" kèm số bộ, menu ba chấm (đổi tên tại chỗ, xoá qua hộp thoại) và nút đóng về Tất cả. Thư mục đang mở nằm trong URL (`?folder=`). Nút "Tạo bộ từ" và "Nhập từ file" trên đầu trang tự động nhận biết thư mục đang mở (`?folder=...`); khi tạo mới hoặc nhập xong, bộ từ tự động được gán vào thư mục đó; bấm Huỷ đưa người dùng quay lại đúng thư mục đang xem.
 
-Thanh tìm kiếm và sắp xếp trên trang Bộ từ: dưới 640 px (mobile 360 px) xếp thành 2 hàng — ô tìm kiếm trọn 1 hàng (`w-full`), ô sắp xếp ở hàng dưới (bỏ nhãn trôi nổi gây lệch hàng); từ 640 px xếp chung 1 hàng theo mẫu `ListToolbar`.
+Thanh tìm kiếm và sắp xếp:
+
+- **Trang Bộ từ:** Sắp xếp theo Mới cập nhật (`-updatedAt`), Mới tạo (`-createdAt`), Tên từ A đến Z (`title`). Dưới 640 px xếp 2 hàng; từ 640 px chung 1 hàng.
+- **Trang Khám phá:** Hỗ trợ tìm kiếm theo từ khoá kèm thanh chọn sắp xếp theo Mới cập nhật (`-updatedAt`), Mới tạo (`-createdAt`), Tên từ A đến Z (`title`), Nhiều thẻ nhất (`-cardCount`).
 
 Kéo thả (`FolderDndArea`, thư viện `@dnd-kit/core`): mỗi thẻ có tay nắm chấm dọc 44 px cạnh nút thư mục (chỉ hiện trên màn hình từ 768 px `hidden md:flex`, ẩn trên cảm ứng/mobile để không vướng thao tác chạm và tránh nhầm với cuộn trang; mobile dùng menu ⋯ chuyển thư mục). Chuột kéo sau 8 px. Khi đang kéo, mọi thư mục nhận thả có viền gạch `primary`; thư mục dưới con trỏ đổi nền `primary`, chữ `primary-fg`. Lớp nổi đi theo con trỏ là chip tên bộ từ có đổ bóng `shadow-raised`. Thả vào "Chưa xếp thư mục" là gỡ khỏi thư mục. Tay nắm ẩn khỏi trình đọc màn hình và không nhận focus vì nút thư mục trên thẻ đã làm cùng việc bằng bàn phím.
 
@@ -339,3 +359,11 @@ Số định dạng theo locale bằng `Intl.NumberFormat`.
 - Nút "Ôn bộ đầu tiên": `rounded-full min-h-11 px-5 font-semibold bg-board-fg text-board shadow-sm hover:bg-surface`, icon `Play` đặc `size-3.5 fill-current`. Hiệu ứng nhấn `motion-safe:active:scale-[0.98]` tắt khi giảm chuyển động.
 - Thanh bước (`ReviewSteps`) truyền vào prop `header` của `StudyShell`, cùng kiểu với `PathSteps` của lộ trình: pill `rounded-full border px-2.5 py-0.5 text-small`. Đã xong `border-primary bg-primary-soft text-primary` kèm icon `Check` và chữ ẩn "đã xong", đang học `border-primary bg-primary font-semibold text-primary-fg` với `aria-current="step"`, chưa tới `border-border text-text-muted`.
 - Màn kết quả chế độ cuối: dòng `ReviewFinished` `rounded-md border border-primary bg-primary-soft p-3 font-medium text-primary` kèm icon `PartyPopper`.
+
+## Thao tác thẻ bộ từ và quyền quản trị (Admin)
+
+- **Kéo thả toàn bộ thẻ (`SetCardShell`):** Sử dụng `@dnd-kit/core` để kéo thẻ trực tiếp vào cây thư mục ở cột bên trái (`FolderPanel`). Toàn thẻ có con trỏ `cursor-grab active:cursor-grabbing`. Tối ưu hiệu năng cao: chỉ thẻ bản sao ảo (`DragOverlay`) được mount qua React Portal và di chuyển bằng GPU hardware acceleration (`transform: translate3d`), hoàn toàn không gây re-render hay lag layout của danh sách thẻ trong DOM. Ngưỡng kích hoạt: click chuột bình thường (< 8 px) mở chi tiết bộ từ (`Link`), giữ và rê (>= 8 px) bắt đầu kéo.
+- **Ngăn xung đột kéo thẻ:** Vùng nút ba chấm ⋯ (`actions`) có `onPointerDown={(e) => e.stopPropagation()}` để thao tác bấm mở menu trên mobile/desktop không bị kéo nhầm thẻ.
+- **Giao diện thẻ gọn gàng:** Loại bỏ nút chuyển thư mục rời rạc trên thẻ để tránh trùng lặp; thao tác chuyển thư mục được đưa hoàn toàn vào menu chuột phải và menu ba chấm ⋯.
+- **Quyền Admin trên thẻ bộ từ:** Với tài khoản Quản trị (`ADMIN`), cả menu chuột phải (`ContextMenu`) và menu ba chấm ⋯ (`DropdownMenu`) trên các thẻ ở `/sets` và `/explore` đều bổ sung lựa chọn "Ẩn bộ từ" (icon `EyeOff`, kiểu `danger`), mở hộp thoại nhập lý do vi phạm (`FormDialog`) và làm mới dữ liệu ngay khi xác nhận.
+- **Thứ tự nút hành động trên trang chi tiết:** Nút overflow menu ba chấm `[...]` luôn nằm ở ngoài cùng bên phải của thanh công cụ (`[Sửa bộ từ]` → `[Ẩn bộ từ]` → `[...]`), tuân thủ chuẩn UX phân cấp hành động từ chính đến phụ và menu mở rộng.

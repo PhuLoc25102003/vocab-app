@@ -1,94 +1,141 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createSetSchema, type ImportRow } from '@vocab/shared';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  setFormSchema,
+  type CardDraft,
+  type ImportRow,
+  type SetFormInput,
+  type SetFormValues,
+} from '@vocab/shared';
 import type { Route } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { z } from 'zod';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { FormField } from '@/components/common/form-field';
 import { FormError } from '@/components/common/form-message';
 import { LoadingState } from '@/components/common/loading-state';
-import { VisibilityField } from '@/components/common/visibility-field';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
-import { getUploadConfig, uploadKeys } from '@/lib/uploads';
+import { CardFields, EMPTY_CARD } from '@/features/sets/components/card-fields';
+import { SetForm } from '@/features/sets/components/set-form';
 import { getImportTarget, importAsNewSet, importIntoSet } from '../api';
-import { ImportPreview } from './import-preview';
 import { ImportSource, type ImportExtraColumns } from './import-source';
 import { useTranslation } from 'react-i18next';
 
-const newSetSchema = createSetSchema.pick({ title: true, visibility: true });
-type NewSetInput = z.input<typeof newSetSchema>;
-type NewSetValues = z.output<typeof newSetSchema>;
-
 // Danh sách bộ từ dùng khoá bắt đầu bằng 'sets', làm mới để thấy số thẻ mới.
 const SETS_QUERY_KEY = ['sets'] as const;
-const NEW_SET_VISIBILITY = ['PRIVATE', 'PUBLIC'] as const;
+
+interface ImportIntoSetProps {
+  setId: string;
+  targetNote: React.ReactNode;
+  initialCards: CardDraft[];
+  onRestart: () => void;
+}
+
+function ImportIntoSet({ setId, targetNote, initialCards, onRestart }: ImportIntoSetProps) {
+  const { t } = useTranslation('sets');
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setFocus,
+    trigger,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<SetFormInput, unknown, SetFormValues>({
+    resolver: zodResolver(setFormSchema),
+    defaultValues: {
+      title: 'Import',
+      description: '',
+      termLang: 'en',
+      defLang: 'vi',
+      visibility: 'PRIVATE',
+      cards: initialCards.length > 0 ? initialCards : [EMPTY_CARD, EMPTY_CARD],
+    },
+  });
+
+  const guard = useUnsavedGuard(isDirty);
+
+  useEffect(() => {
+    void trigger();
+  }, [trigger]);
+
+  const submit = handleSubmit(async (values) => {
+    try {
+      setServerError(null);
+      const cards = values.cards.map(({ id: _id, ...card }) => card);
+      await importIntoSet(setId, cards);
+      await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
+      toast.success(t('import.imported', { count: cards.length }));
+      await guard.release();
+      router.replace(`/sets/${setId}` as Route);
+    } catch (error) {
+      setServerError(formErrorMessage(error));
+    }
+  });
+
+  return (
+    <form onSubmit={submit} noValidate className="flex w-full flex-col gap-6">
+      {guard.dialog}
+      {targetNote}
+      {serverError ? <FormError>{serverError}</FormError> : null}
+      <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" loading={isSubmitting}>
+          {t('import.saveCount', { count: initialCards.length })}
+        </Button>
+        <Button type="button" variant="secondary" onClick={onRestart}>
+          {t('import.restart')}
+        </Button>
+        <Button asChild variant="secondary">
+          <Link href={`/sets/${setId}` as Route}>{t('form.cancel')}</Link>
+        </Button>
+      </div>
+    </form>
+  );
+}
 
 interface ImportWizardProps {
   /** Có thì thêm thẻ vào bộ này, không có thì tạo bộ mới. */
   setId?: string;
+  folderId?: string;
 }
 
-export function ImportWizard({ setId }: ImportWizardProps) {
+export function ImportWizard({ setId, folderId }: ImportWizardProps) {
   const { t } = useTranslation('sets');
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<ImportRow[] | null>(null);
-  const [columns, setColumns] = useState<ImportExtraColumns>({
-    phonetic: false,
-    example: false,
+  const [suggestedTitle, setSuggestedTitle] = useState('');
+  const [_columns, setColumns] = useState<ImportExtraColumns>({
+    phonetic: true,
+    example: true,
     image: false,
   });
   const hasMounted = useRef(false);
-  const uploads = useQuery({
-    queryKey: uploadKeys.config,
-    queryFn: getUploadConfig,
-    staleTime: 5 * 60_000,
-  });
-  const canSearch = uploads.data?.imageSearch === true;
   const target = useQuery({
     queryKey: [...SETS_QUERY_KEY, 'import-target', setId],
     queryFn: () => getImportTarget(setId ?? ''),
     enabled: Boolean(setId),
   });
-  const save = useMutation({
-    mutationFn: async (details: NewSetValues) => {
-      const cards = (rows ?? []).map(({ term, definition, phonetic, example, imageUrl }) => ({
-        term,
-        definition,
-        phonetic: phonetic?.trim() || undefined,
-        example: example?.trim() || undefined,
-        ...(imageUrl?.trim() ? { imageUrl: imageUrl.trim() } : {}),
-      }));
-      return setId ? importIntoSet(setId, cards) : importAsNewSet({ ...details, cards });
-    },
-  });
-  const form = useForm<NewSetInput, unknown, NewSetValues>({
-    resolver: zodResolver(newSetSchema),
-    defaultValues: { title: '', visibility: 'PRIVATE' },
-  });
-  // Chỉ hỏi khi đã có dòng dữ liệu xem trước, trang trống thì rời tự do.
-  const guard = useUnsavedGuard(Boolean(rows?.length) && !save.isSuccess);
 
   // Next giữ trang đã rời ở trạng thái ẩn, nên mở lại thì bắt đầu từ đầu.
   useEffect(() => {
     if (hasMounted.current) {
       setRows(null);
-      save.reset();
-      form.reset();
+      setSuggestedTitle('');
     }
     hasMounted.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ chạy khi trang hiện lại
   }, []);
 
   if (setId && target.isPending) {
@@ -120,9 +167,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
       <div className="flex flex-col gap-6">
         {targetNote}
         <ImportSource
-          onPreview={(result, chosen) => {
+          onPreview={(result, chosen, suggested) => {
             setColumns(chosen);
             setRows(result.rows);
+            if (suggested) {
+              setSuggestedTitle(suggested);
+            }
           }}
         />
       </div>
@@ -131,27 +181,8 @@ export function ImportWizard({ setId }: ImportWizardProps) {
 
   const restart = () => {
     setRows(null);
-    save.reset();
+    setSuggestedTitle('');
   };
-  const invalidCount = rows.filter(({ errors }) => errors.length > 0).length;
-  const saveWith = async (details: NewSetValues) => {
-    try {
-      const id = await save.mutateAsync(details);
-      await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
-      toast.success(t('import.imported', { count: rows.length }));
-      await guard.release();
-      router.replace(`/sets/${id}` as Route);
-    } catch {
-      // Lỗi hiện qua `save.error`.
-    }
-  };
-  // Thêm vào bộ có sẵn thì không có ô tên bộ mới để kiểm tra.
-  const submit = setId
-    ? (event: FormEvent) => {
-        event.preventDefault();
-        void saveWith({ title: '', visibility: 'PRIVATE' });
-      }
-    : form.handleSubmit(saveWith);
 
   if (rows.length === 0) {
     return (
@@ -163,36 +194,49 @@ export function ImportWizard({ setId }: ImportWizardProps) {
     );
   }
 
+  const initialCards: CardDraft[] = rows.map((r) => ({
+    term: r.term,
+    definition: r.definition,
+    phonetic: r.phonetic ?? '',
+    example: r.example ?? '',
+    imageUrl: r.imageUrl?.trim() || undefined,
+  }));
+
+  if (setId) {
+    return (
+      <ImportIntoSet
+        setId={setId}
+        targetNote={targetNote}
+        initialCards={initialCards}
+        onRestart={restart}
+      />
+    );
+  }
+
   return (
-    <div className="flex w-full flex-col gap-6">
-      {guard.dialog}
-      <ImportPreview rows={rows} columns={columns} onChange={setRows} canSearch={canSearch} />
-      <form
-        onSubmit={submit}
-        noValidate
-        className="flex flex-col gap-4 border-t border-border pt-6"
-      >
-        <h2 className="text-h2">{t('import.saveTitle')}</h2>
-        {save.error ? <FormError>{formErrorMessage(save.error)}</FormError> : null}
-        {targetNote ?? (
-          <div className="flex flex-col gap-4">
-            <FormField
-              label={t('import.newTitle')}
-              error={form.formState.errors.title?.message}
-              {...form.register('title')}
-            />
-            <VisibilityField options={NEW_SET_VISIBILITY} {...form.register('visibility')} />
-          </div>
-        )}
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" loading={save.isPending} disabled={invalidCount > 0}>
-            {t('import.saveCount', { count: rows.length })}
-          </Button>
-          <Button type="button" variant="secondary" onClick={restart}>
-            {t('import.restart')}
-          </Button>
-        </div>
-      </form>
-    </div>
+    <SetForm
+      cancelHref={(folderId ? `/sets?folder=${folderId}` : '/sets') as Route}
+      defaultValues={{
+        title: suggestedTitle,
+        description: '',
+        termLang: 'en',
+        defLang: 'vi',
+        visibility: 'PRIVATE',
+        cards: initialCards.length > 0 ? initialCards : [EMPTY_CARD, EMPTY_CARD],
+      }}
+      onRestart={restart}
+      submitLabel={t('import.saveCount', { count: rows.length })}
+      onSubmit={async (values) => {
+        const id = await importAsNewSet({
+          title: values.title,
+          visibility: values.visibility,
+          folderId,
+          cards: values.cards.map(({ id: _id, ...card }) => card),
+        });
+        await queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY });
+        toast.success(t('import.imported', { count: values.cards.length }));
+        return `/sets/${id}` as Route;
+      }}
+    />
   );
 }

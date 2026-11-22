@@ -65,19 +65,17 @@ describe('CreateSet', () => {
     });
   });
 
-  it('đảo ngôn ngữ của từ và nghĩa rồi gửi theo chiều mới', async () => {
+  it('không hiển thị trường chọn ngôn ngữ, mặc định termLang là en và defLang là vi', async () => {
     vi.mocked(createSet).mockResolvedValue(summary);
     renderWithQuery(<CreateSet />);
-    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Từ tiếng Việt');
-    await userEvent.click(screen.getByRole('button', { name: 'Đảo ngôn ngữ của từ và nghĩa' }));
-
-    expect(screen.getByLabelText('Ngôn ngữ của từ')).toHaveValue('Tiếng Việt');
-    expect(screen.getByLabelText('Ngôn ngữ của nghĩa')).toHaveValue('Tiếng Anh');
+    expect(screen.queryByLabelText('Ngôn ngữ của từ')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Ngôn ngữ của nghĩa')).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Bộ từ mới');
     await save();
     await waitFor(() =>
       expect(vi.mocked(createSet).mock.calls[0]?.[0]).toMatchObject({
-        termLang: 'vi',
-        defLang: 'en',
+        termLang: 'en',
+        defLang: 'vi',
       }),
     );
   });

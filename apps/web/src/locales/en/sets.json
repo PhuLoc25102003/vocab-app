@@ -120,7 +120,9 @@
     "noMatch": "No public set matches \"{{q}}\" yet.",
     "empty": "No public sets yet",
     "emptyHint": "Sets made public will appear here.",
-    "pageEmptyHint": "The list is shorter than this page."
+    "pageEmptyHint": "The list is shorter than this page.",
+    "sort": "Sort public sets",
+    "sortCards": "Most cards"
   },
   "seeAll": "See all",
   "pageEmpty": "This page has no sets",
@@ -178,7 +180,15 @@
     "deleteTitle": "Delete the set \"{{title}}\"?",
     "deleteDescription": "The set, its cards and your progress will be deleted. This cannot be undone.",
     "copied": "Set copied",
-    "copy": "Copy set"
+    "copy": "Copy set",
+    "copyToLibrary": "Copy to your library",
+    "startStudy": "Start study",
+    "copyLink": "Copy link",
+    "linkCopied": "Set link copied",
+    "duplicate": "Make a copy",
+    "downloading": "Downloading to device...",
+    "hide": "Hide set",
+    "unhide": "Unhide set"
   },
   "cardCount": "{{count}} cards",
   "summaryCount": "Set of {{count}} cards",
@@ -277,7 +287,7 @@
       "dash": "dash"
     },
     "delimiterField": "Terms and definitions are separated by",
-    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nOne card per line, term and definition separated by a tab, a comma or \" - \".",
+    "placeholder": "apple\tquả táo\t/ˈæp.əl/\tI eat an apple every day.\nbanana\tquả chuối\t/bəˈnæn.ə/\tBananas are rich in potassium.\n\nOne card per line (term, definition, phonetic, example), separated by tabs.",
     "templateFailed": "Could not create the template. Try again.",
     "readFailed": "Could not read the file.",
     "columnSample": "Column {{column}}: {{sample}}",

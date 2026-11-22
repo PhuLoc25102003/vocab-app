@@ -63,6 +63,11 @@ export class SetsService {
   }
 
   async create(ownerId: string, dto: CreateSetDto) {
+    if (dto.folderId) {
+      if (!(await this.sets.folderOwnedBy(dto.folderId, ownerId))) {
+        throw folderNotFound();
+      }
+    }
     this.uploads.assertCardImages(dto.cards);
     return ok(await this.sets.create(ownerId, dto));
   }

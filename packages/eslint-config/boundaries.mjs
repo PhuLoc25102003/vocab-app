@@ -32,6 +32,10 @@ export const webBoundaries = createBoundaries({
   policies: [
     allow('app', ['feature', 'common', 'ui', 'lib']),
     allow('feature', ['common', 'ui', 'lib']),
+    {
+      from: { element: { type: 'feature', captured: { feature: 'import' } } },
+      allow: { to: { element: { type: 'feature', captured: { feature: 'sets' } } } },
+    },
     allow('common', ['ui', 'lib']),
     allow('ui', ['lib']),
   ],

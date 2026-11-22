@@ -5,24 +5,25 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 ## UC-S1. Xem danh sách bộ từ của tôi
 
 - **Việc:** 1.7, 1.10, 1.43. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
-- **Phải có:** danh sách dạng dòng với tên, số thẻ, phạm vi, ngày cập nhật; phân trang trên URL; nút tạo bộ; ô tìm theo tên; chọn cách sắp xếp.
+- **Phải có:** danh sách dạng thẻ với tên, số thẻ, phạm vi, ngày cập nhật; phân trang trên URL; nút tạo bộ; ô tìm theo tên; chọn cách sắp xếp; thao tác chuột phải (desktop) và nút ba chấm ⋯ (mobile) tích hợp đầy đủ: Bắt đầu học, Sửa, Chuyển thư mục, Nhập thêm thẻ, Lưu ngoại tuyến, Sao chép liên kết, Tạo bản sao, Xoá, và Ẩn bộ từ (dành cho Admin).
+- **Kéo thả và thao tác nhanh:** Toàn bộ thẻ bộ từ có thể kéo thả trực tiếp (`@dnd-kit/core`) vào các thư mục ở cột bên trái; cơ chế dùng GPU hardware acceleration và `DragOverlay` mount qua React Portal nên hoàn toàn không gây re-render các thẻ khác trong danh sách; chuột click bình thường (< 8px) mở bộ từ, giữ và rê (>= 8px) kích hoạt kéo. Bỏ icon chuyển thư mục rời rạc trên thẻ để tránh lặp với menu.
 - **Luồng chính:** mở `/sets`, thấy bộ mới sửa ở đầu, tìm hoặc sắp xếp, mở một bộ, quay lại vẫn đúng trang và từ khoá.
 - **Ngoại lệ:** chưa có bộ nào; không có kết quả tìm kiếm; số trang vượt quá; lỗi mạng có nút thử lại.
-- **Test đã có:** `sets.integration`, `my-sets.test`.
+- **Test đã có:** `sets.integration`, `my-sets.test`, `set-context-menu.test`.
 - **Test cần thêm:** E2E tìm rồi mở rồi quay lại.
 
 ## UC-S2. Tạo bộ từ
 
 - **Việc:** 1.7, 1.11, 1.37, 1.38. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
-- **Phải có:** tên, mô tả, ngôn ngữ từ và nghĩa, phạm vi Riêng tư hoặc Công khai, soạn thẻ, nút lưu, nút huỷ, nút quay lại.
-- **Luồng chính:** từ `/sets` bấm "Tạo bộ từ", nhập, lưu, thấy thông báo và tới trang chi tiết. Nút quay lại của trình duyệt phải về `/sets`, không về form đã lưu.
+- **Phải có:** tên, mô tả, ngôn ngữ từ và nghĩa, phạm vi Riêng tư hoặc Công khai, soạn thẻ, nút lưu, nút huỷ, nút quay lại. Tự động nhận biết thư mục đang đứng (`?folder=...`) để lưu vào thư mục đó.
+- **Luồng chính:** từ `/sets` (hoặc thư mục đang xem) bấm "Tạo bộ từ", nhập, lưu, thấy thông báo và tới trang chi tiết. Bộ từ mới tự động nằm trong thư mục đang mở. Nút quay lại/huỷ trả về đúng thư mục đó.
 - **Ngoại lệ:**
   - Dữ liệu sai: focus ô lỗi đầu tiên, giữ nguyên nội dung.
   - Mất mạng khi lưu: báo lỗi, giữ nội dung, bấm lưu lại được.
   - Bấm lưu nhiều lần: chỉ tạo một bộ.
   - Đã nhập mà rời trang: hỏi xác nhận.
 - **Test đã có:** `sets.integration`, `set-form.test`, E2E tạo bộ công khai.
-- **Đã đổi:** form gọn hơn, có nút đảo ngôn ngữ, "Ai xem được" là hai thẻ lựa chọn có mô tả (việc 2.39, UC-X8).
+- **Đã đổi:** form gọn hơn, giữ ngầm tiếng Anh/tiếng Việt, "Ai xem được" là hai thẻ lựa chọn có mô tả, tạo từ thư mục nào thì tự động gán thư mục đó.
 
 ## UC-S3. Soạn thẻ từ
 
@@ -45,11 +46,12 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 
 ## UC-S5. Xem chi tiết bộ từ
 
-- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai. **Trạng thái:** Đủ.
+- **Việc:** 1.7, 1.12, 1.44, 1.46. **Người dùng:** chủ bộ, người xem bộ công khai, ADMIN. **Trạng thái:** Đủ.
 - **Phải có:**
   - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại.
   - Chủ bộ: sửa, xoá, sao chép đường dẫn khi bộ công khai.
   - Người khác: sao chép về tài khoản.
+  - Quản trị viên (ADMIN): nút "Ẩn bộ từ" / "Bỏ ẩn bộ từ" (icon EyeOff/Eye). Thứ tự sắp xếp nút luôn đảm bảo nút ba chấm `[...]` ở cuối cùng bên phải (`[Sửa bộ từ]` -> `[Ẩn bộ từ]` -> `[...]`), không bị kẹp menu ở giữa các nút hành động chính.
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.
 - **Ngoại lệ:** bộ không tồn tại hoặc không có quyền; bộ chưa có thẻ thì ẩn nút học và mời thêm thẻ; lỗi mạng có nút thử lại.
@@ -86,11 +88,11 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
 ## UC-S9. Khám phá bộ từ công khai
 
 - **Việc:** 1.7, 1.36, 1.42. **Người dùng:** khách, người đã đăng nhập. **Trạng thái:** Đủ.
-- **Phải có:** tìm theo tên, phân trang, từ khoá trên URL, mở trang chi tiết phù hợp với phiên, lối vào từ trang giới thiệu.
-- **Luồng chính:** khách từ trang chủ mở Khám phá, tìm, mở bộ, học thử.
+- **Phải có:** tìm theo tên, sắp xếp (mới cập nhật, mới tạo, tên, nhiều thẻ nhất), phân trang, từ khoá và cách xếp trên URL, mở trang chi tiết phù hợp với phiên, thao tác nhanh chuột phải và nút ⋯ (Bắt đầu học, Sao chép về thư viện, Sao chép liên kết), lối vào từ trang giới thiệu.
+- **Luồng chính:** khách từ trang chủ mở Khám phá, tìm, sắp xếp, mở bộ, học thử hoặc sao chép về thư viện.
 - **Ngoại lệ:** không có kết quả có nút xem tất cả; từ khoá quá 100 ký tự; số trang vượt quá; lỗi mạng có nút thử lại.
 - **Điều hướng:** khách vào `/explore` được chuyển tới `/public/explore`, người đã đăng nhập ở lại `/explore` với menu đầy đủ.
-- **Test đã có:** `sets-public.integration`, `explore-sets.test`, E2E khách tìm và học thử.
+- **Test đã có:** `sets-public.integration`, `explore-sets.test`, `explore-card-menu.test`, E2E khách tìm và học thử.
 - **Test cần thêm:** E2E người đã đăng nhập tìm rồi sao chép.
 
 ## UC-S10. Nhập danh sách từ

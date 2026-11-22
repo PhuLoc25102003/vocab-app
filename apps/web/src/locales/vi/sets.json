@@ -120,7 +120,9 @@
     "noMatch": "Chưa có bộ từ công khai nào khớp với \"{{q}}\".",
     "empty": "Chưa có bộ từ công khai",
     "emptyHint": "Bộ từ được đặt ở chế độ công khai sẽ hiện ở đây.",
-    "pageEmptyHint": "Danh sách ngắn hơn số trang này."
+    "pageEmptyHint": "Danh sách ngắn hơn số trang này.",
+    "sort": "Sắp xếp bộ từ công khai",
+    "sortCards": "Nhiều thẻ nhất"
   },
   "seeAll": "Xem tất cả",
   "pageEmpty": "Trang này không có bộ từ",
@@ -178,7 +180,15 @@
     "deleteTitle": "Xoá bộ từ \"{{title}}\"?",
     "deleteDescription": "Bộ từ, các thẻ và tiến độ học của bộ này sẽ bị xoá. Bạn không khôi phục được.",
     "copied": "Đã sao chép bộ từ",
-    "copy": "Sao chép bộ từ"
+    "copy": "Sao chép bộ từ",
+    "copyToLibrary": "Sao chép về thư viện",
+    "startStudy": "Bắt đầu học",
+    "copyLink": "Sao chép liên kết",
+    "linkCopied": "Đã sao chép liên kết bộ từ",
+    "duplicate": "Tạo bản sao",
+    "downloading": "Đang tải về máy...",
+    "hide": "Ẩn bộ từ",
+    "unhide": "Bỏ ẩn bộ từ"
   },
   "cardCount": "{{count}} thẻ",
   "summaryCount": "Bộ từ gồm {{count}} thẻ",
@@ -277,7 +287,7 @@
       "dash": "gạch ngang"
     },
     "delimiterField": "Từ và nghĩa cách nhau bằng",
-    "placeholder": "apple\tquả táo\nbanana\tquả chuối\n\nMỗi dòng một thẻ, từ và nghĩa cách nhau bằng tab, dấu phẩy hoặc \" - \".",
+    "placeholder": "apple\tquả táo\t/ˈæp.əl/\tI eat an apple every day.\nbanana\tquả chuối\t/bəˈnæn.ə/\tBananas are rich in potassium.\n\nMỗi dòng một thẻ (từ, nghĩa, phiên âm, ví dụ), các cột cách nhau bằng tab.",
     "templateFailed": "Không tạo được file mẫu. Hãy thử lại.",
     "readFailed": "Không đọc được file.",
     "columnSample": "Cột {{column}}: {{sample}}",

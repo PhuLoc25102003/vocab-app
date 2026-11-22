@@ -18,7 +18,7 @@ import { AppError } from '../../common/errors/app-error';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
-const SORTABLE_FIELDS = ['updatedAt', 'createdAt', 'title'] as const;
+const SORTABLE_FIELDS = ['updatedAt', 'createdAt', 'title', 'cardCount'] as const;
 type SortableField = (typeof SORTABLE_FIELDS)[number];
 
 const SET_SUMMARY_SELECT = {

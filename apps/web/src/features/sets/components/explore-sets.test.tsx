@@ -44,6 +44,11 @@ function renderExplore() {
 }
 
 describe('ExploreSets', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    navigation.params = new URLSearchParams();
+  });
+
   it('đưa khách tới trang công khai của bộ từ', async () => {
     vi.mocked(listPublicSets).mockResolvedValue(result);
     navigation.params = new URLSearchParams();
@@ -58,11 +63,6 @@ describe('ExploreSets', () => {
       'href',
       '/public/sets/s1',
     );
-  });
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    navigation.params = new URLSearchParams();
   });
 
   it('hiện bộ từ công khai kèm người tạo và mở được chi tiết', async () => {
@@ -82,7 +82,12 @@ describe('ExploreSets', () => {
     renderExplore();
 
     await screen.findByRole('link', { name: 'Trái cây' });
-    expect(listPublicSets).toHaveBeenCalledWith({ page: 2, limit: EXPLORE_PAGE_SIZE, q: 'fruit' });
+    expect(listPublicSets).toHaveBeenCalledWith({
+      page: 2,
+      limit: EXPLORE_PAGE_SIZE,
+      q: 'fruit',
+      sort: '-updatedAt',
+    });
     expect(screen.getByRole('searchbox')).toHaveValue('fruit');
   });
 
@@ -96,6 +101,16 @@ describe('ExploreSets', () => {
     expect(navigation.push).toHaveBeenCalledWith('/explore?q=con+v%E1%BA%ADt');
   });
 
+  it('cho phép chọn sắp xếp theo nhiều tiêu chí', async () => {
+    vi.mocked(listPublicSets).mockResolvedValue(result);
+    renderExplore();
+
+    const select = screen.getByRole('combobox', { name: /Sắp xếp/i });
+    await userEvent.selectOptions(select, '-cardCount');
+
+    expect(navigation.push).toHaveBeenCalledWith('/explore?sort=-cardCount');
+  });
+
   it('báo không có kết quả và cho xem tất cả', async () => {
     navigation.params = new URLSearchParams('q=xyz');
     vi.mocked(listPublicSets).mockResolvedValue(emptyResult);
@@ -105,20 +120,22 @@ describe('ExploreSets', () => {
     expect(screen.getByRole('link', { name: 'Xem tất cả' })).toHaveAttribute('href', '/explore');
   });
 
-  it('báo khi chưa có bộ từ công khai', async () => {
-    vi.mocked(listPublicSets).mockResolvedValue(emptyResult);
+  it('báo trang trống khi số trang lớn hơn dữ liệu', async () => {
+    navigation.params = new URLSearchParams('page=5');
+    vi.mocked(listPublicSets).mockResolvedValue({ ...result, data: [] });
     renderExplore();
 
-    expect(await screen.findByText('Chưa có bộ từ công khai')).toBeInTheDocument();
+    expect(await screen.findByText('Trang này không có bộ từ')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Về trang đầu' })).toHaveAttribute('href', '/explore');
   });
 
-  it('cho thử lại khi tải lỗi', async () => {
-    vi.mocked(listPublicSets).mockRejectedValueOnce(new Error('offline'));
-    vi.mocked(listPublicSets).mockResolvedValue(result);
+  it('cho thử lại khi tải thất bại', async () => {
+    vi.mocked(listPublicSets).mockRejectedValue(new Error('Network error'));
     renderExplore();
 
-    await userEvent.click(await screen.findByRole('button', { name: /thử lại/i }));
-
+    expect(await screen.findByText('Không tải được bộ từ')).toBeInTheDocument();
+    vi.mocked(listPublicSets).mockResolvedValue(result);
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }));
     expect(await screen.findByRole('link', { name: 'Trái cây' })).toBeInTheDocument();
   });
 });

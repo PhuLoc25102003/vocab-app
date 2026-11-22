@@ -10,23 +10,14 @@ import {
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeftRight } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import {
-  Controller,
-  useForm,
-  type Control,
-  type FieldErrors,
-  type UseFormRegister,
-} from 'react-hook-form';
-import { Combobox } from '@/components/common/combobox';
+import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { FormError } from '@/components/common/form-message';
 import { FormField, TextareaField } from '@/components/common/form-field';
 import { VisibilityField } from '@/components/common/visibility-field';
 import { Button } from '@/components/ui/button';
 import { applyFormError } from '@/lib/form-errors';
 import { useUnsavedGuard } from '@/components/common/use-unsaved-guard';
-import { LANGUAGE_CODES } from '../labels';
 import { CardFields, EMPTY_CARD } from './card-fields';
 import { translateValidation } from '@/lib/validation-message';
 import { useTranslation } from 'react-i18next';
@@ -48,35 +39,14 @@ function withCurrent<T extends string>(options: readonly T[], current: T): reado
   return options.includes(current) ? options : [...options, current];
 }
 
-/** Cả hai ô ngôn ngữ cùng có hai giá trị đang lưu để đảo chiều không mất lựa chọn. */
-function languageOptions({ termLang, defLang }: SetFormInput, name: (code: string) => string) {
-  return withCurrent(withCurrent(LANGUAGE_CODES, termLang), defLang).map((code) => ({
-    value: code,
-    label: name(code),
-  }));
-}
-
 interface SetDetailsFieldsProps {
   initialValues: SetFormInput;
   register: UseFormRegister<SetFormInput>;
-  control: Control<SetFormInput, unknown, SetFormValues>;
   errors: FieldErrors<SetFormInput>;
-  onSwapLanguages: () => void;
 }
 
-function SetDetailsFields({
-  initialValues,
-  register,
-  control,
-  errors,
-  onSwapLanguages,
-}: SetDetailsFieldsProps) {
+function SetDetailsFields({ initialValues, register, errors }: SetDetailsFieldsProps) {
   const { t } = useTranslation('sets');
-  const languages = languageOptions(initialValues, (code) =>
-    (LANGUAGE_CODES as readonly string[]).includes(code)
-      ? t(`languages.${code as (typeof LANGUAGE_CODES)[number]}`)
-      : code,
-  );
   return (
     <div className="flex flex-col gap-4">
       <FormField label={t('form.title')} error={errors.title?.message} {...register('title')} />
@@ -87,49 +57,6 @@ function SetDetailsFields({
         error={errors.description?.message}
         {...register('description')}
       />
-      <div className="grid gap-x-2 gap-y-2 sm:grid-cols-[1fr_auto_1fr] sm:items-start">
-        <Controller
-          control={control}
-          name="termLang"
-          render={({ field }) => (
-            <Combobox
-              label={t('form.termLang')}
-              options={languages}
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              error={errors.termLang?.message}
-            />
-          )}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label={t('form.swap')}
-          title={t('form.swap')}
-          className="justify-self-center sm:mt-6"
-          onClick={onSwapLanguages}
-        >
-          <ArrowLeftRight aria-hidden className="size-5 rotate-90 sm:rotate-0" />
-        </Button>
-        <Controller
-          control={control}
-          name="defLang"
-          render={({ field }) => (
-            <Combobox
-              label={t('form.defLang')}
-              options={languages}
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              error={errors.defLang?.message}
-            />
-          )}
-        />
-      </div>
       <VisibilityField
         options={withCurrent(SELECTABLE_VISIBILITY, initialValues.visibility)}
         error={errors.visibility?.message}
@@ -156,9 +83,19 @@ interface SetFormProps {
   defaultValues: SetFormInput;
   /** Lưu dữ liệu và trả về trang cần tới. */
   onSubmit: (values: SetFormValues) => Promise<Route>;
+  onRestart?: () => void;
+  restartLabel?: string;
+  submitLabel?: string;
 }
 
-export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
+export function SetForm({
+  cancelHref,
+  defaultValues,
+  onSubmit,
+  onRestart,
+  restartLabel,
+  submitLabel,
+}: SetFormProps) {
   const { t } = useTranslation('sets');
   const router = useRouter();
   const [initialValues] = useState(defaultValues);
@@ -171,7 +108,7 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
     setError,
     setFocus,
     getValues,
-    setValue,
+    trigger,
     formState: { errors, isDirty, isSubmitting },
   } = useForm<SetFormInput, unknown, SetFormValues>({
     resolver: zodResolver(setFormSchema),
@@ -183,9 +120,15 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
   useEffect(() => {
     if (hasMounted.current) {
       reset(initialValues);
+    } else {
+      // Nếu có thẻ được import (nhiều hơn thẻ trống ban đầu), trigger kiểm tra lỗi ngay để hiện cảnh báo
+      const hasImportedCards = initialValues.cards.some((c) => c.term || c.definition);
+      if (hasImportedCards) {
+        void trigger();
+      }
     }
     hasMounted.current = true;
-  }, [initialValues, reset]);
+  }, [initialValues, reset, trigger]);
 
   // Sửa bộ có sẵn thì mọi thay đổi đều đáng hỏi. Tạo bộ mới thì chỉ hỏi khi đã gõ nội dung,
   // không hỏi khi chỉ thêm rồi xoá dòng trống.
@@ -194,12 +137,6 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
     [getValues, initialValues],
   );
   const guard = useUnsavedGuard(isDirty, hasData);
-
-  const swapLanguages = () => {
-    const { termLang, defLang } = getValues();
-    setValue('termLang', defLang, { shouldDirty: true });
-    setValue('defLang', termLang, { shouldDirty: true });
-  };
 
   const submit = handleSubmit(async (values) => {
     try {
@@ -221,18 +158,17 @@ export function SetForm({ cancelHref, defaultValues, onSubmit }: SetFormProps) {
       {errors.root?.message ? (
         <FormError>{translateValidation(errors.root.message)}</FormError>
       ) : null}
-      <SetDetailsFields
-        initialValues={initialValues}
-        register={register}
-        control={control}
-        errors={errors}
-        onSwapLanguages={swapLanguages}
-      />
+      <SetDetailsFields initialValues={initialValues} register={register} errors={errors} />
       <CardFields control={control} register={register} setFocus={setFocus} errors={errors.cards} />
       <div className="flex flex-wrap gap-2">
         <Button type="submit" loading={isSubmitting}>
-          {t('form.save')}
+          {submitLabel ?? t('form.save')}
         </Button>
+        {onRestart ? (
+          <Button type="button" variant="secondary" onClick={onRestart}>
+            {restartLabel ?? t('import.restart')}
+          </Button>
+        ) : null}
         <Button asChild variant="secondary">
           <Link href={cancelHref}>{t('form.cancel')}</Link>
         </Button>

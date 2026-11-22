@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { SetDetail } from '@vocab/shared';
 import { FileUp, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
@@ -16,7 +16,13 @@ import { useOfflineMenu } from './offline-toggle';
 import { useTranslation } from 'react-i18next';
 
 /** Một nút chính để sửa, các thao tác còn lại gom vào menu cho header gọn. */
-export function SetOwnerActions({ set }: { set: SetDetail }) {
+export function SetOwnerActions({
+  set,
+  extraActions,
+}: {
+  set: SetDetail;
+  extraActions?: ReactNode;
+}) {
   const { t } = useTranslation('sets');
   const { id, title } = set;
   const router = useRouter();
@@ -50,6 +56,7 @@ export function SetOwnerActions({ set }: { set: SetDetail }) {
           {t('actions.edit')}
         </Link>
       </Button>
+      {extraActions}
       <Menu>
         <MenuTrigger asChild>
           <Button variant="secondary" aria-label={t('actions.more')} className="px-3">
