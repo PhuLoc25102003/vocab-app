@@ -54,8 +54,8 @@ const DEFAULT_VALUES: ImportPreviewInput = {
     hasHeader: false,
     termColumn: 1,
     definitionColumn: 2,
-    phoneticColumn: '',
-    exampleColumn: '',
+    phoneticColumn: 3,
+    exampleColumn: 4,
     imageColumn: '',
   },
 };
@@ -68,7 +68,11 @@ export interface ImportExtraColumns {
 }
 
 interface ImportSourceProps {
-  onPreview: (result: ImportPreviewResult, columns: ImportExtraColumns) => void;
+  onPreview: (
+    result: ImportPreviewResult,
+    columns: ImportExtraColumns,
+    suggestedTitle?: string,
+  ) => void;
 }
 
 export function ImportSource({ onPreview }: ImportSourceProps) {
@@ -150,11 +154,16 @@ export function ImportSource({ onPreview }: ImportSourceProps) {
   const submit = handleSubmit(async (values) => {
     try {
       const result = await preview.mutateAsync(values);
-      onPreview(result, {
-        phonetic: values.options.phoneticColumn !== undefined,
-        example: values.options.exampleColumn !== undefined,
-        image: values.options.imageColumn !== undefined,
-      });
+      const suggestedTitle = fileName ? fileName.replace(/\.[^.]+$/, '') : undefined;
+      onPreview(
+        result,
+        {
+          phonetic: values.options.phoneticColumn !== undefined,
+          example: values.options.exampleColumn !== undefined,
+          image: values.options.imageColumn !== undefined,
+        },
+        suggestedTitle,
+      );
     } catch {
       // Lỗi hiện qua `preview.error`.
     }

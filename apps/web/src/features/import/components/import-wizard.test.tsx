@@ -33,7 +33,7 @@ function renderWizard(setId?: string) {
 async function goToPreview() {
   await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple\tquả táo');
   await userEvent.click(screen.getByRole('button', { name: 'Xem trước' }));
-  await screen.findByRole('heading', { name: 'Xem trước (2 thẻ)' });
+  await screen.findByRole('heading', { level: 2, name: /^Thẻ/ });
 }
 
 describe('ImportWizard', () => {
@@ -48,9 +48,13 @@ describe('ImportWizard', () => {
     await goToPreview();
     const saveButton = screen.getByRole('button', { name: 'Lưu 2 thẻ' });
 
-    expect(saveButton).toBeDisabled();
-    await userEvent.type(screen.getByLabelText('Nghĩa'), 'con mèo');
-    await userEvent.type(screen.getByLabelText('Tên bộ từ mới'), 'Động vật');
+    // Dòng 2 đang thiếu định nghĩa
+    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Động vật');
+    await userEvent.click(saveButton);
+    expect(importAsNewSet).not.toHaveBeenCalled();
+
+    const defInputs = screen.getAllByLabelText('Nghĩa');
+    await userEvent.type(defInputs[1]!, 'con mèo');
     await userEvent.click(saveButton);
 
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/s9'));
@@ -82,14 +86,11 @@ describe('ImportWizard', () => {
     vi.mocked(importAsNewSet).mockResolvedValue('s9');
     renderWizard();
     await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'apple	quả táo');
-    await userEvent.click(screen.getByRole('button', { name: 'Đổi cách đọc' }));
-    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
-    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
     await userEvent.click(screen.getByRole('button', { name: 'Xem trước' }));
 
-    expect(await screen.findByLabelText('Phiên âm')).toHaveValue('/ˈæp.əl/');
-    await userEvent.type(screen.getByLabelText('Ví dụ'), 'I eat an apple.');
-    await userEvent.type(screen.getByLabelText('Tên bộ từ mới'), 'Trái cây');
+    expect(await screen.findByLabelText(/Phiên âm/)).toHaveValue('/ˈæp.əl/');
+    await userEvent.type(screen.getByLabelText(/Ví dụ/), 'I eat an apple.');
+    await userEvent.type(screen.getByLabelText('Tên bộ từ'), 'Trái cây');
     await userEvent.click(screen.getByRole('button', { name: 'Lưu 1 thẻ' }));
 
     await waitFor(() => expect(importAsNewSet).toHaveBeenCalled());
@@ -140,13 +141,10 @@ describe('ImportWizard', () => {
     ).toBeInTheDocument();
   });
 
-  it('bỏ hết dòng thì cho nhập lại', async () => {
+  it('cho phép nhập lại bằng nút Nhập lại', async () => {
     renderWizard();
     await goToPreview();
 
-    await userEvent.click(screen.getByLabelText('Chỉ hiện dòng lỗi'));
-    await userEvent.click(screen.getByRole('button', { name: 'Bỏ dòng 1' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Bỏ dòng 2' }));
     await userEvent.click(screen.getByRole('button', { name: 'Nhập lại' }));
 
     expect(screen.getByLabelText('Dán danh sách từ')).toBeInTheDocument();

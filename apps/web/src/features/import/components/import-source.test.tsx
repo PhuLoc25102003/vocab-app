@@ -34,7 +34,7 @@ const DELIMITER = 'Từ và nghĩa cách nhau bằng';
 describe('ImportSource', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('gửi text đã dán cùng cách đọc và trả kết quả xem trước', async () => {
+  it('gửi text đã dán cùng cách đọc và trả kết quả xem trước kèm mặc định cột phiên âm và ví dụ', async () => {
     vi.mocked(previewImport).mockResolvedValue(result);
     const onPreview = renderSource();
 
@@ -45,38 +45,53 @@ describe('ImportSource', () => {
     await userEvent.click(previewButton());
 
     await waitFor(() =>
-      expect(onPreview).toHaveBeenCalledWith(result, {
-        phonetic: false,
-        example: false,
-        image: false,
-      }),
+      expect(onPreview).toHaveBeenCalledWith(
+        result,
+        {
+          phonetic: true,
+          example: true,
+          image: false,
+        },
+        undefined,
+      ),
     );
-    expect(vi.mocked(previewImport).mock.calls[0]?.[0]).toEqual({
+    expect(vi.mocked(previewImport).mock.calls[0]?.[0]).toMatchObject({
       content: 'Từ,Nghĩa\napple,quả táo',
-      options: { delimiter: 'comma', hasHeader: true, termColumn: 1, definitionColumn: 2 },
+      options: {
+        delimiter: 'comma',
+        hasHeader: true,
+        termColumn: 1,
+        definitionColumn: 2,
+        phoneticColumn: 3,
+        exampleColumn: 4,
+      },
     });
   });
 
-  it('gửi cột phiên âm và ví dụ khi được chọn', async () => {
+  it('gửi cột phiên âm và ví dụ khi được chọn tùy chỉnh', async () => {
     vi.mocked(previewImport).mockResolvedValue(result);
     const onPreview = renderSource();
 
-    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b	c	d');
+    await userEvent.type(screen.getByLabelText('Dán danh sách từ'), 'a	b	c	d	e	f');
     await openOptions();
-    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '3');
-    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '4');
+    await userEvent.selectOptions(screen.getByLabelText('Cột phiên âm (không bắt buộc)'), '5');
+    await userEvent.selectOptions(screen.getByLabelText('Cột ví dụ (không bắt buộc)'), '6');
     await userEvent.click(previewButton());
 
     await waitFor(() =>
-      expect(onPreview).toHaveBeenCalledWith(result, {
-        phonetic: true,
-        example: true,
-        image: false,
-      }),
+      expect(onPreview).toHaveBeenCalledWith(
+        result,
+        {
+          phonetic: true,
+          example: true,
+          image: false,
+        },
+        undefined,
+      ),
     );
     expect(vi.mocked(previewImport).mock.calls[0]?.[0].options).toMatchObject({
-      phoneticColumn: 3,
-      exampleColumn: 4,
+      phoneticColumn: 5,
+      exampleColumn: 6,
     });
   });
 
@@ -201,12 +216,15 @@ describe('ImportSource', () => {
 
     expect(
       screen.getByText(
-        'Trang tự nhận cách ngăn cách sau khi bạn dán hoặc chọn file. Lấy từ ở cột 1, nghĩa ở cột 2.',
+        'Trang tự nhận cách ngăn cách sau khi bạn dán hoặc chọn file. Lấy từ ở cột 1, nghĩa ở cột 2, phiên âm ở cột 3, ví dụ ở cột 4.',
       ),
     ).toBeInTheDocument();
     await openOptions();
     expect(screen.getByRole('option', { name: 'Dấu phẩy: apple, quả táo' })).toBeInTheDocument();
     expect(screen.getByLabelText('Cột từ')).toHaveDisplayValue('Cột 1');
+    expect(screen.getByLabelText('Cột nghĩa')).toHaveDisplayValue('Cột 2');
+    expect(screen.getByLabelText('Cột phiên âm (không bắt buộc)')).toHaveDisplayValue('Cột 3');
+    expect(screen.getByLabelText('Cột ví dụ (không bắt buộc)')).toHaveDisplayValue('Cột 4');
   });
 
   it('nhãn cột hiện giá trị dòng đầu và báo ký tự đã tự nhận', async () => {
