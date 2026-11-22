@@ -34,6 +34,7 @@
     "definitionColumnSame": "The definition column must differ from the term column",
     "phoneticColumnSame": "The phonetic column must differ from the term and definition columns",
     "exampleColumnSame": "The example column must differ from the chosen columns",
+    "imageColumnSame": "The image column must differ from the chosen columns",
     "importTextRequired": "Paste the content or choose a file",
     "importTextTooLong": "The content can be at most 2 MB",
     "importNoCards": "There are no cards to import yet",

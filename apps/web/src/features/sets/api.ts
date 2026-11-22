@@ -1,4 +1,5 @@
 import {
+  imageSearchResponseSchema,
   presignedUploadSchema,
   uploadConfigSchema,
   publicSetListSchema,
@@ -6,6 +7,7 @@ import {
   setListSchema,
   setResponseSchema,
   type CreateSetInput,
+  type ImageSearchResultItem,
   type PublicSetList,
   type ReplaceCardsDto,
   type SetDetail,
@@ -118,4 +120,12 @@ export async function uploadCardImage(file: File): Promise<string> {
     throw new Error(`Tải ảnh lên thất bại (${response.status})`);
   }
   return upload.publicUrl;
+}
+
+/** Tìm ảnh trực tuyến theo từ khoá qua Unsplash hoặc Pixabay. */
+export async function searchImages(query: string): Promise<ImageSearchResultItem[]> {
+  const { data } = await http<{ data: unknown }>(
+    `/uploads/search-images?query=${encodeURIComponent(query)}`,
+  );
+  return imageSearchResponseSchema.parse({ data }).data;
 }

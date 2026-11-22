@@ -4,7 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readImportFile } from './read-file';
 import { buildTemplateFile, downloadTemplate } from './template-file';
 
-const expectedText = [IMPORT_TEMPLATE_HEADERS, ...IMPORT_TEMPLATE_ROWS]
+const expectedText = [
+  [...IMPORT_TEMPLATE_HEADERS, 'Hình ảnh'],
+  ...IMPORT_TEMPLATE_ROWS.map((row) => [...row, '']),
+]
   .map((row) => row.join('\t'))
   .join('\n');
 

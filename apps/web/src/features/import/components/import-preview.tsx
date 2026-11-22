@@ -9,7 +9,7 @@ import type { ImportExtraColumns } from './import-source';
 import { translateValidation } from '@/lib/validation-message';
 import { useTranslation } from 'react-i18next';
 
-type RowField = 'term' | 'definition' | 'phonetic' | 'example';
+type RowField = 'term' | 'definition' | 'phonetic' | 'example' | 'imageUrl';
 
 /** Lỗi đầu tiên của từng ô, dùng cùng schema với API. */
 function fieldErrors(row: ImportRow): Partial<Record<RowField, string>> {
@@ -18,6 +18,7 @@ function fieldErrors(row: ImportRow): Partial<Record<RowField, string>> {
     definition: row.definition,
     phonetic: row.phonetic || undefined,
     example: row.example || undefined,
+    imageUrl: row.imageUrl || undefined,
   });
   const errors: Partial<Record<RowField, string>> = {};
   for (const issue of result.success ? [] : result.error.issues) {
@@ -118,6 +119,27 @@ export function ImportPreview({ rows, columns, onChange }: ImportPreviewProps) {
                     error={errors.example}
                     onChange={(event) => update(row.line, 'example', event.target.value)}
                   />
+                ) : null}
+                {columns.image ? (
+                  <div className="flex flex-col gap-1 sm:col-span-2">
+                    <FormField
+                      label={t('import.image')}
+                      value={row.imageUrl ?? ''}
+                      error={errors.imageUrl}
+                      onChange={(event) => update(row.line, 'imageUrl', event.target.value)}
+                    />
+                    {row.imageUrl ? (
+                      <div className="mt-1 flex items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={row.imageUrl}
+                          alt={row.term}
+                          className="size-12 rounded border border-border object-cover"
+                        />
+                        <span className="truncate text-xs text-text-muted">{row.imageUrl}</span>
+                      </div>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
               <Button

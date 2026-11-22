@@ -45,7 +45,11 @@ describe('ImportSource', () => {
     await userEvent.click(previewButton());
 
     await waitFor(() =>
-      expect(onPreview).toHaveBeenCalledWith(result, { phonetic: false, example: false }),
+      expect(onPreview).toHaveBeenCalledWith(result, {
+        phonetic: false,
+        example: false,
+        image: false,
+      }),
     );
     expect(vi.mocked(previewImport).mock.calls[0]?.[0]).toEqual({
       content: 'Từ,Nghĩa\napple,quả táo',
@@ -64,7 +68,11 @@ describe('ImportSource', () => {
     await userEvent.click(previewButton());
 
     await waitFor(() =>
-      expect(onPreview).toHaveBeenCalledWith(result, { phonetic: true, example: true }),
+      expect(onPreview).toHaveBeenCalledWith(result, {
+        phonetic: true,
+        example: true,
+        image: false,
+      }),
     );
     expect(vi.mocked(previewImport).mock.calls[0]?.[0].options).toMatchObject({
       phoneticColumn: 3,

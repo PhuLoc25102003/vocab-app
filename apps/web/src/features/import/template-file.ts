@@ -4,9 +4,9 @@ import type { XlsxCell, XlsxSheet } from '@/lib/xlsx';
 export const TEMPLATE_FILE_NAME = 'mau-nhap-tu-vung.xlsx';
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-/** Hai cột đầu bắt buộc nên tiêu đề nền đậm, hai cột sau nền nhạt. */
+/** Hai cột đầu bắt buộc nên tiêu đề nền đậm, các cột sau nền nhạt. */
 const REQUIRED_COLUMNS = 2;
-const COLUMN_WIDTHS = [18, 22, 18, 40];
+const COLUMN_WIDTHS = [18, 22, 18, 40, 35];
 const GUIDE_WIDTH = 90;
 
 const GUIDE: readonly (readonly [text: string, isTitle?: boolean])[] = [
@@ -16,9 +16,10 @@ const GUIDE: readonly (readonly [text: string, isTitle?: boolean])[] = [
   ['Nghĩa (bắt buộc): nghĩa tiếng Việt hoặc định nghĩa ngắn.'],
   ['Phiên âm (không bắt buộc): cách đọc theo IPA, ví dụ /ˈæp.əl/. Không biết thì để trống.'],
   ['Ví dụ (không bắt buộc): một câu có chứa từ. Chế độ Điền từ dùng câu này để ra đề.'],
+  ['Hình ảnh (không bắt buộc): link URL ảnh minh hoạ (Unsplash, Pixabay...).'],
   [''],
   ['Lưu ý khi nhập', true],
-  ['Giữ nguyên hàng tiêu đề Từ, Nghĩa, Phiên âm, Ví dụ để trang tự chọn đúng cột.'],
+  ['Giữ nguyên hàng tiêu đề Từ, Nghĩa, Phiên âm, Ví dụ, Hình ảnh để trang tự chọn đúng cột.'],
   ['Trang chỉ đọc sheet đầu tiên ("Từ vựng"). Sheet hướng dẫn này không được nhập.'],
   ['Mỗi bộ từ tối đa 2.000 thẻ, mỗi file tối đa 2 MB.'],
   ['Lưu file dạng .xlsx. File .xls cũ cần mở bằng Excel rồi lưu lại thành .xlsx.'],
@@ -26,11 +27,15 @@ const GUIDE: readonly (readonly [text: string, isTitle?: boolean])[] = [
 
 /** Sheet đầu là dữ liệu mẫu để đọc lại được, sheet sau là hướng dẫn. */
 export function templateSheets(): XlsxSheet[] {
-  const header: XlsxCell[] = IMPORT_TEMPLATE_HEADERS.map((text, index) => ({
+  const headers = [...IMPORT_TEMPLATE_HEADERS, 'Hình ảnh'];
+  const header: XlsxCell[] = headers.map((text, index) => ({
     text,
     style: index < REQUIRED_COLUMNS ? 'header' : 'headerOptional',
   }));
-  const rows: XlsxCell[][] = IMPORT_TEMPLATE_ROWS.map((row) => row.map((cell) => cell || null));
+  const rows: XlsxCell[][] = IMPORT_TEMPLATE_ROWS.map((row) => [
+    ...row.map((cell) => cell || null),
+    null,
+  ]);
   const guide: XlsxCell[][] = GUIDE.map(([text, isTitle]) => [
     text ? { text, style: isTitle ? 'title' : 'wrap' } : null,
   ]);

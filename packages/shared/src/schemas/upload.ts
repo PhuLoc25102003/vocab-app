@@ -26,7 +26,24 @@ export type PresignedUpload = z.infer<typeof presignedUploadSchema>;
 
 export const uploadConfigSchema = z.object({
   images: z.boolean(),
+  imageSearch: z.boolean().default(false),
   maxBytes: z.number(),
   contentTypes: z.array(z.enum(IMAGE_CONTENT_TYPES)),
 });
 export type UploadConfig = z.infer<typeof uploadConfigSchema>;
+
+export const imageSearchResultItemSchema = z.object({
+  id: z.string(),
+  thumbUrl: z.url(),
+  imageUrl: z.url(),
+  alt: z.string(),
+  authorName: z.string(),
+  authorUrl: z.url(),
+  source: z.enum(['unsplash', 'pixabay']),
+});
+export type ImageSearchResultItem = z.infer<typeof imageSearchResultItemSchema>;
+
+export const imageSearchResponseSchema = z.object({
+  data: z.array(imageSearchResultItemSchema),
+});
+export type ImageSearchResponse = z.infer<typeof imageSearchResponseSchema>;

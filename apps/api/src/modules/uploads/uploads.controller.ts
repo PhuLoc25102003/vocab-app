@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { presignImageSchema, type PresignImageInput } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
@@ -16,6 +16,12 @@ export class UploadsController {
   @ApiOperation({ summary: 'Tải ảnh lên đã bật chưa, giới hạn dung lượng và loại ảnh' })
   getConfig() {
     return this.uploads.getConfig();
+  }
+
+  @Get('search-images')
+  @ApiOperation({ summary: 'Tìm ảnh minh hoạ trực tuyến theo từ khoá' })
+  searchImages(@Query('query') query = '') {
+    return this.uploads.searchImages(query);
   }
 
   @Post('presign')

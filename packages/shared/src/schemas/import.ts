@@ -29,6 +29,7 @@ const DISTINCT_COLUMNS = [
   ['definitionColumn', vm('definitionColumnSame')],
   ['phoneticColumn', vm('phoneticColumnSame')],
   ['exampleColumn', vm('exampleColumnSame')],
+  ['imageColumn', vm('imageColumnSame')],
 ] as const;
 
 export const importOptionsSchema = z
@@ -39,6 +40,7 @@ export const importOptionsSchema = z
     definitionColumn: columnSchema.default(2),
     phoneticColumn: optionalColumnSchema,
     exampleColumn: optionalColumnSchema,
+    imageColumn: optionalColumnSchema,
   })
   .superRefine((value, context) => {
     const used = new Set<number>();
@@ -75,6 +77,8 @@ export const importRowSchema = z.object({
   phonetic: z.string().optional(),
   /** Chỉ có khi chọn cột ví dụ. */
   example: z.string().optional(),
+  /** Chỉ có khi chọn cột hình ảnh. */
+  imageUrl: z.string().optional(),
   errors: z.array(z.string()),
 });
 export type ImportRow = z.infer<typeof importRowSchema>;

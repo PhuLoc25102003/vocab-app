@@ -43,7 +43,11 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [rows, setRows] = useState<ImportRow[] | null>(null);
-  const [columns, setColumns] = useState<ImportExtraColumns>({ phonetic: false, example: false });
+  const [columns, setColumns] = useState<ImportExtraColumns>({
+    phonetic: false,
+    example: false,
+    image: false,
+  });
   const hasMounted = useRef(false);
   const target = useQuery({
     queryKey: [...SETS_QUERY_KEY, 'import-target', setId],
@@ -52,11 +56,12 @@ export function ImportWizard({ setId }: ImportWizardProps) {
   });
   const save = useMutation({
     mutationFn: async (details: NewSetValues) => {
-      const cards = (rows ?? []).map(({ term, definition, phonetic, example }) => ({
+      const cards = (rows ?? []).map(({ term, definition, phonetic, example, imageUrl }) => ({
         term,
         definition,
         phonetic: phonetic?.trim() || undefined,
         example: example?.trim() || undefined,
+        ...(imageUrl?.trim() ? { imageUrl: imageUrl.trim() } : {}),
       }));
       return setId ? importIntoSet(setId, cards) : importAsNewSet({ ...details, cards });
     },

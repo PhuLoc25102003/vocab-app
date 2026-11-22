@@ -10,7 +10,8 @@
   "cloze": {
     "blank": "blank",
     "input": "Fill in the missing word",
-    "hint": "Hint: {{hint}}"
+    "hint": "Hint: {{hint}}",
+    "imageAlt": "Illustration"
   },
   "dictation": {
     "unsupported": "This browser cannot read words aloud",
@@ -45,7 +46,8 @@
     "continue": "Continue"
   },
   "mcq": {
-    "yourChoice": "Your choice"
+    "yourChoice": "Your choice",
+    "imageAlt": "Illustration"
   },
   "speak": {
     "unsupported": "This browser cannot recognize speech. Use Chrome or Edge, or skip.",

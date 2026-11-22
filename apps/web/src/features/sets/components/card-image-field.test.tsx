@@ -35,8 +35,9 @@ const detail: SetDetail = {
   owner: { displayName: 'An' },
   cards: [card('c1', 'apple', IMAGE), { ...card('c2', 'pear', null), position: 1 }],
 };
-const config = (images: boolean) => ({
+const config = (images: boolean, imageSearch = false) => ({
   images,
+  imageSearch,
   maxBytes: 1024 * 1024,
   contentTypes: ['image/png' as const, 'image/jpeg' as const, 'image/webp' as const],
 });

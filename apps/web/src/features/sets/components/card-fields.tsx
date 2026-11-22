@@ -46,13 +46,15 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
     name: 'cards',
     keyName: 'key',
   });
-  // Chưa bật kho ảnh, đang tải hoặc lỗi thì không hiện ô ảnh.
+  // Cấu hình tải ảnh lên và tìm ảnh trực tuyến.
   const uploads = useQuery({
     queryKey: setKeys.uploadConfig,
     queryFn: getUploadConfig,
     staleTime: 5 * 60_000,
   });
-  const imagesEnabled = uploads.data?.images === true;
+  const canUpload = uploads.data?.images === true;
+  const canSearch = uploads.data?.imageSearch === true;
+  const imagesEnabled = canUpload || canSearch;
   const listError = translateValidation(errors?.root?.message ?? errors?.message);
   const isFull = fields.length >= MAX_CARDS_PER_SET;
 
@@ -196,6 +198,8 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                     <CardImageField
                       control={control}
                       index={index}
+                      canUpload={canUpload}
+                      canSearch={canSearch}
                       error={cardErrors?.imageUrl?.message}
                     />
                   ) : null}

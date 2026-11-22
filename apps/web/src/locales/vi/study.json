@@ -10,7 +10,8 @@
   "cloze": {
     "blank": "chỗ trống",
     "input": "Điền từ còn thiếu",
-    "hint": "Gợi ý: {{hint}}"
+    "hint": "Gợi ý: {{hint}}",
+    "imageAlt": "Ảnh minh hoạ"
   },
   "dictation": {
     "unsupported": "Trình duyệt này không đọc được từ",
@@ -45,7 +46,8 @@
     "continue": "Tiếp tục"
   },
   "mcq": {
-    "yourChoice": "Bạn đã chọn"
+    "yourChoice": "Bạn đã chọn",
+    "imageAlt": "Ảnh minh hoạ"
   },
   "speak": {
     "unsupported": "Trình duyệt này chưa nhận được giọng nói. Hãy dùng Chrome hoặc Edge, hoặc bỏ qua.",

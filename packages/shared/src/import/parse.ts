@@ -124,18 +124,22 @@ export function parseImport(content: string, options: ImportOptions): ImportPrev
   const rows = records.map(({ line, fields }) => {
     const term = cell(fields, options.termColumn);
     const definition = cell(fields, options.definitionColumn);
-    const optional: Pick<ImportRow, 'phonetic' | 'example'> = {};
+    const optional: Pick<ImportRow, 'phonetic' | 'example' | 'imageUrl'> = {};
     if (options.phoneticColumn !== undefined) {
       optional.phonetic = cell(fields, options.phoneticColumn);
     }
     if (options.exampleColumn !== undefined) {
       optional.example = cell(fields, options.exampleColumn);
     }
+    if (options.imageColumn !== undefined) {
+      optional.imageUrl = cell(fields, options.imageColumn);
+    }
     const result = cardInputSchema.safeParse({
       term,
       definition,
       phonetic: optional.phonetic || undefined,
       example: optional.example || undefined,
+      imageUrl: optional.imageUrl || undefined,
     });
     // Mỗi ô chỉ báo lỗi đầu tiên để người dùng dễ đọc.
     const errors: string[] = [];

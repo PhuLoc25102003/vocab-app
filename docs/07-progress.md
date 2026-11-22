@@ -19,12 +19,12 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | ----------------------- | ------------------------------------------ | ------: | ------: | ---------- |
 | 0. Nền tảng             | Khung dự án và nền chung cho mọi tính năng |      13 |      13 | Xong       |
 | 1. MVP                  | Học sinh dùng được trọn vẹn trên web thật  |      52 |      54 | Đang làm   |
-| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      40 |      42 | Đang làm   |
+| 2. Mở rộng              | Thêm chế độ học, nội dung và quản trị      |      41 |      43 | Đang làm   |
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      11 |      11 | Xong       |
-| **Toàn dự án**          |                                            | **175** | **179** | **98%**    |
+| **Toàn dự án**          |                                            | **176** | **180** | **98%**    |
 
 ## Cách cập nhật
 
@@ -180,6 +180,7 @@ Không tính vào tổng số việc.
 - [x] **2.5a** API ảnh cho thẻ: `GET /uploads/config`, `POST /uploads/presign` qua adapter `ObjectStorage` (R2, ký SigV4), thẻ nhận `imageUrl` trong kho của app; thiếu khoá R2 thì trả 503 (#308).
 - [x] **2.5b** Giao diện ảnh cho thẻ: nút thêm ảnh trong trình sửa thẻ (ẩn khi chưa bật), xem trước, gỡ ảnh, hiện ảnh ở trang bộ từ; CSP cho phép `*.r2.dev` và tải lên `*.r2.cloudflarestorage.com` (#310).
 - [x] **2.5c** Hiện ảnh của thẻ khi học: câu hỏi Flashcard (mặt nghĩa) và Luyện viết (cạnh nghĩa) có `imageUrl`; chế độ chọn hoặc ghép đáp án không có ảnh để không lộ đáp án (#313).
+- [x] **2.5d** Tìm và chọn ảnh minh hoạ trực tuyến cho thẻ qua Unsplash / Pixabay API: nút tìm ảnh 1-click cạnh ô từ vựng ở form thẻ; hỗ trợ cột hình ảnh ở trang import bộ từ; hiển thị ảnh minh hoạ ở các chế độ học (Flashcard, Learn, Write, Cloze); không phụ thuộc R2; UC-X3b trong `docs/use-cases/05-lo-trinh.md` (#416).
 - [ ] **2.6** Tạo và lưu âm thanh TTS lên R2. Cần chọn dịch vụ TTS; chưa có thì giữ giọng đọc của trình duyệt.
 
 ### 2C. Chế độ học
