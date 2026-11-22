@@ -187,8 +187,8 @@
     "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes.",
     "backToDashboard": "Back to Dashboard",
     "adminUsersDescription": "Find accounts, change roles, lock or unlock them.",
-    "adminHiddenSets": "Hidden sets",
-    "adminHiddenSetsDescription": "List of public sets hidden by moderation. Unhide if needed.",
+    "adminHiddenSets": "Public sets management",
+    "adminHiddenSetsDescription": "Search, filter visible or hidden public sets, and moderate as needed.",
     "adminClasses": "Classes & Students",
     "adminClassesDescription": "Manage all classes by teacher and unassigned students."
   },

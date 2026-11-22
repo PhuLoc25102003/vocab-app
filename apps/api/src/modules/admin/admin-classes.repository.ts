@@ -9,7 +9,43 @@ export class AdminClassesRepository extends BaseRepository {
   }
 
   async getClassesOverview() {
-    const [classes, unassignedStudents] = await Promise.all([
+    const [teachers, classes, unassignedStudents] = await Promise.all([
+      this.prisma.user.findMany({
+        where: {
+          deletedAt: null,
+          OR: [{ role: 'TEACHER' }, { teachingClasses: { some: {} } }],
+        },
+        select: {
+          id: true,
+          displayName: true,
+          email: true,
+          createdAt: true,
+          teachingClasses: {
+            include: {
+              members: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      displayName: true,
+                      email: true,
+                    },
+                  },
+                },
+                orderBy: { joinedAt: 'desc' },
+              },
+              _count: {
+                select: {
+                  members: true,
+                  assignments: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+        orderBy: { displayName: 'asc' },
+      }),
       this.prisma.class.findMany({
         include: {
           teacher: {
@@ -51,10 +87,45 @@ export class AdminClassesRepository extends BaseRepository {
           displayName: true,
           email: true,
           createdAt: true,
+          lockedAt: true,
+          lockReason: true,
         },
         orderBy: { createdAt: 'desc' },
       }),
     ]);
+
+    const formattedTeachers = teachers.map((t) => {
+      const teacherStudentIds = new Set<string>();
+      for (const cls of t.teachingClasses) {
+        for (const m of cls.members) {
+          teacherStudentIds.add(m.userId);
+        }
+      }
+      return {
+        id: t.id,
+        displayName: t.displayName,
+        email: t.email,
+        createdAt: t.createdAt,
+        classCount: t.teachingClasses.length,
+        totalStudents: teacherStudentIds.size,
+        classes: t.teachingClasses.map((c) => ({
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          joinCode: c.joinCode,
+          archivedAt: c.archivedAt,
+          createdAt: c.createdAt,
+          memberCount: c._count.members,
+          assignmentCount: c._count.assignments,
+          members: c.members.map((m) => ({
+            id: m.user.id,
+            displayName: m.user.displayName,
+            email: m.user.email,
+            joinedAt: m.joinedAt,
+          })),
+        })),
+      };
+    });
 
     const formattedClasses = classes.map((c) => ({
       id: c.id,
@@ -82,8 +153,10 @@ export class AdminClassesRepository extends BaseRepository {
     }
 
     return {
+      teachers: formattedTeachers,
       classes: formattedClasses,
       unassignedStudents,
+      totalTeachers: formattedTeachers.length,
       totalClasses: formattedClasses.length,
       totalStudentsInClasses: studentIdsInClasses.size,
       totalUnassignedStudents: unassignedStudents.length,

@@ -1,6 +1,6 @@
 'use client';
 
-import { EyeOff, School, Users, type LucideIcon } from 'lucide-react';
+import { Library, School, Users, type LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ export type AdminTabKey = 'users' | 'hidden-sets' | 'classes';
 interface AdminTabItem {
   key: AdminTabKey;
   href: Route;
-  labelKey: 'tabs.users' | 'tabs.hiddenSets' | 'tabs.classes';
+  labelKey: 'tabs.users' | 'tabs.publicSets' | 'tabs.classes';
   icon: LucideIcon;
 }
 
@@ -20,8 +20,8 @@ const ADMIN_TABS: AdminTabItem[] = [
   {
     key: 'hidden-sets',
     href: '/admin/hidden-sets' as Route,
-    labelKey: 'tabs.hiddenSets',
-    icon: EyeOff,
+    labelKey: 'tabs.publicSets',
+    icon: Library,
   },
   { key: 'classes', href: '/admin/classes' as Route, labelKey: 'tabs.classes', icon: School },
 ];

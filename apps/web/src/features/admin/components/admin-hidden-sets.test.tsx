@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { AdminHiddenSetItem } from '@vocab/shared';
+import type { AdminSetItem } from '@vocab/shared';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { toast } from 'sonner';
-import { listHiddenSets, unhideSet } from '../api';
+import { listPublicSets, unhideSet } from '../api';
 import { AdminHiddenSets } from './admin-hidden-sets';
 
 const navigation = vi.hoisted(() => ({ params: new URLSearchParams(), push: vi.fn() }));
@@ -15,7 +15,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
-  listHiddenSets: vi.fn(),
+  listPublicSets: vi.fn(),
   unhideSet: vi.fn(),
 }));
 
@@ -26,11 +26,12 @@ vi.mock('sonner', () => ({
   },
 }));
 
-const mockHiddenItem: AdminHiddenSetItem = {
+const mockHiddenItem: AdminSetItem = {
   id: 'set-1',
   title: 'Từ vựng vi phạm chính sách',
   description: 'Mô tả bộ từ',
   cardCount: 20,
+  visibility: 'PUBLIC',
   hiddenAt: new Date('2026-11-21T10:00:00.000Z'),
   hiddenReason: 'Nội dung phản cảm',
   owner: {
@@ -55,14 +56,14 @@ function renderPage() {
   );
 }
 
-describe('AdminHiddenSets', () => {
+describe('AdminHiddenSets (Quản lý bộ từ công khai)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     navigation.params = new URLSearchParams();
   });
 
-  it('hiển thị danh sách bộ từ bị ẩn và chi tiết lý do, tác giả', async () => {
-    vi.mocked(listHiddenSets).mockResolvedValue({
+  it('hiển thị danh sách bộ từ công khai và chi tiết lý do, tác giả', async () => {
+    vi.mocked(listPublicSets).mockResolvedValue({
       data: [mockHiddenItem],
       meta: { page: 1, limit: 20, total: 1 },
     });
@@ -78,7 +79,7 @@ describe('AdminHiddenSets', () => {
 
   it('bấm Bỏ ẩn gọi API unhideSet và hiển thị thông báo thành công', async () => {
     const user = userEvent.setup();
-    vi.mocked(listHiddenSets).mockResolvedValue({
+    vi.mocked(listPublicSets).mockResolvedValue({
       data: [mockHiddenItem],
       meta: { page: 1, limit: 20, total: 1 },
     });
@@ -97,20 +98,18 @@ describe('AdminHiddenSets', () => {
 
     await waitFor(() => {
       expect(unhideSet).toHaveBeenCalledWith('set-1');
-      expect(toast.success).toHaveBeenCalledWith(
-        expect.stringContaining('Đã bỏ ẩn bộ từ “Từ vựng vi phạm chính sách”'),
-      );
+      expect(toast.success).toHaveBeenCalledWith(expect.stringContaining('Đã bỏ ẩn bộ từ'));
     });
   });
 
-  it('hiển thị empty state khi chưa có bộ từ nào bị ẩn', async () => {
-    vi.mocked(listHiddenSets).mockResolvedValue({
+  it('hiển thị empty state khi chưa có bộ từ nào', async () => {
+    vi.mocked(listPublicSets).mockResolvedValue({
       data: [],
       meta: { page: 1, limit: 20, total: 0 },
     });
 
     renderPage();
 
-    expect(await screen.findByText('Chưa có bộ từ nào bị ẩn')).toBeInTheDocument();
+    expect(await screen.findByText('Chưa có bộ từ công khai nào')).toBeInTheDocument();
   });
 });

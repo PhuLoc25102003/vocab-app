@@ -178,14 +178,28 @@ export function ListPager({
 }
 
 /** Đang lọc mà không có kết quả: nói rõ và cho xoá bộ lọc. */
-export function ListNoMatch({ text, clearHref }: { text: string; clearHref: Route }) {
+export function ListNoMatch({
+  text,
+  clearHref,
+  onClear,
+}: {
+  text: string;
+  clearHref?: Route;
+  onClear?: () => void;
+}) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-start gap-3 py-8">
       <p className="text-text-muted">{text}</p>
-      <Button asChild variant="secondary">
-        <Link href={clearHref}>{t('actions.clearFilters')}</Link>
-      </Button>
+      {onClear ? (
+        <Button variant="secondary" onClick={onClear}>
+          {t('actions.clearFilters')}
+        </Button>
+      ) : clearHref ? (
+        <Button asChild variant="secondary">
+          <Link href={clearHref}>{t('actions.clearFilters')}</Link>
+        </Button>
+      ) : null}
     </div>
   );
 }

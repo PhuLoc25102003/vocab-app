@@ -12,9 +12,51 @@ vi.mock('../api', async (importOriginal) => ({
 }));
 
 const mockOverview: AdminClassesOverview = {
+  totalTeachers: 1,
   totalClasses: 1,
   totalStudentsInClasses: 2,
   totalUnassignedStudents: 1,
+  teachers: [
+    {
+      id: 't1',
+      displayName: 'Thầy Hưng',
+      email: 'teacher@example.com',
+      createdAt: new Date('2026-11-19T00:00:00.000Z'),
+      classCount: 1,
+      totalStudents: 2,
+      classes: [
+        {
+          id: 'c1',
+          name: 'Tiếng Anh 8A1',
+          description: 'Lớp 8 nâng cao',
+          joinCode: 'ABCXYZ',
+          archivedAt: null,
+          createdAt: new Date('2026-11-20T00:00:00.000Z'),
+          teacher: {
+            id: 't1',
+            displayName: 'Thầy Hưng',
+            email: 'teacher@example.com',
+          },
+          memberCount: 2,
+          assignmentCount: 3,
+          members: [
+            {
+              id: 's1',
+              displayName: 'Nguyễn Văn A',
+              email: 's1@example.com',
+              joinedAt: new Date('2026-11-21T00:00:00.000Z'),
+            },
+            {
+              id: 's2',
+              displayName: 'Lê Văn B',
+              email: 's2@example.com',
+              joinedAt: new Date('2026-11-21T00:00:00.000Z'),
+            },
+          ],
+        },
+      ],
+    },
+  ],
   classes: [
     {
       id: 'c1',
@@ -52,6 +94,8 @@ const mockOverview: AdminClassesOverview = {
       displayName: 'Trần Thị C',
       email: 's3@example.com',
       createdAt: new Date('2026-11-22T00:00:00.000Z'),
+      lockedAt: null,
+      lockReason: null,
     },
   ],
 };
@@ -70,7 +114,7 @@ describe('AdminClasses', () => {
     vi.clearAllMocks();
   });
 
-  it('hiển thị 3 thẻ thống kê tổng quan và thông tin lớp học theo giáo viên', async () => {
+  it('hiển thị 3 thẻ thống kê tổng quan và thông tin danh sách giáo viên', async () => {
     vi.mocked(getAdminClassesOverview).mockResolvedValue(mockOverview);
 
     renderPage();
@@ -79,25 +123,31 @@ describe('AdminClasses', () => {
     expect(screen.getByText('Học sinh trong lớp')).toBeInTheDocument();
     expect(screen.getByText('Học sinh chưa có lớp')).toBeInTheDocument();
 
-    // Thông tin lớp học
-    expect(screen.getByText('Tiếng Anh 8A1')).toBeInTheDocument();
+    // Thông tin giáo viên
     expect(screen.getByText('Thầy Hưng')).toBeInTheDocument();
-    expect(screen.getByText(/Mã: ABCXYZ/i)).toBeInTheDocument();
-    expect(screen.getByText(/2 học sinh/i)).toBeInTheDocument();
+    expect(screen.getByText('teacher@example.com')).toBeInTheDocument();
+    expect(screen.getByText(/1 lớp/i)).toBeInTheDocument();
 
     // Học sinh chưa có lớp
     expect(screen.getByText('Trần Thị C')).toBeInTheDocument();
     expect(screen.getByText('s3@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Khoá tài khoản/i })).toBeInTheDocument();
   });
 
-  it('mở rộng danh sách học sinh của một lớp khi bấm Xem học sinh', async () => {
+  it('mở rộng danh sách lớp học và học sinh của giáo viên', async () => {
     const user = userEvent.setup();
     vi.mocked(getAdminClassesOverview).mockResolvedValue(mockOverview);
 
     renderPage();
 
-    const viewBtn = await screen.findByRole('button', { name: /Xem học sinh/i });
-    await user.click(viewBtn);
+    const viewClassesBtn = await screen.findByRole('button', { name: /Xem lớp học/i });
+    await user.click(viewClassesBtn);
+
+    expect(screen.getByText('Tiếng Anh 8A1')).toBeInTheDocument();
+    expect(screen.getByText(/Mã: ABCXYZ/i)).toBeInTheDocument();
+
+    const viewStudentsBtn = screen.getByRole('button', { name: /Xem học sinh/i });
+    await user.click(viewStudentsBtn);
 
     expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
     expect(screen.getByText('Lê Văn B')).toBeInTheDocument();
@@ -110,11 +160,13 @@ describe('AdminClasses', () => {
     renderPage();
 
     const searchInput = await screen.findByPlaceholderText(
-      /Tìm theo tên lớp, mã lớp hoặc giáo viên/i,
+      /Tìm theo tên giáo viên, email hoặc lớp học/i,
     );
     await user.type(searchInput, 'Không tồn tại');
 
-    expect(screen.queryByText('Tiếng Anh 8A1')).not.toBeInTheDocument();
-    expect(screen.getByText('Chưa có lớp học nào')).toBeInTheDocument();
+    expect(screen.queryByText('Thầy Hưng')).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Không tìm thấy giáo viên hoặc lớp học nào khớp với từ khoá.'),
+    ).toBeInTheDocument();
   });
 });

@@ -2,8 +2,10 @@ import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   adminHiddenSetQuerySchema,
+  adminSetQuerySchema,
   hideSetSchema,
   type AdminHiddenSetQuery,
+  type AdminSetQuery,
   type HideSetDto,
 } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
@@ -19,6 +21,12 @@ import { AdminSetsService } from './admin-sets.service';
 @Controller('admin/sets')
 export class AdminSetsController {
   constructor(private readonly sets: AdminSetsService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Danh sách bộ từ công khai và kiểm duyệt' })
+  listPublicSets(@Query(new ZodValidationPipe(adminSetQuerySchema)) query: AdminSetQuery) {
+    return this.sets.listPublicSets(query);
+  }
 
   @Get('hidden')
   @ApiOperation({ summary: 'Danh sách bộ từ bị ẩn' })

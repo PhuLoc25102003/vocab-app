@@ -31,6 +31,8 @@ export function HideSetButton({ setId, hidden }: HideSetButtonProps) {
   const refresh = () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: SETS_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sets'] }),
+      queryClient.invalidateQueries({ queryKey: ['admin', 'hidden-sets'] }),
       queryClient.invalidateQueries({ queryKey: ADMIN_STATS_QUERY_KEY }),
     ]);
   const hide = useMutation({ mutationFn: (dto: HideSetDto) => hideSet(setId, dto.reason) });

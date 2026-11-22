@@ -19,7 +19,7 @@
   "failed": "Could not load admin stats",
   "checkNetwork": "Check your connection and try again.",
   "title": "Admin",
-  "manageUsers": "Manage users",
+  "manageUsers": "Management page",
   "tiles": {
     "users": "Users",
     "newUsers": "+{{count}} in 7 days",
@@ -105,11 +105,38 @@
     "reason": "Reason for hiding"
   },
   "locked": "Locked",
+  "active": "Active",
   "navLabel": "Admin management",
   "tabs": {
     "users": "Users",
-    "hiddenSets": "Hidden sets",
+    "publicSets": "Public sets",
     "classes": "Classes & Students"
+  },
+  "publicSets": {
+    "title": "Public sets management",
+    "loading": "Loading public sets",
+    "failed": "Could not load public sets",
+    "search": "Search by set title or owner",
+    "noMatch": "No sets matching “{{q}}”.",
+    "noFilterMatch": "No sets match this filter.",
+    "emptyTitle": "No public sets",
+    "emptyDescription": "Publicly published sets will appear here for moderation and management.",
+    "list": "Public sets list",
+    "cardsCount": "{{count}} cards",
+    "owner": "Owner",
+    "reason": "Reason",
+    "hiddenAt": "Hidden on",
+    "createdAt": "Created on",
+    "by": "By",
+    "unhide": "Unhide",
+    "hide": "Hide set",
+    "status": {
+      "all": "All",
+      "visible": "Visible",
+      "hidden": "Hidden"
+    },
+    "statusVisible": "Visible",
+    "statusHidden": "Hidden"
   },
   "hiddenSets": {
     "title": "Hidden sets",
@@ -133,15 +160,20 @@
     "totalStudentsInClasses": "Students in classes",
     "totalUnassignedStudents": "Unassigned students",
     "byTeacherTitle": "All classes by teacher",
-    "searchPlaceholder": "Search by class name, join code, or teacher...",
-    "emptyClassesTitle": "No classes yet",
-    "emptyClassesDesc": "No classes have been created by teachers yet.",
+    "teacherCount": "{{count}} teachers",
+    "classesCount": "{{count}} classes",
+    "viewClasses": "View classes ({{count}})",
+    "hideClasses": "Hide classes",
+    "noClassesForTeacher": "This teacher has not created any classes yet.",
+    "emptyTeachersTitle": "No teachers yet",
+    "emptyTeachersDesc": "No teacher accounts found in the system.",
+    "searchTeacherPlaceholder": "Search by teacher name, email, or class...",
     "code": "Code",
     "archived": "Archived",
     "teacher": "Teacher",
     "membersCount": "{{count}} students",
     "assignmentsCount": "{{count}} assignments",
-    "viewStudents": "View students",
+    "viewStudents": "View students ({{count}})",
     "hideStudents": "Hide students",
     "studentList": "Student list",
     "noStudents": "No students have joined this class yet.",
@@ -152,6 +184,17 @@
     "emptyUnassignedDesc": "Currently all students are enrolled in at least one class.",
     "registeredAt": "Registered on {{date}}",
     "loading": "Loading classes data",
-    "failed": "Could not load classes list"
+    "failed": "Could not load classes list",
+    "lockReasonDefault": "Unverified identity",
+    "lockStudent": "Lock account",
+    "unlockStudent": "Unlock",
+    "unlockSuccess": "Account unlocked successfully",
+    "status": {
+      "all": "All",
+      "active": "Active",
+      "locked": "Locked"
+    },
+    "noTeacherMatch": "No teachers or classes match your search.",
+    "noUnassignedMatch": "No unassigned students match this filter."
   }
 }

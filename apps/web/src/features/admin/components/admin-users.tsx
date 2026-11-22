@@ -1,27 +1,21 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ADMIN_USER_SORTS,
   adminUserQuerySchema,
-  lockUserSchema,
   roleSchema,
   type AdminUser,
   type AdminUserSort,
-  type LockUserDto,
   type Role,
 } from '@vocab/shared';
 import type { Route } from 'next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
-import { FormDialog } from '@/components/common/form-dialog';
-import { TextareaField } from '@/components/common/form-field';
 import {
   ListFilter,
   ListNoMatch,
@@ -40,11 +34,11 @@ import {
   adminKeys,
   ADMIN_USERS_PAGE_SIZE,
   listAdminUsers,
-  lockUser,
   setUserRole,
   unlockUser,
   type AdminUsersView,
 } from '../api';
+import { LockDialog } from './lock-dialog';
 
 const STATUS_TABS = [undefined, 'active', 'locked'] as const;
 
@@ -77,62 +71,6 @@ function readView(params: URLSearchParams): AdminUsersView {
     sort: isSort(sort) ? sort : '-createdAt',
     page: page.success ? page.data : 1,
   };
-}
-
-function LockDialog({
-  user,
-  open,
-  onOpenChange,
-}: {
-  user: AdminUser;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const { t } = useTranslation('admin');
-  const queryClient = useQueryClient();
-  const lock = useMutation({ mutationFn: (dto: LockUserDto) => lockUser(user.id, dto.reason) });
-  const form = useForm<LockUserDto>({
-    resolver: zodResolver(lockUserSchema),
-    defaultValues: { reason: '' },
-  });
-  const close = (next: boolean) => {
-    if (!next) {
-      form.reset();
-      lock.reset();
-    }
-    onOpenChange(next);
-  };
-  const submit = form.handleSubmit(async (dto) => {
-    try {
-      await lock.mutateAsync(dto);
-      await queryClient.invalidateQueries({ queryKey: adminKeys.users });
-      toast.success(t('lock.done', { email: user.email }));
-      close(false);
-    } catch {
-      // Lỗi hiện qua `lock.error`.
-    }
-  });
-
-  return (
-    <FormDialog
-      open={open}
-      onOpenChange={close}
-      title={t('lock.title', { email: user.email })}
-      description={t('lock.description')}
-      submitLabel={t('lock.submit')}
-      pending={lock.isPending}
-      error={lock.error ? formErrorMessage(lock.error) : null}
-      dirty={form.formState.isDirty}
-      onSubmit={(event) => void submit(event)}
-    >
-      <TextareaField
-        label={t('lock.reason')}
-        rows={2}
-        error={form.formState.errors.reason?.message}
-        {...form.register('reason')}
-      />
-    </FormDialog>
-  );
 }
 
 function UserRow({ user }: { user: AdminUser }) {

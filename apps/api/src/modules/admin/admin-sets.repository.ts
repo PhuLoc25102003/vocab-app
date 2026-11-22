@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { AdminHiddenSetQuery, HiddenSet } from '@vocab/shared';
+import type { AdminHiddenSetQuery, AdminSetQuery, HiddenSet } from '@vocab/shared';
 import { paginated, toSkipTake } from '../../common/base/pagination';
 import { BaseRepository } from '../../common/base/base.repository';
 import type { Prisma } from '../../generated/prisma/client';
@@ -19,20 +19,31 @@ export class AdminSetsRepository extends BaseRepository {
     super(prisma);
   }
 
-  /** Lấy danh sách các bộ từ công khai đã bị ẩn kiểm duyệt. */
-  async listHidden(query: AdminHiddenSetQuery) {
+  /** Lấy danh sách bộ từ công khai và hỗ trợ lọc theo trạng thái (tất cả / đang hiển thị / bị ẩn). */
+  async listPublicSets(query: AdminSetQuery) {
     const { skip, take } = toSkipTake(query);
 
     const where: Prisma.StudySetWhereInput = {
       deletedAt: null,
-      hiddenAt: { not: null },
+      OR: [{ visibility: 'PUBLIC' }, { hiddenAt: { not: null } }],
     };
 
+    if (query.status === 'visible') {
+      where.hiddenAt = null;
+      where.visibility = 'PUBLIC';
+    } else if (query.status === 'hidden') {
+      where.hiddenAt = { not: null };
+    }
+
     if (query.q) {
-      where.OR = [
-        { title: { contains: query.q, mode: 'insensitive' } },
-        { owner: { displayName: { contains: query.q, mode: 'insensitive' } } },
-        { owner: { email: { contains: query.q, mode: 'insensitive' } } },
+      where.AND = [
+        {
+          OR: [
+            { title: { contains: query.q, mode: 'insensitive' } },
+            { owner: { displayName: { contains: query.q, mode: 'insensitive' } } },
+            { owner: { email: { contains: query.q, mode: 'insensitive' } } },
+          ],
+        },
       ];
     }
 
@@ -45,6 +56,7 @@ export class AdminSetsRepository extends BaseRepository {
           title: true,
           description: true,
           cardCount: true,
+          visibility: true,
           hiddenAt: true,
           hiddenReason: true,
           hiddenById: true,
@@ -52,7 +64,7 @@ export class AdminSetsRepository extends BaseRepository {
           updatedAt: true,
           owner: { select: { id: true, displayName: true, email: true } },
         },
-        orderBy: { hiddenAt: 'desc' },
+        orderBy: { createdAt: 'desc' },
         skip,
         take,
       }),
@@ -75,7 +87,8 @@ export class AdminSetsRepository extends BaseRepository {
       title: item.title,
       description: item.description,
       cardCount: item.cardCount,
-      hiddenAt: item.hiddenAt ?? new Date(),
+      visibility: item.visibility,
+      hiddenAt: item.hiddenAt,
       hiddenReason: item.hiddenReason,
       owner: item.owner,
       hiddenBy: item.hiddenById ? (adminMap.get(item.hiddenById) ?? null) : null,
@@ -84,6 +97,11 @@ export class AdminSetsRepository extends BaseRepository {
     }));
 
     return paginated(data, total, query);
+  }
+
+  /** Lấy danh sách các bộ từ công khai đã bị ẩn kiểm duyệt. */
+  async listHidden(query: AdminHiddenSetQuery) {
+    return this.listPublicSets({ ...query, status: 'hidden' });
   }
 
   /** Trả `null` nếu bộ từ không tồn tại hoặc đã xoá. */

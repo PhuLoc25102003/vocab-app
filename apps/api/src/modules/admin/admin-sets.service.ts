@@ -1,5 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ERROR_CODES, type AdminHiddenSetQuery, type HiddenSet } from '@vocab/shared';
+import {
+  ERROR_CODES,
+  type AdminHiddenSetQuery,
+  type AdminSetQuery,
+  type HiddenSet,
+} from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { PublicSetCache } from '../sets/public-set-cache';
@@ -18,6 +23,10 @@ export class AdminSetsService {
     private readonly sets: AdminSetsRepository,
     private readonly cache: PublicSetCache,
   ) {}
+
+  async listPublicSets(query: AdminSetQuery) {
+    return this.sets.listPublicSets(query);
+  }
 
   async listHidden(query: AdminHiddenSetQuery) {
     return this.sets.listHidden(query);

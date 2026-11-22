@@ -1,63 +1,55 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AdminHiddenSetItem } from '@vocab/shared';
+import { useQuery } from '@tanstack/react-query';
+import type { AdminSetItem, AdminSetStatus } from '@vocab/shared';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { ListNoMatch, ListPager, ListPanel, ListToolbar } from '@/components/common/list-panel';
 import { LoadingState } from '@/components/common/loading-state';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
-import {
-  adminKeys,
-  ADMIN_HIDDEN_SETS_PAGE_SIZE,
-  listHiddenSets,
-  unhideSet,
-  type AdminHiddenSetsView,
-} from '../api';
+import { adminKeys, ADMIN_SETS_PAGE_SIZE, listPublicSets, type AdminSetsView } from '../api';
+import { HideSetButton } from './hide-set-button';
 
-function hiddenSetsHref(view: AdminHiddenSetsView): Route {
+const STATUS_TABS = ['all', 'visible', 'hidden'] as const satisfies readonly AdminSetStatus[];
+
+function setsHref(view: AdminSetsView): Route {
   const params = new URLSearchParams();
   if (view.q) params.set('q', view.q);
+  if (view.status !== 'all') params.set('status', view.status);
   if (view.page > 1) params.set('page', String(view.page));
   const query = params.toString();
   return (query ? `/admin/hidden-sets?${query}` : '/admin/hidden-sets') as Route;
 }
 
-function readView(params: URLSearchParams): AdminHiddenSetsView {
+function readView(params: URLSearchParams): AdminSetsView {
   const q = params.get('q') ?? '';
+  const statusParam = params.get('status');
+  const status: AdminSetStatus =
+    statusParam === 'visible' || statusParam === 'hidden' ? statusParam : 'all';
   const pageRaw = Number.parseInt(params.get('page') ?? '1', 10);
   const page = Number.isInteger(pageRaw) && pageRaw > 0 ? pageRaw : 1;
-  return { q, page };
+  return { q, status, page };
 }
 
-function HiddenSetRow({ item }: { item: AdminHiddenSetItem }) {
+function SetRow({ item }: { item: AdminSetItem }) {
   const { t, i18n } = useTranslation('admin');
-  const queryClient = useQueryClient();
 
-  const unhide = useMutation({
-    mutationFn: () => unhideSet(item.id),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: adminKeys.hiddenSets }),
-        queryClient.invalidateQueries({ queryKey: adminKeys.stats }),
-      ]);
-      toast.success(t('hiddenSets.unhideSuccess', { title: item.title }));
-    },
-    onError: (error) => toast.error(formErrorMessage(error)),
-  });
+  const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+  const hiddenDate = item.hiddenAt
+    ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(
+        new Date(item.hiddenAt),
+      )
+    : null;
+  const createdDate = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
+    new Date(item.createdAt),
+  );
 
-  const hiddenDate = new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'vi-VN', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(item.hiddenAt));
+  const isHidden = Boolean(item.hiddenAt);
 
   return (
     <li className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-border py-3 last:border-b-0 sm:px-2">
@@ -70,37 +62,40 @@ function HiddenSetRow({ item }: { item: AdminHiddenSetItem }) {
             {item.title}
           </Link>
           <span className="rounded-sm bg-surface-elevated px-2 py-0.5 text-tiny text-text-muted">
-            {t('hiddenSets.cardsCount', { count: item.cardCount })}
+            {t('publicSets.cardsCount', { count: item.cardCount })}
           </span>
+          {isHidden ? (
+            <span className="rounded-sm bg-danger-soft px-2 py-0.5 text-tiny font-medium text-danger">
+              {t('publicSets.statusHidden')}
+            </span>
+          ) : (
+            <span className="rounded-sm bg-success-soft px-2 py-0.5 text-tiny font-medium text-success">
+              {t('publicSets.statusVisible')}
+            </span>
+          )}
         </div>
 
         <p className="text-small text-text-muted">
-          {t('hiddenSets.owner')}:{' '}
+          {t('publicSets.owner')}:{' '}
           <span className="font-medium text-text">{item.owner.displayName}</span> (
           {item.owner.email})
         </p>
 
-        {item.hiddenReason ? (
+        {isHidden && item.hiddenReason ? (
           <p className="text-small text-danger bg-danger-soft/40 px-2 py-1 rounded-sm wrap-anywhere">
-            <span className="font-medium">{t('hiddenSets.reason')}:</span> {item.hiddenReason}
+            <span className="font-medium">{t('publicSets.reason')}:</span> {item.hiddenReason}
           </p>
         ) : null}
 
         <p className="text-tiny text-text-muted">
-          {t('hiddenSets.hiddenAt')}: {hiddenDate}
-          {item.hiddenBy ? ` • ${t('hiddenSets.by')}: ${item.hiddenBy.displayName}` : ''}
+          {isHidden
+            ? `${t('publicSets.hiddenAt')}: ${hiddenDate}${item.hiddenBy ? ` • ${t('publicSets.by')}: ${item.hiddenBy.displayName}` : ''}`
+            : `${t('publicSets.createdAt')}: ${createdDate}`}
         </p>
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
-        <Button
-          variant="secondary"
-          className="h-9 px-3 text-small"
-          loading={unhide.isPending}
-          onClick={() => unhide.mutate()}
-        >
-          {t('hiddenSets.unhide')}
-        </Button>
+        <HideSetButton setId={item.id} hidden={isHidden} />
       </div>
     </li>
   );
@@ -109,7 +104,7 @@ function HiddenSetRow({ item }: { item: AdminHiddenSetItem }) {
 export function AdminHiddenSetsLoading() {
   const { t } = useTranslation('admin');
   return (
-    <LoadingState label={t('hiddenSets.loading')}>
+    <LoadingState label={t('publicSets.loading')}>
       {Array.from({ length: 4 }, (_, index) => (
         <Skeleton key={index} className="h-16 w-full" />
       ))}
@@ -122,26 +117,26 @@ export function AdminHiddenSets() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const view = readView(new URLSearchParams(searchParams.toString()));
-  const go = (patch: Partial<AdminHiddenSetsView>) =>
-    router.push(hiddenSetsHref({ ...view, page: 1, ...patch }));
+  const go = (patch: Partial<AdminSetsView>) =>
+    router.push(setsHref({ ...view, page: 1, ...patch }));
 
   const sets = useQuery({
-    queryKey: adminKeys.hiddenSetList(view),
-    queryFn: () => listHiddenSets(view),
+    queryKey: adminKeys.setList(view),
+    queryFn: () => listPublicSets(view),
   });
 
   if (sets.isError && sets.error instanceof HttpError && sets.error.status === 403) {
     return <EmptyState title={t('users.forbidden')} description={t('users.forbiddenHint')} />;
   }
 
-  const filtered = Boolean(view.q);
+  const filtered = Boolean(view.q || view.status !== 'all');
   let body;
   if (sets.isPending) {
     body = <AdminHiddenSetsLoading />;
   } else if (sets.isError) {
     body = (
       <ErrorState
-        title={t('hiddenSets.failed')}
+        title={t('publicSets.failed')}
         description={t('checkNetwork')}
         onRetry={() => void sets.refetch()}
       />
@@ -149,20 +144,20 @@ export function AdminHiddenSets() {
   } else if (sets.data.data.length === 0) {
     body = filtered ? (
       <ListNoMatch
-        text={t('hiddenSets.noMatch', { q: view.q })}
-        clearHref={hiddenSetsHref({ q: '', page: 1 })}
+        text={view.q ? t('publicSets.noMatch', { q: view.q }) : t('publicSets.noFilterMatch')}
+        clearHref={setsHref({ q: '', status: 'all', page: 1 })}
       />
     ) : (
       <EmptyState
-        title={t('hiddenSets.emptyTitle')}
-        description={t('hiddenSets.emptyDescription')}
+        title={t('publicSets.emptyTitle')}
+        description={t('publicSets.emptyDescription')}
       />
     );
   } else {
     body = (
-      <ul aria-label={t('hiddenSets.list')} className="flex flex-col">
+      <ul aria-label={t('publicSets.list')} className="flex flex-col">
         {sets.data.data.map((item) => (
-          <HiddenSetRow key={item.id} item={item} />
+          <SetRow key={item.id} item={item} />
         ))}
       </ul>
     );
@@ -170,13 +165,18 @@ export function AdminHiddenSets() {
 
   return (
     <ListPanel
-      title={t('hiddenSets.title')}
+      title={t('publicSets.title')}
       count={sets.data?.meta.total}
       toolbar={
         <ListToolbar
-          key={view.q}
+          key={`${view.q}-${view.status}`}
+          tabs={STATUS_TABS.map((status) => ({
+            label: t(`publicSets.status.${status}`),
+            href: setsHref({ ...view, status, page: 1 }),
+            current: view.status === status,
+          }))}
           search={{
-            label: t('hiddenSets.search'),
+            label: t('publicSets.search'),
             value: view.q,
             onSearch: (q) => go({ q }),
           }}
@@ -186,9 +186,9 @@ export function AdminHiddenSets() {
         sets.data && sets.data.meta.total > 0 ? (
           <ListPager
             page={sets.data.meta.page}
-            pageSize={ADMIN_HIDDEN_SETS_PAGE_SIZE}
+            pageSize={ADMIN_SETS_PAGE_SIZE}
             total={sets.data.meta.total}
-            hrefFor={(page) => hiddenSetsHref({ ...view, page })}
+            hrefFor={(page) => setsHref({ ...view, page })}
           />
         ) : null
       }
@@ -197,3 +197,6 @@ export function AdminHiddenSets() {
     </ListPanel>
   );
 }
+
+export const AdminPublicSets = AdminHiddenSets;
+export const AdminPublicSetsLoading = AdminHiddenSetsLoading;

@@ -7,7 +7,7 @@ describe('AdminNavTabs', () => {
     render(<AdminNavTabs current="users" />);
 
     const usersLink = screen.getByRole('link', { name: /Người dùng/i });
-    const hiddenSetsLink = screen.getByRole('link', { name: /Bộ từ bị ẩn/i });
+    const hiddenSetsLink = screen.getByRole('link', { name: /Bộ từ công khai/i });
     const classesLink = screen.getByRole('link', { name: /Lớp học & Học sinh/i });
 
     expect(usersLink).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('AdminNavTabs', () => {
 
   it('đánh dấu đúng tab khi current là hidden-sets hoặc classes', () => {
     const { rerender } = render(<AdminNavTabs current="hidden-sets" />);
-    expect(screen.getByRole('link', { name: /Bộ từ bị ẩn/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Bộ từ công khai/i })).toHaveAttribute(
       'aria-current',
       'page',
     );

@@ -187,8 +187,8 @@
     "globalErrorDesc": "Hãy thử lại. Nếu vẫn lỗi, tải lại trang sau ít phút.",
     "backToDashboard": "Quay lại Tổng quan",
     "adminUsersDescription": "Tìm, đổi vai trò, khoá hoặc mở khoá tài khoản.",
-    "adminHiddenSets": "Bộ từ bị ẩn",
-    "adminHiddenSetsDescription": "Danh sách các bộ từ công khai đã bị ẩn kiểm duyệt. Khôi phục lại nếu cần.",
+    "adminHiddenSets": "Quản lý bộ từ công khai",
+    "adminHiddenSetsDescription": "Tìm kiếm, lọc bộ từ công khai đang hiển thị hoặc bị ẩn và kiểm duyệt nếu cần.",
     "adminClasses": "Lớp học & Học sinh",
     "adminClassesDescription": "Quản lý toàn bộ lớp học của từng giáo viên và học sinh chưa tham gia lớp."
   },

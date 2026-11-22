@@ -79,7 +79,16 @@ describe('GET /admin/classes/overview', () => {
       totalUnassignedStudents: 1, // student2 chưa vào lớp nào
     });
 
-    // Kiểm tra thông tin lớp
+    // Kiểm tra thông tin giáo viên và lớp
+    expect(res.body.data.teachers).toHaveLength(1);
+    const tch = res.body.data.teachers[0];
+    expect(tch.displayName).toBe('Thầy Hưng');
+    expect(tch.classCount).toBe(1);
+    expect(tch.classes).toHaveLength(1);
+    expect(tch.classes[0].name).toBe('Tiếng Anh 8A1');
+    expect(tch.classes[0].members[0].displayName).toBe('Nguyễn Văn A');
+
+    // Kiểm tra thông tin lớp (backward compatibility)
     expect(res.body.data.classes).toHaveLength(1);
     const cls = res.body.data.classes[0];
     expect(cls.name).toBe('Tiếng Anh 8A1');
@@ -91,5 +100,6 @@ describe('GET /admin/classes/overview', () => {
     // Kiểm tra học sinh chưa có lớp
     expect(res.body.data.unassignedStudents).toHaveLength(1);
     expect(res.body.data.unassignedStudents[0].displayName).toBe('Trần Thị B');
+    expect(res.body.data.unassignedStudents[0].lockedAt).toBeNull();
   });
 });
