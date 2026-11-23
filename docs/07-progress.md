@@ -1,8 +1,8 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-22
+Cập nhật lần cuối: 2026-11-23
 
-**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.16 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, và trung tâm quản trị toàn diện 6.16). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.17 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, trung tâm quản trị toàn diện #423, giọng đọc tự nhiên #424, sticky table header và tối ưu mobile 6.17 #425). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -433,7 +433,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
     - Khi giáo viên giao nhiều chế độ học (4-9 chế độ), cụm điểm từng chế độ được đưa vào container cuộn ngang mượt mà (`overflow-x-auto whitespace-nowrap scrollbar-thin`), các badge giữ `shrink-0` giúp chiều cao các dòng dữ liệu luôn đồng đều, không bị phình to làm vỡ layout.
   - **Căn chỉnh Nút Thao tác trong Bảng Dashboard Quản trị (`AdminOverview`)**:
     - Sửa lỗi nút "Ẩn" (`HideSetButton`) trong danh sách "Bộ công khai mới" bị rớt dòng và kéo dãn 100% chiều rộng trên màn hình nhỏ; chuyển sang layout `flex items-center justify-between` với tiêu đề thu gọn `truncate` và nút căn phải gọn gàng (`className="w-auto"`).
-- [x] **6.17** Tối ưu hóa Sticky Header chuẩn UX, Sticky Table Header toàn hệ thống, Debounce tìm kiếm, Cân đối chế độ học và Tối ưu Responsive di động:
+- [x] **6.17** Tối ưu hóa Sticky Header chuẩn UX, Sticky Table Header toàn hệ thống, Debounce tìm kiếm, Cân đối chế độ học và Tối ưu Responsive di động (#425):
   - **Tối ưu Sticky Header chuẩn UX trên Mobile**:
     - Header chính (`layout.tsx`): Chuyển thành `sticky top-0 z-20` trên cả mobile lẫn desktop để người dùng luôn truy cập được Logo, Đổi ngôn ngữ, Đổi Theme và Menu tài khoản.
     - Tiêu đề trang (`page-header.tsx`): Bỏ thuộc tính `sticky top-2 sm:static` trên mobile, để tiêu đề cuộn tự nhiên cùng nội dung, tránh chiếm dụng không gian màn hình dọc khi đã có Bottom Navigation ở đáy.
