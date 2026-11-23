@@ -65,4 +65,22 @@ describe('giọng đọc', () => {
     speak('hello', 'en');
     expect(window.speechSynthesis.speak).toBeDefined();
   });
+
+  it('tự động phát qua Audio fallback khi trình duyệt không có speechSynthesis (như Vivo/Oppo/Zalo webview)', () => {
+    Reflect.deleteProperty(window, 'speechSynthesis');
+    const playMock = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal(
+      'Audio',
+      class {
+        play = playMock;
+        pause = vi.fn();
+        currentTime = 0;
+        playbackRate = 1;
+        constructor(public src: string) {}
+      },
+    );
+
+    speak('hello', 'en-GB');
+    expect(playMock).toHaveBeenCalled();
+  });
 });

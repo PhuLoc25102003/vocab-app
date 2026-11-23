@@ -461,6 +461,11 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
     - Cập nhật `AppNav` hỗ trợ nhận diện ngữ cảnh Ôn tập (`fromReview`: `?from=review`, `?due=...`, `?review=...`), đảm bảo tab "Ôn tập" luôn giữ trạng thái active trên navbar trong suốt phiên ôn thẻ và nút quay lại hiển thị "Quay lại Ôn tập".
   - **Khắc phục chồng đè cột bảng lớp học giáo viên (`TeacherClasses`)**:
     - Tinh chỉnh lại template `TEACHER_CLASS_GRID` và container `minWidth="min-w-[800px]"`, xử lý `truncate` và `whitespace-nowrap` hợp lý.
+  - **Khắc phục lỗi mất loa phát âm trên các dòng máy Android (Vivo/Oppo/Xiaomi/Webview) & Hệ thống Hybrid Speech Fallback**:
+    - Khắc phục triệt để lỗi nút loa (`AudioButton`) bị ẩn hoàn toàn (`return null`) trên các dòng điện thoại không tích hợp sẵn Web Speech API (như Vivo Y35, trình duyệt Vivo Browser, Zalo in-app webview, Facebook webview).
+    - Nâng cấp `isSpeechSupported()` hỗ trợ nhận diện cả Web Speech API lẫn HTML5 Audio, đảm bảo biểu tượng loa phát âm luôn luôn hiển thị 100% trên mọi thiết bị và trình duyệt.
+    - Xây dựng cơ chế phát âm kép Hybrid Speech: ưu tiên giọng đọc native Web Speech API (S23 Ultra, Chrome PC, iOS Safari), và tự động kích hoạt Audio fallback qua HTML5 Audio khi trình duyệt không có Web Speech hoặc thiết bị Android thiếu gói giọng đọc Google TTS.
+    - Tích hợp cơ chế watchdog 1.2s tự động phát hiện và chuyển sang Audio fallback nếu engine TTS trên điện thoại bị treo hoặc không phản hồi.
 
 ## Quyết định cần chốt
 

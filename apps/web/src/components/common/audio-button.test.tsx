@@ -30,9 +30,20 @@ describe('AudioButton', () => {
     expect(speak).toHaveBeenCalledWith(expect.objectContaining({ text: 'apple', lang: 'en-GB' }));
   });
 
-  it('ẩn khi trình duyệt không hỗ trợ', () => {
-    renderButton();
+  it('ẩn khi trình duyệt không hỗ trợ âm thanh', () => {
+    const originalAudio = window.Audio;
+    // @ts-expect-error test unsupported environment
+    delete window.Audio;
+    try {
+      renderButton();
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    } finally {
+      window.Audio = originalAudio;
+    }
+  });
 
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  it('vẫn hiện nút nghe khi không có Web Speech nhưng có HTML5 Audio (như điện thoại Vivo/Oppo/Xiaomi)', () => {
+    renderButton();
+    expect(screen.getByRole('button', { name: 'Nghe apple' })).toBeInTheDocument();
   });
 });

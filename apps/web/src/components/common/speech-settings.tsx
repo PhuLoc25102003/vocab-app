@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import {
   DEFAULT_SPEECH_SETTINGS,
   hasExactVoice,
+  isNativeSpeechSupported,
   isSpeechSupported,
   loadSpeechSettings,
   saveSpeechSettings,
@@ -43,7 +44,7 @@ export function SpeechSettings() {
   }, []);
 
   useEffect(() => {
-    if (!isSpeechSupported()) return;
+    if (!isNativeSpeechSupported() || typeof window.speechSynthesis === 'undefined') return;
     // Danh sách giọng của trình duyệt có thể tải sau.
     const check = () => setExact(hasExactVoice(settings.accent));
     check();

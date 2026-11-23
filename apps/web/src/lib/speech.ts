@@ -10,8 +10,16 @@ export const DEFAULT_SPEECH_SETTINGS: SpeechSettings = { accent: 'en-GB', rate: 
 const RATES: Record<SpeechRate, number> = { normal: 1, slow: 0.7 };
 const STORAGE_KEY = 'vocab.speech';
 
-export function isSpeechSupported() {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window;
+export function isNativeSpeechSupported(): boolean {
+  return (
+    typeof window !== 'undefined' && 'speechSynthesis' in window && Boolean(window.speechSynthesis)
+  );
+}
+
+export function isSpeechSupported(): boolean {
+  return (
+    typeof window !== 'undefined' && ('speechSynthesis' in window || typeof Audio !== 'undefined')
+  );
 }
 
 /** Lựa chọn giọng lưu trên thiết bị. Không đọc được thì dùng mặc định (Anh - Anh). */
@@ -88,8 +96,8 @@ function scoreVoice(
 
 /** Giọng có trên máy khớp đúng mã, ưu tiên giọng AI tự nhiên rõ ràng. */
 export function findVoice(lang: string): SpeechSynthesisVoice | undefined {
-  if (!isSpeechSupported()) return undefined;
-  const voices = window.speechSynthesis.getVoices?.() ?? [];
+  if (!isNativeSpeechSupported()) return undefined;
+  const voices = window.speechSynthesis?.getVoices?.() ?? [];
   const wanted = lang.toLowerCase();
 
   let bestVoice: SpeechSynthesisVoice | undefined;
@@ -112,19 +120,113 @@ export function hasExactVoice(lang: string): boolean {
   return voice?.lang.toLowerCase().replace('_', '-') === lang.toLowerCase();
 }
 
+let currentAudio: HTMLAudioElement | null = null;
+
+export function stopSpeaking(): void {
+  if (typeof window === 'undefined') return;
+  if (isNativeSpeechSupported()) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // Bỏ qua lỗi trình duyệt cũ
+    }
+  }
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    } catch {
+      // Bỏ qua lỗi audio
+    }
+    currentAudio = null;
+  }
+}
+
+/** Phát âm qua HTML5 Audio fallback cho các thiết bị không có Web Speech API (như Vivo Browser, Zalo webview,...) */
+export function playAudioFallback(
+  text: string,
+  targetLang: string,
+  options: { slow?: boolean } = {},
+): void {
+  if (typeof window === 'undefined' || typeof Audio === 'undefined') return;
+  try {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    const cleanText = text.trim();
+    if (!cleanText) return;
+    const encoded = encodeURIComponent(cleanText);
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${targetLang}&q=${encoded}`;
+    const audio = new Audio(url);
+    if (options.slow) {
+      audio.playbackRate = 0.75;
+    }
+    currentAudio = audio;
+    audio.play().catch((err) => {
+      console.warn('Audio fallback playback failed:', err);
+    });
+  } catch (err) {
+    console.warn('Audio fallback error:', err);
+  }
+}
+
 export function speak(text: string, lang = 'en-GB', options: { slow?: boolean } = {}) {
   if (!isSpeechSupported()) {
     return;
   }
+  stopSpeaking();
+
   const settings = loadSpeechSettings();
   const target = targetLang(lang, settings.accent);
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = target;
-  const voice = findVoice(target);
-  if (voice) {
-    utterance.voice = voice;
+
+  if (isNativeSpeechSupported()) {
+    try {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = target;
+      const voice = findVoice(target);
+      if (voice) {
+        utterance.voice = voice;
+      }
+      utterance.rate = options.slow ? RATES.slow : RATES[settings.rate];
+
+      let started = false;
+      utterance.onstart = () => {
+        started = true;
+      };
+
+      utterance.onerror = () => {
+        if (!started) {
+          playAudioFallback(text, target, options);
+        }
+      };
+
+      // Fix lỗi Chrome / WebView trên Android bị treo trạng thái paused
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+
+      window.speechSynthesis.speak(utterance);
+
+      // Watchdog: Nếu sau 1.2s trình duyệt không thể phát âm (do không có TTS engine cài trên máy) -> tự động chuyển sang Audio fallback
+      setTimeout(() => {
+        if (!started && (!window.speechSynthesis.speaking || window.speechSynthesis.paused)) {
+          try {
+            window.speechSynthesis.cancel();
+          } catch {
+            // ignore
+          }
+          playAudioFallback(text, target, options);
+        }
+      }, 1200);
+
+      return;
+    } catch {
+      // Chuyển sang fallback nếu lỗi khởi tạo utterance
+    }
   }
-  utterance.rate = options.slow ? RATES.slow : RATES[settings.rate];
-  window.speechSynthesis.speak(utterance);
+
+  // Dự phòng khi trình duyệt không hỗ trợ Web Speech API (như Vivo Browser, Zalo webview, etc.)
+  playAudioFallback(text, target, options);
 }
