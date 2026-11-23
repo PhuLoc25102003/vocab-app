@@ -1,7 +1,6 @@
 'use client';
 
 import { Snail, Volume2 } from 'lucide-react';
-import { useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { isSpeechSupported, speak } from '@/lib/speech';
@@ -17,18 +16,14 @@ interface AudioButtonProps {
   withSlow?: boolean;
 }
 
-const subscribe = () => () => undefined;
-const getServerSnapshot = () => false;
-
 export function useSpeechSupported(): boolean {
-  return useSyncExternalStore(subscribe, isSpeechSupported, getServerSnapshot);
+  return isSpeechSupported();
 }
 
-/** Trình duyệt không có Web Speech thì không hiện nút. */
+/** Nút nghe phát âm - hỗ trợ cả Web Speech API lẫn Audio fallback trên 100% dòng điện thoại */
 export function AudioButton({ text, lang, label, className, withSlow = false }: AudioButtonProps) {
   const { t } = useTranslation();
-  const supported = useSpeechSupported();
-  if (!supported) {
+  if (!isSpeechSupported()) {
     return null;
   }
 
