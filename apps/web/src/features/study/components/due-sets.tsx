@@ -122,7 +122,7 @@ function ReviewModePicker({
           {t(all ? 'review.onlyFlashcard' : 'review.selectAll')}
         </button>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 w-full">
         {REVIEW_MODES.map((mode) => {
           const order = modes.indexOf(mode);
           const on = order >= 0;
@@ -133,7 +133,7 @@ function ReviewModePicker({
               aria-pressed={on}
               onClick={() => toggle(mode)}
               className={cn(
-                "relative inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-small font-medium transition-all duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-lg after:content-['']",
+                "relative inline-flex h-9 w-full min-w-0 items-center justify-start gap-2 rounded-lg border px-2.5 text-small font-medium transition-all duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-lg after:content-['']",
                 on
                   ? 'border-board-fg bg-board-fg font-semibold text-board shadow-xs'
                   : 'border-board-muted/40 bg-board-muted/10 text-board-fg/90 hover:border-board-fg/80 hover:bg-board-muted/20',
@@ -148,7 +148,7 @@ function ReviewModePicker({
               >
                 {on ? order + 1 : ''}
               </span>
-              <span>{t(`common:modes.${mode}`)}</span>
+              <span className="truncate">{t(`common:modes.${mode}`)}</span>
             </button>
           );
         })}
@@ -288,7 +288,7 @@ export function DueSets() {
           {data.map(({ setId, title, dueCount }) => (
             <SetCardShell
               key={setId}
-              href={`/sets/${setId}` as Route}
+              href={reviewHref(setId, modes)}
               title={title}
               badge={
                 <span className="flex items-center gap-1 rounded-sm bg-primary-soft px-2 text-tiny text-primary">

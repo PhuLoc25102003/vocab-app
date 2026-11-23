@@ -86,7 +86,7 @@ export function StudyModeGrid({ setId, guest = false, fromExplore = false }: Stu
           </Link>
         </Button>
       </div>
-      <ul className="grid auto-rows-fr gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid auto-rows-fr gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {STUDY_ENTRIES.map(({ slug }) => {
           const Icon = ICONS[slug];
           return (

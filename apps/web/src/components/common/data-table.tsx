@@ -54,7 +54,7 @@ export function DataTableHeader({
       role="row"
       style={style}
       className={cn(
-        'grid items-center gap-4 border-b border-border px-3 py-2 text-tiny font-semibold uppercase tracking-wider text-text-muted select-none',
+        'sticky top-0 z-10 bg-surface grid items-center gap-4 border-b border-border px-3 py-2.5 text-tiny font-semibold uppercase tracking-wider text-text-muted select-none',
         gridColsClass,
         className,
       )}

@@ -115,9 +115,10 @@ export function OfflineToggle({ set }: { set: SetDetail }) {
         variant="secondary"
         loading={busy && !confirming}
         onClick={() => (state === 'saved' ? setConfirming(true) : void offline.save())}
+        className="w-full sm:w-auto justify-center gap-1.5 text-small whitespace-nowrap h-9 px-2.5 sm:px-3"
       >
-        <Icon aria-hidden className="size-4" />
-        {label}
+        <Icon aria-hidden className="size-4 shrink-0" />
+        <span>{label}</span>
       </Button>
       <RemoveOfflineDialog offline={offline} open={confirming} onOpenChange={setConfirming} />
     </>

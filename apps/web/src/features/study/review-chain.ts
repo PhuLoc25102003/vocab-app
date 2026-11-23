@@ -11,6 +11,8 @@ export const REVIEW_MODES: readonly StudyMode[] = [
   'MCQ',
   'CLOZE',
   'MATCH',
+  'TEST',
+  'SPEAK',
 ];
 
 const MODES_KEY = 'vocab.review-modes';

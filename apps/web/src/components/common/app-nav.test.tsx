@@ -16,7 +16,7 @@ describe('AppNav', () => {
     expect(screen.getByRole('link', { name: 'Tổng quan' })).toHaveAttribute('href', '/dashboard');
     expect(screen.getByRole('link', { name: 'Bộ từ' })).toHaveAttribute('href', '/sets');
     expect(screen.getByRole('link', { name: 'Khám phá' })).toHaveAttribute('href', '/explore');
-    expect(screen.getByRole('link', { name: 'Ôn hôm nay' })).toHaveAttribute('href', '/review');
+    expect(screen.getByRole('link', { name: 'Ôn tập' })).toHaveAttribute('href', '/review');
   });
 
   it('đánh dấu mục hiện tại, kể cả trang con', () => {
@@ -40,6 +40,15 @@ describe('AppNav', () => {
     render(<AppNav />);
 
     expect(screen.getByRole('link', { name: 'Khám phá' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Bộ từ' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('đánh dấu mục Ôn tập khi ôn bộ từ (?from=review hoặc ?due=1)', () => {
+    vi.mocked(usePathname).mockReturnValue('/sets/abc/study/flashcard');
+    vi.mocked(useSearchParams).mockReturnValue(new URLSearchParams('due=1') as never);
+    render(<AppNav />);
+
+    expect(screen.getByRole('link', { name: 'Ôn tập' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Bộ từ' })).not.toHaveAttribute('aria-current');
   });
 

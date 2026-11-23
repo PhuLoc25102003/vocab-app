@@ -59,10 +59,14 @@ export function SetOwnerActions({
   return (
     <>
       <div className="grid grid-cols-[1fr_1fr_auto] sm:flex sm:items-center gap-2 w-full sm:w-auto">
-        <Button asChild variant="secondary" className="w-full sm:w-auto justify-center">
+        <Button
+          asChild
+          variant="secondary"
+          className="w-full sm:w-auto justify-center gap-1.5 text-small whitespace-nowrap h-9 px-2.5 sm:px-3"
+        >
           <Link href={`/sets/${id}/edit` as Route}>
             <Pencil aria-hidden className="size-4 shrink-0" />
-            <span aria-hidden="true" className="sm:hidden">
+            <span aria-hidden="true" className="truncate sm:hidden">
               {t('actions.editShort')}
             </span>
             <span className="sr-only sm:not-sr-only">{t('actions.edit')}</span>
@@ -132,7 +136,12 @@ export function DuplicateSetButton({ id }: { id: string }) {
   };
 
   return (
-    <Button variant="secondary" loading={duplicateSet.isPending} onClick={duplicate}>
+    <Button
+      variant="secondary"
+      loading={duplicateSet.isPending}
+      onClick={duplicate}
+      className="w-full sm:w-auto justify-center gap-1.5 text-small whitespace-nowrap h-9 px-2.5 sm:px-3"
+    >
       {t('actions.copy')}
     </Button>
   );

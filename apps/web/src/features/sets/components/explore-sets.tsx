@@ -76,7 +76,7 @@ export function ExploreSets({
             onSearch={(value) => router.push(exploreHref(paths.list, value, sort))}
           />
         </div>
-        <div className="w-full sm:w-48">
+        <div className="w-full sm:w-52 shrink-0">
           <Select
             aria-label={t('explore.sort')}
             value={sort}

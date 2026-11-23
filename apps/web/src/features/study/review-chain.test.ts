@@ -20,7 +20,12 @@ describe('review-chain', () => {
   });
 
   it('đọc danh sách chế độ, bỏ giá trị lạ và trùng', () => {
-    expect(parseModeList('mcq,abc,MCQ,write,test')).toEqual(['MCQ', 'WRITE']);
+    expect(parseModeList('mcq,abc,MCQ,write,invalid_mode,test,speak')).toEqual([
+      'MCQ',
+      'WRITE',
+      'TEST',
+      'SPEAK',
+    ]);
     expect(parseModeList(undefined)).toEqual([]);
   });
 

@@ -2,8 +2,7 @@
 
 import { publicSetQuerySchema } from '@vocab/shared';
 import { Search } from 'lucide-react';
-import type { FormEvent } from 'react';
-import { Button } from '@/components/ui/button';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from 'react-i18next';
 
@@ -23,31 +22,45 @@ interface SetSearchFormProps {
 
 export function SetSearchForm({ id, value, onSearch }: SetSearchFormProps) {
   const { t } = useTranslation('sets');
+  const [draft, setDraft] = useState(value);
+
+  useEffect(() => {
+    setDraft(value);
+  }, [value]);
+
+  useEffect(() => {
+    const trimmed = draft.trim();
+    if (trimmed === value) return;
+    const timer = setTimeout(() => {
+      onSearch(trimmed);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [draft, value, onSearch]);
+
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const next = new FormData(event.currentTarget).get(QUERY_FIELD);
-    onSearch(typeof next === 'string' ? next.trim() : '');
+    onSearch(draft.trim());
   };
 
   return (
-    <form role="search" onSubmit={submit} className="flex w-full max-w-[560px] gap-2">
+    <form role="search" onSubmit={submit} className="relative w-full">
       <label htmlFor={id} className="sr-only">
         {t('search.label')}
       </label>
+      <Search
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted"
+      />
       <Input
-        // Giữ ô tìm kiếm đúng với URL khi bấm quay lại trên trình duyệt.
-        key={value}
         id={id}
         name={QUERY_FIELD}
         type="search"
-        defaultValue={value}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
         maxLength={MAX_QUERY_LENGTH}
         placeholder={t('search.placeholder')}
+        className="w-full pl-9"
       />
-      <Button type="submit">
-        <Search aria-hidden className="size-4" />
-        {t('search.submit')}
-      </Button>
     </form>
   );
 }

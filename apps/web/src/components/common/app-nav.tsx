@@ -22,7 +22,16 @@ const NAV_ITEMS = [
   { href: '/classes', label: 'classes', icon: School },
 ] as const satisfies readonly { href: Route; label: string; icon: LucideIcon }[];
 
-function isCurrent(pathname: string, href: string, fromExplore?: boolean): boolean {
+function isCurrent(
+  pathname: string,
+  href: string,
+  fromExplore?: boolean,
+  fromReview?: boolean,
+): boolean {
+  if (fromReview && (pathname === '/sets' || pathname.startsWith('/sets/'))) {
+    if (href === '/review') return true;
+    if (href === '/sets') return false;
+  }
   if (fromExplore && (pathname === '/sets' || pathname.startsWith('/sets/'))) {
     if (href === '/explore') return true;
     if (href === '/sets') return false;
@@ -33,8 +42,10 @@ function isCurrent(pathname: string, href: string, fromExplore?: boolean): boole
 export function AppNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const fromExplore = searchParams?.get('from') === 'explore';
-  return <NavLinks pathname={pathname} fromExplore={fromExplore} />;
+  const from = searchParams?.get('from');
+  const fromExplore = from === 'explore';
+  const fromReview = from === 'review' || searchParams?.has('due') || searchParams?.has('review');
+  return <NavLinks pathname={pathname} fromExplore={fromExplore} fromReview={fromReview} />;
 }
 
 /** Hiện trong lúc chờ đường dẫn ở các route có tham số, chưa đánh dấu mục nào. */
@@ -42,7 +53,15 @@ export function AppNavFallback() {
   return <NavLinks pathname="" />;
 }
 
-function NavLinks({ pathname, fromExplore }: { pathname: string; fromExplore?: boolean }) {
+function NavLinks({
+  pathname,
+  fromExplore,
+  fromReview,
+}: {
+  pathname: string;
+  fromExplore?: boolean;
+  fromReview?: boolean;
+}) {
   const { t } = useTranslation();
   return (
     <nav
@@ -51,7 +70,7 @@ function NavLinks({ pathname, fromExplore }: { pathname: string; fromExplore?: b
     >
       <ul className="grid grid-cols-5 md:flex md:gap-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const current = isCurrent(pathname, href, fromExplore);
+          const current = isCurrent(pathname, href, fromExplore, fromReview);
           return (
             <li key={href}>
               <Link
