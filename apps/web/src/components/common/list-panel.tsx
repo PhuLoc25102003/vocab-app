@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useId, useState, type FormEvent, type ReactNode } from 'react';
+import { useId, useState, useEffect, type FormEvent, type ReactNode } from 'react';
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,7 +60,7 @@ export function ListPanel({
       </div>
       <div
         className={cn(
-          'flex min-w-0 flex-col px-4 py-2 min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto',
+          'flex min-w-0 flex-col px-4 pt-0 pb-2 min-h-[260px] max-h-[calc(100dvh-280px)] overflow-y-auto',
           bodyClassName,
         )}
       >
@@ -94,6 +94,21 @@ interface ListToolbarProps {
 export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
   const { t, i18n } = useTranslation();
   const [draft, setDraft] = useState(search?.value ?? '');
+
+  useEffect(() => {
+    setDraft(search?.value ?? '');
+  }, [search?.value]);
+
+  useEffect(() => {
+    if (!search) return;
+    const trimmed = draft.trim();
+    if (trimmed === (search.value ?? '')) return;
+    const timer = setTimeout(() => {
+      search.onSearch(trimmed);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [draft, search]);
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
     search?.onSearch(draft.trim());
@@ -101,13 +116,16 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
   return (
     <div className="flex flex-col gap-3">
       {tabs ? (
-        <nav aria-label={t('list.statusFilter')} className="flex flex-wrap gap-1">
+        <nav
+          aria-label={t('list.statusFilter')}
+          className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 sm:flex-wrap"
+        >
           {tabs.map((tab) => (
             <Link
               key={tab.key ?? `${tab.label}-${tab.href}`}
               href={tab.href}
               aria-current={tab.current ? 'page' : undefined}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-small font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
+              className="inline-flex min-h-11 shrink-0 whitespace-nowrap items-center gap-1.5 rounded-md px-3 text-small font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
             >
               {tab.label}
               {tab.count !== undefined ? ' ' : null}
@@ -132,11 +150,13 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
                 placeholder={search.label}
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                className="pl-9"
+                className="pl-9 w-full"
               />
             </form>
           ) : null}
-          {filters ? <div className="flex flex-wrap gap-2 sm:flex-nowrap">{filters}</div> : null}
+          {filters ? (
+            <div className="flex flex-wrap gap-2 sm:flex-nowrap shrink-0">{filters}</div>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -146,7 +166,7 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
 /** Bề rộng cố định cho một ô lọc hoặc sắp xếp trong `ListToolbar`. */
 export function ListFilter({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <div className={cn('min-w-0 flex-1 sm:flex-none', wide ? 'sm:w-56' : 'sm:w-44')}>
+    <div className={cn('min-w-0 flex-1 sm:flex-none', wide ? 'sm:w-56' : 'sm:w-48')}>
       {children}
     </div>
   );

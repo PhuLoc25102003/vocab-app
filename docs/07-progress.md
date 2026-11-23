@@ -23,8 +23,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      18 |      18 | Xong       |
-| **Toàn dự án**          |                                            | **183** | **187** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      19 |      19 | Xong       |
+| **Toàn dự án**          |                                            | **184** | **188** | **98%**    |
 
 ## Cách cập nhật
 
@@ -433,6 +433,34 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
     - Khi giáo viên giao nhiều chế độ học (4-9 chế độ), cụm điểm từng chế độ được đưa vào container cuộn ngang mượt mà (`overflow-x-auto whitespace-nowrap scrollbar-thin`), các badge giữ `shrink-0` giúp chiều cao các dòng dữ liệu luôn đồng đều, không bị phình to làm vỡ layout.
   - **Căn chỉnh Nút Thao tác trong Bảng Dashboard Quản trị (`AdminOverview`)**:
     - Sửa lỗi nút "Ẩn" (`HideSetButton`) trong danh sách "Bộ công khai mới" bị rớt dòng và kéo dãn 100% chiều rộng trên màn hình nhỏ; chuyển sang layout `flex items-center justify-between` với tiêu đề thu gọn `truncate` và nút căn phải gọn gàng (`className="w-auto"`).
+- [x] **6.17** Tối ưu hóa Sticky Header chuẩn UX, Sticky Table Header toàn hệ thống, Debounce tìm kiếm, Cân đối chế độ học và Tối ưu Responsive di động:
+  - **Tối ưu Sticky Header chuẩn UX trên Mobile**:
+    - Header chính (`layout.tsx`): Chuyển thành `sticky top-0 z-20` trên cả mobile lẫn desktop để người dùng luôn truy cập được Logo, Đổi ngôn ngữ, Đổi Theme và Menu tài khoản.
+    - Tiêu đề trang (`page-header.tsx`): Bỏ thuộc tính `sticky top-2 sm:static` trên mobile, để tiêu đề cuộn tự nhiên cùng nội dung, tránh chiếm dụng không gian màn hình dọc khi đã có Bottom Navigation ở đáy.
+  - **Ghim tiêu đề bảng dữ liệu (Sticky Table Header) toàn hệ thống (`DataTableHeader`)**:
+    - Toàn bộ tiêu đề cột của mọi bảng dữ liệu (`DataTableHeader`) được cấu hình `sticky top-0 z-10 bg-surface`, ghim cố định ngay ở đỉnh khung cuộn dữ liệu của `ListPanel`.
+    - Áp dụng cấu hình cuộn `overflow-x-auto` trên `DataTableContainer`, vừa đảm bảo cuộn ngang an toàn trên màn hình hẹp vừa cho phép sticky header bám chắc ở đỉnh khi cuộn dọc danh sách.
+  - **Tìm kiếm tức thì với Debounce 300ms & Tối ưu thanh công cụ (`SetSearchForm`, `ListToolbar`)**:
+    - Bỏ nút tím "Tìm kiếm" submit thủ công, tích hợp debounce 300ms tự động lọc khi gõ phím và phản hồi ngay lập tức khi ấn Enter.
+    - Mở rộng thanh tìm kiếm tràn hết phần dư (`flex-1 min-w-0`), thêm icon kính lúp bên trong (`pl-9`).
+    - Khắc phục lỗi chữ bị đè lên dropdown "Mới cập nhật" / "Recently updated" bằng cách căn chỉnh độ rộng tối thiểu và `shrink-0`.
+  - **Cuộn ngang chống rớt dòng cho các tab lọc (`ListToolbar`, `AdminClasses`, `ClassDetail`)**:
+    - Bổ sung tiện ích `.no-scrollbar` trong `globals.css` và áp dụng `overflow-x-auto no-scrollbar py-0.5 sm:flex-wrap` kèm `shrink-0 whitespace-nowrap` cho danh sách tab lọc trên toàn bộ các bảng quản trị và chi tiết lớp học, giải quyết dứt điểm hiện tượng các tab bị rớt dòng lộn xộn trên màn hình nhỏ.
+  - **Cân đối chế độ học & Đưa TEST, SPEAK vào Ôn tập**:
+    - Bộ chọn chế độ ôn tập (`ReviewModePicker` trong `due-sets.tsx`): Phân bổ 3 chế độ/hàng trên PC (`md:grid-cols-3`) và 2 chế độ/hàng trên mobile (`grid-cols-2`).
+    - Bổ sung 2 chế độ `TEST` (Kiểm tra) và `SPEAK` (Luyện nói) vào chuỗi ôn tập `REVIEW_MODES` (tổng cộng đủ 9 chế độ học).
+    - Lưới kỹ năng trang chi tiết bộ từ (`StudyModeGrid`): Điều chỉnh hiển thị **1 hàng** trên mobile (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`), loại bỏ hoàn toàn hiện tượng bẻ đôi từ ngữ ("Flashca\nrd").
+  - **Đồng bộ chia đôi bộ lọc trang Bộ từ trên Mobile (`MySets`)**:
+    - Gộp 2 dropdown "Phạm vi hiển thị" và "Sắp xếp" vào container `grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3`, chia đôi 50/50 trên một hàng ngang ở mobile thay vì chiếm 2 hàng dọc.
+  - **Khắc phục lỗi Responsive cụm nút thao tác chi tiết bộ từ (`SetOwnerActions`, `ToggleVisibilityButton`)**:
+    - Chuẩn hóa đồng bộ chiều cao 36px (`h-9`), padding `px-2.5 sm:px-3`, kích thước chữ `text-small` và `whitespace-nowrap`, `truncate` cho nút "Sửa", nút "Công khai / Riêng tư" và nút ba chấm (`size-9`), xóa bỏ hoàn toàn hiện tượng nút bị kéo to thô kệch và vỡ chữ ("Công \n khai").
+  - **Chuẩn hóa nút Sao chép mã lớp dùng chung (`JoinCodeBadge`)**:
+    - Tách component độc lập `JoinCodeBadge` và đồng bộ 100% style pill bo góc tím nhạt (`bg-primary-soft`, `text-primary`, icon `Copy` -> `Check` khi sao chép kèm toast) giữa bảng giáo viên bên ngoài (`TeacherClasses`) và trang chi tiết lớp học bên trong (`ClassDetail`).
+  - **Sửa lỗi Điều hướng khi bấm vào bộ từ ở trang Ôn tập**:
+    - Sửa `href` thẻ bộ từ trong `due-sets.tsx` trỏ trực tiếp đến `reviewHref(setId, modes)` thay vì trang quản lý bộ từ.
+    - Cập nhật `AppNav` hỗ trợ nhận diện ngữ cảnh Ôn tập (`fromReview`: `?from=review`, `?due=...`, `?review=...`), đảm bảo tab "Ôn tập" luôn giữ trạng thái active trên navbar trong suốt phiên ôn thẻ và nút quay lại hiển thị "Quay lại Ôn tập".
+  - **Khắc phục chồng đè cột bảng lớp học giáo viên (`TeacherClasses`)**:
+    - Tinh chỉnh lại template `TEACHER_CLASS_GRID` và container `minWidth="min-w-[800px]"`, xử lý `truncate` và `whitespace-nowrap` hợp lý.
 
 ## Quyết định cần chốt
 

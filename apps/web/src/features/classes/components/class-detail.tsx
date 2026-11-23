@@ -37,6 +37,7 @@ import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { FormDialog } from '@/components/common/form-dialog';
 import { FormField, TextareaField } from '@/components/common/form-field';
+import { JoinCodeBadge } from './join-code-badge';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
@@ -261,21 +262,7 @@ function ClassHeader({ klass }: { klass: Class }) {
           {t('detail.members', { count: klass.memberCount })}
         </span>
         <span aria-hidden>·</span>
-        <span className="flex items-center gap-1">
-          <span className="rounded-sm bg-primary-soft px-2 py-0.5 font-mono text-tiny font-bold tracking-wider text-primary">
-            <span className="sr-only">{t('codeLabel')}</span>
-            {klass.joinCode}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t('copy.label', { code: klass.joinCode })}
-            onClick={() => void copyCode(klass.joinCode)}
-            className="size-7 text-text-muted hover:text-primary"
-          >
-            <Copy aria-hidden className="size-3.5" />
-          </Button>
-        </span>
+        <JoinCodeBadge code={klass.joinCode} />
         {archived ? (
           <>
             <span aria-hidden>·</span>
@@ -342,7 +329,7 @@ function TabLink({ href, current, children }: { href: Route; current: boolean; c
     <Link
       href={href}
       aria-current={current ? 'page' : undefined}
-      className="-mb-px inline-flex min-h-11 items-center border-b-2 border-transparent px-3 font-medium text-text-muted transition-colors duration-fast ease-standard hover:text-primary aria-[current=page]:border-primary aria-[current=page]:text-primary"
+      className="-mb-px inline-flex min-h-11 shrink-0 whitespace-nowrap items-center border-b-2 border-transparent px-3 font-medium text-text-muted transition-colors duration-fast ease-standard hover:text-primary aria-[current=page]:border-primary aria-[current=page]:text-primary"
     >
       {children}
     </Link>
@@ -421,7 +408,10 @@ export function ClassDetail({ id }: { id: string }) {
     <>
       <BackLink href="/classes" label={t('detail.backToClasses')} />
       <ClassHeader klass={klass.data} />
-      <nav aria-label={t('detail.sections')} className="flex gap-1 border-b border-border">
+      <nav
+        aria-label={t('detail.sections')}
+        className="flex items-center gap-1 border-b border-border overflow-x-auto no-scrollbar"
+      >
         <TabLink href={classHref({ tab: 'assignments' })} current={tab === 'assignments'}>
           {t('detail.assignmentsTab')}
         </TabLink>

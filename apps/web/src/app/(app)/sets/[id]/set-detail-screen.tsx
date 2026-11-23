@@ -22,6 +22,7 @@ export function SetDetailScreen({ id }: { id: string }) {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const fromExplore = searchParams.get('from') === 'explore';
+  const fromReview = searchParams.get('from') === 'review';
   const user = useAuthStore((state) => state.user);
 
   return (
@@ -29,6 +30,9 @@ export function SetDetailScreen({ id }: { id: string }) {
       id={id}
       fromExplore={fromExplore}
       renderBack={(set) => {
+        if (fromReview) {
+          return <BackLink href="/review" label={t('pages.backToReview')} />;
+        }
         if (fromExplore) {
           return <BackLink href="/explore" label={t('pages.backToExplore')} />;
         }

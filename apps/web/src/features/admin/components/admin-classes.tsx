@@ -2,7 +2,16 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AdminClassItem, AdminTeacherItem, AdminUnassignedStudent } from '@vocab/shared';
-import { ChevronDown, Lock, School, Unlock, UserCheck, UserMinus, Users } from 'lucide-react';
+import {
+  ChevronDown,
+  Lock,
+  School,
+  Search,
+  Unlock,
+  UserCheck,
+  UserMinus,
+  Users,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -583,7 +592,7 @@ export function AdminClasses() {
         toolbar={
           <div className="flex flex-col gap-3">
             {/* Tabs lọc trạng thái lớp */}
-            <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-border pb-2 sm:flex-wrap">
               {(['all', 'has_classes', 'no_classes'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -593,7 +602,7 @@ export function AdminClasses() {
                     setTeacherPage(1);
                   }}
                   className={cn(
-                    'rounded-md px-3 py-1.5 text-small font-medium transition-colors',
+                    'shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-small font-medium transition-colors',
                     teacherStatusTab === tab
                       ? 'bg-primary text-primary-fg shadow-sm'
                       : 'text-text-muted hover:bg-surface-elevated hover:text-text',
@@ -607,6 +616,10 @@ export function AdminClasses() {
             {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <div className="relative w-full flex-1">
+                <Search
+                  aria-hidden
+                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted"
+                />
                 <Input
                   type="search"
                   placeholder={t('classes.searchTeacherPlaceholder')}
@@ -615,7 +628,7 @@ export function AdminClasses() {
                     setTeacherFilter(e.target.value);
                     setTeacherPage(1);
                   }}
-                  className="w-full"
+                  className="w-full pl-9"
                 />
               </div>
               <div className="w-full sm:w-56 shrink-0">
@@ -685,7 +698,7 @@ export function AdminClasses() {
         toolbar={
           <div className="flex flex-col gap-3">
             {/* Tabs lọc trạng thái tài khoản */}
-            <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-border pb-2 sm:flex-wrap">
               {(['all', 'active', 'locked'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -695,7 +708,7 @@ export function AdminClasses() {
                     setUnassignedPage(1);
                   }}
                   className={cn(
-                    'rounded-md px-3 py-1.5 text-small font-medium transition-colors',
+                    'shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-small font-medium transition-colors',
                     unassignedStatus === tab
                       ? 'bg-primary text-primary-fg shadow-sm'
                       : 'text-text-muted hover:bg-surface-elevated hover:text-text',
@@ -709,6 +722,10 @@ export function AdminClasses() {
             {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <div className="relative w-full flex-1">
+                <Search
+                  aria-hidden
+                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-text-muted"
+                />
                 <Input
                   type="search"
                   placeholder={t('classes.searchUnassignedPlaceholder')}
@@ -717,7 +734,7 @@ export function AdminClasses() {
                     setUnassignedFilter(e.target.value);
                     setUnassignedPage(1);
                   }}
-                  className="w-full"
+                  className="w-full pl-9"
                 />
               </div>
               <div className="w-full sm:w-56 shrink-0">

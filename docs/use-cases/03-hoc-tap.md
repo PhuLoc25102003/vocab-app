@@ -87,10 +87,10 @@
 
 ## UC-L10. Ôn hôm nay
 
-- **Việc:** 1.13, 1.27, 1.45, 5.28, 5.36. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
+- **Việc:** 1.13, 1.27, 1.45, 5.28, 5.36, 6.17. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** tổng số thẻ đến hạn, danh sách bộ có thẻ đến hạn, phân trang, chọn chế độ ôn, phiên chỉ gồm thẻ đến hạn.
 - **Luồng chính:** mở trang, chọn bộ và chế độ, ôn xong thì số thẻ giảm.
-- **Nhiều chế độ (5.28, 5.36):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình:
+- **Nhiều chế độ (5.28, 5.36, 6.17):** ô "Ôn bằng chế độ" cho chọn một, nhiều hoặc tất cả chế độ theo thứ tự (mặc định chỉ Flashcard, hỗ trợ đủ 9 chế độ gồm cả Kiểm tra `TEST` và Luyện nói `SPEAK`). Thẻ bộ từ liên kết trực tiếp vào phiên ôn bài (`reviewHref`). Thanh điều hướng `AppNav` giữ active mục "Ôn tập" trong suốt phiên ôn (`fromReview`). Chọn nhiều thì các phiên chạy nối tiếp như lộ trình:
   - Thanh bước ở đầu (`ReviewSteps` / `header`) hiển thị các chế độ đã chọn, đánh dấu chế độ đã học (check xanh), chế độ đang học (nổi bật) và chế độ kế tiếp.
   - Sau phiên đầu tiên, danh sách thẻ của phiên đầu được lưu trong `sessionStorage` (`vocab.review-cards:<setId>`) và chuỗi chế độ (`vocab.review-chain:<setId>`) để các chế độ tiếp theo ôn đúng tập thẻ này mà không bị lỗi hết thẻ do thẻ đã được dời lịch.
   - Khi hoàn thành từng chế độ, màn kết quả có nút chuyển sang chế độ tiếp theo (`chainHref`), tự động cập nhật danh sách chế độ còn lại trong query param `next`.

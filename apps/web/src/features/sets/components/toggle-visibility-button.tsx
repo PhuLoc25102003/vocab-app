@@ -6,6 +6,7 @@ import { Globe, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { formErrorMessage } from '@/lib/form-errors';
 import { updateSet } from '../api';
 
@@ -32,8 +33,10 @@ export function useToggleVisibility(set: Pick<SetSummary | SetDetail, 'id' | 'vi
 
 export function ToggleVisibilityButton({
   set,
+  className,
 }: {
   set: Pick<SetSummary | SetDetail, 'id' | 'visibility'>;
+  className?: string;
 }) {
   const { t } = useTranslation('sets');
   const { nextVisibility, toggle, isPending } = useToggleVisibility(set);
@@ -44,14 +47,17 @@ export function ToggleVisibilityButton({
       variant="secondary"
       loading={isPending}
       onClick={toggle}
-      className="w-full sm:w-auto justify-center"
+      className={cn(
+        'w-full sm:w-auto justify-center gap-1.5 text-small whitespace-nowrap h-9 px-2.5 sm:px-3',
+        className,
+      )}
     >
       {isGoingPrivate ? (
         <Lock aria-hidden className="size-4 shrink-0" />
       ) : (
         <Globe aria-hidden className="size-4 shrink-0" />
       )}
-      <span aria-hidden="true" className="sm:hidden">
+      <span aria-hidden="true" className="truncate sm:hidden">
         {t(isGoingPrivate ? 'actions.makePrivateShort' : 'actions.makePublicShort')}
       </span>
       <span className="sr-only sm:not-sr-only">

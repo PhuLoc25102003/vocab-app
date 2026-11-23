@@ -113,33 +113,35 @@ export function MySets({ renderCardActions, renderContextMenu, renderCard }: MyS
               onSearch={(value) => router.push(listHref({ ...state, q: value }))}
             />
           </div>
-          <div className="w-full sm:w-44">
-            <Select
-              aria-label={t('mine.filterVisibility')}
-              value={visibility}
-              onChange={(event) =>
-                router.push(listHref({ ...state, visibility: event.target.value }))
-              }
-            >
-              {VISIBILITY_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {t(label)}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div className="w-full sm:w-44">
-            <Select
-              aria-label={t('mine.sort')}
-              value={sort}
-              onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
-            >
-              {SORT_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {t(label)}
-                </option>
-              ))}
-            </Select>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+            <div className="w-full sm:w-48 shrink-0">
+              <Select
+                aria-label={t('mine.filterVisibility')}
+                value={visibility}
+                onChange={(event) =>
+                  router.push(listHref({ ...state, visibility: event.target.value }))
+                }
+              >
+                {VISIBILITY_OPTIONS.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {t(label)}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className="w-full sm:w-52 shrink-0">
+              <Select
+                aria-label={t('mine.sort')}
+                value={sort}
+                onChange={(event) => router.push(listHref({ ...state, sort: event.target.value }))}
+              >
+                {SORT_OPTIONS.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {t(label)}
+                  </option>
+                ))}
+              </Select>
+            </div>
           </div>
         </div>
       ) : null}

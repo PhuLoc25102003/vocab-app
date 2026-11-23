@@ -11,7 +11,7 @@ import {
   type ClassListItem,
   type CreateClassInput,
 } from '@vocab/shared';
-import { Check, ChevronRight, Copy, Plus, Users } from 'lucide-react';
+import { ChevronRight, Plus, Users } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -136,42 +136,10 @@ export function CreateClassDialog({
   );
 }
 
-function JoinCodeBadge({ code }: { code: string }) {
-  const { t } = useTranslation('classes');
-  const [copied, setCopied] = useState(false);
-  const copy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      toast.success(t('copy.done', { code }));
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error(t('copy.failedManual'));
-    }
-  };
+import { JoinCodeBadge } from './join-code-badge';
 
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      title={t('copy.label', { code })}
-      aria-label={t('copy.label', { code })}
-      className="relative z-20 inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary-soft px-2.5 py-1 font-mono text-tiny font-bold tracking-wider text-primary shadow-2xs transition-all hover:border-primary hover:bg-primary hover:text-primary-fg active:scale-95 cursor-pointer"
-    >
-      <span className="sr-only">{t('codeLabel')}</span>
-      <span>{code}</span>
-      {copied ? (
-        <Check aria-hidden className="size-3.5 shrink-0 text-success" />
-      ) : (
-        <Copy aria-hidden className="size-3.5 shrink-0 opacity-80" />
-      )}
-    </button>
-  );
-}
-
-const TEACHER_CLASS_GRID = 'minmax(220px, 1.4fr) 90px 100px 140px 170px';
+const TEACHER_CLASS_GRID =
+  'minmax(220px, 1.4fr) minmax(110px, 0.8fr) minmax(160px, 1.1fr) minmax(180px, 1.2fr) minmax(130px, 0.8fr)';
 
 /** Thẻ hàng: cả thẻ mở trang lớp, riêng nút sao chép mã nằm trên lớp link. */
 function ClassRow({ item }: { item: ClassListItem }) {
@@ -204,18 +172,18 @@ function ClassRow({ item }: { item: ClassListItem }) {
         </span>
       </DataTableCell>
 
-      <DataTableCell className="flex items-center gap-1.5 text-small tabular-nums text-text-muted">
+      <DataTableCell className="flex items-center gap-1.5 text-small tabular-nums text-text-muted whitespace-nowrap">
         <Users aria-hidden className="size-4 shrink-0 text-text-muted" />
         <span>{t('teacher.members', { count: item.memberCount })}</span>
       </DataTableCell>
 
-      <DataTableCell className="text-small tabular-nums text-text-muted">
+      <DataTableCell className="text-small tabular-nums text-text-muted whitespace-nowrap">
         {t('teacher.openCount', { count: item.openAssignmentCount })}
       </DataTableCell>
 
-      <DataTableCell className="flex flex-col gap-1 text-small text-text-muted">
+      <DataTableCell className="flex flex-col gap-1 text-small text-text-muted min-w-0">
         {item.onTimeRate === null ? (
-          <span>{t('teacher.noClosed')}</span>
+          <span className="truncate">{t('teacher.noClosed')}</span>
         ) : (
           <div className="flex items-center gap-2">
             <span
@@ -224,11 +192,11 @@ function ClassRow({ item }: { item: ClassListItem }) {
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={item.onTimeRate}
-              className="h-1.5 w-14 overflow-hidden rounded-full bg-border"
+              className="h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-border"
             >
               <span className="block h-full bg-primary" style={{ width: `${item.onTimeRate}%` }} />
             </span>
-            <span className="tabular-nums font-medium text-text">
+            <span className="tabular-nums font-medium text-text whitespace-nowrap">
               {t('teacher.onTime', { rate: item.onTimeRate })}
             </span>
           </div>
@@ -294,7 +262,7 @@ function ClassList({ view }: { view: ClassesView }) {
     }
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[720px]">
+      <DataTableContainer minWidth="min-w-[800px]">
         <DataTableHeader
           gridTemplateColumns={TEACHER_CLASS_GRID}
           columns={[
