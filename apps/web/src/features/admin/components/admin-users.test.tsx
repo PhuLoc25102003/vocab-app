@@ -29,6 +29,9 @@ const user = (overrides: Partial<AdminUser>): AdminUser => ({
   lockedAt: null,
   lockReason: null,
   lockedById: null,
+  isOnline: false,
+  lastActiveAt: null,
+  recentSets: [],
   ...overrides,
 });
 const page = (data: AdminUser[]) => ({ data, meta: { page: 1, limit: 20, total: data.length } });
@@ -166,5 +169,38 @@ describe('AdminUsers', () => {
     );
 
     await waitFor(() => expect(setUserRole).toHaveBeenCalledWith('u1', 'STUDENT'));
+  });
+
+  it('hiển thị trạng thái online và mở xem các bộ từ học gần đây', async () => {
+    vi.mocked(listAdminUsers).mockResolvedValue(
+      page([
+        user({
+          id: 'u2',
+          displayName: 'Mai',
+          email: 'mai@example.com',
+          isOnline: true,
+          recentSets: [
+            {
+              setId: 's1',
+              title: 'Unit 1 Leisure time',
+              mode: 'flashcards',
+              startedAt: new Date('2026-11-20T10:00:00Z'),
+              correct: 10,
+              total: 10,
+            },
+          ],
+        }),
+      ]),
+    );
+    renderPage();
+
+    expect(await screen.findByText('Online')).toBeInTheDocument();
+    const btn = screen.getByRole('button', { name: '1 bộ gần đây' });
+    expect(btn).toBeInTheDocument();
+    await userEvent.click(btn);
+
+    expect(await screen.findByText('Bộ từ gần đây của Mai')).toBeInTheDocument();
+    expect(screen.getByText('Unit 1 Leisure time')).toBeInTheDocument();
+    expect(screen.getByText(/Đúng 10\/10 câu/)).toBeInTheDocument();
   });
 });

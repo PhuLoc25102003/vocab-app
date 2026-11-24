@@ -6,7 +6,7 @@ import { paginationMetaSchema, paginationSchema } from './pagination';
 export const LOCK_REASON_MAX_LENGTH = 500;
 
 /** Lọc theo trạng thái tài khoản ở trang Quản lý người dùng. */
-export const adminUserStatusSchema = z.enum(['active', 'locked']);
+export const adminUserStatusSchema = z.enum(['active', 'locked', 'online']);
 export type AdminUserStatus = z.infer<typeof adminUserStatusSchema>;
 
 export const ADMIN_USER_SORTS = ['-createdAt', 'createdAt', 'displayName', 'email'] as const;
@@ -188,6 +188,17 @@ export type LockUserDto = z.infer<typeof lockUserSchema>;
 export const setUserRoleSchema = z.object({ role: roleSchema });
 export type SetUserRoleDto = z.infer<typeof setUserRoleSchema>;
 
+/** Thông tin một bộ từ học gần đây của người dùng cho ADMIN theo dõi */
+export const adminRecentStudySetSchema = z.object({
+  setId: z.string(),
+  title: z.string(),
+  mode: z.string(),
+  startedAt: z.coerce.date(),
+  correct: z.number().int(),
+  total: z.number().int(),
+});
+export type AdminRecentStudySet = z.infer<typeof adminRecentStudySetSchema>;
+
 export const adminUserSchema = z.object({
   id: z.string(),
   email: z.string(),
@@ -197,6 +208,9 @@ export const adminUserSchema = z.object({
   lockedAt: z.coerce.date().nullable(),
   lockReason: z.string().nullable(),
   lockedById: z.string().nullable(),
+  isOnline: z.boolean().default(false),
+  lastActiveAt: z.coerce.date().nullable().optional(),
+  recentSets: z.array(adminRecentStudySetSchema).default([]),
 });
 export type AdminUser = z.infer<typeof adminUserSchema>;
 

@@ -90,13 +90,24 @@
     },
     "status": {
       "all": "All",
+      "online": "Online",
       "active": "Active",
       "locked": "Locked"
     },
     "thUser": "User",
     "thStatus": "Status",
+    "thRecentSets": "Recent sets",
     "thRole": "Role",
-    "thAction": "Action"
+    "thAction": "Action",
+    "online": "Online",
+    "offline": "Offline",
+    "recentSetsCount": "{{count}} recent sets",
+    "noRecentSetsBrief": "None",
+    "recentSetsTitle": "Recent study sets of {{name}}",
+    "noRecentSets": "No recent study activity.",
+    "viewSet": "View set",
+    "studyScore": "Score: {{correct}}/{{total}}",
+    "close": "Close"
   },
   "hide": {
     "unhidden": "Set unhidden",

@@ -74,7 +74,8 @@
     "tagSmooth": "Rất mượt",
     "inAppTip": "Mẹo: Nếu bạn mở link từ Zalo hoặc Facebook, hãy bấm dấu ba chấm (...) ở góc trên cùng màn hình và chọn 'Mở bằng trình duyệt' để chuyển sang Chrome hoặc Safari.",
     "gotIt": "Đã hiểu",
-    "unsupportedBadge": "Trình duyệt chưa hỗ trợ nói - Bấm xem hướng dẫn"
+    "unsupportedBadge": "Trình duyệt chưa hỗ trợ nói - Bấm xem hướng dẫn",
+    "viewSupportedBrowsers": "Xem danh sách trình duyệt được hỗ trợ giọng nói"
   },
   "test": {
     "intro": "Trả lời hết rồi nộp bài. Bài chỉ được chấm sau khi nộp.",

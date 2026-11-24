@@ -35,6 +35,14 @@ function recognitionConstructor(): RecognitionConstructor | null {
   if (typeof window === 'undefined') {
     return null;
   }
+  // Các trình duyệt nhúng (in-app WebView) hoặc trình duyệt OEM nội bộ thường không hỗ trợ Google Speech Service
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  const isKnownUnsupportedBrowser =
+    /Zalo|FBAN|FBAV|Instagram|MicroMessenger|VivoBrowser|vivo|HeyTapBrowser|MiuiBrowser/i.test(ua);
+  if (isKnownUnsupportedBrowser) {
+    return null;
+  }
+
   const scope = window as unknown as Record<string, RecognitionConstructor | undefined>;
   return scope.SpeechRecognition ?? scope.webkitSpeechRecognition ?? null;
 }
@@ -81,11 +89,15 @@ export function listenOnce(lang: string, signal?: AbortSignal): Promise<string[]
     };
     recognition.onerror = ({ error }) => {
       const reason: ListenFailure =
-        error === 'not-allowed' || error === 'service-not-allowed'
+        error === 'not-allowed'
           ? 'denied'
-          : error === 'no-speech'
-            ? 'no-speech'
-            : 'failed';
+          : error === 'service-not-allowed' ||
+              error === 'audio-capture' ||
+              error === 'language-not-supported'
+            ? 'unsupported'
+            : error === 'no-speech'
+              ? 'no-speech'
+              : 'failed';
       finish(() => reject(new ListenError(reason)));
     };
     recognition.onend = () => finish(() => reject(new ListenError('no-speech')));
@@ -100,7 +112,7 @@ export function listenOnce(lang: string, signal?: AbortSignal): Promise<string[]
     try {
       recognition.start();
     } catch {
-      finish(() => reject(new ListenError('failed')));
+      finish(() => reject(new ListenError('unsupported')));
     }
   });
 }
