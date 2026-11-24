@@ -106,6 +106,7 @@ function RemoveOfflineDialog({
 
 /** Tải bộ từ về máy để xem khi mất mạng, hoặc xoá bản đã tải. */
 export function OfflineToggle({ set }: { set: SetDetail }) {
+  const { t } = useTranslation('sets');
   const offline = useOfflineSet(set);
   const [confirming, setConfirming] = useState(false);
   const { label, Icon, busy, state } = offline;
@@ -115,6 +116,7 @@ export function OfflineToggle({ set }: { set: SetDetail }) {
         variant="secondary"
         loading={busy && !confirming}
         onClick={() => (state === 'saved' ? setConfirming(true) : void offline.save())}
+        title={t('offline.tooltip')}
         className="w-full sm:w-auto justify-center gap-1.5 text-small whitespace-nowrap h-9 px-2.5 sm:px-3"
       >
         <Icon aria-hidden className="size-4 shrink-0" />

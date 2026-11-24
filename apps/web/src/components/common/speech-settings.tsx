@@ -9,7 +9,6 @@ import {
   DEFAULT_SPEECH_SETTINGS,
   hasExactVoice,
   isNativeSpeechSupported,
-  isSpeechSupported,
   loadSpeechSettings,
   saveSpeechSettings,
   speak,

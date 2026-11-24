@@ -1,17 +1,25 @@
 'use client';
 
-import { getMode, gradeText, type GradeResult, type UserAnswer } from '@vocab/shared';
-import { Check, Mic, Square, X } from 'lucide-react';
+import {
+  getMode,
+  gradeSpokenText,
+  normalizeSpokenText,
+  type GradeResult,
+  type UserAnswer,
+} from '@vocab/shared';
+import { AlertCircle, Check, Mic, Square, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { CardImage } from '@/components/common/card-image';
 import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { isRecognitionSupported, ListenError, listenOnce } from '@/lib/speech-recognition';
+import { loadSpeechSettings } from '@/lib/speech';
 import { cn } from '@/lib/utils';
 import type { StudyModeProps } from '../views';
 import { playCorrectSound } from '@/lib/sound';
 import { useTranslation } from 'react-i18next';
+import { UnsupportedSpeechDialog } from './unsupported-speech-dialog';
 
 const FAILURE_MESSAGES = {
   unsupported: 'speak.unsupported',
@@ -30,9 +38,8 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<string | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
-  const [failure, setFailure] = useState<keyof typeof FAILURE_MESSAGES | null>(
-    supported ? null : 'unsupported',
-  );
+  const [failure, setFailure] = useState<keyof typeof FAILURE_MESSAGES | null>(null);
+  const [unsupportedModalOpen, setUnsupportedModalOpen] = useState(false);
   const shownAt = useRef(0);
   const first = useRef<UserAnswer | null>(null);
   const answered = useRef(false);
@@ -45,15 +52,23 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
   }, []);
 
   const speakNow = async () => {
+    if (!supported) {
+      setUnsupportedModalOpen(true);
+      return;
+    }
     const controller = new AbortController();
     listen.current = controller;
     setListening(true);
     setFailure(null);
     try {
-      const transcripts = await listenOnce(languages.term, controller.signal);
-      // Lấy câu khớp từ đích nếu có trong các phương án, không thì lấy câu chắc chắn nhất.
+      const userAccent = loadSpeechSettings().accent ?? 'en-US';
+      const recognitionLang = languages.term === 'en' ? userAccent : languages.term;
+      const transcripts = await listenOnce(recognitionLang, controller.signal);
+      // Ưu tiên phương án khớp chính xác tuyệt đối trước, sau đó tới các phương án dung sai âm học
+      const expectedNorm = normalizeSpokenText(question.expected);
       const value =
-        transcripts.find((text) => gradeText(question.expected, text).isCorrect) ??
+        transcripts.find((text) => normalizeSpokenText(text) === expectedNorm) ??
+        transcripts.find((text) => gradeSpokenText(question.expected, text).isCorrect) ??
         transcripts[0] ??
         '';
       const answer = { questionId: question.id, value, timeMs: Date.now() - shownAt.current };
@@ -78,6 +93,10 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
   };
 
   const toggleMic = () => {
+    if (!supported) {
+      setUnsupportedModalOpen(true);
+      return;
+    }
     if (listening) {
       listen.current?.abort();
     } else {
@@ -153,30 +172,47 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
         ) : null}
         {failure ? <FormError>{t(FAILURE_MESSAGES[failure])}</FormError> : null}
 
-        {supported && !result?.isCorrect ? (
+        {!result?.isCorrect ? (
           <div className="flex flex-col items-center gap-2 pt-2">
-            {/* Một nút duy nhất đổi vai trò Nói, Dừng nên focus bàn phím không bị mất. */}
+            {/* Một nút duy nhất đổi vai trò Nói, Dừng hoặc Mở modal hướng dẫn khi trình duyệt chưa hỗ trợ */}
             <button
               type="button"
               onClick={toggleMic}
               aria-label={t(
-                listening ? 'speak.stop' : heard === null ? 'speak.start' : 'speak.retry',
+                !supported
+                  ? 'speak.unsupportedDialogTitle'
+                  : listening
+                    ? 'speak.stop'
+                    : heard === null
+                      ? 'speak.start'
+                      : 'speak.retry',
               )}
               className={cn(
-                'flex size-16 items-center justify-center rounded-full border-2 border-primary transition-colors duration-fast ease-standard',
-                listening
-                  ? 'mic-listening bg-primary text-primary-fg'
-                  : 'bg-primary-soft text-primary hover:bg-primary hover:text-primary-fg',
+                'flex size-16 items-center justify-center rounded-full border-2 transition-colors duration-fast ease-standard shadow-sm',
+                !supported
+                  ? 'border-warning/70 bg-warning-soft text-warning hover:bg-warning hover:text-warning-fg'
+                  : listening
+                    ? 'mic-listening border-primary bg-primary text-primary-fg'
+                    : 'border-primary bg-primary-soft text-primary hover:bg-primary hover:text-primary-fg',
               )}
             >
-              {listening ? (
+              {!supported ? (
+                <AlertCircle aria-hidden className="size-7" />
+              ) : listening ? (
                 <Square aria-hidden className="size-5 fill-current" />
               ) : (
                 <Mic aria-hidden className="size-7" />
               )}
             </button>
             <p role="status" className="text-center text-small font-medium">
-              {listening ? (
+              {!supported ? (
+                <span
+                  className="text-warning font-semibold cursor-pointer"
+                  onClick={() => setUnsupportedModalOpen(true)}
+                >
+                  {t('speak.unsupportedBadge')}
+                </span>
+              ) : listening ? (
                 <span className="inline-flex items-center gap-1 text-primary">
                   <Mic aria-hidden className="size-4" />
                   {t('speak.listening')}
@@ -190,6 +226,8 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
           </div>
         ) : null}
       </div>
+
+      <UnsupportedSpeechDialog open={unsupportedModalOpen} onOpenChange={setUnsupportedModalOpen} />
 
       <div className="mt-auto flex flex-col">
         <Button

@@ -70,12 +70,17 @@ const answerAll = async () => {
 describe('StudyShell', () => {
   beforeEach(() => {
     window.sessionStorage.clear();
+    window.localStorage.clear();
+    window.localStorage.setItem('vocab.study.shuffle', 'false');
     useStudyStore.setState({
       session: null,
       questions: [],
+      originalQuestions: [],
       position: 0,
+      recorded: -1,
       pending: [],
       result: null,
+      shuffle: false,
     });
   });
 
@@ -177,5 +182,23 @@ describe('StudyShell', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Thử lại' }));
 
     expect(await screen.findByRole('button', { name: 'Trả lời apple' })).toBeInTheDocument();
+  });
+
+  it('mặc định trộn câu hỏi ngẫu nhiên và có nút chuyển đổi thứ tự gốc', async () => {
+    window.localStorage.clear();
+    useStudyStore.setState({ shuffle: true });
+    setup();
+
+    const shuffleBtn = await screen.findByRole('button', { name: /Ngẫu nhiên|Thứ tự gốc/ });
+    expect(shuffleBtn).toBeInTheDocument();
+    expect(shuffleBtn).toHaveAttribute('aria-label', 'Ngẫu nhiên');
+
+    await userEvent.click(shuffleBtn);
+    expect(await screen.findByRole('button', { name: 'Thứ tự gốc' })).toBeInTheDocument();
+    expect(window.localStorage.getItem('vocab.study.shuffle')).toBe('false');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Thứ tự gốc' }));
+    expect(await screen.findByRole('button', { name: 'Ngẫu nhiên' })).toBeInTheDocument();
+    expect(window.localStorage.getItem('vocab.study.shuffle')).toBe('true');
   });
 });

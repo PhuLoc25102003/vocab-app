@@ -18,9 +18,30 @@ interface BeginOptions {
   progress?: StudyProgress;
 }
 
+export function shuffleArray<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = result[i]!;
+    result[i] = result[j]!;
+    result[j] = temp;
+  }
+  return result;
+}
+
+export function getSavedShuffle(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    return window.localStorage.getItem('vocab.study.shuffle') !== 'false';
+  } catch {
+    return true;
+  }
+}
+
 interface StudyState {
   session: StudySession | null;
   questions: Question[];
+  originalQuestions: Question[];
   languages: StudyLanguages;
   position: number;
   /** Vị trí câu đã ghi nhận đáp án nhưng người học chưa sang câu sau. */
@@ -29,6 +50,8 @@ interface StudyState {
   pending: UserAnswer[];
   result: SessionResult | null;
   snapshotKey: string | null;
+  shuffle: boolean;
+  toggleShuffle: () => void;
   begin: (started: StartedSession, options?: BeginOptions) => void;
   record: (answer: UserAnswer) => void;
   answer: (answer: UserAnswer) => void;
@@ -36,20 +59,57 @@ interface StudyState {
   finish: (result: SessionResult) => void;
 }
 
-export const useStudyStore = create<StudyState>((set) => ({
+export const useStudyStore = create<StudyState>((set, get) => ({
   session: null,
   questions: [],
+  originalQuestions: [],
   languages: { term: 'en', definition: 'vi' },
   position: 0,
   recorded: NOT_RECORDED,
   pending: [],
   result: null,
   snapshotKey: null,
+  shuffle: getSavedShuffle(),
+  toggleShuffle: () => {
+    const state = get();
+    const newShuffle = !state.shuffle;
+    try {
+      window.localStorage.setItem('vocab.study.shuffle', String(newShuffle));
+    } catch {
+      // ignore
+    }
+    const { questions, originalQuestions, position } = state;
+    if (position >= questions.length) {
+      set({ shuffle: newShuffle });
+      return;
+    }
+    const answered = questions.slice(0, position);
+    const remaining = questions.slice(position);
+    let newRemaining: Question[];
+    if (newShuffle) {
+      newRemaining = shuffleArray([...remaining]);
+    } else {
+      const origIndex = new Map(originalQuestions.map((q, idx) => [q.id, idx]));
+      newRemaining = [...remaining].sort(
+        (a, b) => (origIndex.get(a.id) ?? 0) - (origIndex.get(b.id) ?? 0),
+      );
+    }
+    set({
+      shuffle: newShuffle,
+      questions: [...answered, ...newRemaining],
+    });
+  },
   begin: ({ session, questions, languages }, { snapshotKey, progress } = {}) => {
     const position = progress?.position ?? 0;
+    const shuffle = get().shuffle;
+    const originalQuestions = [...questions];
+    // Nếu tiếp tục phiên dở (progress) thì giữ nguyên thứ tự câu đã lưu; nếu phiên mới thì trộn theo shuffle
+    const activeQuestions = progress || !shuffle ? [...questions] : shuffleArray([...questions]);
+
     set({
       session,
-      questions,
+      questions: activeQuestions,
+      originalQuestions,
       languages,
       // Câu đã chấm trước khi tải lại không phải trả lời lần nữa.
       position: progress?.recorded === position ? position + 1 : position,

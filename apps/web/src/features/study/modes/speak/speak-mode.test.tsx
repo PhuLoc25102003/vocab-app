@@ -131,11 +131,30 @@ describe('SpeakModeView', () => {
     expect(onAnswer.mock.calls[0]?.[0]).toMatchObject({ questionId: 'c1', value: '' });
   });
 
-  it('trình duyệt không hỗ trợ thì chỉ còn nút bỏ qua', () => {
+  it('trình duyệt không hỗ trợ vẫn hiện nút micro cảnh báo, bấm vào mở modal thông báo trình duyệt', async () => {
+    // Mock HTMLDialogElement methods in jsdom
+    HTMLDialogElement.prototype.showModal = vi.fn();
+    HTMLDialogElement.prototype.close = vi.fn();
+
     setup();
 
-    expect(screen.getByRole('alert')).toHaveTextContent('chưa nhận được giọng nói');
-    expect(screen.queryByRole('button', { name: 'Bấm để nói' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Bỏ qua' })).toBeInTheDocument();
+    // Nút micro vẫn hiện diện cho người dùng thấy có tính năng luyện nói
+    const unsupportedBtn = screen.getByRole('button', { name: /Trình duyệt chưa hỗ trợ/i });
+    expect(unsupportedBtn).toBeInTheDocument();
+    expect(
+      screen.getByText(/Trình duyệt chưa hỗ trợ nói - Bấm xem hướng dẫn/i),
+    ).toBeInTheDocument();
+
+    await userEvent.click(unsupportedBtn);
+    expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalled();
+  });
+
+  it('nhận diện chính xác khi có dấu chấm câu tự động hoặc mạo từ', async () => {
+    installRecognizer([['Apple.']]);
+    const { onChecked } = setup();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Bấm để nói' }));
+    expect(await screen.findByText(/Chính xác/)).toHaveTextContent('Bạn nói: Apple.');
+    expect(onChecked).toHaveBeenCalledWith(expect.objectContaining({ value: 'Apple.' }));
   });
 });

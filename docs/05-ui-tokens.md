@@ -146,6 +146,8 @@ Xoá mềm dùng thông báo có nút "Hoàn tác" thay cho hộp xác nhận. C
 - Ẩn điều hướng, chỉ còn nút thoát, tiến độ dạng đường kẻ cao 4 px và số `12/40`.
 - Vùng học rộng tối đa 720 px. Trên mobile, hành động chính nằm ở nửa dưới màn hình.
 - Phím tắt: `Space` lật thẻ, `1` đến `4` chọn đáp án, `Enter` gửi. Chỉ gợi ý phím tắt trên thiết bị có bàn phím.
+- Nút trộn thẻ `ShuffleToggle` (6.18): Đặt trên thanh tiêu đề `StudyFrame` cạnh tiến độ, kích thước `h-8 px-2.5`, icon `Shuffle` (bật - mặc định) và `ListOrdered` (tắt).
+- Dialog cảnh báo trình duyệt `UnsupportedSpeechDialog` (6.18): Modal hiển thị khi trình duyệt không hỗ trợ Web Speech API trong chế độ Luyện nói, gợi ý trình duyệt phù hợp.
 - Chữ nhỏ trên `.paper-grid` đặt trên nền `bg-surface` để dòng kẻ không cắt qua chữ.
 - Nút phát âm nằm cố định một vị trí trên thẻ, không làm lật thẻ khi bấm.
 

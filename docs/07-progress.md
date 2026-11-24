@@ -1,8 +1,8 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-23
+Cập nhật lần cuối: 2026-11-24
 
-**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.17 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, trung tâm quản trị toàn diện #423, giọng đọc tự nhiên #424, sticky table header và tối ưu mobile 6.17 #425). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
+**Đang ở:** Đã hoàn thành các việc 6.10 đến 6.18 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, trung tâm quản trị toàn diện #423, giọng đọc tự nhiên #424, sticky table header và tối ưu mobile 6.17 #425, tối ưu nhận diện luyện nói, modal cảnh báo trình duyệt, trộn thẻ ngẫu nhiên mặc định và tối ưu nút chi tiết bộ từ mobile 6.18 #426). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
 **Việc tiếp theo:**
 
@@ -466,6 +466,25 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
     - Nâng cấp `isSpeechSupported()` hỗ trợ nhận diện cả Web Speech API lẫn HTML5 Audio, đảm bảo biểu tượng loa phát âm luôn luôn hiển thị 100% trên mọi thiết bị và trình duyệt.
     - Xây dựng cơ chế phát âm kép Hybrid Speech: ưu tiên giọng đọc native Web Speech API (S23 Ultra, Chrome PC, iOS Safari), và tự động kích hoạt Audio fallback qua HTML5 Audio khi trình duyệt không có Web Speech hoặc thiết bị Android thiếu gói giọng đọc Google TTS.
     - Tích hợp cơ chế watchdog 1.2s tự động phát hiện và chuyển sang Audio fallback nếu engine TTS trên điện thoại bị treo hoặc không phản hồi.
+- [x] **6.18** Tối ưu nhận diện giọng nói Luyện nói, Modal cảnh báo trình duyệt, Trộn thẻ ngẫu nhiên mặc định và Tối ưu nút chi tiết bộ từ trên Mobile (#426):
+  - **Tối ưu nhận diện giọng nói Luyện nói (`SpeakMode`, `gradeSpokenText`, `speech-recognition.ts`)**:
+    - Chuẩn hoá mã ngôn ngữ nhận diện có vùng BCP-47 (`en-US` / `en-GB` theo cài đặt người dùng) thay vì mã chung `en`, giúp kích hoạt chính xác acoustic model tiếng Anh trên Chrome Android và các thiết bị di động.
+    - Mở rộng `MAX_ALTERNATIVES = 10` để tiếp nhận đầy đủ các phương án nhận diện giọng nói từ Google Speech Engine.
+    - Xây dựng thuật toán chấm điểm âm học `gradeSpokenText`:
+      - Tự động bóc tách dấu chấm câu cuối câu (`. , ! ?`) do Web Speech API tự gán.
+      - Xử lý mạo từ và cụm từ ("an apple", "the cat" cho từ đích "apple", "cat").
+      - Tách các phương án trích xuất từ ngoặc đơn và gạch chéo ("autumn (fall)" -> "autumn", "fall"; "(to) swim" -> "swim", "to swim"; "cinema / movie theater").
+      - Áp dụng khoảng cách Damerau-Levenshtein hỗ trợ hoán vị ký tự liền kề và dung sai ngữ âm (theatre/theater, colour/color, pronunciation/pronounciation) nhưng vẫn phân biệt rạch ròi số ít và số nhiều (apple vs apples).
+  - **Modal cảnh báo trình duyệt không hỗ trợ Nhận diện giọng nói (`UnsupportedSpeechDialog`, `speak-mode.tsx`)**:
+    - Nút micro luyện nói luôn luôn hiển thị trực quan trên giao diện ngay cả khi trình duyệt không hỗ trợ Web Speech Recognition.
+    - Bấm vào nút micro trên trình duyệt không hỗ trợ (Vivo Browser, Zalo / Facebook WebView...) sẽ mở modal thông báo chi tiết, kèm danh sách các trình duyệt khuyên dùng: Google Chrome (tốt nhất), Microsoft Edge, Samsung Internet, Apple Safari (iOS 14.5+), và hướng dẫn mở link ra trình duyệt ngoài khi dùng Zalo/Facebook.
+  - **Trộn thẻ ngẫu nhiên mặc định & Nút chuyển đổi thứ tự gốc (`ShuffleToggle`, `session.store`)**:
+    - Thiết lập chế độ trộn thẻ ngẫu nhiên (`shuffle: true`) làm mặc định cho toàn bộ 9 chế độ học (Flashcard, Học kỹ, Ghép thẻ, Trắc nghiệm, Tự luận, Điền từ, Nghe viết, Luyện nói, Kiểm tra).
+    - Tích hợp nút `ShuffleToggle` ngay trên thanh tiến độ của khung học (`StudyFrame`), hiển thị icon `Shuffle` kèm highlight khi đang trộn ngẫu nhiên (mặc định) và icon `ListOrdered` khi tắt để học theo thứ tự từ vựng gốc cho học sinh mới/học sinh yếu.
+    - Ghi nhớ trạng thái vào `localStorage` (`vocab.study.shuffle`) và cho phép chuyển đổi mượt mà giữa ngẫu nhiên và thứ tự gốc bất kỳ lúc nào trong phiên học.
+  - **Tối ưu khoảng cách nút và nhãn Học Offline trên Mobile (`SetDetailScreen`, `OfflineToggle`)**:
+    - Khắc phục triệt để lỗi 2 nút "Sao chép bộ từ" và "Tải về máy" bị dính sát sạt vào nhau trên màn hình di động bằng container `flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto`.
+    - Đổi nhãn nút từ "Tải về máy" thành **"Tải về học offline"** ngắn gọn, dễ hiểu ngay tính năng tải về để học khi mất mạng mà không bị dài dòng, kèm tooltip giải thích chi tiết.
 
 ## Quyết định cần chốt
 

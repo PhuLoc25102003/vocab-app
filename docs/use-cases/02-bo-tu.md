@@ -51,6 +51,7 @@ Giới hạn chung: tên bộ 200 ký tự, mô tả 2.000, từ 200, nghĩa 1.0
   - Tên, mô tả, thông tin bộ, danh sách thẻ có phát âm, 4 nút học, nút quay lại. Người xem từ Khám phá (`?from=explore`) có nút "Quay lại Khám phá" và menu chính giữ active tab "Khám phá"; từ Bộ từ có "Quay lại Bộ từ". Khi bắt đầu học lẻ hoặc học lộ trình, cờ `?from=explore` được giữ nguyên để màn hình kết quả và nút thoát hiển thị "Trở về" (`exitLabel = t('result.return')`) quay lại đúng bộ từ ở Khám phá.
   - Chủ bộ: sửa, xoá, sao chép liên kết (trong menu ba chấm ⋯), chuyển đổi nhanh trạng thái giữa Công khai và Riêng tư (`actions.makePublic` / `actions.makePrivate`). Bộ của chính mình không bao giờ hiện nút "Ẩn bộ từ".
   - Người khác: sao chép về tài khoản.
+  - Nút tải ngoại tuyến: hiển thị nhãn rõ ràng "Tải về học offline" (`OfflineToggle`) thay cho "Tải về máy", kèm tooltip giải thích lưu về máy để học khi mất mạng (6.18). Trên mobile, cụm nút thao tác của người xem (Sao chép bộ từ, Tải về học offline) dùng container `flex flex-col sm:flex-row gap-2.5` đảm bảo khoảng cách giãn cách 10px chuẩn, không bị dính sát vào nhau.
   - Quản trị viên (ADMIN): khi xem bộ của người khác có nút "Ẩn bộ từ" / "Bỏ ẩn bộ từ" (icon EyeOff/Eye). Thứ tự sắp xếp nút luôn đảm bảo nút ba chấm `[...]` ở cuối cùng bên phải (`[Sửa bộ từ]` -> `[Chuyển thành Riêng tư/Ẩn bộ từ]` -> `[...]`), không bị kẹp menu ở giữa các nút hành động chính.
   - Tiến độ của bộ: số thẻ đã thuộc, đang học, đến hạn.
 - **Luồng chính:** mở bộ, xem tiến độ, chọn chế độ học hoặc ôn thẻ đến hạn.

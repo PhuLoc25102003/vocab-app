@@ -2,16 +2,18 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ERROR_CODES, type StudyMode } from '@vocab/shared';
-import { X } from 'lucide-react';
+import { ListOrdered, Shuffle, X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useEffect, useRef, type ReactNode } from 'react';
+import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
+import { cn } from '@/lib/utils';
 import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
 import { STUDY_ROUND_SIZE, STUDY_VIEWS } from '../modes/views';
@@ -59,6 +61,47 @@ const UNAVAILABLE_CODES = new Set<string>([
   ERROR_CODES.NO_QUESTIONS_FOR_MODE,
 ]);
 
+function ShuffleToggle() {
+  const { t } = useTranslation('study');
+  const shuffle = useStudyStore((state) => state.shuffle);
+  const toggleShuffle = useStudyStore((state) => state.toggleShuffle);
+
+  const handleToggle = () => {
+    toggleShuffle();
+    const nextState = useStudyStore.getState().shuffle;
+    if (nextState) {
+      toast.info(t('shell.shuffleOnToast'));
+    } else {
+      toast.info(t('shell.shuffleOffToast'));
+    }
+  };
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={handleToggle}
+      className={cn(
+        'h-8 px-2 sm:px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
+        shuffle
+          ? 'bg-primary-soft text-primary border border-primary/25 hover:bg-primary-soft/80'
+          : 'text-text-muted hover:text-text hover:bg-surface-elevated/60',
+      )}
+      title={t(shuffle ? 'shell.shuffleOnTooltip' : 'shell.shuffleOffTooltip')}
+      aria-label={t(shuffle ? 'shell.shuffleOn' : 'shell.shuffleOff')}
+    >
+      {shuffle ? (
+        <Shuffle aria-hidden className="size-3.5 text-primary" />
+      ) : (
+        <ListOrdered aria-hidden className="size-3.5 text-text-muted" />
+      )}
+      <span className="hidden sm:inline">
+        {t(shuffle ? 'shell.shuffleOn' : 'shell.shuffleOff')}
+      </span>
+    </Button>
+  );
+}
+
 function StudyFrame({
   exitHref,
   onExit,
@@ -77,7 +120,7 @@ function StudyFrame({
   const { t } = useTranslation('study');
   return (
     <div className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-bg">
-      <header className="mx-auto flex w-full max-w-[720px] items-center gap-3 px-4 py-2">
+      <header className="mx-auto flex w-full max-w-[720px] items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2">
         {onExit ? (
           <Button variant="ghost" size="icon" onClick={onExit} aria-label={t('shell.exit')}>
             <X aria-hidden className="size-5" />
@@ -102,9 +145,10 @@ function StudyFrame({
             style={{ width: `${total > 0 ? (position / total) * 100 : 0}%` }}
           />
         </div>
-        <span className="text-small tabular-nums">
+        <span className="text-small tabular-nums whitespace-nowrap">
           {position}/{total}
         </span>
+        <ShuffleToggle />
       </header>
       {header ? <div className="mx-auto w-full max-w-[720px] px-4">{header}</div> : null}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-6 px-4 py-6">

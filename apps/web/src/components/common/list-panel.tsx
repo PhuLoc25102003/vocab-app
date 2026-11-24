@@ -93,11 +93,13 @@ interface ListToolbarProps {
 
 export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
   const { t, i18n } = useTranslation();
+  const [prevSearchValue, setPrevSearchValue] = useState(search?.value ?? '');
   const [draft, setDraft] = useState(search?.value ?? '');
 
-  useEffect(() => {
+  if ((search?.value ?? '') !== prevSearchValue) {
+    setPrevSearchValue(search?.value ?? '');
     setDraft(search?.value ?? '');
-  }, [search?.value]);
+  }
 
   useEffect(() => {
     if (!search) return;

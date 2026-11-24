@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { gradeText, normalizeAnswer } from './grading';
+import { gradeSpokenText, gradeText, normalizeAnswer } from './grading';
 
 describe('normalizeAnswer', () => {
   it('lowercases, trims and collapses whitespace', () => {
@@ -38,5 +38,45 @@ describe('gradeText', () => {
 
   it('never accepts a blank answer', () => {
     expect(gradeText('   ', '').isCorrect).toBe(false);
+  });
+});
+
+describe('gradeSpokenText', () => {
+  it('chấp nhận từ đọc khớp chính xác', () => {
+    expect(gradeSpokenText('apple', 'apple')).toEqual({ isCorrect: true, expected: 'apple' });
+  });
+
+  it('bỏ dấu chấm câu tự động do Web Speech API gán (dấu chấm cuối câu)', () => {
+    expect(gradeSpokenText('apple', 'Apple.').isCorrect).toBe(true);
+    expect(gradeSpokenText('good morning', 'Good morning!').isCorrect).toBe(true);
+  });
+
+  it('chấp nhận khi người nói đọc kèm mạo từ (an apple, the dog)', () => {
+    expect(gradeSpokenText('apple', 'an apple').isCorrect).toBe(true);
+    expect(gradeSpokenText('cat', 'the cat').isCorrect).toBe(true);
+  });
+
+  it('chấp nhận phương án trong ngoặc đơn hoặc lược bỏ ngoặc đơn', () => {
+    expect(gradeSpokenText('autumn (fall)', 'autumn').isCorrect).toBe(true);
+    expect(gradeSpokenText('autumn (fall)', 'fall').isCorrect).toBe(true);
+    expect(gradeSpokenText('(to) swim', 'swim').isCorrect).toBe(true);
+    expect(gradeSpokenText('(to) swim', 'to swim').isCorrect).toBe(true);
+  });
+
+  it('chấp nhận các từ có gạch nối hoặc gạch chéo', () => {
+    expect(gradeSpokenText('ice-cream', 'ice cream').isCorrect).toBe(true);
+    expect(gradeSpokenText('cinema / movie theater', 'cinema').isCorrect).toBe(true);
+    expect(gradeSpokenText('cinema / movie theater', 'movie theater').isCorrect).toBe(true);
+  });
+
+  it('dung sai âm học và chính tả Anh-Anh / Anh-Mỹ (theatre/theater, colour/color)', () => {
+    expect(gradeSpokenText('theatre', 'theater').isCorrect).toBe(true);
+    expect(gradeSpokenText('colour', 'color').isCorrect).toBe(true);
+    expect(gradeSpokenText('pronunciation', 'pronounciation').isCorrect).toBe(true);
+  });
+
+  it('từ chối từ hoàn toàn khác hoặc chuỗi rỗng', () => {
+    expect(gradeSpokenText('apple', 'orange').isCorrect).toBe(false);
+    expect(gradeSpokenText('apple', '').isCorrect).toBe(false);
   });
 });
