@@ -22,11 +22,13 @@ interface SetSearchFormProps {
 
 export function SetSearchForm({ id, value, onSearch }: SetSearchFormProps) {
   const { t } = useTranslation('sets');
+  const [prevValue, setPrevValue] = useState(value);
   const [draft, setDraft] = useState(value);
 
-  useEffect(() => {
+  if (value !== prevValue) {
+    setPrevValue(value);
     setDraft(value);
-  }, [value]);
+  }
 
   useEffect(() => {
     const trimmed = draft.trim();

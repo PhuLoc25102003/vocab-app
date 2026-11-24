@@ -28,13 +28,13 @@ export function UnsupportedSpeechDialog({ open, onOpenChange }: UnsupportedSpeec
     {
       name: 'Google Chrome',
       desc: t('speak.browserChrome'),
-      tag: 'Khuyên dùng',
+      tag: t('speak.tagRecommended'),
       icon: Globe,
     },
     {
       name: 'Microsoft Edge',
       desc: t('speak.browserEdge'),
-      tag: 'Rất mượt',
+      tag: t('speak.tagSmooth'),
       icon: Laptop,
     },
     {

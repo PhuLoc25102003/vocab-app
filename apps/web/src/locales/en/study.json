@@ -70,6 +70,8 @@
     "browserEdge": "Microsoft Edge (Smooth on Windows & Mac)",
     "browserSamsung": "Samsung Internet (For Samsung devices)",
     "browserSafari": "Apple Safari (For iPhone / iPad on iOS 14.5+)",
+    "tagRecommended": "Recommended",
+    "tagSmooth": "Smooth",
     "inAppTip": "Tip: If opened via Zalo or Facebook in-app browser, tap (...) at the top right and select 'Open in Browser'.",
     "gotIt": "Got it",
     "unsupportedBadge": "Speech unsupported - Tap for instructions"

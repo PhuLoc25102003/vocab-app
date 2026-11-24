@@ -24,7 +24,9 @@ export function DataTableContainer({
 }: DataTableContainerProps) {
   return (
     <div className="overflow-x-auto">
-      <div className={cn('flex flex-col', minWidth, className)}>{children}</div>
+      <div role="table" className={cn('flex flex-col', minWidth, className)}>
+        {children}
+      </div>
     </div>
   );
 }
