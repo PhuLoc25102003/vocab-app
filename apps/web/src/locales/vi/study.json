@@ -134,7 +134,13 @@
     "shuffleOnTooltip": "Đang trộn ngẫu nhiên (Mặc định). Bấm để học theo thứ tự từ vựng gốc cho học sinh mới/yếu.",
     "shuffleOffTooltip": "Đang theo thứ tự gốc (Dành cho học sinh mới/yếu). Bấm để trộn ngẫu nhiên.",
     "shuffleOnToast": "Đã bật chế độ trộn thẻ ngẫu nhiên",
-    "shuffleOffToast": "Đã chuyển về thứ tự từ vựng gốc"
+    "shuffleOffToast": "Đã chuyển về thứ tự từ vựng gốc",
+    "speechRateNormal": "Bình thường",
+    "speechRateSlow": "Đọc chậm",
+    "speechRateNormalToast": "Tốc độ đọc: 1.0x (Bình thường)",
+    "speechRateSlowToast": "Tốc độ đọc: 0.8x (Chậm)",
+    "speechRateNormalTooltip": "Tốc độ đọc đang là 1.0x (Bấm để chuyển sang đọc chậm 0.8x)",
+    "speechRateSlowTooltip": "Tốc độ đọc đang là 0.8x (Bấm để chuyển về đọc bình thường 1.0x)"
   },
   "chain": {
     "steps": "Các bước ôn tập",

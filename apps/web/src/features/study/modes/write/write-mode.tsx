@@ -38,6 +38,7 @@ export function WriteModeView(props: StudyModeProps) {
               text={question.prompt}
               lang={languages.definition}
               label={t('listenDefinition')}
+              withSlow
             />
           </div>
         </div>

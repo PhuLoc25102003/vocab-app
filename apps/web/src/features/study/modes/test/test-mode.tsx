@@ -187,6 +187,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                     text={item.prompt}
                     lang={promptLang}
                     label={t(item.choices ? 'listenTerm' : 'listenDefinition')}
+                    withSlow
                   />
                 </div>
               </div>

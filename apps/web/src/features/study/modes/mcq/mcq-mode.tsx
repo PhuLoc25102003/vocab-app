@@ -71,7 +71,12 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
           <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
             {question.prompt}
           </h1>
-          <AudioButton text={question.prompt} lang={languages.term} label={t('listenTerm')} />
+          <AudioButton
+            text={question.prompt}
+            lang={languages.term}
+            label={t('listenTerm')}
+            withSlow
+          />
         </div>
 
         <ul className="flex flex-col gap-3">

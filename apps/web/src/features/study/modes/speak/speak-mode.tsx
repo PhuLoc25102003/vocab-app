@@ -150,7 +150,12 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
             <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
               {question.prompt}
             </h1>
-            <AudioButton text={question.prompt} lang={languages.term} label={t('speak.sample')} />
+            <AudioButton
+              text={question.prompt}
+              lang={languages.term}
+              label={t('speak.sample')}
+              withSlow
+            />
           </div>
           {question.hint ? (
             <p lang={languages.definition} className="text-text-muted break-words">

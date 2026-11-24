@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { loadSpeechSettings, saveSpeechSettings, speak } from './speech';
+import { loadSpeechSettings, saveSpeechSettings, speak, toggleSpeechRate } from './speech';
 
 class FakeUtterance {
   lang = '';
@@ -34,6 +34,14 @@ describe('giọng đọc', () => {
     expect(loadSpeechSettings()).toEqual({ accent: 'en-US', rate: 'slow' });
     window.localStorage.setItem('vocab.speech', '{hỏng');
     expect(loadSpeechSettings()).toEqual({ accent: 'en-GB', rate: 'normal' });
+  });
+
+  it('toggleSpeechRate đổi qua lại giữa normal và slow trực tiếp', () => {
+    expect(loadSpeechSettings().rate).toBe('normal');
+    expect(toggleSpeechRate()).toBe('slow');
+    expect(loadSpeechSettings().rate).toBe('slow');
+    expect(toggleSpeechRate()).toBe('normal');
+    expect(loadSpeechSettings().rate).toBe('normal');
   });
 
   it('đọc tiếng Anh theo giọng đã chọn, nghe chậm thì giảm tốc độ', () => {
