@@ -42,9 +42,20 @@ export function loadSpeechSettings(): SpeechSettings {
 export function saveSpeechSettings(settings: SpeechSettings): void {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('vocab:speech-settings-changed', { detail: settings }));
+    }
   } catch {
     // Không lưu được thì chỉ áp dụng trong phiên này.
   }
+}
+
+/** Đổi nhanh tốc độ đọc giữa bình thường (1.0x) và chậm (0.8x) trực tiếp trên chế độ học */
+export function toggleSpeechRate(): SpeechRate {
+  const current = loadSpeechSettings();
+  const nextRate: SpeechRate = current.rate === 'normal' ? 'slow' : 'normal';
+  saveSpeechSettings({ ...current, rate: nextRate });
+  return nextRate;
 }
 
 /** Nội dung tiếng Anh đọc theo giọng người dùng chọn, ngôn ngữ khác giữ nguyên. */
@@ -160,7 +171,8 @@ export function playAudioFallback(
     const encoded = encodeURIComponent(cleanText);
     const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${targetLang}&q=${encoded}`;
     const audio = new Audio(url);
-    if (options.slow) {
+    const isSlow = options.slow !== undefined ? options.slow : loadSpeechSettings().rate === 'slow';
+    if (isSlow) {
       audio.playbackRate = 0.75;
     }
     currentAudio = audio;
@@ -189,7 +201,8 @@ export function speak(text: string, lang = 'en-GB', options: { slow?: boolean } 
       if (voice) {
         utterance.voice = voice;
       }
-      utterance.rate = options.slow ? RATES.slow : RATES[settings.rate];
+      const isSlow = options.slow !== undefined ? options.slow : settings.rate === 'slow';
+      utterance.rate = isSlow ? RATES.slow : RATES.normal;
 
       let started = false;
       utterance.onstart = () => {

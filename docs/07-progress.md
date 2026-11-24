@@ -500,6 +500,15 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
   - **Xem nhanh những bộ từ học gần đây của người dùng (`RecentStudySetsDialog`, `AdminUsersRepository`)**:
     - Backend truy vấn các phiên học (`studySessions`) gần nhất của từng người dùng, gộp các bộ từ đã học kèm thông tin: tên bộ từ, chế độ học (Flashcard, Trắc nghiệm, Luyện viết...), số câu đúng/tổng số câu (%) và thời gian học.
     - Cung cấp nút xem "X bộ gần đây" trên từng dòng người dùng trong bảng Quản trị, mở hộp thoại chi tiết `RecentStudySetsDialog` với link trực tiếp đến bộ từ.
+- [x] **6.20** Loại bỏ cài đặt tốc độ đọc trong Cài đặt tài khoản và chuyển đổi trực tiếp trên khung học & các chế độ học:
+  - **Loại bỏ lựa chọn tốc độ đọc trong Cài đặt tài khoản (`SpeechSettings`)**:
+    - Xoá bỏ ô chọn `speech.rate` ("Bình thường" / "Chậm") khỏi trang Cài đặt tài khoản/Setup, giúp tinh giản giao diện cài đặt và tránh việc người học phải rời phiên học để vào Cài đặt đổi tốc độ phát âm.
+  - **Tích hợp nút chuyển tốc độ đọc trực tiếp trên thanh điều khiển phiên học (`StudyFrame`, `SpeechRateToggle`)**:
+    - Bổ sung nút `SpeechRateToggle` trên thanh công cụ của `StudyFrame` (ngay cạnh nút `ShuffleToggle`), hiển thị tốc độ hiện tại (`1.0x` / `0.8x`) kèm nhãn trạng thái và icon trực quan (`Volume2` cho bình thường, `Snail` cho đọc chậm).
+    - Hỗ trợ đổi nhanh giữa 1.0x và 0.8x bằng một chạm, đồng bộ tức thì vào `localStorage` qua sự kiện `vocab:speech-settings-changed` và thông báo toast cho người dùng.
+    - Mọi lần phát âm tự động và thủ công trong phiên học ngay lập tức áp dụng tốc độ đọc vừa chọn trên cả Web Speech API lẫn Audio fallback.
+  - **Tích hợp nút nghe chậm trực tiếp trên câu hỏi của các chế độ học (`AudioButton`)**:
+    - Kích hoạt `withSlow` cho `AudioButton` trên tất cả các chế độ học (Flashcard, Trắc nghiệm, Tự luận, Luyện nói, Kiểm tra, Nghe viết), cung cấp icon ốc sên bên cạnh loa để nghe chậm ngay tại chỗ mà không cần thao tác chuyển đổi chung.
 
 ## Quyết định cần chốt
 

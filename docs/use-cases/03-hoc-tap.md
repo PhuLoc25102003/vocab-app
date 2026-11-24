@@ -27,6 +27,7 @@
 - **Test đã có:** `study-sessions.integration`, `study-shell.test`, `session.store.test`.
 - **Cách giữ tiến độ:** phiên và hàng đợi đáp án nằm trong `sessionStorage` của tab tối đa 12 giờ, xoá khi đăng xuất. Đáp án gửi bằng `keepalive`, server bỏ qua đáp án gửi lại y hệt.
 - **Thứ tự câu hỏi và trộn thẻ ngẫu nhiên (6.18):** Mặc định toàn bộ 9 chế độ học đều trộn thẻ ngẫu nhiên (`shuffle: true`). Nút chuyển đổi `ShuffleToggle` ở thanh tiêu đề `StudyFrame` (cả mobile và desktop) cho phép người học tắt chế độ ngẫu nhiên để chuyển về thứ tự danh sách từ gốc (phù hợp học sinh yếu). Lựa chọn được lưu trong `localStorage` (`vocab.study.shuffle`).
+- **Tốc độ đọc và phát âm trực tiếp trên chế độ học (6.20):** Bỏ ô chọn tốc độ trong Cài đặt tài khoản. Nút `SpeechRateToggle` trên thanh tiêu đề `StudyFrame` cho phép chuyển đổi tốc độ đọc giữa Bình thường (1.0x) và Chậm (0.8x) trực tiếp trong phiên học mà không cần vào Setup. Mọi nút `AudioButton` trong các chế độ học (Flashcard, Trắc nghiệm, Tự luận, Luyện nói, Kiểm tra, Nghe viết) hỗ trợ nút ốc sên để nghe chậm ngay tại chỗ.
 - **Test cần thêm:** E2E đóng trang rồi xem thống kê; E2E mất mạng rồi có mạng lại.
 
 ## UC-L3. Xem kết quả phiên

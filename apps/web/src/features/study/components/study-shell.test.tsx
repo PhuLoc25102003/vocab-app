@@ -201,4 +201,18 @@ describe('StudyShell', () => {
     expect(await screen.findByRole('button', { name: 'Ngẫu nhiên' })).toBeInTheDocument();
     expect(window.localStorage.getItem('vocab.study.shuffle')).toBe('true');
   });
+
+  it('hỗ trợ nút đổi tốc độ đọc (1.0x / 0.8x) trực tiếp trên khung học', async () => {
+    setup();
+
+    const speedBtn = await screen.findByRole('button', { name: /Bình thường|Đọc chậm/ });
+    expect(speedBtn).toBeInTheDocument();
+    expect(speedBtn).toHaveAttribute('aria-label', 'Bình thường');
+
+    await userEvent.click(speedBtn);
+    expect(await screen.findByRole('button', { name: 'Đọc chậm' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Đọc chậm' }));
+    expect(await screen.findByRole('button', { name: 'Bình thường' })).toBeInTheDocument();
+  });
 });

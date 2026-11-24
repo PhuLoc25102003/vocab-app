@@ -13,7 +13,6 @@ import {
   saveSpeechSettings,
   speak,
   type Accent,
-  type SpeechRate,
   type SpeechSettings as Settings,
 } from '@/lib/speech';
 import {
@@ -65,8 +64,8 @@ export function SpeechSettings() {
       <h2 id="speech-title" className="text-h3">
         {t('speech.title')}
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-small font-medium">
+      <div className="grid gap-4 sm:grid-cols-1">
+        <label className="flex flex-col gap-1 text-small font-medium max-w-sm">
           {t('speech.accent')}
           <Select
             value={settings.accent}
@@ -74,16 +73,6 @@ export function SpeechSettings() {
           >
             <option value="en-GB">{t('speech.gb')}</option>
             <option value="en-US">{t('speech.us')}</option>
-          </Select>
-        </label>
-        <label className="flex flex-col gap-1 text-small font-medium">
-          {t('speech.rate')}
-          <Select
-            value={settings.rate}
-            onChange={(event) => update({ rate: event.target.value as SpeechRate })}
-          >
-            <option value="normal">{t('speech.normal')}</option>
-            <option value="slow">{t('speech.slow')}</option>
           </Select>
         </label>
       </div>

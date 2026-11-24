@@ -134,7 +134,13 @@
     "shuffleOnTooltip": "Shuffled (Default). Click to study in original sequence for beginners.",
     "shuffleOffTooltip": "Original order (For beginners). Click to shuffle cards.",
     "shuffleOnToast": "Card shuffling enabled",
-    "shuffleOffToast": "Switched to original card order"
+    "shuffleOffToast": "Switched to original card order",
+    "speechRateNormal": "Normal",
+    "speechRateSlow": "Slow",
+    "speechRateNormalToast": "Speech speed: 1.0x (Normal)",
+    "speechRateSlowToast": "Speech speed: 0.8x (Slow)",
+    "speechRateNormalTooltip": "Current speech speed is 1.0x (Click for slow 0.8x)",
+    "speechRateSlowTooltip": "Current speech speed is 0.8x (Click for normal 1.0x)"
   },
   "chain": {
     "steps": "Review chain steps",
