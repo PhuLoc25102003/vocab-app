@@ -63,7 +63,16 @@
     "listening": "Đang nghe… hãy đọc to từ",
     "tapMic": "Bấm micro rồi đọc to từ",
     "tapMicAgain": "Bấm micro để thử lại",
-    "skip": "Bỏ qua"
+    "skip": "Bỏ qua",
+    "unsupportedDialogTitle": "Trình duyệt chưa hỗ trợ Nhận diện giọng nói",
+    "unsupportedDialogDesc": "Trình duyệt hiện tại không hỗ trợ Web Speech Recognition để thu âm giọng nói. Để luyện nói tiếng Anh mượt mà và nhận diện chuẩn xác nhất, bạn vui lòng mở trang web trên các trình duyệt sau:",
+    "browserChrome": "Google Chrome (Khuyên dùng tốt nhất cho Android & Máy tính)",
+    "browserEdge": "Microsoft Edge (Hoạt động rất mượt trên Windows & Mac)",
+    "browserSamsung": "Samsung Internet (Dành cho điện thoại Samsung)",
+    "browserSafari": "Apple Safari (Dành cho iPhone / iPad từ iOS 14.5+)",
+    "inAppTip": "Mẹo: Nếu bạn mở link từ Zalo hoặc Facebook, hãy bấm dấu ba chấm (...) ở góc trên cùng màn hình và chọn 'Mở bằng trình duyệt' để chuyển sang Chrome hoặc Safari.",
+    "gotIt": "Đã hiểu",
+    "unsupportedBadge": "Trình duyệt chưa hỗ trợ nói - Bấm xem hướng dẫn"
   },
   "test": {
     "intro": "Trả lời hết rồi nộp bài. Bài chỉ được chấm sau khi nộp.",
@@ -116,7 +125,13 @@
     "preparing": "Đang chuẩn bị phiên học",
     "saveFailed": "Chưa lưu được kết quả",
     "saveFailedHint": "Đáp án của bạn vẫn còn. Hãy kiểm tra mạng rồi thử lại.",
-    "saving": "Đang lưu kết quả"
+    "saving": "Đang lưu kết quả",
+    "shuffleOn": "Ngẫu nhiên",
+    "shuffleOff": "Thứ tự gốc",
+    "shuffleOnTooltip": "Đang trộn ngẫu nhiên (Mặc định). Bấm để học theo thứ tự từ vựng gốc cho học sinh mới/yếu.",
+    "shuffleOffTooltip": "Đang theo thứ tự gốc (Dành cho học sinh mới/yếu). Bấm để trộn ngẫu nhiên.",
+    "shuffleOnToast": "Đã bật chế độ trộn thẻ ngẫu nhiên",
+    "shuffleOffToast": "Đã chuyển về thứ tự từ vựng gốc"
   },
   "chain": {
     "steps": "Các bước ôn tập",

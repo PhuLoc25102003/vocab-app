@@ -24,7 +24,7 @@ describe('OfflineToggle', () => {
   it('tải về máy, xoá bản offline, báo cập nhật khi bộ đã đổi', async () => {
     const { rerender } = render(<OfflineToggle set={set('2026-11-01T00:00:00.000Z')} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Tải về máy' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Tải về học offline' }));
     expect(await screen.findByRole('button', { name: 'Xoá bản offline' })).toBeInTheDocument();
     expect((await getOfflineSet('s1'))?.set.title).toBe('Trái cây');
 
@@ -34,14 +34,14 @@ describe('OfflineToggle', () => {
 
   it('hỏi bằng hộp thoại trước khi xoá bản offline', async () => {
     render(<OfflineToggle set={set('2026-11-01T00:00:00.000Z')} />);
-    await userEvent.click(await screen.findByRole('button', { name: 'Tải về máy' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Tải về học offline' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Xoá bản offline' }));
 
     const dialog = screen.getByRole('dialog', { name: 'Xoá bản offline?' });
     expect(await getOfflineSet('s1')).not.toBeNull();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá bản offline' }));
 
-    expect(await screen.findByRole('button', { name: 'Tải về máy' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Tải về học offline' })).toBeInTheDocument();
     expect(await getOfflineSet('s1')).toBeNull();
   });
 });

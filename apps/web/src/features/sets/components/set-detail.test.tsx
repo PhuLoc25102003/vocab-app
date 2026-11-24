@@ -134,7 +134,7 @@ describe('SetOwnerActions', () => {
       'href',
       '/sets/import?setId=s1',
     );
-    expect(screen.getByRole('menuitem', { name: 'Tải về máy' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Tải về học offline' })).toBeInTheDocument();
   });
 
   it('hỏi bằng hộp thoại, chỉ xoá sau khi xác nhận rồi về danh sách', async () => {

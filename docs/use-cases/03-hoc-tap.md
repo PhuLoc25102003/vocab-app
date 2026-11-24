@@ -26,6 +26,7 @@
   - Bộ bị xoá hoặc sửa giữa phiên: câu không còn hợp lệ bị bỏ qua, không làm hỏng phiên.
 - **Test đã có:** `study-sessions.integration`, `study-shell.test`, `session.store.test`.
 - **Cách giữ tiến độ:** phiên và hàng đợi đáp án nằm trong `sessionStorage` của tab tối đa 12 giờ, xoá khi đăng xuất. Đáp án gửi bằng `keepalive`, server bỏ qua đáp án gửi lại y hệt.
+- **Thứ tự câu hỏi và trộn thẻ ngẫu nhiên (6.18):** Mặc định toàn bộ 9 chế độ học đều trộn thẻ ngẫu nhiên (`shuffle: true`). Nút chuyển đổi `ShuffleToggle` ở thanh tiêu đề `StudyFrame` (cả mobile và desktop) cho phép người học tắt chế độ ngẫu nhiên để chuyển về thứ tự danh sách từ gốc (phù hợp học sinh yếu). Lựa chọn được lưu trong `localStorage` (`vocab.study.shuffle`).
 - **Test cần thêm:** E2E đóng trang rồi xem thống kê; E2E mất mạng rồi có mạng lại.
 
 ## UC-L3. Xem kết quả phiên
@@ -118,3 +119,16 @@
 - **Ngoại lệ:** trình duyệt không có Web Audio thì ẩn nút bật tắt và không phát; localStorage bị chặn thì coi như bật; lỗi phát âm thanh không làm hỏng phiên học.
 - **Test đã có:** `sound.test`, `mcq-mode.test`.
 - **Test thủ công:** Chrome Android, Safari iOS (chế độ im lặng), Chrome máy tính.
+
+## UC-L13. Chế độ Luyện nói và Nhận diện giọng nói
+
+- **Việc:** 4.1, 6.18. **Người dùng:** người học. **Trạng thái:** Đủ.
+- **Phải có:** hiện từ/nghĩa/phiên âm, nút micro thu âm, phân tích phát âm qua Web Speech Recognition API, chấm điểm bằng `gradeSpokenText`.
+- **Tối ưu nhận diện giọng nói (6.18):**
+  - Sử dụng tag vùng ngôn ngữ chuẩn (`en-US` / `en-GB` theo cài đặt người học) thay vì mã chung `en`, giúp kích hoạt mô hình âm học tiếng Anh chính xác trên Chrome Android.
+  - Tăng `MAX_ALTERNATIVES = 10` để kiểm tra tối đa các phương án nhận diện từ Google Speech Engine.
+  - Bóc tách dấu câu (`. , ! ?`) và xử lý mạo từ ("an apple", "the cat" cho "apple", "cat").
+  - Trích xuất phương án thay thế trong ngoặc đơn hoặc gạch chéo ("autumn (fall)", "cinema / movie theater").
+  - Áp dụng thuật toán khoảng cách Damerau-Levenshtein hỗ trợ hoán vị ký tự liền kề và dung sai phát âm (như `theatre`/`theater`), phân biệt nghiêm ngặt số ít/số nhiều (`apple` vs `apples`).
+- **Trình duyệt không hỗ trợ (6.18):** Nút micro luôn hiển thị với cảnh báo vàng; bấm vào mở modal `UnsupportedSpeechDialog` giải thích nguyên nhân và đề xuất các trình duyệt tương thích (Google Chrome, Microsoft Edge, Samsung Internet, Safari iOS 14.5+), kèm chỉ dẫn mở trình duyệt ngoài khi dùng in-app WebView (Zalo, Facebook).
+- **Test đã có:** `speak-mode.test`, `grading.test` (unit cho `gradeSpokenText`).

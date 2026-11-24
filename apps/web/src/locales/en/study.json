@@ -63,7 +63,16 @@
     "listening": "Listening… say the term out loud",
     "tapMic": "Tap the mic and say the term",
     "tapMicAgain": "Tap the mic to try again",
-    "skip": "Skip"
+    "skip": "Skip",
+    "unsupportedDialogTitle": "Browser Does Not Support Speech Recognition",
+    "unsupportedDialogDesc": "Your current browser does not support Web Speech Recognition. To practice pronunciation with optimal accuracy, please open this app in one of the following browsers:",
+    "browserChrome": "Google Chrome (Recommended for Android & Desktop)",
+    "browserEdge": "Microsoft Edge (Smooth on Windows & Mac)",
+    "browserSamsung": "Samsung Internet (For Samsung devices)",
+    "browserSafari": "Apple Safari (For iPhone / iPad on iOS 14.5+)",
+    "inAppTip": "Tip: If opened via Zalo or Facebook in-app browser, tap (...) at the top right and select 'Open in Browser'.",
+    "gotIt": "Got it",
+    "unsupportedBadge": "Speech unsupported - Tap for instructions"
   },
   "test": {
     "intro": "Answer everything, then submit. It is graded only after you submit.",
@@ -116,7 +125,13 @@
     "preparing": "Preparing the session",
     "saveFailed": "Results not saved yet",
     "saveFailedHint": "Your answers are kept. Check your connection and try again.",
-    "saving": "Saving results"
+    "saving": "Saving results",
+    "shuffleOn": "Shuffled",
+    "shuffleOff": "Original order",
+    "shuffleOnTooltip": "Shuffled (Default). Click to study in original sequence for beginners.",
+    "shuffleOffTooltip": "Original order (For beginners). Click to shuffle cards.",
+    "shuffleOnToast": "Card shuffling enabled",
+    "shuffleOffToast": "Switched to original card order"
   },
   "chain": {
     "steps": "Review chain steps",

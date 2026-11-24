@@ -1,4 +1,4 @@
-import { gradeText } from '../grading';
+import { gradeSpokenText } from '../grading';
 import { registerMode } from '../registry';
 import type {
   GradeResult,
@@ -29,7 +29,7 @@ export class SpeakMode implements StudyModeStrategy {
   }
 
   grade(question: Question, answer: UserAnswer): GradeResult {
-    return gradeText(question.expected, answer.value);
+    return gradeSpokenText(question.expected, answer.value);
   }
 }
 

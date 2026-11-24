@@ -43,7 +43,7 @@ export function isRecognitionSupported(): boolean {
   return recognitionConstructor() !== null;
 }
 
-const MAX_ALTERNATIVES = 3;
+const MAX_ALTERNATIVES = 10;
 
 /**
  * Nghe một lần và trả các câu nhận dạng được, câu chắc chắn nhất đứng đầu.
@@ -66,7 +66,8 @@ export function listenOnce(lang: string, signal?: AbortSignal): Promise<string[]
         action();
       }
     };
-    recognition.lang = lang;
+    // Web Speech API yêu cầu mã ngôn ngữ chuẩn có vùng (ví dụ 'en-US' thay vì 'en') để tải đúng acoustic model
+    recognition.lang = lang === 'en' ? 'en-US' : lang;
     recognition.maxAlternatives = MAX_ALTERNATIVES;
     recognition.interimResults = false;
     recognition.onresult = (event) => {
