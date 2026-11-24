@@ -263,7 +263,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
       .toBe(true);
     await page.getByRole('button', { name: 'Thao tác khác' }).click();
-    await page.getByRole('menuitem', { name: 'Tải về máy' }).click();
+    await page.getByRole('menuitem', { name: /Tải về/ }).click();
     await page.getByRole('button', { name: 'Thao tác khác' }).click();
     await expect(page.getByRole('menuitem', { name: 'Xoá bản offline' })).toBeVisible();
     await page.keyboard.press('Escape');

@@ -72,7 +72,7 @@ describe('SetContextMenuContent & SetCardActionsDropdown', () => {
     expect(screen.getByRole('menuitem', { name: /Sửa bộ từ/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Chuyển vào thư mục/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Nhập thêm thẻ/i })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: /Tải về máy/i })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Tải về học offline/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Sao chép liên kết/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Tạo bản sao/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /Xoá bộ từ/i })).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe('SetContextMenuContent & SetCardActionsDropdown', () => {
     const target = screen.getByTestId('target-card');
     await user.pointer([{ target, keys: '[MouseRight]' }]);
 
-    const dlBtn = await screen.findByRole('menuitem', { name: /Tải về máy/i });
+    const dlBtn = await screen.findByRole('menuitem', { name: /Tải về học offline/i });
     await user.click(dlBtn);
 
     await waitFor(() => {
