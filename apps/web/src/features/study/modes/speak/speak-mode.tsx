@@ -8,7 +8,7 @@ import {
   type UserAnswer,
 } from '@vocab/shared';
 import { AlertCircle, Check, Mic, Square, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { CardImage } from '@/components/common/card-image';
 import { FormError } from '@/components/common/form-message';
@@ -28,13 +28,21 @@ const FAILURE_MESSAGES = {
   failed: 'speak.failed',
 } as const;
 
+const emptySubscribe = () => () => undefined;
+
 /**
  * Luyện nói: đọc to từ đang hiện. Điểm tính theo lần nói đầu, thử lại chỉ để luyện thêm.
  * Bỏ qua khi chưa nói lần nào thì gửi chuỗi rỗng.
  */
 export function SpeakModeView({ question, languages, onAnswer, onChecked }: StudyModeProps) {
   const { t } = useTranslation('study');
-  const [supported] = useState(isRecognitionSupported);
+  const browserSupported = useSyncExternalStore(
+    emptySubscribe,
+    isRecognitionSupported,
+    () => false,
+  );
+  const [runtimeUnsupported, setRuntimeUnsupported] = useState(false);
+  const supported = browserSupported && !runtimeUnsupported;
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<string | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -82,6 +90,10 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
       }
     } catch (error) {
       const reason = error instanceof ListenError ? error.reason : 'failed';
+      if (reason === 'unsupported') {
+        setRuntimeUnsupported(true);
+        setUnsupportedModalOpen(true);
+      }
       // Bấm Dừng không phải lỗi, chỉ quay về trạng thái chờ nói.
       if (reason !== 'aborted') {
         setFailure(reason);
@@ -93,7 +105,7 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
   };
 
   const toggleMic = () => {
-    if (!supported) {
+    if (!supported || failure === 'unsupported') {
       setUnsupportedModalOpen(true);
       return;
     }
@@ -170,7 +182,20 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
             </p>
           </div>
         ) : null}
-        {failure ? <FormError>{t(FAILURE_MESSAGES[failure])}</FormError> : null}
+        {failure ? (
+          <div className="flex flex-col items-center gap-1.5">
+            <FormError>{t(FAILURE_MESSAGES[failure])}</FormError>
+            {failure === 'unsupported' || failure === 'failed' || failure === 'denied' ? (
+              <button
+                type="button"
+                onClick={() => setUnsupportedModalOpen(true)}
+                className="text-tiny font-medium text-primary underline underline-offset-4 hover:text-primary-hover cursor-pointer"
+              >
+                {t('speak.viewSupportedBrowsers')}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
         {!result?.isCorrect ? (
           <div className="flex flex-col items-center gap-2 pt-2">

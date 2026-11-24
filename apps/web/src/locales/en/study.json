@@ -74,7 +74,8 @@
     "tagSmooth": "Smooth",
     "inAppTip": "Tip: If opened via Zalo or Facebook in-app browser, tap (...) at the top right and select 'Open in Browser'.",
     "gotIt": "Got it",
-    "unsupportedBadge": "Speech unsupported - Tap for instructions"
+    "unsupportedBadge": "Speech unsupported - Tap for instructions",
+    "viewSupportedBrowsers": "View browsers supporting speech recognition"
   },
   "test": {
     "intro": "Answer everything, then submit. It is graded only after you submit.",

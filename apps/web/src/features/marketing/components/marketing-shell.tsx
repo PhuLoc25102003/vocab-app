@@ -19,9 +19,9 @@ export function MarketingShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-border">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-2 px-4 md:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-2 px-3 sm:px-4 md:px-6 lg:px-8">
           <Logo href="/" />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <LanguageToggle />
             <ThemeToggle />
             <SessionLink

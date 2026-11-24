@@ -21,7 +21,11 @@ export function SessionLink({ guest, member, variant }: SessionLinkProps) {
   const { href, label } = signedIn ? member : guest;
 
   return (
-    <Button asChild variant={variant}>
+    <Button
+      asChild
+      variant={variant}
+      className="shrink-0 whitespace-nowrap px-2.5 text-small sm:px-4 sm:text-body"
+    >
       <Link href={href}>{label}</Link>
     </Button>
   );

@@ -10,9 +10,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-2 sm:gap-6 px-3 sm:px-4 md:px-6 lg:px-8">
           <Logo href="/" />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <LanguageToggle />
             <ThemeToggle />
             <SessionLink

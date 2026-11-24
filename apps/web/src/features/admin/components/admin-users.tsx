@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { GraduationCap, Lock, ShieldCheck, Unlock, User } from 'lucide-react';
+import { BookOpen, GraduationCap, Lock, ShieldCheck, Unlock, User } from 'lucide-react';
 import { DataTableContainer, DataTableHeader, DataTableRow } from '@/components/common/data-table';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
@@ -41,8 +41,9 @@ import {
   type AdminUsersView,
 } from '../api';
 import { LockDialog } from './lock-dialog';
+import { RecentStudySetsDialog } from './recent-study-sets-dialog';
 
-const STATUS_TABS = [undefined, 'active', 'locked'] as const;
+const STATUS_TABS = [undefined, 'online', 'active', 'locked'] as const;
 
 const isSort = (value: string | null): value is AdminUserSort =>
   ADMIN_USER_SORTS.some((sort) => sort === value);
@@ -76,7 +77,7 @@ function readView(params: URLSearchParams): AdminUsersView {
 }
 
 const USER_GRID =
-  'minmax(200px, 1.8fr) minmax(130px, 1fr) minmax(120px, 0.9fr) minmax(240px, 1.6fr)';
+  'minmax(200px, 1.4fr) minmax(140px, 1fr) minmax(130px, 0.9fr) minmax(110px, 0.8fr) minmax(220px, 1.5fr)';
 
 function RoleBadge({ role }: { role: Role }) {
   const { t } = useTranslation('admin');
@@ -108,6 +109,7 @@ function UserRow({ user }: { user: AdminUser }) {
   const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   const [locking, setLocking] = useState(false);
+  const [recentSetsOpen, setRecentSetsOpen] = useState(false);
   const unlock = useMutation({
     mutationFn: () => unlockUser(user.id),
     onSuccess: async () => {
@@ -129,17 +131,27 @@ function UserRow({ user }: { user: AdminUser }) {
 
   return (
     <DataTableRow gridTemplateColumns={USER_GRID}>
-      {/* Cột 1: Người dùng (Avatar + Tên + Email) */}
+      {/* Cột 1: Người dùng (Avatar + Tên + Email + Chỉ báo online) */}
       <div className="flex items-center gap-3 min-w-0">
-        <span
-          aria-hidden
-          className={cn(
-            'flex size-10 shrink-0 items-center justify-center rounded-full font-semibold',
-            locked ? 'bg-danger-soft text-danger' : 'bg-primary-soft text-primary',
-          )}
-        >
-          {initial}
-        </span>
+        <div className="relative shrink-0">
+          <span
+            aria-hidden
+            className={cn(
+              'flex size-10 items-center justify-center rounded-full font-semibold',
+              locked ? 'bg-danger-soft text-danger' : 'bg-primary-soft text-primary',
+            )}
+          >
+            {initial}
+          </span>
+          <span
+            title={user.isOnline ? t('users.online') : t('users.offline')}
+            aria-label={user.isOnline ? t('users.online') : t('users.offline')}
+            className={cn(
+              'absolute bottom-0 right-0 size-3 rounded-full border-2 border-surface',
+              user.isOnline ? 'bg-success' : 'bg-border/90',
+            )}
+          />
+        </div>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="font-semibold text-text truncate block" title={user.displayName}>
             {user.displayName}
@@ -150,17 +162,34 @@ function UserRow({ user }: { user: AdminUser }) {
         </div>
       </div>
 
-      {/* Cột 2: Trạng thái */}
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <span
-          className={cn(
-            'inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-tiny font-medium w-fit whitespace-nowrap',
-            locked ? 'bg-danger-soft text-danger' : 'bg-success-soft text-success',
-          )}
-        >
-          <span aria-hidden className="size-1.5 rounded-full bg-current" />
-          {locked ? t('locked') : t('active')}
-        </span>
+      {/* Cột 2: Trạng thái (Hoạt động/Khoá + Online/Offline) */}
+      <div className="flex flex-col gap-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-tiny font-medium w-fit whitespace-nowrap',
+              locked ? 'bg-danger-soft text-danger' : 'bg-surface-elevated text-text',
+            )}
+          >
+            <span aria-hidden className="size-1.5 rounded-full bg-current" />
+            {locked ? t('locked') : t('active')}
+          </span>
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-tiny font-medium w-fit whitespace-nowrap',
+              user.isOnline ? 'bg-success-soft text-success' : 'bg-muted/40 text-text-muted',
+            )}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'size-1.5 rounded-full',
+                user.isOnline ? 'bg-success' : 'bg-text-muted/60',
+              )}
+            />
+            {user.isOnline ? t('users.online') : t('users.offline')}
+          </span>
+        </div>
         {locked && user.lockReason ? (
           <span className="text-tiny text-danger truncate block" title={user.lockReason}>
             {t('lockedReason', { reason: user.lockReason })}
@@ -168,12 +197,32 @@ function UserRow({ user }: { user: AdminUser }) {
         ) : null}
       </div>
 
-      {/* Cột 3: Vai trò (Badge trực quan) */}
+      {/* Cột 3: Bộ từ học gần đây */}
+      <div className="min-w-0">
+        {user.recentSets && user.recentSets.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setRecentSetsOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-tiny font-medium text-primary hover:bg-primary-soft transition-colors cursor-pointer"
+            title={t('users.recentSetsCount', { count: user.recentSets.length })}
+          >
+            <BookOpen aria-hidden className="size-3.5 shrink-0" />
+            <span className="truncate">
+              {t('users.recentSetsCount', { count: user.recentSets.length })}
+            </span>
+          </button>
+        ) : (
+          <span className="text-tiny text-text-muted px-2 py-1 block">—</span>
+        )}
+        <RecentStudySetsDialog user={user} open={recentSetsOpen} onOpenChange={setRecentSetsOpen} />
+      </div>
+
+      {/* Cột 4: Vai trò (Badge trực quan) */}
       <div className="min-w-0">
         <RoleBadge role={user.role} />
       </div>
 
-      {/* Cột 4: Thao tác (Đổi vai trò + Khoá / Mở khoá, căn phải) */}
+      {/* Cột 5: Thao tác (Đổi vai trò + Khoá / Mở khoá, căn phải) */}
       <div className="flex items-center justify-end gap-2">
         <div className="w-32 sm:w-36 shrink-0">
           <Select
@@ -274,12 +323,13 @@ export function AdminUsers() {
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[720px]">
+      <DataTableContainer minWidth="min-w-[820px]">
         <DataTableHeader
           gridTemplateColumns={USER_GRID}
           columns={[
             { label: t('users.thUser') },
             { label: t('users.thStatus') },
+            { label: t('users.thRecentSets') },
             { label: t('users.thRole') },
             { label: t('users.thAction'), align: 'right' },
           ]}

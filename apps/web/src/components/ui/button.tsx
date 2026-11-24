@@ -5,7 +5,7 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'relative inline-flex min-h-11 items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-50 aria-busy:opacity-100',
+  'relative inline-flex min-h-11 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-50 aria-busy:opacity-100',
   {
     variants: {
       variant: {

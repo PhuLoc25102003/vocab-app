@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import type { FastifyRequest } from 'fastify';
 import { AccessTokenService, unauthorizedError } from '../auth/access-token.service';
 import { TokenUserRepository } from '../auth/token-user.repository';
+import { UserPresenceService } from '../auth/user-presence.service';
 import { IS_PUBLIC_KEY, OPTIONAL_AUTH_KEY } from '../decorators/public.decorator';
 import '../decorators/current-user.decorator';
 
@@ -18,6 +19,7 @@ export class AuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly accessTokens: AccessTokenService,
     private readonly users: TokenUserRepository,
+    private readonly presence: UserPresenceService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -47,6 +49,7 @@ export class AuthGuard implements CanActivate {
     if (!user || user.tokenVersion !== claims.tv) {
       throw unauthorizedError();
     }
+    this.presence.recordActivity(user.id);
     request.user = { id: user.id, role: user.role };
   }
 }

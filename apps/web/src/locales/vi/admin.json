@@ -91,13 +91,24 @@
     },
     "status": {
       "all": "Tất cả",
+      "online": "Đang online",
       "active": "Đang hoạt động",
       "locked": "Đã khoá"
     },
     "thUser": "Người dùng",
     "thStatus": "Trạng thái",
+    "thRecentSets": "Bộ từ gần đây",
     "thRole": "Vai trò",
-    "thAction": "Thao tác"
+    "thAction": "Thao tác",
+    "online": "Online",
+    "offline": "Offline",
+    "recentSetsCount": "{{count}} bộ gần đây",
+    "noRecentSetsBrief": "Chưa học",
+    "recentSetsTitle": "Bộ từ gần đây của {{name}}",
+    "noRecentSets": "Chưa có hoạt động học nào gần đây.",
+    "viewSet": "Xem bộ từ",
+    "studyScore": "Đúng {{correct}}/{{total}} câu",
+    "close": "Đóng"
   },
   "hide": {
     "unhidden": "Đã bỏ ẩn bộ từ",

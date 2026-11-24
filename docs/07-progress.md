@@ -485,6 +485,21 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
   - **Tối ưu khoảng cách nút và nhãn Học Offline trên Mobile (`SetDetailScreen`, `OfflineToggle`)**:
     - Khắc phục triệt để lỗi 2 nút "Sao chép bộ từ" và "Tải về máy" bị dính sát sạt vào nhau trên màn hình di động bằng container `flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto`.
     - Đổi nhãn nút từ "Tải về máy" thành **"Tải về học offline"** ngắn gọn, dễ hiểu ngay tính năng tải về để học khi mất mạng mà không bị dài dòng, kèm tooltip giải thích chi tiết.
+- [x] **6.19** Quản lý trạng thái Online/Offline và các bộ từ học gần đây của người dùng cho Quản trị viên, khắc phục dứt điểm rớt dòng nút Đăng nhập Header và tự động kích hoạt Modal trình duyệt không hỗ trợ micro:
+  - **Khắc phục lỗi rớt dòng nút Đăng nhập trên Mobile Header (`button.tsx`, `session-link.tsx`, `(public)/layout.tsx`, `marketing-shell.tsx`)**:
+    - Cấu hình `whitespace-nowrap` trực tiếp vào `buttonVariants` của `Button` toàn hệ thống, ngăn chặn vỡ chữ 2 hàng ("Đăng \n nhập") trên màn hình hẹp (<= 360 px).
+    - Thêm `shrink-0`, padding và gap co giãn linh hoạt (`px-2.5 sm:px-4`, `gap-1 sm:gap-2`) cho thanh điều hướng trên mobile.
+  - **Khắc phục triệt để hiển thị Modal không hỗ trợ giọng nói trên Android / In-App WebView (`speech-recognition.ts`, `speak-mode.tsx`)**:
+    - Mở rộng nhận diện User-Agent phát hiện các trình duyệt di động OEM và WebView nhúng không có Google Speech Service backend (`VivoBrowser`, `vivo`, `Zalo`, `FBAN`, `FBAV`, `Instagram`, `HeyTapBrowser`, `MiuiBrowser`).
+    - Bắt lỗi runtime `service-not-allowed`, `language-not-supported`, `audio-capture` và ngoại lệ khởi tạo đồng bộ, tự động chuyển sang trạng thái `unsupported` và mở ngay modal hướng dẫn trình duyệt.
+    - Dùng `useSyncExternalStore` để xác định năng lực trình duyệt phía client theo chuẩn React 19, tránh lỗi cascading render effect, kèm đường link "Xem danh sách trình duyệt được hỗ trợ" khi có lỗi nhận diện.
+  - **Theo dõi trạng thái Online/Offline người dùng trong Quản trị (`UserPresenceService`, `AuthGuard`, `AdminUsersRepository`, `adminUserSchema`)**:
+    - Xây dựng `UserPresenceService` ghi nhận mốc thời gian hoạt động cuối cùng (`lastActiveAt`) của người dùng khi gửi yêu cầu xác thực qua `AuthGuard`.
+    - Định nghĩa người dùng Online khi có hoạt động trong vòng 15 phút gần nhất; hiển thị chấm tròn chỉ báo màu xanh/xám trên Avatar và badge Online/Offline bên cạnh trạng thái tài khoản.
+    - Bổ sung tab lọc "Đang online" (`status=online`) trên thanh công cụ quản lý người dùng.
+  - **Xem nhanh những bộ từ học gần đây của người dùng (`RecentStudySetsDialog`, `AdminUsersRepository`)**:
+    - Backend truy vấn các phiên học (`studySessions`) gần nhất của từng người dùng, gộp các bộ từ đã học kèm thông tin: tên bộ từ, chế độ học (Flashcard, Trắc nghiệm, Luyện viết...), số câu đúng/tổng số câu (%) và thời gian học.
+    - Cung cấp nút xem "X bộ gần đây" trên từng dòng người dùng trong bảng Quản trị, mở hộp thoại chi tiết `RecentStudySetsDialog` với link trực tiếp đến bộ từ.
 
 ## Quyết định cần chốt
 
