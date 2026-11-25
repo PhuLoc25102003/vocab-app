@@ -48,7 +48,10 @@ export function TypedAnswer({
 
   useEffect(() => {
     shownAt.current = Date.now();
-    inputRef.current?.focus();
+    // Tránh tự focus trên thiết bị cảm ứng để bàn phím ảo không che mất câu hỏi trước khi người học kịp đọc.
+    if (typeof window === 'undefined' || !window.matchMedia?.('(pointer: coarse)').matches) {
+      inputRef.current?.focus();
+    }
   }, []);
 
   useEffect(() => {

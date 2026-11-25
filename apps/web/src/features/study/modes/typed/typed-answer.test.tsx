@@ -33,6 +33,26 @@ describe('WriteModeView', () => {
     expect(input).toHaveFocus();
   });
 
+  it('không tự focus vào ô nhập trên thiết bị cảm ứng', () => {
+    const matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(pointer: coarse)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    vi.stubGlobal('matchMedia', matchMedia);
+    try {
+      const { input } = setup();
+      expect(input).not.toHaveFocus();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('chấm đúng rồi sang câu sau bằng Enter', async () => {
     const { onAnswer } = setup();
 

@@ -323,7 +323,7 @@ export function AdminUsers() {
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[820px]">
+      <DataTableContainer minWidth="min-w-[900px]">
         <DataTableHeader
           gridTemplateColumns={USER_GRID}
           columns={[

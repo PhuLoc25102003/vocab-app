@@ -243,7 +243,7 @@ export function ClassAssignments({
     }
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[720px]">
+      <DataTableContainer minWidth="min-w-[900px]">
         <DataTableHeader
           gridTemplateColumns={ASSIGNMENT_GRID}
           columns={[

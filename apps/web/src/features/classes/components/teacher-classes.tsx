@@ -262,7 +262,7 @@ function ClassList({ view }: { view: ClassesView }) {
     }
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[800px]">
+      <DataTableContainer minWidth="min-w-[900px]">
         <DataTableHeader
           gridTemplateColumns={TEACHER_CLASS_GRID}
           columns={[

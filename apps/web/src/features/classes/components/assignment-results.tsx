@@ -236,7 +236,7 @@ function ResultsList({ classId, assignmentId }: { classId: string; assignmentId:
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[780px]">
+      <DataTableContainer minWidth="min-w-[880px]">
         <DataTableHeader
           gridTemplateColumns={RESULT_GRID}
           columns={[

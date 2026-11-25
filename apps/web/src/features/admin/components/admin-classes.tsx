@@ -36,7 +36,7 @@ const UNASSIGNED_PAGE_SIZE = 10;
 const TEACHER_GRID =
   'minmax(220px, 2fr) minmax(110px, 1fr) minmax(130px, 1fr) minmax(165px, 1.2fr)';
 const CLASS_GRID =
-  'minmax(180px, 1.8fr) minmax(120px, 1fr) minmax(110px, 0.9fr) minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1.2fr)';
+  'minmax(170px, 1.8fr) minmax(120px, 1fr) minmax(110px, 0.9fr) minmax(130px, 1fr) minmax(120px, 0.9fr) minmax(175px, 1.3fr)';
 const CLASS_STUDENT_GRID = 'minmax(180px, 1.5fr) minmax(200px, 1.8fr) minmax(150px, 1fr)';
 const UNASSIGNED_GRID =
   'minmax(170px, 1.4fr) minmax(190px, 1.6fr) minmax(130px, 1fr) minmax(140px, 1.1fr) minmax(110px, 0.9fr)';
@@ -86,7 +86,7 @@ function TeacherClassRow({ item }: { item: AdminClassItem }) {
 
   return (
     <div className="rounded-md border border-border bg-surface-elevated/20 p-3">
-      <div style={{ gridTemplateColumns: CLASS_GRID }} className="grid items-center gap-3">
+      <div style={{ gridTemplateColumns: CLASS_GRID }} className="grid items-center gap-4">
         {/* Tên lớp */}
         <div className="min-w-0">
           <span className="font-semibold text-text text-body truncate block" title={item.name}>
@@ -163,7 +163,7 @@ function TeacherClassRow({ item }: { item: AdminClassItem }) {
           {item.members.length === 0 ? (
             <p className="py-1 text-small text-text-muted">{t('classes.noStudents')}</p>
           ) : (
-            <DataTableContainer minWidth="min-w-[550px]">
+            <DataTableContainer minWidth="min-w-[600px]">
               <DataTableHeader
                 gridTemplateColumns={CLASS_STUDENT_GRID}
                 columns={[
@@ -292,7 +292,7 @@ function TeacherRow({ teacher }: { teacher: AdminTeacherItem }) {
           {teacher.classes.length === 0 ? (
             <p className="py-2 text-small text-text-muted">{t('classes.noClassesForTeacher')}</p>
           ) : (
-            <DataTableContainer minWidth="min-w-[820px]">
+            <DataTableContainer minWidth="min-w-[960px]">
               <DataTableHeader
                 gridTemplateColumns={CLASS_GRID}
                 columns={[
@@ -672,7 +672,7 @@ export function AdminClasses() {
             />
           )
         ) : (
-          <DataTableContainer minWidth="min-w-[650px]">
+          <DataTableContainer minWidth="min-w-[710px]">
             <DataTableHeader
               gridTemplateColumns={TEACHER_GRID}
               columns={[
@@ -778,7 +778,7 @@ export function AdminClasses() {
             />
           )
         ) : (
-          <DataTableContainer minWidth="min-w-[760px]">
+          <DataTableContainer minWidth="min-w-[840px]">
             <DataTableHeader
               gridTemplateColumns={UNASSIGNED_GRID}
               columns={[
