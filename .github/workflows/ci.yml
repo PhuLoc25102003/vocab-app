@@ -116,7 +116,7 @@ jobs:
 
       - name: Upload E2E results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-results
           path: apps/web/test-results
