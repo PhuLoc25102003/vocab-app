@@ -356,7 +356,7 @@ export function ClassMembers({
   } else {
     const { data } = members.data;
     body = (
-      <DataTableContainer minWidth="min-w-[720px]">
+      <DataTableContainer minWidth="min-w-[860px]">
         <DataTableHeader
           gridTemplateColumns={MEMBER_GRID}
           columns={[

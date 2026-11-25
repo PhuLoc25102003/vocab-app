@@ -179,7 +179,7 @@ export function MemberResults({ classId, userId }: { classId: string; userId: st
     );
   } else {
     listContent = (
-      <DataTableContainer minWidth="min-w-[650px]">
+      <DataTableContainer minWidth="min-w-[740px]">
         <DataTableHeader
           gridTemplateColumns={MEMBER_RESULT_GRID}
           columns={[

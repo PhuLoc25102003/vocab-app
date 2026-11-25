@@ -179,7 +179,7 @@ export function AdminHiddenSets() {
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[780px]">
+      <DataTableContainer minWidth="min-w-[870px]">
         <DataTableHeader
           gridTemplateColumns={SET_GRID}
           columns={[

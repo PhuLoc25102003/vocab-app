@@ -429,7 +429,7 @@ function JoinedClasses({ view }: { view: ClassesView }) {
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[500px]">
+      <DataTableContainer minWidth="min-w-[590px]">
         <DataTableHeader
           gridTemplateColumns={JOINED_CLASS_GRID}
           columns={[
