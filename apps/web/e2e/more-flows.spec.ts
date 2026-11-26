@@ -377,7 +377,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     });
     await expect(page.getByText('Đã nhận ra tiêu đề file mẫu')).toBeVisible();
     await page.getByRole('button', { name: 'Xem trước' }).click();
-    await expect(page.getByRole('heading', { name: 'Xem trước (7 thẻ)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lưu 7 thẻ' })).toBeVisible();
     await expect(page.getByLabel('Phiên âm').first()).toHaveValue('/ˈæp.əl/');
     await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
   });
@@ -398,16 +398,14 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('link', { name: 'Đóng thư mục' }).click();
     await page.waitForURL(/\/sets$/);
 
-    // Kéo tay nắm của thẻ bộ từ thả vào thư mục trên cột thư mục.
-    const card = page
-      .getByRole('listitem')
-      .filter({ has: page.getByRole('link', { name: title }) });
-    const handle = await card.locator('[data-drag-handle]').boundingBox();
+    // Kéo thẻ bộ từ thả vào thư mục trên cột thư mục.
+    const card = page.locator('li').filter({ has: page.getByRole('link', { name: title }) });
+    const handle = await card.boundingBox();
     const target = await folders.getByRole('link', { name: new RegExp(folderName) }).boundingBox();
     if (!handle || !target) throw new Error('Không thấy tay nắm hoặc thư mục');
     await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
     await page.mouse.down();
-    await page.mouse.move(target.x + 20, target.y + target.height / 2, { steps: 12 });
+    await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 20 });
     await page.mouse.up();
     await expect(page.getByText(`Đã chuyển "${title}" vào thư mục`)).toBeVisible();
 
@@ -422,8 +420,12 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('button', { name: 'Lưu' }).click();
     await expect(page.getByText('Đã đổi tên thư mục')).toBeVisible();
 
-    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
-    await page.getByRole('menuitem', { name: `Gỡ khỏi thư mục ${folderName} A` }).click();
+    await card.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Chuyển vào thư mục' }).click();
+    await page
+      .getByRole('dialog', { name: 'Chuyển vào thư mục' })
+      .getByRole('button', { name: 'Không có thư mục' })
+      .click();
     await expect(page.getByText('Đã gỡ khỏi thư mục')).toBeVisible();
     await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
 
