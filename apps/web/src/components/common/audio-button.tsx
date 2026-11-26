@@ -27,8 +27,7 @@ export function AudioButton({ text, lang, label, className, withSlow = false }: 
     return null;
   }
 
-  const pillClass =
-    'min-h-10 rounded-full px-3 text-small sm:min-h-11 sm:px-4 sm:text-body shrink-0';
+  const pillClass = 'min-h-11 rounded-full px-3 text-small sm:px-4 sm:text-body shrink-0';
 
   const normal = (
     <Button
@@ -51,7 +50,7 @@ export function AudioButton({ text, lang, label, className, withSlow = false }: 
       <Button
         type="button"
         variant="secondary"
-        aria-label={t('audio.slow', { label })}
+        aria-label={`${t('audio.slowLabel')} (${label})`}
         title={t('audio.slowTitle')}
         className={cn(pillClass, className)}
         onClick={() => speak(text, lang, { slow: true })}
