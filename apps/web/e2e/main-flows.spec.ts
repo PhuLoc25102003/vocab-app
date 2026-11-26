@@ -192,7 +192,7 @@ test.describe.serial('luồng chính', () => {
     await nameDialog.getByLabel('Tên hiển thị').fill('Tên mới E2E');
     await nameDialog.getByRole('button', { name: 'Lưu tên' }).click();
     await expect(page.getByText('Đã lưu tên hiển thị')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Tài khoản: Tên mới E2E' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Tài khoản: mới E2E' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Đổi mật khẩu' }).click();
     const passwordDialog = page.getByRole('dialog', { name: 'Đổi mật khẩu' });

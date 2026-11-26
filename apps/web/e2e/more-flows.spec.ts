@@ -132,10 +132,10 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
     await page.goto('/sets');
     await page.getByRole('searchbox').fill('khong-co-bo-tu-nay');
-    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await page.getByRole('searchbox').press('Enter');
     await expect(page.getByText('Không tìm thấy bộ từ phù hợp')).toBeVisible();
     await page.getByRole('searchbox').fill(title);
-    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await page.getByRole('searchbox').press('Enter');
     await expect(page.getByRole('link', { name: title })).toBeVisible();
   });
 
@@ -553,7 +553,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await signUp(other, 'Người học khác', `e2e-other-${stamp}@example.com`);
     await other.goto('/explore');
     await other.getByRole('searchbox').fill(title);
-    await other.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await other.getByRole('searchbox').press('Enter');
     await other.getByRole('link', { name: title }).click();
     await other.getByRole('button', { name: 'Sao chép bộ từ' }).click();
     const copyTitle = `${title} (bản sao)`;
