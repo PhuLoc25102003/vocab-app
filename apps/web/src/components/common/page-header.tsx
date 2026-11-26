@@ -60,7 +60,7 @@ export function PageHeader({
                   type="button"
                   variant="secondary"
                   size="icon"
-                  className="size-9 rounded-md border-border-strong/70 bg-surface/90 text-text hover:bg-primary-soft hover:text-primary"
+                  className="size-11 rounded-md border-border-strong/70 bg-surface/90 text-text hover:bg-primary-soft hover:text-primary"
                   aria-label={t('actions.pageActions')}
                 >
                   <MoreVertical aria-hidden className="size-4" />

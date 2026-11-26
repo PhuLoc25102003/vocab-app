@@ -29,7 +29,7 @@ export function JoinCodeBadge({ code, className }: { code: string; className?: s
       title={t('copy.label', { code })}
       aria-label={t('copy.label', { code })}
       className={cn(
-        'relative z-20 inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary-soft px-2.5 py-1 font-mono text-tiny font-bold tracking-wider text-primary shadow-2xs transition-all hover:border-primary hover:bg-primary hover:text-primary-fg active:scale-95 cursor-pointer',
+        'relative z-20 inline-flex min-h-11 items-center gap-1.5 rounded-md border border-primary/25 bg-primary-soft px-2.5 py-1 font-mono text-tiny font-bold tracking-wider text-primary shadow-2xs transition-all hover:border-primary hover:bg-primary hover:text-primary-fg active:scale-95 cursor-pointer',
         className,
       )}
     >

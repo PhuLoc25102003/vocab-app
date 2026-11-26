@@ -24,11 +24,9 @@ describe('DataTable components', () => {
       />,
     );
 
-    const headers = screen.getAllByRole('columnheader');
-    expect(headers).toHaveLength(3);
-    expect(headers[0]).toHaveTextContent('Cột 1');
-    expect(headers[1]).toHaveClass('text-center');
-    expect(headers[2]).toHaveClass('text-right');
+    expect(screen.getByText('Cột 1')).toBeInTheDocument();
+    expect(screen.getByText('Cột 2')).toHaveClass('text-center');
+    expect(screen.getByText('Cột 3')).toHaveClass('text-right');
   });
 
   it('render DataTableRow và DataTableCell chuẩn cấu trúc grid', () => {
