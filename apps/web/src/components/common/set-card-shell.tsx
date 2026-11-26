@@ -65,7 +65,7 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
       {...rest}
       {...itemProps}
       className={cn(
-        'relative flex min-h-28 flex-col gap-1 rounded-md border border-border-strong bg-surface p-3 transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft',
+        'glass-surface relative flex min-h-28 flex-col gap-1 rounded-xl border border-border p-3.5 shadow-xs transition-all duration-fast ease-standard hover:border-primary/60 hover:bg-primary-soft hover:shadow-md',
         className,
       )}
     >

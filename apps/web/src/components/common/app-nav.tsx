@@ -66,7 +66,7 @@ function NavLinks({
   return (
     <nav
       aria-label={t('nav.main')}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:pb-0"
+      className="glass-surface fixed inset-x-0 bottom-0 z-30 border-t border-border pb-[env(safe-area-inset-bottom)] md:static md:border-t-0 md:bg-transparent md:shadow-none md:backdrop-blur-none md:pb-0"
     >
       <ul className="grid grid-cols-5 md:flex md:gap-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {

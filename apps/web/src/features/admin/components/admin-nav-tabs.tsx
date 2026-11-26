@@ -45,7 +45,7 @@ export function AdminNavTabs({ current }: { current: AdminTabKey }) {
 
   return (
     <nav aria-label={t('navLabel')}>
-      <div className="w-full rounded-lg border border-border-strong/70 bg-surface/80 p-1 shadow-2xs backdrop-blur-sm">
+      <div className="glass-surface w-full rounded-xl border border-border p-1">
         <ul className="grid grid-cols-3 gap-1">
           {ADMIN_TABS.map(({ key, href, labelKey, mobileLabelKey, icon: Icon }) => {
             const isActive = current === key;

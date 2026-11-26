@@ -132,7 +132,7 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+      <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
         {question.imageUrl ? (
           <div className="flex justify-center">
             <div className="w-full max-w-[480px] overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-2xs">

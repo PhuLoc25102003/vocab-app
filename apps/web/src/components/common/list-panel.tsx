@@ -42,7 +42,7 @@ export function ListPanel({
   return (
     <section
       aria-labelledby={titleId}
-      className="flex min-w-0 flex-col rounded-lg border border-border-strong bg-surface"
+      className="glass-surface flex min-w-0 flex-col rounded-xl border border-border shadow-sm"
     >
       <div className="flex flex-col gap-3 border-b border-border p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">

@@ -48,7 +48,7 @@ function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLink
         className={cn(
           'flex min-h-11 items-center gap-2 rounded-md border px-3 text-small transition-colors duration-fast ease-standard',
           'border-transparent hover:bg-primary-soft',
-          active && 'border-primary bg-primary-soft font-semibold text-primary',
+          active && 'border-primary/25 bg-primary-soft font-semibold text-primary',
           isDragging && dropTarget && 'border-dashed border-primary',
           isOver && 'bg-primary text-primary-fg hover:bg-primary',
         )}
@@ -110,7 +110,7 @@ export function FolderPanel() {
       </div>
       <nav
         aria-label={t('folders.title')}
-        className="hidden min-w-0 flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 shadow-sm lg:sticky lg:top-20 lg:flex lg:self-start"
+        className="glass-surface hidden min-w-0 flex-col gap-3 rounded-xl border border-border p-4 lg:sticky lg:top-20 lg:flex lg:self-start"
       >
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-h3">{t('folders.title')}</h2>

@@ -56,7 +56,7 @@ function Tile({
 }) {
   const { i18n } = useTranslation();
   return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5">
+    <div className="glass-surface grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-xl border border-border p-4 transition-all duration-fast hover:border-primary/50 hover:shadow-md sm:p-5">
       <dt className="col-span-2 row-start-2 font-medium text-text">{label}</dt>
       <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">
         {formatNum(value, i18n.language)}
@@ -82,7 +82,7 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section
       aria-label={title}
-      className="flex min-w-0 flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 sm:p-5"
+      className="glass-surface flex min-w-0 flex-col gap-3 rounded-xl border border-border p-4 sm:p-5"
     >
       <h3 className="text-h3">{title}</h3>
       {children}

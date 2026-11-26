@@ -21,7 +21,7 @@ export function DashboardScreen() {
         <AdminOverview />
 
         {/* Khối gập mở rõ ràng cho Giáo viên & Học sinh */}
-        <details className="group rounded-xl border border-border-strong bg-surface p-4 transition-all duration-fast hover:border-primary/50 sm:p-5">
+        <details className="group rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors duration-fast hover:border-primary/50 sm:p-5">
           <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 select-none">
             <div className="flex items-center gap-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary border border-primary/20">
@@ -66,7 +66,7 @@ export function DashboardScreen() {
     return (
       <div className="flex flex-col gap-8">
         <TeacherOverview />
-        <details className="group rounded-xl border border-border-strong bg-surface p-4 transition-all duration-fast hover:border-primary/50 sm:p-5">
+        <details className="group rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors duration-fast hover:border-primary/50 sm:p-5">
           <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 select-none">
             <div className="flex items-center gap-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary border border-primary/20">

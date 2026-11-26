@@ -2,65 +2,73 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light: giấy vở, mực tím */
+/* Light: Liquid Glass ban ngày (nền băng trong + chàm điện tử) */
 :root {
-  --bg: #fafaf7;
-  --surface: #ffffff;
-  --border: #e3dfec;
-  --border-strong: #857e94;
-  --rule: #f0edf5;
-  --text: #211d2e;
-  --text-muted: #5f5a6e;
-  --primary: #5f1a9b;
-  --primary-hover: #4c1480;
+  --bg: #e8efff;
+  --surface: rgb(255 255 255 / 0.58);
+  --border: rgb(255 255 255 / 0.78);
+  --border-strong: rgb(71 85 105 / 0.18);
+  --rule: rgb(99 102 241 / 0.12);
+  --text: #0f172a;
+  --text-muted: #475569;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
   --primary-fg: #ffffff;
-  --primary-soft: #f3ebfa;
-  --board: #1f4d45;
-  --board-fg: #f6f8f2;
-  --board-muted: #bfd6cc;
-  --danger: #bf2a20;
-  --danger-mark: #de3a2e;
-  --danger-soft: #fcedea;
-  --success: #17774c;
-  --success-mark: #259a66;
-  --success-soft: #e6f5ee;
-  --highlight: #ffe14d;
-  --highlight-fg: #211d2e;
-  --focus: #5f1a9b;
-  --overlay: rgb(33 29 46 / 0.5);
+  --primary-soft: rgb(79 70 229 / 0.12);
+  --board: #0f3d3e;
+  --board-fg: #f0fdfa;
+  --board-muted: #99f6e4;
+  --danger: #dc2626;
+  --danger-mark: #ef4444;
+  --danger-soft: rgb(239 68 68 / 0.12);
+  --success: #0f766e;
+  --success-mark: #0d9488;
+  --success-soft: rgb(13 148 136 / 0.13);
+  --highlight: #fde047;
+  --highlight-fg: #0f172a;
+  --focus: #4f46e5;
+  --overlay: rgb(15 23 42 / 0.42);
 
-  --elevation-raised: 0 1px 0 var(--border), 0 12px 32px rgb(33 29 46 / 0.1);
+  --glass-highlight: rgb(255 255 255 / 0.92);
+  --glass-ring: rgb(79 70 229 / 0.08);
+  --elevation-raised:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.9), 0 16px 40px -8px rgb(15 23 42 / 0.14),
+    0 0 0 1px var(--border);
 
   --duration-fast: 120ms;
   --duration-base: 200ms;
   --duration-flip: 450ms;
 }
 
-/* Dark: giấy than */
+/* Dark: Obsidian Liquid Glass (kính tối sâu + chàm sáng) */
 .dark {
-  --bg: #16141b;
-  --surface: #211e29;
-  --border: #373240;
-  --border-strong: #827b90;
-  --rule: #2a2632;
-  --text: #f2eff5;
-  --text-muted: #b1abbc;
-  --primary: #c9a4f4;
-  --primary-hover: #d9bdf8;
-  --primary-fg: #1b1424;
-  --primary-soft: #33264a;
-  --board-fg: #f6f8f2;
-  --board-muted: #bfd6cc;
-  --danger: #ff8b7f;
-  --danger-mark: #ff8b7f;
-  --danger-soft: #43211f;
-  --success: #5cd6a2;
-  --success-mark: #5cd6a2;
-  --success-soft: #173a2c;
-  --focus: #c9a4f4;
-  --overlay: rgb(0 0 0 / 0.6);
+  --bg: #070b18;
+  --surface: rgb(18 26 48 / 0.62);
+  --border: rgb(255 255 255 / 0.14);
+  --border-strong: rgb(255 255 255 / 0.22);
+  --rule: rgb(148 163 184 / 0.12);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --primary-fg: #070b18;
+  --primary-soft: rgb(129 140 248 / 0.18);
+  --board-fg: #f0fdfa;
+  --board-muted: #99f6e4;
+  --danger: #fb7185;
+  --danger-mark: #fb7185;
+  --danger-soft: rgb(251 113 133 / 0.16);
+  --success: #34d399;
+  --success-mark: #34d399;
+  --success-soft: rgb(52 211 153 / 0.16);
+  --focus: #818cf8;
+  --overlay: rgb(2 6 23 / 0.65);
 
-  --elevation-raised: 0 0 0 1px var(--border), 0 12px 32px rgb(0 0 0 / 0.4);
+  --glass-highlight: rgb(255 255 255 / 0.14);
+  --glass-ring: rgb(0 0 0 / 0.25);
+  --elevation-raised:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.14), 0 20px 44px -8px rgb(0 0 0 / 0.55),
+    0 0 0 1px var(--border);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -161,10 +169,40 @@
   }
 
   body {
+    position: relative;
     background-color: var(--bg);
     color: var(--text);
     /* Lưới an toàn: từ dài không dấu cách xuống dòng thay vì tràn khỏi khối. */
     overflow-wrap: break-word;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        at 10% 10%,
+        color-mix(in oklab, var(--primary) 26%, transparent) 0px,
+        transparent 46%
+      ),
+      radial-gradient(
+        at 88% 12%,
+        color-mix(in oklab, var(--success) 22%, transparent) 0px,
+        transparent 44%
+      ),
+      radial-gradient(
+        at 75% 82%,
+        color-mix(in oklab, var(--primary) 18%, transparent) 0px,
+        transparent 48%
+      ),
+      radial-gradient(
+        at 18% 85%,
+        color-mix(in oklab, var(--success) 16%, transparent) 0px,
+        transparent 45%
+      );
   }
 
   :focus-visible {
@@ -174,13 +212,37 @@
 }
 
 @layer components {
+  /* Bề mặt Liquid Glass: kính mờ xuyên sáng kèm viền sáng phía trên */
+  .glass-surface {
+    background-color: var(--surface);
+    backdrop-filter: blur(12px) saturate(1.5);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      0 8px 28px -6px var(--glass-ring);
+  }
+
   /* Vở ô li: 4 dòng li 8px trong mỗi ô lớn 32px */
   .paper-grid {
     background-color: var(--surface);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
     background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--primary) 26%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--primary) 26%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--primary) 11%, transparent) 1px,
+        transparent 1px
+      );
     background-size:
       32px 32px,
       32px 32px,
@@ -205,6 +267,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--surface);
+    backdrop-filter: blur(20px) saturate(1.4);
     color: var(--text);
     box-shadow: var(--shadow-raised);
   }

@@ -94,7 +94,7 @@ export function Dialog({
         }
       }}
       className={cn(
-        'm-auto rounded-lg border border-border bg-surface p-0 text-text shadow-raised backdrop:bg-overlay',
+        'glass-surface m-auto rounded-2xl border border-border p-0 text-text shadow-raised backdrop:bg-overlay backdrop:backdrop-blur-xs',
         layout === 'sheet'
           ? cn(
               // Tấm đáy: chỉ cao bằng nội dung, chạm gần đỉnh khi form thật sự dài.

@@ -32,7 +32,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        'flex min-h-[60px] sm:min-h-[64px] items-center justify-between gap-3 rounded-lg border border-border-strong/70 bg-surface/80 px-4 py-2.5 sm:px-5 sm:py-3 shadow-sm shadow-primary/5 backdrop-blur-md transition-all',
+        'glass-surface flex min-h-[60px] sm:min-h-[64px] items-center justify-between gap-3 rounded-xl border border-border px-4 py-2.5 sm:px-5 sm:py-3 shadow-sm transition-all',
         className,
       )}
     >

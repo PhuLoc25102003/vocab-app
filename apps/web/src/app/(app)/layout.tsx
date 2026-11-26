@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       >
         {t('nav.skipToContent')}
       </a>
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur-sm">
+      <header className="glass-surface sticky top-0 z-20 border-b border-border">
         <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
           <Logo href="/dashboard" />
           <div className="hidden md:flex">

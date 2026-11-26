@@ -55,7 +55,7 @@ function StatTile({
   iconBg?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-border-strong bg-surface p-3.5 shadow-xs">
+    <div className="glass-surface flex flex-col gap-1.5 rounded-xl border border-border p-3.5">
       <div className="flex items-center justify-between">
         <dt className="text-small font-medium text-text-muted">{label}</dt>
         {Icon ? (
@@ -175,7 +175,7 @@ function MemberProfile({
 
           <section
             aria-labelledby={`${titleId}-recent`}
-            className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 shadow-xs"
+            className="glass-surface flex flex-col gap-3 rounded-xl border border-border p-4"
           >
             <h3 id={`${titleId}-recent`} className="font-semibold text-text">
               {t('members.recent')}

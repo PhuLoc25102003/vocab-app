@@ -66,7 +66,7 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+      <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
         <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-4">
           <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
             {question.prompt}
