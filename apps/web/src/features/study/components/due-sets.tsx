@@ -133,9 +133,9 @@ function ReviewModePicker({
               aria-pressed={on}
               onClick={() => toggle(mode)}
               className={cn(
-                "relative inline-flex h-9 w-full min-w-0 items-center justify-start gap-2 rounded-lg border px-2.5 text-small font-medium transition-all duration-fast ease-standard after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-lg after:content-['']",
+                "glass-rim relative inline-flex h-9 w-full min-w-0 items-center justify-start gap-2 rounded-full border px-2.5 text-small font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:rounded-full after:content-['']",
                 on
-                  ? 'border-board-fg bg-board-fg font-semibold text-board shadow-xs'
+                  ? 'border-board-fg bg-board-fg font-semibold text-board'
                   : 'border-board-muted/40 bg-board-muted/10 text-board-fg/90 hover:border-board-fg/80 hover:bg-board-muted/20',
               )}
             >

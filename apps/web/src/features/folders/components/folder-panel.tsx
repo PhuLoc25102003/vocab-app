@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
 import { cn } from '@/lib/utils';
 import { useCreateFolder, useFolders } from '../hooks';
 import { useFolderDrop } from './folder-dnd';
@@ -46,13 +47,14 @@ function FolderLink({ href, label, count, active, Icon, dropTarget }: FolderLink
         href={href}
         aria-current={active ? 'page' : undefined}
         className={cn(
-          'flex min-h-11 items-center gap-2 rounded-md border px-3 text-small transition-colors duration-fast ease-standard',
+          'relative isolate flex min-h-11 items-center gap-2 rounded-xl border px-3 text-small transition-colors duration-fast ease-standard',
           'border-transparent hover:bg-primary-soft',
-          active && 'border-primary/25 bg-primary-soft font-semibold text-primary',
+          active && 'font-semibold text-primary hover:bg-transparent',
           isDragging && dropTarget && 'border-dashed border-primary',
           isOver && 'bg-primary text-primary-fg hover:bg-primary',
         )}
       >
+        {active ? <GlassTabIndicator radius={12} /> : null}
         <Icon aria-hidden className="size-4 shrink-0" />
         <span className="min-w-0 flex-1 truncate">{label}</span>
         {count !== undefined ? (
@@ -132,38 +134,40 @@ export function FolderPanel() {
             onChange={(event) => setFilter(event.target.value)}
           />
         ) : null}
-        <ul className="flex max-h-[calc(100dvh-16rem)] flex-col gap-0.5 overflow-y-auto">
-          <FolderLink
-            href={folderHref('', sort)}
-            label={t('folders.all')}
-            active={current === ''}
-            Icon={Library}
-          />
-          <FolderLink
-            href={folderHref(NO_FOLDER, sort)}
-            label={t('folders.noFolder')}
-            active={current === NO_FOLDER}
-            Icon={FolderMinus}
-            dropTarget={NO_FOLDER}
-          />
-          {folders.isPending
-            ? Array.from({ length: 3 }, (_, index) => (
-                <li key={index}>
-                  <Skeleton className="h-11 w-full" />
-                </li>
-              ))
-            : shown.map(({ id, name, setCount }) => (
-                <FolderLink
-                  key={id}
-                  href={folderHref(id, sort)}
-                  label={name}
-                  count={setCount}
-                  active={current === id}
-                  Icon={current === id ? FolderOpen : Folder}
-                  dropTarget={id}
-                />
-              ))}
-        </ul>
+        <GlassTabGroup>
+          <ul className="flex max-h-[calc(100dvh-16rem)] flex-col gap-0.5 overflow-y-auto">
+            <FolderLink
+              href={folderHref('', sort)}
+              label={t('folders.all')}
+              active={current === ''}
+              Icon={Library}
+            />
+            <FolderLink
+              href={folderHref(NO_FOLDER, sort)}
+              label={t('folders.noFolder')}
+              active={current === NO_FOLDER}
+              Icon={FolderMinus}
+              dropTarget={NO_FOLDER}
+            />
+            {folders.isPending
+              ? Array.from({ length: 3 }, (_, index) => (
+                  <li key={index}>
+                    <Skeleton className="h-11 w-full" />
+                  </li>
+                ))
+              : shown.map(({ id, name, setCount }) => (
+                  <FolderLink
+                    key={id}
+                    href={folderHref(id, sort)}
+                    label={name}
+                    count={setCount}
+                    active={current === id}
+                    Icon={current === id ? FolderOpen : Folder}
+                    dropTarget={id}
+                  />
+                ))}
+          </ul>
+        </GlassTabGroup>
         {folders.isError ? (
           <p role="alert" className="text-small text-danger">
             {t('folders.loadFailed')}{' '}

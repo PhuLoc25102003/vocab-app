@@ -32,32 +32,32 @@ Tránh: nền oải hương với nút tím xanh kiểu SaaS, gradient trang tr�
 
 Component chỉ dùng tên token. Cột tương phản ghi light / dark, đã đo theo công thức WCAG 2.x. Chữ cần ít nhất 4.5:1, viền điều khiển và icon cần ít nhất 3:1.
 
-| Token             | Light       | Dark      | Dùng cho                                 | Tương phản                |
-| ----------------- | ----------- | --------- | ---------------------------------------- | ------------------------- |
-| `--bg`            | `#FAFAF7`   | `#16141B` | Nền trang                                | –                         |
-| `--surface`       | `#FFFFFF`   | `#211E29` | Panel, input, mặt trước flashcard        | –                         |
-| `--border`        | `#E3DFEC`   | `#373240` | Đường chia, viền trang trí, ô lớn        | Không dùng cho điều khiển |
-| `--border-strong` | `#857E94`   | `#827B90` | Viền input, nút phụ, đáp án              | 3.88 / 4.04 trên surface  |
-| `--rule`          | `#F0EDF5`   | `#2A2632` | Dòng li nhỏ của `.paper-grid`            | Chỉ trang trí             |
-| `--text`          | `#211D2E`   | `#F2EFF5` | Chữ chính                                | 15.69 / 16.04 trên bg     |
-| `--text-muted`    | `#5F5A6E`   | `#B1ABBC` | Chữ phụ, placeholder                     | 6.33 / 8.19 trên bg       |
-| `--primary`       | `#5F1A9B`   | `#C9A4F4` | Nút chính, link, tiến độ                 | 9.53 / 8.78 trên bg       |
-| `--primary-hover` | `#4C1480`   | `#D9BDF8` | Hover của nút chính                      | 12.22 / 10.74 với chữ nút |
-| `--primary-fg`    | `#FFFFFF`   | `#1B1424` | Chữ trên nút chính                       | 9.96 / 8.62               |
-| `--primary-soft`  | `#F3EBFA`   | `#33264A` | Nền tag, mục đang chọn, hover nút phụ    | Chữ primary 8.58 / 6.66   |
-| `--board`         | `#1F4D45`   | `#1F4D45` | Mặt sau flashcard                        | –                         |
-| `--board-fg`      | `#F6F8F2`   | `#F6F8F2` | Chữ chính trên bảng                      | 8.90                      |
-| `--board-muted`   | `#BFD6CC`   | `#BFD6CC` | Ví dụ, chữ phụ trên bảng                 | 6.21                      |
-| `--danger`        | `#BF2A20`   | `#FF8B7F` | Chữ báo sai, lỗi form                    | 5.89 / 7.21 trên surface  |
-| `--danger-mark`   | `#DE3A2E`   | `#FF8B7F` | Đường gạch, viền, icon sai               | 4.42 / 7.21               |
-| `--danger-soft`   | `#FCEDEA`   | `#43211F` | Nền đáp án sai                           | Chữ danger 5.17 / 6.27    |
-| `--success`       | `#17774C`   | `#5CD6A2` | Chữ báo đúng                             | 5.56 / 9.04 trên surface  |
-| `--success-mark`  | `#259A66`   | `#5CD6A2` | Viền, icon đúng                          | 3.56 / 9.04               |
-| `--success-soft`  | `#E6F5EE`   | `#173A2C` | Nền đáp án đúng                          | Chữ success 4.94 / 6.91   |
-| `--highlight`     | `#FFE14D`   | `#FFE14D` | Highlight, streak                        | –                         |
-| `--highlight-fg`  | `#211D2E`   | `#211D2E` | Chữ trên highlight, không đổi theo theme | 12.60                     |
-| `--focus`         | `#5F1A9B`   | `#C9A4F4` | Vòng focus 2px                           | 9.53 / 8.78 trên bg       |
-| `--overlay`       | mực đen 50% | đen 60%   | Nền mờ sau dialog                        | –                         |
+| Token             | Light        | Dark      | Dùng cho                                 | Tương phản                |
+| ----------------- | ------------ | --------- | ---------------------------------------- | ------------------------- |
+| `--bg`            | `#FAFAF7`    | `#16141B` | Nền trang                                | –                         |
+| `--surface`       | `#FFFFFF`    | `#211E29` | Panel, input, mặt trước flashcard        | –                         |
+| `--border`        | `#E3DFEC`    | `#373240` | Đường chia, viền trang trí, ô lớn        | Không dùng cho điều khiển |
+| `--border-strong` | `#857E94`    | `#827B90` | Viền input, nút phụ, đáp án              | 3.88 / 4.04 trên surface  |
+| `--rule`          | `#F0EDF5`    | `#2A2632` | Dòng li nhỏ của `.paper-grid`            | Chỉ trang trí             |
+| `--text`          | `#211D2E`    | `#F2EFF5` | Chữ chính                                | 15.69 / 16.04 trên bg     |
+| `--text-muted`    | `#5F5A6E`    | `#B1ABBC` | Chữ phụ, placeholder                     | 6.33 / 8.19 trên bg       |
+| `--primary`       | `#5F1A9B`    | `#C9A4F4` | Nút chính, link, tiến độ                 | 9.53 / 8.78 trên bg       |
+| `--primary-hover` | `#4C1480`    | `#D9BDF8` | Hover của nút chính                      | 12.22 / 10.74 với chữ nút |
+| `--primary-fg`    | `#FFFFFF`    | `#1B1424` | Chữ trên nút chính                       | 9.96 / 8.62               |
+| `--primary-soft`  | `#F3EBFA`    | `#33264A` | Nền tag, mục đang chọn, hover nút phụ    | Chữ primary 8.58 / 6.66   |
+| `--board`         | `#1F4D45`    | `#1F4D45` | Mặt sau flashcard                        | –                         |
+| `--board-fg`      | `#F6F8F2`    | `#F6F8F2` | Chữ chính trên bảng                      | 8.90                      |
+| `--board-muted`   | `#BFD6CC`    | `#BFD6CC` | Ví dụ, chữ phụ trên bảng                 | 6.21                      |
+| `--danger`        | `#BF2A20`    | `#FF8B7F` | Chữ báo sai, lỗi form                    | 5.89 / 7.21 trên surface  |
+| `--danger-mark`   | `#DE3A2E`    | `#FF8B7F` | Đường gạch, viền, icon sai               | 4.42 / 7.21               |
+| `--danger-soft`   | `#FCEDEA`    | `#43211F` | Nền đáp án sai                           | Chữ danger 5.17 / 6.27    |
+| `--success`       | `#17774C`    | `#5CD6A2` | Chữ báo đúng                             | 5.56 / 9.04 trên surface  |
+| `--success-mark`  | `#259A66`    | `#5CD6A2` | Viền, icon đúng                          | 3.56 / 9.04               |
+| `--success-soft`  | `#E6F5EE`    | `#173A2C` | Nền đáp án đúng                          | Chữ success 4.94 / 6.91   |
+| `--highlight`     | `#FFE14D`    | `#FFE14D` | Highlight, streak                        | –                         |
+| `--highlight-fg`  | `#211D2E`    | `#211D2E` | Chữ trên highlight, không đổi theo theme | 12.60                     |
+| `--focus`         | `#5F1A9B`    | `#C9A4F4` | Vòng focus 2px                           | 9.53 / 8.78 trên bg       |
+| `--overlay`       | xám nhạt 45% | đen 45%   | Nền mờ sau dialog, kèm blur 8 px         | –                         |
 
 Quy tắc:
 
@@ -95,15 +95,15 @@ Nạp bằng `next/font/google`. Noto Serif đặt `preload: false` vì chỉ c�
 
 ## Spacing, bố cục, bo góc
 
-| Nhóm       | Giá trị                                               | Quy tắc                                                                                                               |
-| ---------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64 px (`1 2 3 4 6 8 12 16`) | Trong component 8 đến 16, giữa các nhóm 24, giữa các mục 48                                                           |
-| Lề trang   | 16 px mobile, 24 px từ `md`, 32 px từ `lg`            | Không để nội dung chạm mép                                                                                            |
-| Độ rộng    | App 1120 px, vùng học và form 720 px, đoạn văn 65ch   | Trang form dùng `PageContainer width="narrow"`: khối 720 px căn giữa gồm cả tiêu đề; trang danh sách dùng hết 1120 px |
-| Breakpoint | `sm` 640, `md` 768, `lg` 1024, `xl` 1280              | Thiết kế từ 360 px trở lên                                                                                            |
-| Bo góc     | `sm` 4, `md` 8, `lg` 16, `full`                       | Tag `sm`; nút, input, panel `md`; chỉ flashcard, dialog `lg`                                                          |
-| Đổ bóng    | `shadow-raised`                                       | Chỉ flashcard và dialog                                                                                               |
-| Vùng bấm   | Tối thiểu 44 × 44 px                                  | Nút thường `min-h-11`, đáp án `min-h-12`                                                                              |
+| Nhóm       | Giá trị                                                | Quy tắc                                                                                                                         |
+| ---------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64 px (`1 2 3 4 6 8 12 16`)  | Trong component 8 đến 16, giữa các nhóm 24, giữa các mục 48                                                                     |
+| Lề trang   | 16 px mobile, 24 px từ `md`, 32 px từ `lg`             | Không để nội dung chạm mép                                                                                                      |
+| Độ rộng    | App 1120 px, vùng học và form 720 px, đoạn văn 65ch    | Trang form dùng `PageContainer width="narrow"`: khối 720 px căn giữa gồm cả tiêu đề; trang danh sách dùng hết 1120 px           |
+| Breakpoint | `sm` 640, `md` 768, `lg` 1024, `xl` 1280               | Thiết kế từ 360 px trở lên                                                                                                      |
+| Bo góc     | `sm` 4, `md` 8, `lg` 16, `menu` 20, `sheet` 28, `full` | Tag `sm`; input, panel `md`; nút `full`; flashcard `lg`; menu, ô chọn, toast `menu` (mục bên trong `2xl`); dialog, lịch `sheet` |
+| Đổ bóng    | `shadow-raised`, `--glass-shadow`                      | `shadow-raised` cho flashcard; lớp nổi dùng `--glass-shadow` qua `.glass-overlay`                                               |
+| Vùng bấm   | Tối thiểu 44 × 44 px                                   | Nút thường `min-h-11`, đáp án `min-h-12`                                                                                        |
 
 ## Chuyển động
 
@@ -289,6 +289,23 @@ Thanh tìm kiếm và sắp xếp:
 - **Trang Khám phá:** Hỗ trợ tìm kiếm theo từ khoá kèm thanh chọn sắp xếp theo Mới cập nhật (`-updatedAt`), Mới tạo (`-createdAt`), Tên từ A đến Z (`title`), Nhiều thẻ nhất (`-cardCount`).
 
 Kéo thả (`FolderDndArea`, thư viện `@dnd-kit/core`): mỗi thẻ có tay nắm chấm dọc 44 px cạnh nút thư mục (chỉ hiện trên màn hình từ 768 px `hidden md:flex`, ẩn trên cảm ứng/mobile để không vướng thao tác chạm và tránh nhầm với cuộn trang; mobile dùng menu ⋯ chuyển thư mục). Chuột kéo sau 8 px. Khi đang kéo, mọi thư mục nhận thả có viền gạch `primary`; thư mục dưới con trỏ đổi nền `primary`, chữ `primary-fg`. Lớp nổi đi theo con trỏ là chip tên bộ từ có đổ bóng `shadow-raised`. Thả vào "Chưa xếp thư mục" là gỡ khỏi thư mục. Tay nắm ẩn khỏi trình đọc màn hình và không nhận focus vì nút thư mục trên thẻ đã làm cùng việc bằng bàn phím.
+
+## Lớp nổi Liquid Glass
+
+Menu, menu chuột phải, ô chọn có tìm kiếm, lịch, toast, hộp thoại, thanh header và thanh điều hướng nổi dùng `.glass-overlay` trong `globals.css`:
+
+- Nền `--surface-overlay` kèm vệt sáng chéo `--glass-sheen`, `backdrop-filter: blur(30px) saturate(1.9)` để nội dung phía sau chỉ còn là mảng màu, chữ trên kính luôn rõ.
+- Viền `--glass-shadow`: mép trên và trái sáng gắt (`--glass-highlight`, `--glass-rim`), mép phải và dưới hắt nhẹ, quầng trong `--glass-thickness` tạo độ dày kính, viền tóc `--glass-hairline` và bóng đổ hai tầng.
+- Không thêm `border`, `bg-surface` hay `shadow-*` cùng `.glass-overlay` vì utility sẽ đè viền kính.
+- Bo góc đồng tâm: khung `rounded-menu` đệm `p-1.5`, mục bên trong `rounded-2xl`. Hộp thoại và lịch `rounded-sheet`.
+- `.glass-pop`: mở ra như giọt nước (phồng từ điểm bấm `origin-(--radix-…-transform-origin)`, giãn quá rồi co về, `--ease-liquid`), đóng thu nhỏ 150 ms. Tấm đáy dưới 640 px thêm `.glass-sheet` để trồi từ mép dưới. Giảm chuyển động thì tắt hết.
+- Menu và dropdown chỉ làm mờ phần nằm ngay sau chính nó. Chỉ hộp thoại (modal) mới làm mờ cả trang: `::backdrop` phủ `--overlay` (sáng: xám nhạt 45%, tối: đen 45%) kèm `backdrop-blur-sm backdrop-saturate-125`.
+- Vân nước `--glass-texture`: SVG nhiễu fractal cắt thành dải đồng mức lượn sóng, ô 320 px, sáng dùng vân xám xanh 22%, tối dùng vân trắng 9%. Chạy trên mọi trình duyệt.
+- Khúc xạ: `LiquidGlassFilter` (`components/common/liquid-glass-filter.tsx`) gắn bộ lọc SVG `#liquid-glass` (nhiễu fractal làm bản đồ dịch chuyển) vào `body`; script đầu trang gắn `data-liquid` cho `<html>` khi trình duyệt là Chromium. Với chuột (`pointer: fine`), menu, hộp thoại và lịch (`.glass-overlay.glass-pop`) dùng `blur(4px) url(#liquid-glass) blur(8px)` để nền phía sau gợn sóng như nhìn qua nước. Safari, Firefox và màn hình cảm ứng giữ blur 30 px thường.
+- Nút (`Button`) cũng là kính, bo `rounded-full`: `primary` là `.glass-button-tint` (kính nhuộm `primary` 96% để chữ `primary-fg` đạt AA, vân nước trắng `--glass-texture-tint`), `secondary` là `.glass-button` (kính trong, viền `--glass-shadow-sm`), `ghost` là `.glass-button-ghost` (trong suốt, hiện kính khi rê chuột, focus hoặc đang mở menu), `danger` là kính trong viền `danger-mark` và lớp rê chuột `--glass-hover: var(--danger-soft)`. Nhấn xuống lún `scale: 0.96`, tắt khi giảm chuyển động. Nút không dùng bộ lọc khúc xạ để trang nhiều nút không nặng.
+- Hiệu năng: chỉ phần tử có nội dung chuyển động phía sau mới làm mờ nền (`backdrop-filter`): `.glass-overlay` cho header, thanh điều hướng, thanh dính, menu, hộp thoại. Nút, `.glass-surface` và `.paper-grid` nằm trên nền trơn nên không blur (trông như nhau, mà blur bắt trình duyệt tính lại cho từng phần tử ở mỗi khung hình cuộn). Bộ lọc khúc xạ chỉ bật cho lớp nổi tạm thời `.glass-overlay.glass-pop`. Đo cuộn trang Khám phá nhân 12 lần nội dung: từ 38 ms xuống 17 ms mỗi khung hình.
+- Mọi nút bấm viết tay cũng dùng các lớp này, bo `rounded-full` (ô lớn như đáp án, thẻ chế độ học `rounded-2xl`): tab và mục đang chọn `glass-button-tint`, còn lại `glass-button-ghost`; chip, ô đáp án trắc nghiệm và ghép cặp, nút ngày gợi ý `glass-button` (trạng thái đúng sai chỉ đổi `border-*` và `bg-*`, vân và viền kính giữ nguyên); mục điều hướng trên header và thanh dưới là `glass-button-ghost`, mục đang mở (`aria-current="page"`) tự hiện bong bóng kính. Nút có màu nền riêng như chip chế độ trên khối `board` dùng `.glass-rim`: giữ màu, chỉ thêm viền sáng, vệt sáng và vân nước. Không đặt `shadow-*` hay `ring-*` cùng lớp kính. Link chữ gạch chân giữ là link.
+- Tab và bộ lọc (thanh điều hướng, Bài tập / Học sinh, Còn hạn / Hết hạn / Tất cả, tab quản trị, danh sách thư mục): tab là `glass-button-ghost relative isolate`, tab đang chọn chứa `GlassTabIndicator` (`components/ui/glass-tabs.tsx`), cả nhóm bọc `GlassTabGroup`. Đổi tab thì bong bóng kính trượt và co giãn theo lò xo `LIQUID_SPRING` bằng Motion (ADR 0004). Kính trong thì chữ tab đang chọn `text-primary`, kính nhuộm (`tone="tint"`) thì `text-primary-fg`. Tab đang chọn cần `aria-current="page"` hoặc `aria-pressed="true"` để ghost không vẽ thêm kính khi rê chuột. Nhóm tab chuyển giữa các route phải nằm trong `layout.tsx` dùng chung (ví dụ `app/(app)/admin/layout.tsx` chứa nút quay lại, tiêu đề và `AdminNavTabs`), không đặt trong từng `page.tsx`: trang bị thay thì thanh tab bị tạo lại và bong bóng không có vị trí cũ để trượt. Nút quay lại (`BackLink`) là `glass-button` bo tròn.
 
 ## Menu thao tác
 

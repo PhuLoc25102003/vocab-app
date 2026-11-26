@@ -94,12 +94,12 @@ export function Dialog({
         }
       }}
       className={cn(
-        'glass-surface m-auto rounded-2xl border border-border p-0 text-text shadow-raised backdrop:bg-overlay backdrop:backdrop-blur-xs',
+        'glass-overlay glass-pop m-auto rounded-sheet p-0 text-text backdrop:bg-overlay backdrop:backdrop-blur-sm backdrop:backdrop-saturate-125',
         layout === 'sheet'
           ? cn(
               // Tấm đáy: chỉ cao bằng nội dung, chạm gần đỉnh khi form thật sự dài.
-              'mx-0 mt-auto mb-0 max-h-[calc(100dvh-2rem)] w-full max-w-full rounded-b-none border-x-0 border-b-0',
-              'sm:m-auto sm:max-h-[calc(100dvh-4rem)] sm:w-[calc(100%-2rem)] sm:rounded-lg sm:border',
+              'glass-sheet mx-0 mt-auto mb-0 max-h-[calc(100dvh-2rem)] w-full max-w-full rounded-b-none',
+              'sm:m-auto sm:max-h-[calc(100dvh-4rem)] sm:w-[calc(100%-2rem)] sm:rounded-sheet',
               size === 'lg' ? 'sm:max-w-[720px]' : 'sm:max-w-[560px]',
             )
           : 'w-[calc(100%-2rem)] max-w-md',

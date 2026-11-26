@@ -15,8 +15,7 @@ export function Toaster() {
       toastOptions={{
         unstyled: true,
         classNames: {
-          toast:
-            'flex w-full items-center gap-3 rounded-md border border-border-strong bg-surface p-4 text-small',
+          toast: 'glass-overlay flex w-full items-center gap-3 rounded-menu p-4 text-small',
           description: 'text-text-muted',
           success: 'text-success',
           error: 'text-danger',

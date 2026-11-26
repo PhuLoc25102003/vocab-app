@@ -43,7 +43,10 @@ export function StudyResult({
   const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   return (
-    <section aria-labelledby="study-result" className="flex flex-col gap-6">
+    <section
+      aria-labelledby="study-result"
+      className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8"
+    >
       <div className="feedback-correct flex flex-col gap-3">
         <h1 id="study-result" className="text-h1">
           {t('result.done')}
@@ -55,7 +58,7 @@ export function StudyResult({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={percent}
-          className="h-2 w-full overflow-hidden rounded-full bg-border"
+          className="h-2.5 w-full overflow-hidden rounded-full bg-primary-soft"
         >
           <div
             className="h-full bg-primary transition-[width] duration-base ease-standard"
@@ -79,12 +82,9 @@ export function StudyResult({
       {wrong.length > 0 ? (
         <div className="flex flex-col gap-2">
           <h2 className="text-h3">{t('result.reviewMore')}</h2>
-          <ul className="border-t border-border">
+          <ul className="divide-y divide-border-strong/50 border-y border-border-strong/50">
             {wrong.map(({ id, prompt, expected }) => (
-              <li
-                key={id}
-                className="flex flex-wrap justify-between gap-x-4 border-b border-border py-3"
-              >
+              <li key={id} className="flex flex-wrap justify-between gap-x-4 py-3">
                 <span className="font-card break-words">{prompt}</span>
                 <span className="break-words text-text-muted">{expected}</span>
               </li>

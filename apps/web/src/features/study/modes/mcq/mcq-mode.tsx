@@ -67,7 +67,7 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
-        <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border/50 pb-4">
           <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
             {question.prompt}
           </h1>
@@ -90,7 +90,7 @@ export function McqModeView({ question, languages, onAnswer, onChecked }: StudyM
                   disabled={result !== null}
                   onClick={() => choose(choice)}
                   className={cn(
-                    'flex min-h-12 w-full items-center gap-3 rounded-xl border border-border bg-bg/50 px-4 py-3 text-left transition-all duration-fast ease-standard enabled:hover:border-primary/50 enabled:hover:bg-primary-soft',
+                    'glass-button flex min-h-12 w-full items-center gap-3 rounded-2xl border border-transparent px-4 py-3 text-left',
                     isExpected && 'border-success bg-success-soft font-medium text-success',
                     isWrongPick && 'border-danger bg-danger-soft text-danger',
                   )}

@@ -3,47 +3,61 @@ import Link from 'next/link';
 
 export const BRAND_NAME = 'Nhớ Từ';
 
-/** Xấp thẻ flashcard, thẻ trên cùng có dấu tích của một từ đã nhớ. */
+/** Biểu trưng Nhớ Từ: hai thẻ flashcard xếp lớp hiện đại kèm dấu tích ghi nhớ. */
 function LogoMark() {
   return (
-    <svg aria-hidden viewBox="0 0 32 32" className="size-8 shrink-0">
-      <rect width="32" height="32" rx="8" className="fill-primary" />
+    <svg
+      aria-hidden
+      viewBox="0 0 36 36"
+      className="size-8 shrink-0 transition-transform duration-fast ease-standard group-hover:scale-105"
+    >
+      {/* Nền bo góc squircle */}
+      <rect width="36" height="36" rx="10" className="fill-primary" />
       <rect
-        x="12"
-        y="7"
-        width="13"
-        height="11"
-        rx="2"
+        x="0.75"
+        y="0.75"
+        width="34.5"
+        height="34.5"
+        rx="9.25"
         fill="none"
-        strokeWidth="2"
-        className="stroke-primary-fg"
-      />
-      <rect
-        x="6.5"
-        y="11.5"
-        width="17"
-        height="14"
-        rx="3"
         strokeWidth="1.5"
-        className="fill-primary-fg stroke-primary"
+        className="stroke-primary-fg/20"
       />
+      {/* Thẻ phía sau nghiêng nhẹ tạo chiều sâu */}
+      <rect
+        x="10.5"
+        y="7.5"
+        width="17"
+        height="19"
+        rx="4"
+        transform="rotate(9 19 17)"
+        className="fill-primary-fg/30"
+      />
+      {/* Thẻ phía trước sắc nét */}
+      <rect x="7.5" y="9" width="18" height="19.5" rx="4.5" className="fill-primary-fg" />
+      {/* Dấu tích ghi nhớ tối giản */}
       <path
-        d="m11 18.5 3 3 5.5-6"
+        d="M12.5 19l2.75 2.75 5.75-6.25"
         fill="none"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         className="stroke-primary"
       />
+      {/* Điểm nhấn nhỏ ở góc trên thẻ */}
+      <circle cx="21.5" cy="12.5" r="1.3" className="fill-primary/45" />
     </svg>
   );
 }
 
 export function Logo({ href }: { href: Route }) {
   return (
-    <Link href={href} className="flex min-h-11 shrink-0 items-center gap-2 font-card text-h3">
+    <Link
+      href={href}
+      className="group flex min-h-11 shrink-0 items-center gap-2.5 font-card text-h3 font-bold tracking-tight text-text"
+    >
       <LogoMark />
-      {BRAND_NAME}
+      <span>{BRAND_NAME}</span>
     </Link>
   );
 }

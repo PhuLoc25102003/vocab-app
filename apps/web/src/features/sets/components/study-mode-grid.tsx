@@ -93,7 +93,7 @@ export function StudyModeGrid({ setId, guest = false, fromExplore = false }: Stu
             <li key={slug} className="flex">
               <Link
                 href={href(slug)}
-                className="group flex h-full w-full min-h-[84px] items-start gap-3.5 rounded-xl border border-border/80 bg-surface p-3.5 transition-all duration-fast ease-standard hover:border-primary hover:bg-primary-soft shadow-2xs"
+                className="glass-button group flex h-full w-full min-h-[84px] items-start gap-3.5 rounded-2xl p-3.5"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary group-hover:bg-surface border border-primary/20">
                   <Icon aria-hidden className="size-5" />

@@ -70,8 +70,8 @@ export function LanguageSettings() {
             lang={locale}
             onClick={() => change(locale)}
             className={cn(
-              'min-h-11 rounded-md border border-border-strong px-4 font-medium transition-colors duration-fast ease-standard hover:bg-primary-soft',
-              current === locale && 'border-primary bg-primary-soft text-primary',
+              'min-h-11 rounded-full px-4 font-medium',
+              current === locale ? 'glass-button-tint' : 'glass-button',
             )}
           >
             {t(`language.names.${locale}`)}

@@ -203,7 +203,7 @@ function UserRow({ user }: { user: AdminUser }) {
           <button
             type="button"
             onClick={() => setRecentSetsOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-tiny font-medium text-primary hover:bg-primary-soft transition-colors cursor-pointer"
+            className="glass-button-ghost inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-tiny font-medium text-primary"
             title={t('users.recentSetsCount', { count: user.recentSets.length })}
           >
             <BookOpen aria-hidden className="size-3.5 shrink-0" />

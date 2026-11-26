@@ -2,10 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ERROR_CODES, type StudyMode } from '@vocab/shared';
-import { ListOrdered, Shuffle, Snail, Volume2, X } from 'lucide-react';
+import { ListOrdered, Shuffle, X } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import { useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
 import { cn } from '@/lib/utils';
-import { loadSpeechSettings, toggleSpeechRate, type SpeechRate } from '@/lib/speech';
 import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
 import { STUDY_ROUND_SIZE, STUDY_VIEWS } from '../modes/views';
@@ -103,60 +102,6 @@ function ShuffleToggle() {
   );
 }
 
-const subscribeSpeechSettings = (callback: () => void) => {
-  if (typeof window === 'undefined') return () => undefined;
-  window.addEventListener('vocab:speech-settings-changed', callback);
-  return () => window.removeEventListener('vocab:speech-settings-changed', callback);
-};
-
-const getSpeechRateSnapshot = (): SpeechRate => loadSpeechSettings().rate;
-const getSpeechRateServerSnapshot = (): SpeechRate => 'normal';
-
-function SpeechRateToggle() {
-  const { t } = useTranslation('study');
-  const rate = useSyncExternalStore(
-    subscribeSpeechSettings,
-    getSpeechRateSnapshot,
-    getSpeechRateServerSnapshot,
-  );
-
-  const handleToggle = () => {
-    const nextRate = toggleSpeechRate();
-    if (nextRate === 'slow') {
-      toast.info(t('shell.speechRateSlowToast'));
-    } else {
-      toast.info(t('shell.speechRateNormalToast'));
-    }
-  };
-
-  const isSlow = rate === 'slow';
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      onClick={handleToggle}
-      className={cn(
-        'min-h-11 min-w-11 px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
-        isSlow
-          ? 'bg-primary-soft text-primary border border-primary/25 hover:bg-primary-soft/80'
-          : 'text-text-muted hover:text-text hover:bg-surface-elevated/60',
-      )}
-      title={t(isSlow ? 'shell.speechRateSlowTooltip' : 'shell.speechRateNormalTooltip')}
-    >
-      {isSlow ? (
-        <Snail aria-hidden className="size-3.5 text-primary" />
-      ) : (
-        <Volume2 aria-hidden className="size-3.5 text-text-muted" />
-      )}
-      <span className="tabular-nums font-semibold">{isSlow ? '0.8x' : '1.0x'}</span>
-      <span className="sr-only sm:not-sr-only">
-        {t(isSlow ? 'shell.speechRateSlow' : 'shell.speechRateNormal')}
-      </span>
-    </Button>
-  );
-}
-
 function StudyFrame({
   exitHref,
   onExit,
@@ -204,7 +149,6 @@ function StudyFrame({
           {position}/{total}
         </span>
         <ShuffleToggle />
-        <SpeechRateToggle />
       </header>
       {header ? <div className="mx-auto w-full max-w-[720px] px-4">{header}</div> : null}
       <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-6 px-4 py-6">

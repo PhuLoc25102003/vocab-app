@@ -27,7 +27,7 @@ export function WriteModeView(props: StudyModeProps) {
               </div>
             </div>
           ) : null}
-          <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-4">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/50 pb-4">
             <p
               lang={languages.definition}
               className="min-w-0 text-h1 font-bold break-words text-text"

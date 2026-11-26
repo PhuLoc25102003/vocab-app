@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 const MAX_ANSWER_LENGTH = 500;
 
 interface TypedAnswerProps extends StudyModeProps {
-  prompt: ReactNode;
+  prompt: ReactNode | ((result: GradeResult | null) => ReactNode);
   inputLabel: string;
 }
 
@@ -82,7 +82,7 @@ export function TypedAnswer({
   return (
     <form onSubmit={submit} className="flex flex-1 flex-col gap-6">
       <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
-        {prompt}
+        {typeof prompt === 'function' ? prompt(result) : prompt}
 
         <div className="flex flex-col gap-2">
           <label htmlFor="study-answer" className="text-small font-medium text-text-muted">

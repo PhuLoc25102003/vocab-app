@@ -133,7 +133,7 @@ export function OfflineStudyButton({ setId, set }: OfflineStudyButtonProps) {
                   type="button"
                   key={mode}
                   onClick={() => handleSelectMode(mode)}
-                  className="group flex min-h-[84px] w-full items-start gap-3.5 rounded-xl border border-border/80 bg-surface p-3.5 text-left transition-all duration-fast ease-standard hover:border-primary hover:bg-primary-soft shadow-2xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="glass-button group flex min-h-[84px] w-full items-start gap-3.5 rounded-2xl p-3.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary group-hover:bg-surface border border-primary/20">
                     <Icon aria-hidden className="size-5" />

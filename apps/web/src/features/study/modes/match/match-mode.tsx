@@ -35,7 +35,7 @@ function formatElapsed(ms: number): string {
 }
 
 const tileClass =
-  'flex min-h-12 w-full items-center gap-2 rounded-lg border border-border/80 bg-bg/50 p-3.5 text-left break-words transition-all duration-fast ease-standard enabled:hover:border-primary/50 enabled:hover:bg-primary-soft aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:ring-1 aria-pressed:ring-primary disabled:border-success/60 disabled:bg-success-soft disabled:text-success shadow-2xs';
+  'glass-button flex min-h-12 w-full items-center gap-2 rounded-2xl border border-transparent p-3.5 text-left break-words aria-pressed:border-primary aria-pressed:bg-primary-soft disabled:border-success/60 disabled:bg-success-soft disabled:text-success';
 
 /**
  * Ghép từ với nghĩa trong một vòng. Lần ghép đầu của mỗi từ quyết định đúng sai.

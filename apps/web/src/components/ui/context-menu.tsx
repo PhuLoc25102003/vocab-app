@@ -6,7 +6,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { cn } from '@/lib/utils';
 
 const ITEM_CLASS =
-  'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:cursor-default data-disabled:opacity-50';
+  'flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:cursor-default data-disabled:opacity-50';
 
 export const ContextMenu = ContextMenuPrimitive.Root;
 export const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
@@ -15,7 +15,7 @@ export const ContextMenuPortal = ContextMenuPrimitive.Portal;
 export const ContextMenuSub = ContextMenuPrimitive.Sub;
 export const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup;
 
-/** Menu chuột phải nổi: viền, nền surface, đổ bóng như dialog. */
+/** Menu chuột phải nổi: kính Liquid Glass bo góc giọt nước, phồng ra từ điểm bấm. */
 export function ContextMenuContent({
   className,
   ...props
@@ -25,7 +25,7 @@ export function ContextMenuContent({
       <ContextMenuPrimitive.Content
         collisionPadding={16}
         className={cn(
-          'z-50 max-h-(--radix-context-menu-content-available-height) min-w-56 overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-raised',
+          'glass-overlay glass-pop z-50 max-h-(--radix-context-menu-content-available-height) min-w-56 origin-(--radix-context-menu-content-transform-origin) overflow-y-auto rounded-menu p-1.5',
           className,
         )}
         {...props}
@@ -59,7 +59,7 @@ export function ContextMenuSubContent({
       <ContextMenuPrimitive.SubContent
         collisionPadding={16}
         className={cn(
-          'z-50 max-h-(--radix-context-menu-content-available-height) min-w-56 overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-raised',
+          'glass-overlay glass-pop z-50 max-h-(--radix-context-menu-content-available-height) min-w-56 origin-(--radix-context-menu-content-transform-origin) overflow-y-auto rounded-menu p-1.5',
           className,
         )}
         {...props}
@@ -113,5 +113,5 @@ export function ContextMenuLabel({
 }
 
 export function ContextMenuSeparator() {
-  return <ContextMenuPrimitive.Separator className="my-1 h-px bg-border" />;
+  return <ContextMenuPrimitive.Separator className="mx-2 my-1 h-px bg-border" />;
 }

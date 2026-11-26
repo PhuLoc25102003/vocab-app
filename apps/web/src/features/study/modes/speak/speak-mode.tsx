@@ -146,7 +146,7 @@ export function SpeakModeView({ question, languages, onAnswer, onChecked }: Stud
         ) : null}
 
         <div className="flex flex-col gap-2 border-b border-border/50 pb-4">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-wrap items-start justify-between gap-2">
             <h1 lang={languages.term} className="min-w-0 font-card text-card-long break-words">
               {question.prompt}
             </h1>

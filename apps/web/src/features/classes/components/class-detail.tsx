@@ -24,6 +24,7 @@ import {
   X,
 } from 'lucide-react';
 import type { Route } from 'next';
+import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useId, useState } from 'react';
@@ -329,8 +330,9 @@ function TabLink({ href, current, children }: { href: Route; current: boolean; c
     <Link
       href={href}
       aria-current={current ? 'page' : undefined}
-      className="-mb-px inline-flex min-h-11 shrink-0 whitespace-nowrap items-center border-b-2 border-transparent px-3 font-medium text-text-muted transition-colors duration-fast ease-standard hover:text-primary aria-[current=page]:border-primary aria-[current=page]:text-primary"
+      className="glass-button-ghost relative isolate inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-4 font-medium text-text-muted hover:text-text aria-[current=page]:text-primary"
     >
+      {current ? <GlassTabIndicator /> : null}
       {children}
     </Link>
   );
@@ -410,14 +412,16 @@ export function ClassDetail({ id }: { id: string }) {
       <ClassHeader klass={klass.data} />
       <nav
         aria-label={t('detail.sections')}
-        className="flex items-center gap-1 border-b border-border overflow-x-auto no-scrollbar"
+        className="glass-surface flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full border border-border p-1 no-scrollbar"
       >
-        <TabLink href={classHref({ tab: 'assignments' })} current={tab === 'assignments'}>
-          {t('detail.assignmentsTab')}
-        </TabLink>
-        <TabLink href={classHref({ tab: 'students' })} current={tab === 'students'}>
-          {t('detail.studentsTab', { count: klass.data.memberCount })}
-        </TabLink>
+        <GlassTabGroup>
+          <TabLink href={classHref({ tab: 'assignments' })} current={tab === 'assignments'}>
+            {t('detail.assignmentsTab')}
+          </TabLink>
+          <TabLink href={classHref({ tab: 'students' })} current={tab === 'students'}>
+            {t('detail.studentsTab', { count: klass.data.memberCount })}
+          </TabLink>
+        </GlassTabGroup>
       </nav>
       {tab === 'assignments' ? (
         <ClassAssignments

@@ -6,14 +6,14 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { cn } from '@/lib/utils';
 
 const ITEM_CLASS =
-  'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:cursor-default data-disabled:opacity-50';
+  'flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:cursor-default data-disabled:opacity-50';
 
 export const Menu = DropdownMenu.Root;
 export const MenuTrigger = DropdownMenu.Trigger;
 export const MenuRadioGroup = DropdownMenu.RadioGroup;
 export const MenuSub = DropdownMenu.Sub;
 
-/** Danh sách nổi của menu: viền, nền surface, đổ bóng như dialog. */
+/** Danh sách nổi của menu: kính Liquid Glass bo góc giọt nước, phồng ra từ nút bấm. */
 export function MenuContent({
   className,
   align = 'end',
@@ -26,7 +26,7 @@ export function MenuContent({
         sideOffset={8}
         collisionPadding={16}
         className={cn(
-          'z-40 max-h-(--radix-dropdown-menu-content-available-height) min-w-56 overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-raised',
+          'glass-overlay glass-pop z-40 max-h-(--radix-dropdown-menu-content-available-height) min-w-56 origin-(--radix-dropdown-menu-content-transform-origin) overflow-y-auto rounded-menu p-1.5',
           className,
         )}
         {...props}
@@ -61,7 +61,7 @@ export function MenuSubContent({
         sideOffset={8}
         collisionPadding={16}
         className={cn(
-          'z-40 max-h-(--radix-dropdown-menu-content-available-height) min-w-56 overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-raised',
+          'glass-overlay glass-pop z-40 max-h-(--radix-dropdown-menu-content-available-height) min-w-56 origin-(--radix-dropdown-menu-content-transform-origin) overflow-y-auto rounded-menu p-1.5',
           className,
         )}
         {...props}
@@ -110,5 +110,5 @@ export function MenuLabel({
 }
 
 export function MenuSeparator() {
-  return <DropdownMenu.Separator className="my-1 h-px bg-border" />;
+  return <DropdownMenu.Separator className="mx-2 my-1 h-px bg-border" />;
 }

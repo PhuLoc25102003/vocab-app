@@ -26,6 +26,7 @@ import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
+import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
 import { cn } from '@/lib/utils';
 import { adminKeys, getAdminClassesOverview, unlockUser } from '../api';
 import { LockDialog } from './lock-dialog';
@@ -597,24 +598,28 @@ export function AdminClasses() {
           <div className="flex flex-col gap-3">
             {/* Tabs lọc trạng thái lớp */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-border pb-2 sm:flex-wrap">
-              {(['all', 'has_classes', 'no_classes'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => {
-                    setTeacherStatusTab(tab);
-                    setTeacherPage(1);
-                  }}
-                  className={cn(
-                    'shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-small font-medium transition-colors',
-                    teacherStatusTab === tab
-                      ? 'bg-primary text-primary-fg shadow-sm'
-                      : 'text-text-muted hover:bg-surface-elevated hover:text-text',
-                  )}
-                >
-                  {t(`classes.teacherFilterStatus.${tab}`)}
-                </button>
-              ))}
+              <GlassTabGroup>
+                {(['all', 'has_classes', 'no_classes'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    aria-pressed={teacherStatusTab === tab}
+                    onClick={() => {
+                      setTeacherStatusTab(tab);
+                      setTeacherPage(1);
+                    }}
+                    className={cn(
+                      'glass-button-ghost relative isolate min-h-11 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-small font-medium',
+                      teacherStatusTab === tab
+                        ? 'text-primary-fg'
+                        : 'text-text-muted hover:text-text',
+                    )}
+                  >
+                    {teacherStatusTab === tab ? <GlassTabIndicator tone="tint" /> : null}
+                    {t(`classes.teacherFilterStatus.${tab}`)}
+                  </button>
+                ))}
+              </GlassTabGroup>
             </div>
 
             {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}
@@ -703,24 +708,28 @@ export function AdminClasses() {
           <div className="flex flex-col gap-3">
             {/* Tabs lọc trạng thái tài khoản */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-border pb-2 sm:flex-wrap">
-              {(['all', 'active', 'locked'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => {
-                    setUnassignedStatus(tab);
-                    setUnassignedPage(1);
-                  }}
-                  className={cn(
-                    'shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-small font-medium transition-colors',
-                    unassignedStatus === tab
-                      ? 'bg-primary text-primary-fg shadow-sm'
-                      : 'text-text-muted hover:bg-surface-elevated hover:text-text',
-                  )}
-                >
-                  {t(`classes.status.${tab}`)}
-                </button>
-              ))}
+              <GlassTabGroup>
+                {(['all', 'active', 'locked'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    aria-pressed={unassignedStatus === tab}
+                    onClick={() => {
+                      setUnassignedStatus(tab);
+                      setUnassignedPage(1);
+                    }}
+                    className={cn(
+                      'glass-button-ghost relative isolate min-h-11 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-small font-medium',
+                      unassignedStatus === tab
+                        ? 'text-primary-fg'
+                        : 'text-text-muted hover:text-text',
+                    )}
+                  >
+                    {unassignedStatus === tab ? <GlassTabIndicator tone="tint" /> : null}
+                    {t(`classes.status.${tab}`)}
+                  </button>
+                ))}
+              </GlassTabGroup>
             </div>
 
             {/* Thanh tìm kiếm dài ngập khung + Sắp xếp */}

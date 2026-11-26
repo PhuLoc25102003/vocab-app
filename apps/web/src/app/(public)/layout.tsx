@@ -9,8 +9,8 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   const t = await getT('common');
   return (
     <div className="flex flex-1 flex-col">
-      <header className="glass-surface sticky top-0 z-20 border-b border-border">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-2 sm:gap-6 px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="sticky top-3 z-20 mx-auto w-full max-w-[1120px] px-4 md:px-6 lg:px-8">
+        <header className="glass-overlay flex min-h-14 w-full items-center gap-2 rounded-full border border-border px-3.5 sm:gap-6 sm:px-5">
           <Logo href="/" />
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <LanguageToggle />
@@ -21,8 +21,8 @@ export default async function PublicLayout({ children }: { children: ReactNode }
               member={{ href: '/dashboard', label: t('session.myPage') }}
             />
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
       <main className="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 py-8 md:px-6 lg:px-8">
         {children}
       </main>

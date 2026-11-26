@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense, type ReactNode } from 'react';
 import { Be_Vietnam_Pro, Literata, Noto_Serif } from 'next/font/google';
+import { LiquidGlassFilter, liquidGlassInitScript } from '@/components/common/liquid-glass-filter';
 import { BRAND_NAME } from '@/components/common/logo';
 import { Providers } from '@/components/common/providers';
 import { ServiceWorkerRegistration } from '@/components/common/service-worker';
@@ -59,15 +60,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang={DEFAULT_LOCALE}
       translate="no"
-      className={`${beVietnamPro.variable} ${literata.variable} ${notoSerif.variable} notranslate h-full antialiased`}
+      className={`${beVietnamPro.variable} ${literata.variable} ${notoSerif.variable} dark notranslate h-full antialiased`}
       // Script bên dưới đổi class của <html> trước khi React hydrate.
       suppressHydrationWarning
     >
       <head>
         <meta name="google" content="notranslate" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: liquidGlassInitScript }} />
       </head>
       <body className="flex min-h-full flex-col font-sans">
+        <LiquidGlassFilter />
         <Suspense fallback={null}>
           <LocaleRoot>{children}</LocaleRoot>
         </Suspense>

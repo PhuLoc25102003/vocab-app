@@ -10,7 +10,7 @@ import { useAuthStore } from '../store';
 import { useTranslation } from 'react-i18next';
 
 const ITEM_CLASS =
-  'flex min-h-11 cursor-pointer items-center gap-3 rounded-sm px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:opacity-50';
+  'flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl px-3 text-body outline-none data-highlighted:bg-primary-soft data-disabled:opacity-50';
 
 /**
  * Rút gọn tên hiển thị trên thanh điều hướng nếu tên dài (từ 3 từ trở lên),
@@ -41,7 +41,7 @@ export function AccountMenu() {
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="flex min-h-11 min-w-11 items-center gap-2 rounded-full px-1 transition-colors duration-fast ease-standard hover:bg-primary-soft sm:pr-3">
+      <DropdownMenu.Trigger className="glass-button-ghost flex min-h-11 min-w-11 items-center gap-2 rounded-full px-1 sm:pr-3">
         <span
           aria-hidden
           className="flex size-9 items-center justify-center rounded-full bg-primary text-small font-semibold text-primary-fg"
@@ -59,10 +59,10 @@ export function AccountMenu() {
         <DropdownMenu.Content
           align="end"
           sideOffset={8}
-          className="z-40 min-w-56 rounded-md border border-border bg-surface p-1 shadow-raised"
+          className="glass-overlay glass-pop z-40 min-w-56 origin-(--radix-dropdown-menu-content-transform-origin) rounded-menu p-1.5"
         >
           {user ? (
-            <div className="border-b border-border px-3 py-2">
+            <div className="mx-1.5 mb-1 border-b border-border px-1.5 pt-1.5 pb-2.5">
               <p className="truncate font-medium">{user.displayName}</p>
               <p className="truncate text-small text-text-muted">{user.email}</p>
             </div>
@@ -81,7 +81,7 @@ export function AccountMenu() {
               </Link>
             </DropdownMenu.Item>
           ) : null}
-          <DropdownMenu.Separator className="my-1 h-px bg-border" />
+          <DropdownMenu.Separator className="mx-2 my-1 h-px bg-border" />
           <DropdownMenu.Item
             className={ITEM_CLASS}
             disabled={leaving}

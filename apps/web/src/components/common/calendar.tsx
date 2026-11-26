@@ -130,10 +130,10 @@ export function Calendar({ selected, minDay, disablePast = false, onPick }: Cale
                     disabled={disabled(cell)}
                     onClick={() => onPick(cell)}
                     className={cn(
-                      'flex size-11 items-center justify-center rounded-md text-body transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-40',
+                      'flex size-11 items-center justify-center rounded-full text-body disabled:pointer-events-none disabled:opacity-40',
                       sameDay(cell, selected)
-                        ? 'bg-primary font-semibold text-primary-fg'
-                        : 'hover:bg-primary-soft',
+                        ? 'glass-button-tint font-semibold'
+                        : 'glass-button-ghost',
                       sameDay(cell, today) && !sameDay(cell, selected)
                         ? 'border border-primary font-semibold text-primary'
                         : null,

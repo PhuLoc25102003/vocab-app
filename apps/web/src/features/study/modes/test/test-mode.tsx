@@ -100,10 +100,8 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                 onClick={() => scrollToQuestion(index)}
                 aria-label={t('test.question', { number: index + 1 })}
                 className={cn(
-                  'flex size-11 items-center justify-center rounded-lg text-tiny font-semibold transition-all',
-                  isDone
-                    ? 'bg-primary text-primary-fg shadow-xs ring-1 ring-primary'
-                    : 'border border-border/80 bg-muted/40 text-text-muted hover:border-primary/50 hover:text-text',
+                  'flex size-11 items-center justify-center rounded-full text-tiny font-semibold',
+                  isDone ? 'glass-button-tint' : 'glass-button text-text-muted hover:text-text',
                 )}
               >
                 {index + 1}
@@ -176,7 +174,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                 ) : null}
 
                 {/* Prompt câu hỏi & Audio */}
-                <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-4">
+                <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/50 pb-4">
                   <p
                     lang={promptLang}
                     className="min-w-0 font-card text-h2 font-bold break-words text-text"
@@ -260,7 +258,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
       </ol>
 
       {/* Thanh nộp bài dính phía dưới (Sticky Footer) */}
-      <div className="glass-surface sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-2xl border border-border p-4 shadow-lg sm:flex-row sm:items-center sm:justify-between">
+      <div className="glass-overlay sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-sheet p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
             <span className="text-small font-semibold">

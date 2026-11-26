@@ -198,7 +198,7 @@ export function Combobox({
           role="listbox"
           aria-label={t('combobox.options', { label })}
           hidden={!open}
-          className="absolute inset-x-0 top-full z-10 mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-md border border-border bg-surface py-1 shadow-raised"
+          className="glass-overlay glass-pop absolute inset-x-0 top-full z-10 mt-1.5 max-h-64 origin-top overflow-y-auto overscroll-contain rounded-menu p-1.5"
         >
           {matches.length === 0 ? (
             <li role="presentation" className="px-3 py-2 text-small text-text-muted">
@@ -217,7 +217,7 @@ export function Combobox({
                   onMouseMove={() => setActive(index)}
                   onClick={() => choose(option)}
                   className={cn(
-                    'flex min-h-11 cursor-pointer items-center gap-2 px-3 py-2',
+                    'flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-3 py-2',
                     option === activeOption && 'bg-primary-soft',
                   )}
                 >

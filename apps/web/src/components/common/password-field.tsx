@@ -25,7 +25,7 @@ export function PasswordField({ className, ...props }: PasswordFieldProps) {
           type="button"
           aria-label={t(visible ? 'password.hide' : 'password.show')}
           onClick={() => setVisible((current) => !current)}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-md text-text-muted transition-colors duration-fast ease-standard hover:text-text"
+          className="glass-button-ghost absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-full text-text-muted hover:text-text"
         >
           <Icon aria-hidden className="size-5" />
         </button>

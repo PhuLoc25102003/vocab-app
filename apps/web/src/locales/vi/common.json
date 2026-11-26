@@ -19,7 +19,9 @@
     "skipToContent": "Đến nội dung chính"
   },
   "audio": {
+    "listen": "Nghe",
     "slow": "{{label}} chậm",
+    "slowLabel": "Nghe chậm",
     "slowTitle": "Nghe chậm"
   },
   "calendar": {

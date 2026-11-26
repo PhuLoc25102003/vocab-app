@@ -179,7 +179,7 @@ export function DateTimeField({
                 ? update('', defaultTime)
                 : update(formatDay(addDays(toCalendarDay(new Date()), preset.offset)), defaultTime)
             }
-            className="min-h-11 rounded-full border border-border px-3 text-small transition-colors duration-fast ease-standard hover:border-primary hover:bg-primary-soft"
+            className="glass-button min-h-11 rounded-full px-3 text-small"
           >
             {preset.label}
           </button>
@@ -202,7 +202,7 @@ export function DateTimeField({
         popover="auto"
         role="dialog"
         aria-label={t('dateTime.pickDay')}
-        className="inset-auto m-0 rounded-lg border border-border bg-surface p-3 text-text shadow-raised"
+        className="glass-overlay glass-pop inset-auto m-0 origin-top rounded-sheet p-4 text-text"
       >
         {calendarOpen ? (
           <Calendar selected={day} minDay={minDay} disablePast={disablePast} onPick={pick} />

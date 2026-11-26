@@ -112,14 +112,13 @@ export function FlashcardMode({ question, languages, onAnswer }: StudyModeProps)
               text={question.expected}
               lang={languages.definition}
               label={t('listenDefinition')}
-              className="text-board-fg hover:bg-board-muted/20"
             />
           ) : (
             <AudioButton
+              withSlow
               text={question.prompt}
               lang={languages.term}
               label={t('listenTerm')}
-              className="bg-surface"
             />
           )}
         </div>

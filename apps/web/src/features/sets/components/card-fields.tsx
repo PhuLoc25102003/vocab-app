@@ -101,7 +101,10 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
   };
 
   return (
-    <section aria-labelledby="cards-title" className="flex flex-col gap-3">
+    <section
+      aria-labelledby="cards-title"
+      className="glass-surface flex flex-col gap-4 rounded-2xl border border-border p-4 sm:p-6"
+    >
       <div className="flex flex-col gap-1">
         <h2 id="cards-title" className="text-h3 font-semibold text-text">
           {t('cards.title')} <span className="tabular-nums">({fields.length})</span>
@@ -118,9 +121,9 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
         role="region"
         aria-label={t('cards.list')}
         tabIndex={0}
-        className="max-h-[60dvh] min-h-48 overflow-y-auto overscroll-contain rounded-lg border border-border bg-surface/50 p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="max-h-[76dvh] min-h-64 overflow-y-auto overscroll-contain rounded-xl border border-border-strong/40 bg-bg/40 p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
-        <ol ref={listRef} className="flex flex-col gap-4">
+        <ol ref={listRef} className="flex flex-col gap-3.5">
           {fields.map((field, index) => {
             const number = index + 1;
             const cardErrors = errors?.[index];
@@ -130,7 +133,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                 key={field.key}
                 data-card={index}
                 aria-labelledby={titleId}
-                className="glass-surface flex flex-col gap-3 rounded-xl border border-border p-4 [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
+                className="flex flex-col gap-3 rounded-xl border border-border-strong/50 bg-surface p-4 shadow-2xs [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 id={titleId} className="text-h3 tabular-nums">
@@ -167,7 +170,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                     </Button>
                   </div>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid items-start gap-3 sm:grid-cols-2">
                   <FormField
                     label={t('cards.term')}
                     error={cardErrors?.term?.message}
@@ -176,7 +179,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                   <TextareaField
                     label={t('cards.definition')}
                     rows={1}
-                    className="min-h-11"
+                    className="h-11 min-h-11 leading-snug"
                     error={cardErrors?.definition?.message}
                     {...register(`cards.${index}.definition`)}
                   />
@@ -189,7 +192,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                   <TextareaField
                     label={t('cards.example')}
                     rows={1}
-                    className="min-h-11"
+                    className="h-11 min-h-11 leading-snug"
                     error={cardErrors?.example?.message}
                     {...register(`cards.${index}.example`)}
                   />

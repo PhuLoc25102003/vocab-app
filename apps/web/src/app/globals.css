@@ -2,19 +2,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light: Liquid Glass ban ngày (nền băng trong + chàm điện tử) */
+/* Light: Kính khoáng sáng (nền đá khoáng thanh + xanh mực coban) */
 :root {
-  --bg: #e8efff;
-  --surface: rgb(255 255 255 / 0.58);
-  --border: rgb(255 255 255 / 0.78);
-  --border-strong: rgb(71 85 105 / 0.18);
-  --rule: rgb(99 102 241 / 0.12);
+  --bg: #f1f4f9;
+  --surface: rgb(255 255 255 / 0.72);
+  --surface-overlay: rgb(255 255 255 / 0.58);
+  --border: rgb(15 23 42 / 0.08);
+  --border-strong: rgb(15 23 42 / 0.16);
+  --rule: rgb(37 99 235 / 0.1);
   --text: #0f172a;
   --text-muted: #475569;
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
   --primary-fg: #ffffff;
-  --primary-soft: rgb(79 70 229 / 0.12);
+  --primary-soft: rgb(37 99 235 / 0.1);
   --board: #0f3d3e;
   --board-fg: #f0fdfa;
   --board-muted: #99f6e4;
@@ -26,33 +27,76 @@
   --success-soft: rgb(13 148 136 / 0.13);
   --highlight: #fde047;
   --highlight-fg: #0f172a;
-  --focus: #4f46e5;
-  --overlay: rgb(15 23 42 / 0.42);
+  --focus: #2563eb;
+  --overlay: rgb(226 232 240 / 0.45);
 
-  --glass-highlight: rgb(255 255 255 / 0.92);
-  --glass-ring: rgb(79 70 229 / 0.08);
+  --glass-highlight: rgb(255 255 255 / 0.95);
+  --glass-rim: rgb(255 255 255 / 0.65);
+  --glass-rim-dim: rgb(255 255 255 / 0.32);
+  --glass-edge-bottom: rgb(255 255 255 / 0.55);
+  --glass-ring: rgb(15 23 42 / 0.1);
+  /* Kính nổi: độ dày mép kính sáng sữa, vệt sáng chéo, viền tóc và bóng đổ hai tầng */
+  --glass-thickness: rgb(255 255 255 / 0.5);
+  --glass-sheen: rgb(255 255 255 / 0.5);
+  --glass-hairline: rgb(15 23 42 / 0.09);
+  --glass-drop: rgb(15 23 42 / 0.2);
+  --glass-drop-near: rgb(15 23 42 / 0.07);
+  /*
+   * Vân nước trên mặt kính: nhiễu fractal kéo dãn ngang, cắt thành các dải đồng mức lượn sóng
+   * như gợn nước. Nền sáng dùng vân xám xanh, nền tối dùng vân trắng. Ô 320 px nối liền
+   * (`stitchTiles`) nên lặp lại không thấy mối nối.
+   */
+  --glass-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='w' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.011' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .39 0 0 0 0 .45 0 0 0 0 .6 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='1.5'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23w)' opacity='.22'/%3E%3C/svg%3E");
   --elevation-raised:
-    inset 0 1px 0 0 rgb(255 255 255 / 0.9), 0 16px 40px -8px rgb(15 23 42 / 0.14),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.9), 0 16px 40px -8px rgb(15 23 42 / 0.12),
     0 0 0 1px var(--border);
 
   --duration-fast: 120ms;
   --duration-base: 200ms;
   --duration-flip: 450ms;
+
+  /*
+   * Viền kính Liquid Glass: ánh sáng chiếu chéo từ trên trái nên mép trên và trái sáng gắt,
+   * mép phải và dưới hắt nhẹ; quầng trong mờ sữa tạo cảm giác kính có độ dày.
+   */
+  --glass-shadow:
+    inset 0 1px 0 0 var(--glass-highlight), inset 1px 0 0 0 var(--glass-rim),
+    inset -1px 0 0 0 var(--glass-rim-dim), inset 0 -1px 0 0 var(--glass-edge-bottom),
+    inset 0 0 16px 0 var(--glass-thickness), 0 0 0 0.5px var(--glass-hairline),
+    0 24px 48px -16px var(--glass-drop), 0 4px 12px -2px var(--glass-drop-near);
+  /* Nút kính: cùng viền khúc xạ nhưng mỏng hơn, bóng đổ gần vì nút nằm sát mặt trang. */
+  --glass-shadow-sm:
+    inset 0 1px 0 0 var(--glass-highlight), inset 1px 0 0 0 var(--glass-rim),
+    inset -1px 0 0 0 var(--glass-rim-dim), inset 0 -1px 0 0 var(--glass-edge-bottom),
+    inset 0 0 8px 0 var(--glass-thickness), 0 0 0 0.5px var(--glass-hairline),
+    0 6px 16px -8px var(--glass-drop), 0 1px 3px 0 var(--glass-drop-near);
+  /* Kính nhuộm màu (nút chính, chip trên nền màu): mép sáng trắng, vân nước trắng mờ. */
+  --glass-tint-highlight: rgb(255 255 255 / 0.5);
+  --glass-tint-edge: rgb(255 255 255 / 0.16);
+  --glass-tint-thickness: rgb(255 255 255 / 0.16);
+  --glass-tint-sheen: rgb(255 255 255 / 0.22);
+  --glass-shadow-tint:
+    inset 0 1px 0 0 var(--glass-tint-highlight), inset 0 -1px 0 0 var(--glass-tint-edge),
+    inset 0 0 10px 0 var(--glass-tint-thickness), 0 0 0 0.5px var(--glass-hairline);
+  --glass-texture-tint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='w' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.011' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='1.5'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23w)' opacity='.12'/%3E%3C/svg%3E");
+  /* Lớp phủ khi rê chuột lên nút kính; nút xoá đổi sang `--danger-soft`. */
+  --glass-hover: var(--primary-soft);
 }
 
-/* Dark: Obsidian Liquid Glass (kính tối sâu + chàm sáng) */
+/* Dark: Graphite Glass (than chì trầm + xanh coban sáng) */
 .dark {
-  --bg: #070b18;
-  --surface: rgb(18 26 48 / 0.62);
-  --border: rgb(255 255 255 / 0.14);
-  --border-strong: rgb(255 255 255 / 0.22);
+  --bg: #0b0e14;
+  --surface: rgb(20 25 35 / 0.72);
+  --surface-overlay: rgb(22 27 38 / 0.64);
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: rgb(255 255 255 / 0.18);
   --rule: rgb(148 163 184 / 0.12);
   --text: #f1f5f9;
   --text-muted: #94a3b8;
-  --primary: #818cf8;
-  --primary-hover: #a5b4fc;
-  --primary-fg: #070b18;
-  --primary-soft: rgb(129 140 248 / 0.18);
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-fg: #0b0e14;
+  --primary-soft: rgb(96 165 250 / 0.15);
   --board-fg: #f0fdfa;
   --board-muted: #99f6e4;
   --danger: #fb7185;
@@ -61,13 +105,22 @@
   --success: #34d399;
   --success-mark: #34d399;
   --success-soft: rgb(52 211 153 / 0.16);
-  --focus: #818cf8;
-  --overlay: rgb(2 6 23 / 0.65);
+  --focus: #60a5fa;
+  --overlay: rgb(2 6 23 / 0.45);
 
-  --glass-highlight: rgb(255 255 255 / 0.14);
-  --glass-ring: rgb(0 0 0 / 0.25);
+  --glass-highlight: rgb(255 255 255 / 0.28);
+  --glass-rim: rgb(255 255 255 / 0.14);
+  --glass-rim-dim: rgb(255 255 255 / 0.06);
+  --glass-edge-bottom: rgb(255 255 255 / 0.1);
+  --glass-ring: rgb(0 0 0 / 0.36);
+  --glass-thickness: rgb(255 255 255 / 0.07);
+  --glass-sheen: rgb(255 255 255 / 0.08);
+  --glass-hairline: rgb(0 0 0 / 0.5);
+  --glass-drop: rgb(0 0 0 / 0.55);
+  --glass-drop-near: rgb(0 0 0 / 0.3);
+  --glass-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='w' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.011' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0 .85 0'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='1.5'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23w)' opacity='.09'/%3E%3C/svg%3E");
   --elevation-raised:
-    inset 0 1px 0 0 rgb(255 255 255 / 0.14), 0 20px 44px -8px rgb(0 0 0 / 0.55),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.1), 0 20px 44px -8px rgb(0 0 0 / 0.55),
     0 0 0 1px var(--border);
 }
 
@@ -83,6 +136,7 @@
   --color-*: initial;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-overlay: var(--surface-overlay);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-rule: var(--rule);
@@ -114,6 +168,9 @@
   --radius-xl: 12px;
   --radius-2xl: 14px;
   --radius-3xl: 18px;
+  /* Bo góc giọt nước cho lớp kính nổi: menu = đệm 6 + bo mục 14 (đồng tâm), hộp thoại lớn hơn */
+  --radius-menu: 20px;
+  --radius-sheet: 28px;
   --radius-full: 9999px;
 
   --shadow-*: initial;
@@ -153,6 +210,7 @@
   --transition-duration-base: var(--duration-base);
   --transition-duration-flip: var(--duration-flip);
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-liquid: cubic-bezier(0.22, 1.2, 0.36, 1);
 
   --font-sans: var(--font-be-vietnam-pro), ui-sans-serif, system-ui, sans-serif;
   --font-card: var(--font-literata), ui-serif, Georgia, serif;
@@ -184,24 +242,19 @@
     pointer-events: none;
     background-image:
       radial-gradient(
-        at 10% 10%,
-        color-mix(in oklab, var(--primary) 26%, transparent) 0px,
-        transparent 46%
+        ellipse 80% 50% at 50% -10%,
+        color-mix(in oklab, var(--primary) 14%, transparent) 0px,
+        transparent 70%
       ),
       radial-gradient(
-        at 88% 12%,
-        color-mix(in oklab, var(--success) 22%, transparent) 0px,
-        transparent 44%
+        ellipse 55% 38% at 90% 12%,
+        color-mix(in oklab, var(--primary) 9%, transparent) 0px,
+        transparent 65%
       ),
       radial-gradient(
-        at 75% 82%,
-        color-mix(in oklab, var(--primary) 18%, transparent) 0px,
-        transparent 48%
-      ),
-      radial-gradient(
-        at 18% 85%,
-        color-mix(in oklab, var(--success) 16%, transparent) 0px,
-        transparent 45%
+        ellipse 50% 40% at 0% 100%,
+        color-mix(in oklab, var(--success-mark) 8%, transparent) 0px,
+        transparent 70%
       );
   }
 
@@ -212,21 +265,162 @@
 }
 
 @layer components {
-  /* Bề mặt Liquid Glass: kính mờ xuyên sáng kèm viền sáng phía trên */
+  /*
+   * Bề mặt Liquid Glass: kính xuyên sáng kèm viền sáng uốn cong mép kính. Không làm mờ nền phía
+   * sau vì thẻ nằm trên nền trơn: blur nền trơn trông như không, mà mỗi khung hình cuộn trang
+   * trình duyệt phải tính lại cho từng thẻ. Thanh dính có nội dung cuộn qua dùng `.glass-overlay`.
+   */
   .glass-surface {
     background-color: var(--surface);
-    backdrop-filter: blur(12px) saturate(1.5);
-    -webkit-backdrop-filter: blur(12px) saturate(1.5);
     box-shadow:
-      inset 0 1px 0 0 var(--glass-highlight),
-      0 8px 28px -6px var(--glass-ring);
+      inset 0 1.5px 1px 0 var(--glass-highlight),
+      inset 0 -1px 1px 0 var(--glass-edge-bottom),
+      inset 0 0 0 1px var(--glass-rim),
+      0 10px 30px -8px var(--glass-ring);
+  }
+
+  /*
+   * Lớp nổi kiểu Apple Liquid Glass (menu, hộp thoại, thanh nổi): blur sâu và tăng bão hoà để
+   * nội dung phía sau chỉ còn là mảng màu, vệt sáng chéo phía trên trái, viền khúc xạ trong
+   * `--glass-shadow`. Không đặt `border` hay `shadow-*` cùng lớp này vì sẽ đè viền kính.
+   */
+  .glass-overlay {
+    background-color: var(--surface-overlay);
+    background-image:
+      var(--glass-texture), linear-gradient(155deg, var(--glass-sheen) 0%, transparent 42%);
+    background-size:
+      320px 320px,
+      auto;
+    backdrop-filter: blur(30px) saturate(1.9) brightness(1.04);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /*
+   * Khúc xạ như nhìn qua nước: nền phía sau bị bẻ cong lượn sóng bằng bộ lọc SVG `#liquid-glass`
+   * (`LiquidGlassFilter`). Chỉ Chromium hỗ trợ `url()` trong `backdrop-filter` nên script đầu
+   * trang gắn `data-liquid` cho `<html>`; chỉ bật với chuột để điện thoại không phải gánh. Chỉ
+   * dùng cho lớp nổi tạm thời (`.glass-pop`: menu, hộp thoại, lịch); header và thanh điều hướng
+   * luôn hiện nên chỉ blur, vì bộ lọc sóng tính lại ở mọi khung hình khi cuộn.
+   */
+  @media (pointer: fine) {
+    html[data-liquid] .glass-overlay.glass-pop {
+      backdrop-filter: blur(4px) url(#liquid-glass) blur(8px) saturate(1.9) brightness(1.04);
+    }
+  }
+
+  /*
+   * Nút kính cho mọi nút bấm (`Button`, tab, chip, ô đáp án, lịch): cùng chất kính với lớp nổi
+   * (viền khúc xạ, vân nước, vệt sáng) nhưng không làm mờ nền phía sau: nút nằm trên nền trơn
+   * hoặc trên kính khác nên blur không thấy khác, mà trang nhiều nút sẽ giật khi cuộn.
+   * - `.glass-button`: kính trong. `.glass-button-tint`: kính nhuộm màu chính.
+   * - `.glass-button-ghost`: trong suốt, hiện kính khi rê chuột, focus, đang mở menu hoặc đang chọn.
+   * - `.glass-rim`: giữ màu nền riêng của nút (ví dụ chip trên khối `board`), chỉ phủ viền sáng,
+   *   vệt sáng và vân nước.
+   * `bg-*` đặt cùng chỉ đổi màu nền, vân và viền kính vẫn giữ; tránh `shadow-*` và `ring-*` vì
+   * sẽ đè viền kính. `--glass-layer` là lớp phủ màu khi rê chuột. Nhấn xuống thì lún như giọt nước.
+   */
+  .glass-button,
+  .glass-button-tint,
+  .glass-button-ghost,
+  .glass-rim {
+    --glass-layer: transparent;
+    background-size:
+      auto,
+      320px 320px,
+      auto;
+    transition-property: background-color, border-color, box-shadow, color, scale;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-liquid);
+  }
+
+  /*
+   * Tab đang chọn (`aria-current="page"`, `aria-pressed="true"`) đã có bong bóng trượt
+   * `GlassTabIndicator` nên ghost không vẽ thêm kính lên nó.
+   */
+  .glass-button,
+  .glass-button-ghost:not([aria-current='page'], [aria-pressed='true']):is(
+      :hover:not(:disabled),
+      :focus-visible,
+      [data-state='open'],
+      [aria-expanded='true']
+    ) {
+    background-color: var(--surface-overlay);
+    background-image:
+      linear-gradient(var(--glass-layer), var(--glass-layer)), var(--glass-texture),
+      linear-gradient(155deg, var(--glass-sheen) 0%, transparent 55%);
+    box-shadow: var(--glass-shadow-sm);
+  }
+
+  .glass-button:hover:not(:disabled),
+  .glass-button-ghost:hover:not(:disabled) {
+    --glass-layer: var(--glass-hover);
+  }
+
+  /* Kính nhuộm màu chính: nền 96% giữ chữ `primary-fg` đạt tương phản AA (khoảng 4.9:1). */
+  .glass-button-tint {
+    background-color: color-mix(in oklab, var(--primary) 96%, transparent);
+    background-image:
+      linear-gradient(var(--glass-layer), var(--glass-layer)), var(--glass-texture-tint),
+      radial-gradient(120% 100% at 0% 0%, var(--glass-tint-sheen) 0%, transparent 50%);
+    color: var(--primary-fg);
+    box-shadow:
+      var(--glass-shadow-tint),
+      0 8px 20px -8px color-mix(in oklab, var(--primary) 55%, transparent);
+  }
+
+  .glass-button-tint:hover:not(:disabled) {
+    background-color: color-mix(in oklab, var(--primary-hover) 97%, transparent);
+  }
+
+  .glass-rim {
+    background-image:
+      linear-gradient(var(--glass-layer), var(--glass-layer)), var(--glass-texture-tint),
+      radial-gradient(120% 100% at 0% 0%, var(--glass-tint-sheen) 0%, transparent 50%);
+    box-shadow: var(--glass-shadow-tint);
+  }
+
+  .glass-button:active:not(:disabled),
+  .glass-button-tint:active:not(:disabled),
+  .glass-button-ghost:active:not(:disabled),
+  .glass-rim:active:not(:disabled) {
+    scale: 0.96;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass-button:active:not(:disabled),
+    .glass-button-tint:active:not(:disabled),
+    .glass-button-ghost:active:not(:disabled),
+    .glass-rim:active:not(:disabled) {
+      scale: none;
+    }
+  }
+
+  /*
+   * Mở ra như giọt nước: phồng từ điểm bấm, hơi giãn quá rồi co về. Radix dùng `data-state`,
+   * thẻ `dialog`, `popover` và danh sách `hidden` tự chạy lại animation mỗi lần hiện.
+   */
+  .glass-pop:not([data-state='closed']) {
+    animation: glass-drop-in 420ms var(--ease-liquid) both;
+  }
+
+  .glass-pop[data-state='closed'] {
+    animation: glass-drop-out 150ms ease-in both;
+  }
+
+  dialog.glass-pop::backdrop {
+    animation: glass-fade-in 240ms ease-out both;
+  }
+
+  /* Tấm đáy trên mobile trồi lên từ mép dưới. */
+  @media (width < 40rem) {
+    dialog.glass-sheet:not([data-state='closed']) {
+      animation: glass-rise-in 380ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+    }
   }
 
   /* Vở ô li: 4 dòng li 8px trong mỗi ô lớn 32px */
   .paper-grid {
     background-color: var(--surface);
-    backdrop-filter: blur(12px) saturate(1.4);
-    -webkit-backdrop-filter: blur(12px) saturate(1.4);
     background-image:
       linear-gradient(
         to right,
@@ -262,20 +456,25 @@
   }
 
   .select-styled::picker(select) {
-    margin-block: 4px;
-    padding: 4px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    backdrop-filter: blur(20px) saturate(1.4);
+    margin-block: 6px;
+    padding: 6px;
+    border: 0;
+    border-radius: var(--radius-menu);
+    background-color: var(--surface-overlay);
+    background-image:
+      var(--glass-texture), linear-gradient(155deg, var(--glass-sheen) 0%, transparent 42%);
+    background-size:
+      320px 320px,
+      auto;
+    backdrop-filter: blur(30px) saturate(1.9) brightness(1.04);
     color: var(--text);
-    box-shadow: var(--shadow-raised);
+    box-shadow: var(--glass-shadow);
   }
 
   .select-styled option {
     min-height: 44px;
     padding-inline: 12px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-2xl);
   }
 
   .select-styled option:hover,
@@ -289,6 +488,55 @@
 
   .select-styled option::checkmark {
     color: var(--primary);
+  }
+}
+
+@keyframes glass-drop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.88, 0.82);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.025, 1.035);
+  }
+  72% {
+    transform: scale(0.995, 0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes glass-drop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes glass-rise-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes glass-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-pop:not([data-state='closed']),
+  .glass-pop[data-state='closed'],
+  dialog.glass-pop::backdrop,
+  dialog.glass-sheet:not([data-state='closed']) {
+    animation: none;
   }
 }
 

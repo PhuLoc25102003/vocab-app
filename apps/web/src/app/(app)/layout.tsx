@@ -11,15 +11,15 @@ import { getT } from '@/lib/i18n/server';
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const t = await getT('common');
   return (
-    <div className="flex flex-1 flex-col pb-16 md:pb-0">
+    <div className="flex flex-1 flex-col pb-20 md:pb-0">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-20 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3"
       >
         {t('nav.skipToContent')}
       </a>
-      <header className="glass-surface sticky top-0 z-20 border-b border-border">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1120px] items-center gap-6 px-4 md:px-6 lg:px-8">
+      <div className="sticky top-3 z-20 mx-auto w-full max-w-[1120px] px-4 md:px-6 lg:px-8">
+        <header className="glass-overlay flex min-h-14 w-full items-center gap-4 rounded-full border border-border px-3.5 sm:px-5">
           <Logo href="/dashboard" />
           <div className="hidden md:flex">
             <Suspense fallback={<AppNavFallback />}>
@@ -31,8 +31,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <ThemeToggle />
             <AccountMenu />
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
       <div className="md:hidden">
         <Suspense fallback={<AppNavFallback />}>
           <AppNav />

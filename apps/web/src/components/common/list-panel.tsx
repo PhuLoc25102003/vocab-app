@@ -7,6 +7,7 @@ import { useId, useState, useEffect, type FormEvent, type ReactNode } from 'reac
 import { Pagination } from '@/components/common/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -122,20 +123,23 @@ export function ListToolbar({ tabs, search, filters }: ListToolbarProps) {
           aria-label={t('list.statusFilter')}
           className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 sm:flex-wrap"
         >
-          {tabs.map((tab) => (
-            <Link
-              key={tab.key ?? `${tab.label}-${tab.href}`}
-              href={tab.href}
-              aria-current={tab.current ? 'page' : undefined}
-              className="inline-flex min-h-11 shrink-0 whitespace-nowrap items-center gap-1.5 rounded-md px-3 text-small font-medium text-text-muted transition-colors duration-fast ease-standard hover:bg-primary-soft aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary"
-            >
-              {tab.label}
-              {tab.count !== undefined ? ' ' : null}
-              {tab.count !== undefined ? (
-                <span className="tabular-nums">({formatNum(tab.count, i18n.language)})</span>
-              ) : null}
-            </Link>
-          ))}
+          <GlassTabGroup>
+            {tabs.map((tab) => (
+              <Link
+                key={tab.key ?? `${tab.label}-${tab.href}`}
+                href={tab.href}
+                aria-current={tab.current ? 'page' : undefined}
+                className="glass-button-ghost relative isolate inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-small font-medium text-text-muted hover:text-text aria-[current=page]:text-primary"
+              >
+                {tab.current ? <GlassTabIndicator /> : null}
+                {tab.label}
+                {tab.count !== undefined ? ' ' : null}
+                {tab.count !== undefined ? (
+                  <span className="tabular-nums">({formatNum(tab.count, i18n.language)})</span>
+                ) : null}
+              </Link>
+            ))}
+          </GlassTabGroup>
         </nav>
       ) : null}
       {search || filters ? (

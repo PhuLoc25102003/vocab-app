@@ -19,7 +19,9 @@
     "skipToContent": "Skip to main content"
   },
   "audio": {
+    "listen": "Listen",
     "slow": "{{label}} slowly",
+    "slowLabel": "Slow",
     "slowTitle": "Listen slowly"
   },
   "calendar": {

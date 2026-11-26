@@ -57,7 +57,7 @@ describe('Button', () => {
     const link = screen.getByRole('link', { name: 'Xem bộ từ' });
 
     expect(link).toHaveAttribute('href', '/sets');
-    expect(link).toHaveClass('border-border-strong');
+    expect(link).toHaveClass('glass-button');
     expect(link).not.toHaveAttribute('type');
   });
 });

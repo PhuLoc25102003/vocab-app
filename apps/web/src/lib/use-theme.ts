@@ -22,8 +22,7 @@ function readChosenTheme(): Theme | null {
 }
 
 function syncTheme(): void {
-  const prefersDark = window.matchMedia(DARK_MODE_QUERY).matches;
-  const theme = readChosenTheme() ?? (prefersDark ? 'dark' : 'light');
+  const theme = readChosenTheme() ?? 'dark';
   document.documentElement.classList.toggle('dark', theme === 'dark');
   listeners.forEach((listener) => listener());
 }
@@ -56,7 +55,7 @@ function getSnapshot(): Theme {
 }
 
 function getServerSnapshot(): Theme {
-  return 'light';
+  return 'dark';
 }
 
 function setTheme(theme: Theme): void {

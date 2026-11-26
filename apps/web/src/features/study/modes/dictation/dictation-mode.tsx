@@ -40,21 +40,23 @@ export function DictationModeView(props: StudyModeProps) {
       {...props}
       inputLabel={t('dictation.input')}
       prompt={
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           <Button
             type="button"
             variant="secondary"
+            className="min-h-10 rounded-full px-3 text-small sm:min-h-11 sm:px-4 sm:text-body"
             onClick={() => speak(question.prompt, languages.term)}
           >
-            <Volume2 aria-hidden className="size-5" />
+            <Volume2 aria-hidden className="size-4 shrink-0 sm:size-5" />
             {t('dictation.replay')}
           </Button>
           <Button
             type="button"
             variant="secondary"
+            className="min-h-10 rounded-full px-3 text-small sm:min-h-11 sm:px-4 sm:text-body"
             onClick={() => speak(question.prompt, languages.term, { slow: true })}
           >
-            <Snail aria-hidden className="size-5" />
+            <Snail aria-hidden className="size-4 shrink-0 sm:size-5" />
             {t('dictation.slow')}
           </Button>
         </div>

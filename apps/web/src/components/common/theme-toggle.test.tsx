@@ -67,7 +67,7 @@ describe('themeInitScript', () => {
     ['lựa chọn tối', 'dark', false, true],
     ['lựa chọn sáng thắng cài đặt hệ thống', 'light', true, false],
     ['không có lựa chọn, hệ thống tối', null, true, true],
-    ['không có lựa chọn, hệ thống sáng', null, false, false],
+    ['không có lựa chọn, hệ thống sáng vẫn mặc định tối', null, false, true],
   ])('%s', (_name, stored, prefersDark, expected) => {
     if (stored) {
       localStorage.setItem(THEME_STORAGE_KEY, stored);

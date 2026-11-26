@@ -5,15 +5,17 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'relative inline-flex min-h-11 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-50 aria-busy:opacity-100',
+  'relative inline-flex min-h-11 items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 aria-busy:opacity-100',
   {
     variants: {
       variant: {
-        primary: 'bg-primary text-primary-fg shadow-sm shadow-primary/20 hover:bg-primary-hover',
-        secondary: 'border border-border-strong bg-surface shadow-2xs hover:bg-primary-soft',
-        ghost: 'hover:bg-primary-soft',
-        // Nền nhạt và chữ đỏ giữ tương phản AA ở cả hai theme, kể cả khi `--danger` sáng ở dark.
-        danger: 'border-2 border-danger-mark bg-danger-soft text-danger hover:bg-surface',
+        // Kính Liquid Glass trong `globals.css`: nhuộm màu chính, kính trong, hiện kính khi rê chuột.
+        primary: 'glass-button-tint',
+        secondary: 'glass-button',
+        ghost: 'glass-button-ghost',
+        // Kính trong viền đỏ, chữ đỏ giữ tương phản AA ở cả hai theme, rê chuột phủ đỏ nhạt.
+        danger:
+          'glass-button border border-danger-mark/70 text-danger [--glass-hover:var(--danger-soft)]',
       },
       size: {
         default: 'px-4 py-2',

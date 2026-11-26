@@ -27,33 +27,37 @@ export function AudioButton({ text, lang, label, className, withSlow = false }: 
     return null;
   }
 
+  const pillClass =
+    'min-h-10 rounded-full px-3 text-small sm:min-h-11 sm:px-4 sm:text-body shrink-0';
+
   const normal = (
     <Button
       type="button"
-      variant="ghost"
-      size="icon"
+      variant="secondary"
       aria-label={label}
-      className={cn('shrink-0', className)}
+      className={cn(pillClass, className)}
       onClick={() => speak(text, lang)}
     >
-      <Volume2 aria-hidden className="size-5" />
+      <Volume2 aria-hidden className="size-4 shrink-0 sm:size-5" />
+      <span>{t('audio.listen')}</span>
     </Button>
   );
   if (!withSlow) {
     return normal;
   }
   return (
-    <span className="flex shrink-0 items-center">
+    <span className="flex shrink-0 flex-wrap items-center gap-1.5 sm:gap-2">
       {normal}
       <Button
         type="button"
-        variant="ghost"
-        size="icon"
+        variant="secondary"
         aria-label={t('audio.slow', { label })}
         title={t('audio.slowTitle')}
+        className={cn(pillClass, className)}
         onClick={() => speak(text, lang, { slow: true })}
       >
-        <Snail aria-hidden className="size-5" />
+        <Snail aria-hidden className="size-4 shrink-0 sm:size-5" />
+        <span>{t('audio.slowLabel')}</span>
       </Button>
     </span>
   );

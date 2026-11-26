@@ -65,7 +65,7 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
       {...rest}
       {...itemProps}
       className={cn(
-        'glass-surface relative flex min-h-28 flex-col gap-1 rounded-xl border border-border p-3.5 shadow-xs transition-all duration-fast ease-standard hover:border-primary/60 hover:bg-primary-soft hover:shadow-md',
+        'glass-surface relative flex h-36 flex-col gap-1 overflow-hidden rounded-xl border border-border p-3.5 shadow-xs transition-all duration-fast ease-standard hover:border-primary/60 hover:bg-primary-soft hover:shadow-md',
         className,
       )}
     >
@@ -93,10 +93,16 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
           {description}
         </p>
       ) : null}
-      <div className="mt-auto flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-small text-text-muted">
-        {badge}
-        <span className="flex shrink-0 items-center gap-1 tabular-nums">{count}</span>
-        {footer ? <span className="flex max-w-full min-w-0 items-center">{footer}</span> : null}
+      <div className="mt-auto flex min-w-0 items-center gap-x-2 pt-1 text-tiny text-text-muted sm:text-small">
+        {badge ? <span className="shrink-0">{badge}</span> : null}
+        <span className="flex shrink-0 items-center gap-1 whitespace-nowrap tabular-nums">
+          {count}
+        </span>
+        {footer ? (
+          <span className="ml-auto flex min-w-0 items-center truncate whitespace-nowrap">
+            {footer}
+          </span>
+        ) : null}
       </div>
     </li>
   );
