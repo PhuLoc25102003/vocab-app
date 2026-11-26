@@ -130,6 +130,13 @@
     --duration-base: 0ms;
     --duration-flip: 0ms;
   }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
 }
 
 @theme inline {
