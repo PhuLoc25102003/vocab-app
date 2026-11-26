@@ -240,7 +240,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
       if (await typed.isVisible()) {
         await typed.fill(card!.term);
       } else {
-        await item.getByRole('radio', { name: card!.definition, exact: true }).check();
+        await item.getByText(card!.definition, { exact: true }).click();
       }
     }
     await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
