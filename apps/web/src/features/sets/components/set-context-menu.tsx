@@ -367,7 +367,7 @@ export function SetCardActionsDropdown({
             variant="ghost"
             size="icon"
             aria-label={t('actions.more')}
-            className="size-9 text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary"
+            className="size-11 text-text-muted transition-colors duration-fast ease-standard hover:bg-surface hover:text-primary"
           >
             <MoreHorizontal aria-hidden className="size-5" />
           </Button>

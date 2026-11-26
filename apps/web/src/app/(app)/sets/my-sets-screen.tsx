@@ -104,6 +104,8 @@ function DraggableMySetCard({ set, ...props }: { set: SetSummary } & SetCardShel
       {...props}
       {...listeners}
       {...attributes}
+      role={undefined}
+      tabIndex={undefined}
       className={cn('cursor-grab active:cursor-grabbing', isDragging && 'opacity-40 shadow-raised')}
     />
   );

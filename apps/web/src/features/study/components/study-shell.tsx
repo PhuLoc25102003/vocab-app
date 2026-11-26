@@ -83,7 +83,7 @@ function ShuffleToggle() {
       variant="ghost"
       onClick={handleToggle}
       className={cn(
-        'h-8 px-2 sm:px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
+        'min-h-11 min-w-11 px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
         shuffle
           ? 'bg-primary-soft text-primary border border-primary/25 hover:bg-primary-soft/80'
           : 'text-text-muted hover:text-text hover:bg-surface-elevated/60',
@@ -96,7 +96,7 @@ function ShuffleToggle() {
       ) : (
         <ListOrdered aria-hidden className="size-3.5 text-text-muted" />
       )}
-      <span className="hidden sm:inline">
+      <span className="sr-only sm:not-sr-only">
         {t(shuffle ? 'shell.shuffleOn' : 'shell.shuffleOff')}
       </span>
     </Button>
@@ -137,13 +137,12 @@ function SpeechRateToggle() {
       variant="ghost"
       onClick={handleToggle}
       className={cn(
-        'h-8 px-2 sm:px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
+        'min-h-11 min-w-11 px-2.5 gap-1.5 text-tiny font-medium rounded-md transition-all shrink-0 select-none',
         isSlow
           ? 'bg-primary-soft text-primary border border-primary/25 hover:bg-primary-soft/80'
           : 'text-text-muted hover:text-text hover:bg-surface-elevated/60',
       )}
       title={t(isSlow ? 'shell.speechRateSlowTooltip' : 'shell.speechRateNormalTooltip')}
-      aria-label={t(isSlow ? 'shell.speechRateSlow' : 'shell.speechRateNormal')}
     >
       {isSlow ? (
         <Snail aria-hidden className="size-3.5 text-primary" />
@@ -151,7 +150,7 @@ function SpeechRateToggle() {
         <Volume2 aria-hidden className="size-3.5 text-text-muted" />
       )}
       <span className="tabular-nums font-semibold">{isSlow ? '0.8x' : '1.0x'}</span>
-      <span className="hidden sm:inline">
+      <span className="sr-only sm:not-sr-only">
         {t(isSlow ? 'shell.speechRateSlow' : 'shell.speechRateNormal')}
       </span>
     </Button>

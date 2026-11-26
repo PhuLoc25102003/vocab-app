@@ -100,7 +100,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                 onClick={() => scrollToQuestion(index)}
                 aria-label={t('test.question', { number: index + 1 })}
                 className={cn(
-                  'flex size-8 items-center justify-center rounded-lg text-tiny font-semibold transition-all',
+                  'flex size-11 items-center justify-center rounded-lg text-tiny font-semibold transition-all',
                   isDone
                     ? 'bg-primary text-primary-fg shadow-xs ring-1 ring-primary'
                     : 'border border-border/80 bg-muted/40 text-text-muted hover:border-primary/50 hover:text-text',
@@ -227,7 +227,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                           checked={isSelected}
                           onChange={() => setValue(item.id, choice)}
                           data-answer={choiceIndex === 0 ? '' : undefined}
-                          className="size-4 shrink-0 accent-primary"
+                          className="sr-only"
                         />
                         <span lang={answerLang} className="min-w-0 flex-1 font-medium break-words">
                           {choice}
