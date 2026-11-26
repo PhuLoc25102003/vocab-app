@@ -24,9 +24,7 @@ export function DataTableContainer({
 }: DataTableContainerProps) {
   return (
     <div className="overflow-x-auto">
-      <div role="table" className={cn('flex flex-col', minWidth, className)}>
-        {children}
-      </div>
+      <div className={cn('flex flex-col', minWidth, className)}>{children}</div>
     </div>
   );
 }
@@ -53,7 +51,6 @@ export function DataTableHeader({
 
   return (
     <div
-      role="row"
       style={style}
       className={cn(
         'sticky top-0 z-10 bg-surface grid items-center gap-4 border-b border-border px-3 py-2.5 text-tiny font-semibold uppercase tracking-wider text-text-muted select-none',
@@ -65,7 +62,6 @@ export function DataTableHeader({
         ? columns.map((col, index) => (
             <div
               key={col.key ?? index}
-              role="columnheader"
               className={cn(
                 'whitespace-nowrap',
                 col.align === 'center' && 'text-center',

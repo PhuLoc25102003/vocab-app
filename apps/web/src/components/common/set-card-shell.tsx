@@ -74,6 +74,7 @@ export const SetCardShell = forwardRef<HTMLLIElement, SetCardShellProps>(functio
         <Link
           href={href}
           title={title}
+          draggable={false}
           className="line-clamp-2 min-h-11 min-w-0 flex-1 py-0.5 font-semibold wrap-anywhere after:absolute after:inset-0 after:rounded-md"
         >
           {title}

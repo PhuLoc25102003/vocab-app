@@ -183,10 +183,29 @@ describe('AdminUsers', () => {
             {
               setId: 's1',
               title: 'Unit 1 Leisure time',
-              mode: 'flashcards',
+              cardCount: 20,
+              mode: 'SPEAK',
               startedAt: new Date('2026-11-20T10:00:00Z'),
-              correct: 10,
-              total: 10,
+              correct: 1,
+              total: 1,
+              modes: [
+                {
+                  mode: 'SPEAK',
+                  startedAt: new Date('2026-11-20T10:00:00Z'),
+                  finishedAt: new Date('2026-11-20T10:05:00Z'),
+                  answered: 1,
+                  correct: 1,
+                  total: 1,
+                },
+                {
+                  mode: 'FLASHCARD',
+                  startedAt: new Date('2026-11-20T09:00:00Z'),
+                  finishedAt: null,
+                  answered: 8,
+                  correct: 6,
+                  total: 20,
+                },
+              ],
             },
           ],
         }),
@@ -201,6 +220,14 @@ describe('AdminUsers', () => {
 
     expect(await screen.findByText('Bộ từ gần đây của Mai')).toBeInTheDocument();
     expect(screen.getByText('Unit 1 Leisure time')).toBeInTheDocument();
-    expect(screen.getByText(/Đúng 10\/10 câu/)).toBeInTheDocument();
+    expect(screen.getByText('20 từ')).toBeInTheDocument();
+    expect(screen.getByText('Đã học 1/20 từ')).toBeInTheDocument();
+    expect(screen.getByText('Đúng 1/1 (100%)')).toBeInTheDocument();
+    expect(screen.getByText('Đã học 8/20 từ')).toBeInTheDocument();
+    expect(screen.getByText('Đúng 6/8 (75%)')).toBeInTheDocument();
+
+    // Bấm vào link bộ từ phải đóng modal để không khoá click ở trang mới
+    await userEvent.click(screen.getByRole('link', { name: 'Unit 1 Leisure time' }));
+    expect(screen.queryByText('Bộ từ gần đây của Mai')).not.toBeInTheDocument();
   });
 });

@@ -5,6 +5,7 @@ import {
   DragOverlay,
   MouseSensor,
   TouchSensor,
+  pointerWithin,
   useDraggable,
   useDroppable,
   useSensor,
@@ -65,6 +66,7 @@ export function FolderDndArea({ children }: { children: ReactNode }) {
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={pointerWithin}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDragCancel={() => setDragging(null)}

@@ -207,12 +207,13 @@ describe('StudyShell', () => {
 
     const speedBtn = await screen.findByRole('button', { name: /Bình thường|Đọc chậm/ });
     expect(speedBtn).toBeInTheDocument();
-    expect(speedBtn).toHaveAttribute('aria-label', 'Bình thường');
+    expect(speedBtn).toHaveAccessibleName(/1\.0x\s*Bình thường/);
 
     await userEvent.click(speedBtn);
-    expect(await screen.findByRole('button', { name: 'Đọc chậm' })).toBeInTheDocument();
+    const slowBtn = await screen.findByRole('button', { name: /0\.8x\s*Đọc chậm/ });
+    expect(slowBtn).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Đọc chậm' }));
-    expect(await screen.findByRole('button', { name: 'Bình thường' })).toBeInTheDocument();
+    await userEvent.click(slowBtn);
+    expect(await screen.findByRole('button', { name: /1\.0x\s*Bình thường/ })).toBeInTheDocument();
   });
 });

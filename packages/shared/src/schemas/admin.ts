@@ -188,14 +188,27 @@ export type LockUserDto = z.infer<typeof lockUserSchema>;
 export const setUserRoleSchema = z.object({ role: roleSchema });
 export type SetUserRoleDto = z.infer<typeof setUserRoleSchema>;
 
+/** Tiến độ một kỹ năng/chế độ học của người dùng trong một bộ từ. */
+export const adminRecentStudyModeSchema = z.object({
+  mode: z.string(),
+  startedAt: z.coerce.date(),
+  finishedAt: z.coerce.date().nullable(),
+  answered: z.number().int(),
+  correct: z.number().int(),
+  total: z.number().int(),
+});
+export type AdminRecentStudyMode = z.infer<typeof adminRecentStudyModeSchema>;
+
 /** Thông tin một bộ từ học gần đây của người dùng cho ADMIN theo dõi */
 export const adminRecentStudySetSchema = z.object({
   setId: z.string(),
   title: z.string(),
+  cardCount: z.number().int().default(0),
   mode: z.string(),
   startedAt: z.coerce.date(),
   correct: z.number().int(),
   total: z.number().int(),
+  modes: z.array(adminRecentStudyModeSchema).default([]),
 });
 export type AdminRecentStudySet = z.infer<typeof adminRecentStudySetSchema>;
 

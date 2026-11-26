@@ -106,9 +106,10 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.goto('/sets/new');
     // Trang form căn giữa ở màn hình rộng, tiêu đề thẳng hàng với form.
     await page.setViewportSize({ width: 1280, height: 800 });
-    const heading = await page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' }).boundingBox();
+    await expect(page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' })).toBeVisible();
+    const header = await page.locator('main header').first().boundingBox();
     const form = await page.locator('main form').first().boundingBox();
-    expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
+    expect(header && form && Math.abs(header.x - form.x)).toBeLessThan(2);
     expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
     await visibleField(page, 'Tên bộ từ').fill(firstTitle);
     // Radio gốc ẩn đi, người dùng bấm vào cả thẻ lựa chọn.
@@ -131,10 +132,10 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
 
     await page.goto('/sets');
     await page.getByRole('searchbox').fill('khong-co-bo-tu-nay');
-    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await page.getByRole('searchbox').press('Enter');
     await expect(page.getByText('Không tìm thấy bộ từ phù hợp')).toBeVisible();
     await page.getByRole('searchbox').fill(title);
-    await page.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await page.getByRole('searchbox').press('Enter');
     await expect(page.getByRole('link', { name: title })).toBeVisible();
   });
 
@@ -230,13 +231,16 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   test('làm bài kiểm tra, nộp một lần rồi xem kết quả', async () => {
     await page.goto(`${setPath}/study/test`);
     await expect(page.getByRole('button', { name: 'Nộp bài' })).toBeVisible();
-    for (const [index, { term, definition }] of cards.entries()) {
+    for (let index = 0; index < cards.length; index += 1) {
       const item = page.locator('form ol > li').nth(index);
+      const promptText = (await item.locator('p').first().textContent())?.trim() ?? '';
+      const card = cards.find((c) => c.term === promptText || c.definition === promptText);
+      expect(card, `Không tìm thấy thẻ cho câu ${index + 1}: ${promptText}`).toBeTruthy();
       const typed = item.getByLabel(`Nhập từ cho câu ${index + 1}`);
       if (await typed.isVisible()) {
-        await typed.fill(term);
+        await typed.fill(card!.term);
       } else {
-        await item.getByRole('radio', { name: definition, exact: true }).check();
+        await item.getByText(card!.definition, { exact: true }).click();
       }
     }
     await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
@@ -328,11 +332,11 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByLabel('Dòng đầu là tiêu đề, bỏ qua khi nhập').check();
     await page.getByRole('button', { name: 'Xem trước' }).click();
 
-    const errorRow = page.getByRole('listitem', { name: 'Dòng 3' });
-    await expect(errorRow.getByText('Hãy nhập định nghĩa')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Lưu 2 thẻ' })).toBeDisabled();
-    await errorRow.getByLabel('Nghĩa').fill('sư tử');
-    await page.getByLabel('Tên bộ từ mới').fill(importTitle);
+    const errorCard = page.locator('[data-card="1"]');
+    await visibleField(page, 'Tên bộ từ').fill(importTitle);
+    await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
+    await expect(errorCard.getByText('Hãy nhập định nghĩa')).toBeVisible();
+    await errorCard.getByLabel('Nghĩa').fill('sư tử');
     await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
 
     await expect(page.getByRole('heading', { name: importTitle })).toBeVisible();
@@ -373,7 +377,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     });
     await expect(page.getByText('Đã nhận ra tiêu đề file mẫu')).toBeVisible();
     await page.getByRole('button', { name: 'Xem trước' }).click();
-    await expect(page.getByRole('heading', { name: 'Xem trước (7 thẻ)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lưu 7 thẻ' })).toBeVisible();
     await expect(page.getByLabel('Phiên âm').first()).toHaveValue('/ˈæp.əl/');
     await expect(page.getByLabel('Ví dụ').first()).toHaveValue('I eat an apple every day.');
   });
@@ -394,16 +398,16 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('link', { name: 'Đóng thư mục' }).click();
     await page.waitForURL(/\/sets$/);
 
-    // Kéo tay nắm của thẻ bộ từ thả vào thư mục trên cột thư mục.
-    const card = page
-      .getByRole('listitem')
-      .filter({ has: page.getByRole('link', { name: title }) });
-    const handle = await card.locator('[data-drag-handle]').boundingBox();
-    const target = await folders.getByRole('link', { name: new RegExp(folderName) }).boundingBox();
+    // Kéo thẻ bộ từ thả vào thư mục trên cột thư mục.
+    const card = page.locator('li').filter({ has: page.getByRole('link', { name: title }) });
+    const handle = await card.boundingBox();
+    const folderLink = folders.getByRole('link', { name: new RegExp(folderName) });
+    const target = await folderLink.boundingBox();
     if (!handle || !target) throw new Error('Không thấy tay nắm hoặc thư mục');
     await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
     await page.mouse.down();
-    await page.mouse.move(target.x + 20, target.y + target.height / 2, { steps: 12 });
+    await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 20 });
+    await expect(folderLink).toHaveClass(/bg-primary/);
     await page.mouse.up();
     await expect(page.getByText(`Đã chuyển "${title}" vào thư mục`)).toBeVisible();
 
@@ -418,8 +422,12 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByRole('button', { name: 'Lưu' }).click();
     await expect(page.getByText('Đã đổi tên thư mục')).toBeVisible();
 
-    await page.getByRole('button', { name: new RegExp(`^Chuyển "${title}" vào thư mục`) }).click();
-    await page.getByRole('menuitem', { name: `Gỡ khỏi thư mục ${folderName} A` }).click();
+    await card.getByRole('button', { name: 'Thao tác khác' }).click();
+    await page.getByRole('menuitem', { name: 'Chuyển vào thư mục' }).click();
+    await page
+      .getByRole('dialog', { name: 'Chuyển vào thư mục' })
+      .getByRole('button', { name: 'Không có thư mục' })
+      .click();
     await expect(page.getByText('Đã gỡ khỏi thư mục')).toBeVisible();
     await expect(page.getByText('Thư mục này chưa có bộ từ')).toBeVisible();
 
@@ -552,7 +560,7 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await signUp(other, 'Người học khác', `e2e-other-${stamp}@example.com`);
     await other.goto('/explore');
     await other.getByRole('searchbox').fill(title);
-    await other.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await other.getByRole('searchbox').press('Enter');
     await other.getByRole('link', { name: title }).click();
     await other.getByRole('button', { name: 'Sao chép bộ từ' }).click();
     const copyTitle = `${title} (bản sao)`;
@@ -622,7 +630,7 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   await visibleField(targetPage, 'Email').fill(target);
   await visibleField(targetPage, 'Mật khẩu').fill(password);
   await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-  await targetPage.waitForURL('**/dashboard');
+  await expect(targetPage).toHaveURL(/\/dashboard/);
 
   // ADMIN ẩn bộ công khai của người khác, khách không còn xem được.
   const setId = `e2e-hidden-${stamp}`;

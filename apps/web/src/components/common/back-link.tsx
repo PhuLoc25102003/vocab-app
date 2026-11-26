@@ -16,7 +16,7 @@ export function BackLink({
     <Link
       href={href}
       className={cn(
-        'group inline-flex items-center gap-2 rounded-lg border border-border-strong bg-surface px-3.5 py-2 text-small font-medium text-text transition-all duration-fast hover:border-primary hover:bg-primary-soft hover:text-primary shadow-xs self-start',
+        'group inline-flex min-h-11 items-center gap-2 rounded-lg border border-border-strong bg-surface px-3.5 py-2 text-small font-medium text-text transition-all duration-fast hover:border-primary hover:bg-primary-soft hover:text-primary shadow-xs self-start',
         className,
       )}
     >

@@ -79,7 +79,7 @@ export function SetOwnerActions({
               variant="secondary"
               aria-label={t('actions.more')}
               size="icon"
-              className="size-9 shrink-0"
+              className="size-11 shrink-0"
             >
               <MoreHorizontal aria-hidden className="size-5" />
             </Button>

@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   ERROR_CODES,
+  type AdminRecentStudyMode,
   type AdminRecentStudySet,
   type AdminUser,
   type AdminUserQuery,
@@ -40,6 +41,88 @@ function toOrderBy(sort: string): Prisma.UserOrderByWithRelationInput[] {
   }
   // Thêm id để thứ tự không đổi giữa các trang khi giá trị trùng nhau.
   return [{ [field]: direction }, { id: 'asc' }];
+}
+
+type SessionWithAttempts = {
+  setId: string;
+  mode: string;
+  startedAt: Date;
+  finishedAt: Date | null;
+  correct: number;
+  total: number;
+  set: { id: string; title: string; cardCount: number } | null;
+  attempts: { cardId: string; isCorrect: boolean }[];
+};
+
+function summarizeAttempts(attempts: { cardId: string; isCorrect: boolean }[]) {
+  const firstResults = new Map<string, boolean>();
+  for (const { cardId, isCorrect } of attempts) {
+    if (!firstResults.has(cardId)) {
+      firstResults.set(cardId, isCorrect);
+    }
+  }
+  let correct = 0;
+  for (const ok of firstResults.values()) {
+    if (ok) correct += 1;
+  }
+  return { answered: firstResults.size, correct };
+}
+
+function buildRecentSets(sessions: SessionWithAttempts[]): AdminRecentStudySet[] {
+  const bySet = new Map<
+    string,
+    {
+      title: string;
+      cardCount: number;
+      seenModes: Set<string>;
+      modes: AdminRecentStudyMode[];
+    }
+  >();
+
+  for (const s of sessions) {
+    if (!s.set) continue;
+    let entry = bySet.get(s.setId);
+    if (!entry) {
+      if (bySet.size >= 5) continue;
+      entry = {
+        title: s.set.title,
+        cardCount: s.set.cardCount,
+        seenModes: new Set(),
+        modes: [],
+      };
+      bySet.set(s.setId, entry);
+    }
+    if (entry.seenModes.has(s.mode)) continue;
+    entry.seenModes.add(s.mode);
+
+    const { answered, correct } =
+      s.attempts.length > 0
+        ? summarizeAttempts(s.attempts)
+        : { answered: s.finishedAt ? s.total : 0, correct: s.correct };
+
+    entry.modes.push({
+      mode: s.mode,
+      startedAt: s.startedAt,
+      finishedAt: s.finishedAt,
+      answered,
+      correct,
+      total: s.total > 0 ? s.total : s.set.cardCount,
+    });
+  }
+
+  return [...bySet.entries()].map(([setId, entry]) => {
+    const latest = entry.modes[0]!;
+    return {
+      setId,
+      title: entry.title,
+      cardCount: entry.cardCount,
+      mode: latest.mode,
+      startedAt: latest.startedAt,
+      correct: latest.correct,
+      total: latest.total,
+      modes: entry.modes,
+    };
+  });
 }
 
 @Injectable()
@@ -93,17 +176,26 @@ export class AdminUsersRepository extends BaseRepository {
           updatedAt: true,
           studySessions: {
             orderBy: { startedAt: 'desc' },
-            take: 10,
+            take: 50,
             select: {
               setId: true,
               mode: true,
               startedAt: true,
+              finishedAt: true,
               correct: true,
               total: true,
               set: {
                 select: {
                   id: true,
                   title: true,
+                  cardCount: true,
+                },
+              },
+              attempts: {
+                orderBy: { createdAt: 'asc' },
+                select: {
+                  cardId: true,
+                  isCorrect: true,
                 },
               },
             },
@@ -114,22 +206,7 @@ export class AdminUsersRepository extends BaseRepository {
     ]);
 
     const mappedUsers: AdminUser[] = users.map((u) => {
-      const recentSets: AdminRecentStudySet[] = [];
-      const seenSets = new Set<string>();
-      for (const s of u.studySessions) {
-        if (!seenSets.has(s.setId) && s.set) {
-          seenSets.add(s.setId);
-          recentSets.push({
-            setId: s.setId,
-            title: s.set.title,
-            mode: s.mode,
-            startedAt: s.startedAt,
-            correct: s.correct,
-            total: s.total,
-          });
-        }
-        if (recentSets.length >= 5) break;
-      }
+      const recentSets = buildRecentSets(u.studySessions);
 
       const memoryActive = this.presence.getLastActive(u.id);
       const sessionActive = u.studySessions[0]?.startedAt;

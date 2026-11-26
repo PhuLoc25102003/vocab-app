@@ -152,7 +152,7 @@ test.describe.serial('luồng chính', () => {
     await guest.getByRole('link', { name: 'Khám phá bộ từ' }).click();
     await guest.waitForURL('**/public/explore');
     await guest.getByRole('searchbox', { name: 'Tìm bộ từ theo tên' }).fill(setTitle);
-    await guest.getByRole('button', { name: 'Tìm', exact: true }).click();
+    await guest.getByRole('searchbox', { name: 'Tìm bộ từ theo tên' }).press('Enter');
     await guest.getByRole('link', { name: setTitle }).click();
     await guest.waitForURL(`**/public${setPath}`);
     await expect(guest.getByRole('heading', { name: setTitle })).toBeVisible();
@@ -165,7 +165,7 @@ test.describe.serial('luồng chính', () => {
     await expect(guest.getByText(/^Bạn nhớ/)).toHaveText('Bạn nhớ 2 trên 2 thẻ.');
     expect(studyRequests).toEqual([]);
 
-    await guest.getByRole('link', { name: 'Về bộ từ' }).click();
+    await guest.getByRole('link', { name: 'Trở về' }).click();
     await guest.getByRole('link', { name: 'Quay lại Khám phá' }).filter({ visible: true }).click();
     await guest.waitForURL('**/public/explore');
     await guest.close();
@@ -192,7 +192,7 @@ test.describe.serial('luồng chính', () => {
     await nameDialog.getByLabel('Tên hiển thị').fill('Tên mới E2E');
     await nameDialog.getByRole('button', { name: 'Lưu tên' }).click();
     await expect(page.getByText('Đã lưu tên hiển thị')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Tài khoản: Tên mới E2E' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Tài khoản: mới E2E' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Đổi mật khẩu' }).click();
     const passwordDialog = page.getByRole('dialog', { name: 'Đổi mật khẩu' });

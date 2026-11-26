@@ -17,7 +17,7 @@ export default async function NewSetPage({ searchParams }: PageProps<'/sets/new'
   const backHref = (folderId ? `/sets?folder=${folderId}` : '/sets') as Route;
 
   return (
-    <PageContainer width="wide">
+    <PageContainer width="narrow">
       <BackLink href={backHref} label={t('pages.backToList')} />
       <PageHeader title={t('pages.newSet')} />
       <CreateSet folderId={folderId} />

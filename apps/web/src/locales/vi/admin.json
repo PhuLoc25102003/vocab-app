@@ -108,6 +108,11 @@
     "noRecentSets": "Chưa có hoạt động học nào gần đây.",
     "viewSet": "Xem bộ từ",
     "studyScore": "Đúng {{correct}}/{{total}} câu",
+    "setCardCount": "{{count}} từ",
+    "modeFinished": "Hoàn thành",
+    "modeInProgress": "Đang học",
+    "modeProgress": "Đã học {{answered}}/{{total}} từ",
+    "modeAccuracy": "Đúng {{correct}}/{{answered}} ({{percent}}%)",
     "close": "Đóng"
   },
   "hide": {

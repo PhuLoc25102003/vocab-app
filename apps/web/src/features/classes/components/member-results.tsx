@@ -39,7 +39,7 @@ function ResultRow({ classId, row }: { classId: string; row: MemberResult }) {
       <DataTableCell className="flex min-w-0 flex-col">
         <Link
           href={`/classes/${classId}/assignments/${row.id}` as Route}
-          className="truncate font-semibold text-primary hover:underline"
+          className="inline-flex min-h-11 items-center truncate font-semibold text-primary hover:underline"
           title={row.setTitle}
         >
           {row.setTitle}

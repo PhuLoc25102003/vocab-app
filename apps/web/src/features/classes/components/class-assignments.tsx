@@ -109,7 +109,7 @@ function TeacherAssignmentRow({
       <DataTableCell className="flex min-w-0 flex-col">
         <Link
           href={`/classes/${classId}/assignments/${item.id}` as Route}
-          className="truncate font-medium text-text hover:text-primary hover:underline after:absolute after:inset-0"
+          className="inline-flex min-h-11 items-center truncate font-medium text-text hover:text-primary hover:underline after:absolute after:inset-0"
           title={item.setTitle}
         >
           {item.setTitle}
