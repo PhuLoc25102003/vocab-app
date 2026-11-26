@@ -332,11 +332,11 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.getByLabel('Dòng đầu là tiêu đề, bỏ qua khi nhập').check();
     await page.getByRole('button', { name: 'Xem trước' }).click();
 
-    const errorRow = page.getByRole('listitem', { name: 'Dòng 3' });
-    await expect(errorRow.getByText('Hãy nhập định nghĩa')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Lưu 2 thẻ' })).toBeDisabled();
-    await errorRow.getByLabel('Nghĩa').fill('sư tử');
-    await page.getByLabel('Tên bộ từ mới').fill(importTitle);
+    const errorCard = page.locator('[data-card="1"]');
+    await visibleField(page, 'Tên bộ từ').fill(importTitle);
+    await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
+    await expect(errorCard.getByText('Hãy nhập định nghĩa')).toBeVisible();
+    await errorCard.getByLabel('Nghĩa').fill('sư tử');
     await page.getByRole('button', { name: 'Lưu 2 thẻ' }).click();
 
     await expect(page.getByRole('heading', { name: importTitle })).toBeVisible();
