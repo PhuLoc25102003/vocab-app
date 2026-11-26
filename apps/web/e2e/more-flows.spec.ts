@@ -106,9 +106,10 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     await page.goto('/sets/new');
     // Trang form căn giữa ở màn hình rộng, tiêu đề thẳng hàng với form.
     await page.setViewportSize({ width: 1280, height: 800 });
-    const heading = await page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' }).boundingBox();
+    await expect(page.getByRole('heading', { level: 1, name: 'Tạo bộ từ' })).toBeVisible();
+    const header = await page.locator('main header').first().boundingBox();
     const form = await page.locator('main form').first().boundingBox();
-    expect(heading && form && Math.abs(heading.x - form.x)).toBeLessThan(2);
+    expect(header && form && Math.abs(header.x - form.x)).toBeLessThan(2);
     expect(form && Math.abs(form.x - (1280 - form.x - form.width))).toBeLessThan(24);
     await visibleField(page, 'Tên bộ từ').fill(firstTitle);
     // Radio gốc ẩn đi, người dùng bấm vào cả thẻ lựa chọn.
