@@ -130,7 +130,7 @@ export function CardFields({ control, register, setFocus, errors }: CardFieldsPr
                 key={field.key}
                 data-card={index}
                 aria-labelledby={titleId}
-                className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 shadow-sm [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
+                className="glass-surface flex flex-col gap-3 rounded-xl border border-border p-4 [contain-intrinsic-size:auto_260px] [content-visibility:auto]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 id={titleId} className="text-h3 tabular-nums">

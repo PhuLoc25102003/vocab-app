@@ -81,7 +81,7 @@ export function TypedAnswer({
 
   return (
     <form onSubmit={submit} className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-surface p-6 sm:p-8 shadow-sm">
+      <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
         {prompt}
 
         <div className="flex flex-col gap-2">

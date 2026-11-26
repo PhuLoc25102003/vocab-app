@@ -75,7 +75,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
       {/* Thanh điều hướng nhanh và tiến độ bài thi */}
       <section
         aria-label={t('test.jumpTo')}
-        className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface p-4 shadow-sm"
+        className="glass-surface flex flex-col gap-3 rounded-2xl border border-border p-4 shadow-sm"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -126,10 +126,10 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
               key={item.id}
               id={`test-q-${index}`}
               className={cn(
-                'group relative flex flex-col gap-5 rounded-2xl border bg-surface p-5 transition-all sm:p-6',
+                'glass-surface group relative flex flex-col gap-5 rounded-2xl border p-5 transition-all sm:p-6',
                 isAnswered
-                  ? 'border-border/90 shadow-sm'
-                  : 'border-border/60 hover:border-border-strong',
+                  ? 'border-border-strong/60 shadow-sm'
+                  : 'border-border hover:border-border-strong',
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -260,7 +260,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
       </ol>
 
       {/* Thanh nộp bài dính phía dưới (Sticky Footer) */}
-      <div className="sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface/95 p-4 shadow-lg backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+      <div className="glass-surface sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-2xl border border-border p-4 shadow-lg sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
             <span className="text-small font-semibold">

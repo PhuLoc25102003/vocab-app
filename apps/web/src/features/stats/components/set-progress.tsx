@@ -68,7 +68,7 @@ export function SetProgressSummary({ setId }: { setId: string }) {
   return (
     <section
       aria-label={t('stats.yourProgress')}
-      className="flex flex-col gap-3.5 rounded-xl border border-border-strong/70 bg-surface/80 p-4 sm:p-5 shadow-2xs backdrop-blur-sm"
+      className="glass-surface flex flex-col gap-3.5 rounded-xl border border-border p-4 sm:p-5"
     >
       <dl className="grid grid-cols-3 gap-2 sm:gap-4 w-full">
         {items.map(({ key, label, value, valueColor, borderBg }) => (

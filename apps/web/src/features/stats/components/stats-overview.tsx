@@ -126,7 +126,7 @@ export function StatsOverview() {
           return (
             <div
               key={label}
-              className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5"
+              className="glass-surface grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-xl border border-border p-4 transition-all duration-fast hover:border-primary/50 hover:shadow-md sm:p-5"
             >
               <dt className="col-span-2 row-start-2 font-medium text-text">{t(label)}</dt>
               <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">
@@ -157,13 +157,13 @@ export function StatsOverview() {
       </div>
 
       {hardCards.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="glass-surface flex flex-col gap-3 rounded-xl border border-border p-4 sm:p-5">
           <h3 className="text-h3">{t('stats.hardWords')}</h3>
-          <ul className="border-t border-border">
+          <ul className="divide-y divide-border-strong/50 border-t border-border-strong/50">
             {hardCards.map(({ cardId, setId, term, definition, wrongCount }) => (
               <li
                 key={cardId}
-                className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-border py-3"
+                className="flex flex-wrap items-baseline justify-between gap-x-4 py-2.5"
               >
                 <Link
                   href={`/sets/${setId}` as Route}

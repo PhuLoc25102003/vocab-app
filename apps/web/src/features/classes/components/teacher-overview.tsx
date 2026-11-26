@@ -44,7 +44,7 @@ function Tile({
   iconBg?: string;
 }) {
   return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-lg border border-border-strong bg-surface p-4 transition-colors duration-fast hover:border-primary/60 sm:p-5">
+    <div className="glass-surface grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1.5 rounded-xl border border-border p-4 transition-all duration-fast hover:border-primary/50 hover:shadow-md sm:p-5">
       <dt className="col-span-2 row-start-2 font-medium text-text">{label}</dt>
       <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">{value}</dd>
       {note ? <dd className="col-span-2 row-start-3 text-small text-text-muted">{note}</dd> : null}
@@ -68,7 +68,7 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section
       aria-label={title}
-      className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-4 sm:p-5"
+      className="glass-surface flex flex-col gap-3 rounded-xl border border-border p-4 sm:p-5"
     >
       <h2 className="text-h3">{title}</h2>
       {children}
@@ -156,7 +156,7 @@ function EmptyClasses({ onCreate }: { onCreate: () => void }) {
   return (
     <section
       aria-label={t('overview.startLabel')}
-      className="flex flex-col gap-4 rounded-lg border border-border-strong bg-surface p-6"
+      className="glass-surface flex flex-col gap-4 rounded-xl border border-border p-6"
     >
       <h2 className="text-h3 font-semibold text-text">{t('overview.startTitle')}</h2>
       <ol className="flex flex-col gap-3">

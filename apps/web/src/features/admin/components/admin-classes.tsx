@@ -61,20 +61,25 @@ function StatTile({
   bgClass: string;
 }) {
   return (
-    <div className="flex items-center gap-3.5 rounded-lg border border-border-strong bg-surface p-4 shadow-sm">
-      <span
-        aria-hidden
-        className={cn(
-          'flex size-11 shrink-0 items-center justify-center rounded-lg',
-          bgClass,
-          colorClass,
-        )}
-      >
-        <Icon className="size-5" />
-      </span>
-      <div className="flex flex-col">
-        <span className="text-small text-text-muted">{label}</span>
-        <span className="text-h2 font-bold tabular-nums text-text">{value}</span>
+    <div className="glass-surface flex h-full min-w-0 flex-col justify-between gap-2 rounded-xl border border-border p-3 sm:flex-row sm:items-center sm:justify-start sm:gap-3.5 sm:p-4">
+      <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
+        <span
+          aria-hidden
+          className={cn(
+            'flex size-8 shrink-0 items-center justify-center rounded-lg sm:size-11',
+            bgClass,
+            colorClass,
+          )}
+        >
+          <Icon className="size-4 sm:size-5" />
+        </span>
+        <span className="text-h3 font-bold tabular-nums text-text sm:hidden">{value}</span>
+      </div>
+      <div className="flex min-w-0 flex-col">
+        <span className="text-tiny leading-tight text-text-muted break-words sm:text-small">
+          {label}
+        </span>
+        <span className="hidden text-h2 font-bold tabular-nums text-text sm:block">{value}</span>
       </div>
     </div>
   );
@@ -560,7 +565,7 @@ export function AdminClasses() {
   return (
     <div className="flex flex-col gap-6">
       {/* 3 Thẻ thống kê tổng quan */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <StatTile
           label={t('classes.totalClasses')}
           value={data.totalClasses}
@@ -579,8 +584,8 @@ export function AdminClasses() {
           label={t('classes.totalUnassignedStudents')}
           value={data.totalUnassignedStudents}
           icon={UserMinus}
-          colorClass="text-warning"
-          bgClass="bg-warning-soft"
+          colorClass="text-danger"
+          bgClass="bg-danger-soft"
         />
       </div>
 

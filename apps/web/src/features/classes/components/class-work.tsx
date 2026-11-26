@@ -113,7 +113,7 @@ export function ClassWork() {
   return (
     <section
       aria-labelledby="class-work-title"
-      className="flex flex-col gap-2 rounded-lg border border-border-strong bg-surface p-4 sm:p-5"
+      className="glass-surface flex flex-col gap-2 rounded-xl border border-border p-4 sm:p-5"
     >
       <h2 id="class-work-title" className="text-h3">
         {t('work.title')}

@@ -53,7 +53,7 @@ export function SetDetail({
   return (
     <>
       {renderBack?.(set.data)}
-      <div className="flex flex-col gap-3 rounded-lg border border-border-strong/70 bg-surface/80 px-4 py-2.5 sm:px-5 sm:py-3.5 shadow-sm shadow-primary/5 backdrop-blur-md">
+      <div className="glass-surface flex flex-col gap-3 rounded-xl border border-border px-4 py-2.5 sm:px-5 sm:py-3.5">
         <div className="flex min-h-[44px] flex-wrap items-center justify-between gap-3">
           <div className="flex max-w-[65ch] min-w-0 flex-col gap-0.5">
             <h1 className="text-[1.65rem] font-bold text-text wrap-anywhere tracking-tight leading-tight sm:text-[1.85rem]">
