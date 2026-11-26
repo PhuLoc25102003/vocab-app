@@ -107,6 +107,11 @@
     "noRecentSets": "No recent study activity.",
     "viewSet": "View set",
     "studyScore": "Score: {{correct}}/{{total}}",
+    "setCardCount": "{{count}} cards",
+    "modeFinished": "Completed",
+    "modeInProgress": "In progress",
+    "modeProgress": "Studied {{answered}}/{{total}}",
+    "modeAccuracy": "{{correct}}/{{answered}} correct ({{percent}}%)",
     "close": "Close"
   },
   "hide": {

@@ -63,6 +63,16 @@ export function Dialog({
     // Chạy lại khi `initialFocus` đổi cũng không sao: chỉ mở và đặt focus khi dialog chưa mở.
   }, [open, container, initialFocus]);
 
+  // Đảm bảo đóng dialog ở top-layer nếu component bị unmount khi đang mở (ví dụ khi bấm Link chuyển trang).
+  useEffect(() => {
+    const dialog = ref.current;
+    return () => {
+      if (dialog?.open) {
+        dialog.close();
+      }
+    };
+  }, []);
+
   if (!container) {
     return null;
   }

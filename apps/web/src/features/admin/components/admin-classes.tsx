@@ -269,7 +269,6 @@ function TeacherRow({ teacher }: { teacher: AdminTeacherItem }) {
             onClick={() => setExpanded((prev) => !prev)}
             aria-expanded={expanded}
           >
-            <School aria-hidden className="size-4 shrink-0 text-text-muted" />
             <span>
               {expanded
                 ? t('classes.hideClasses')
