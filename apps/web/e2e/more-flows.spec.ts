@@ -401,11 +401,13 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
     // Kéo thẻ bộ từ thả vào thư mục trên cột thư mục.
     const card = page.locator('li').filter({ has: page.getByRole('link', { name: title }) });
     const handle = await card.boundingBox();
-    const target = await folders.getByRole('link', { name: new RegExp(folderName) }).boundingBox();
+    const folderLink = folders.getByRole('link', { name: new RegExp(folderName) });
+    const target = await folderLink.boundingBox();
     if (!handle || !target) throw new Error('Không thấy tay nắm hoặc thư mục');
     await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
     await page.mouse.down();
     await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 20 });
+    await expect(folderLink).toHaveClass(/bg-primary/);
     await page.mouse.up();
     await expect(page.getByText(`Đã chuyển "${title}" vào thư mục`)).toBeVisible();
 
