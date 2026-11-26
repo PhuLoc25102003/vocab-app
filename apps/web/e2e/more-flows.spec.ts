@@ -231,13 +231,16 @@ test.describe.serial('quản lý bộ từ và các chế độ học', () => {
   test('làm bài kiểm tra, nộp một lần rồi xem kết quả', async () => {
     await page.goto(`${setPath}/study/test`);
     await expect(page.getByRole('button', { name: 'Nộp bài' })).toBeVisible();
-    for (const [index, { term, definition }] of cards.entries()) {
+    for (let index = 0; index < cards.length; index += 1) {
       const item = page.locator('form ol > li').nth(index);
+      const promptText = (await item.locator('p').first().textContent())?.trim() ?? '';
+      const card = cards.find((c) => c.term === promptText || c.definition === promptText);
+      expect(card, `Không tìm thấy thẻ cho câu ${index + 1}: ${promptText}`).toBeTruthy();
       const typed = item.getByLabel(`Nhập từ cho câu ${index + 1}`);
       if (await typed.isVisible()) {
-        await typed.fill(term);
+        await typed.fill(card!.term);
       } else {
-        await item.getByRole('radio', { name: definition, exact: true }).check();
+        await item.getByRole('radio', { name: card!.definition, exact: true }).check();
       }
     }
     await expect(page.getByText(/Chính xác|Chưa đúng/)).toHaveCount(0);
@@ -623,7 +626,7 @@ test('ADMIN tìm, khoá rồi mở khoá tài khoản; tài khoản bị khoá k
   await visibleField(targetPage, 'Email').fill(target);
   await visibleField(targetPage, 'Mật khẩu').fill(password);
   await targetPage.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
-  await targetPage.waitForURL('**/dashboard');
+  await expect(targetPage).toHaveURL(/\/dashboard/);
 
   // ADMIN ẩn bộ công khai của người khác, khách không còn xem được.
   const setId = `e2e-hidden-${stamp}`;
