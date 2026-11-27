@@ -80,10 +80,12 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G6. Chế độ Mưa từ
 
-- **Việc:** 7.11, 7.12a, 7.12b, 7.12c. **Người dùng:** người học, kể cả khách học thử (không lưu điểm cao). **Trạng thái:** Chưa làm.
+- **Việc:** 7.11, 7.12a, 7.12b, 7.12c, 7.12d. **Người dùng:** người học, kể cả khách học thử (không lưu điểm cao). **Trạng thái:** Chưa làm.
 - **Phải có:**
-  - Nghĩa rơi từ trên xuống trên drone địch, người học gõ từ tiếng Anh tương ứng để chiến đấu cơ bắn nổ.
-  - Gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất; mỗi ký tự đúng bắn một tia laser, đủ từ thì nổ.
+  - Nghĩa rơi từ trên xuống trên drone địch, người học trả lời bằng từ tiếng Anh tương ứng để chiến đấu cơ bắn nổ. Có hai kiểu chơi chọn ở màn bắt đầu: **Gõ** và **Nói**.
+  - Kiểu Gõ: gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất; mỗi ký tự đúng bắn một tia laser, đủ từ thì nổ.
+  - Kiểu Nói: đọc to từ, nhận dạng giọng nói khớp với bất kỳ mục tiêu nào đang rơi thì bắn mục tiêu gần đáy nhất có từ đó; hiện chữ vừa nghe được; tốc độ rơi chậm hơn kiểu Gõ để bù độ trễ nhận dạng; chấm theo quy tắc của chế độ Luyện nói.
+  - Điểm cao tính riêng cho từng kiểu chơi.
   - 3 khiên, đợt 10 mục tiêu nhanh dần, mục tiêu lớn sau mỗi 3 đợt, combo nhân điểm.
   - Điểm cao nhất theo từng bộ.
   - Chiến đấu cơ và hiệu ứng vẽ chi tiết, hiện đại, chỉ dùng màu từ design token, đúng light và dark.
@@ -97,4 +99,5 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
   - Tải lại trang giữa chừng thì phiên học được giữ như các chế độ khác, ván chơi bắt đầu lại.
   - Mất mạng khi kết thúc thì kết quả vào hàng đợi offline như Flashcard.
   - Từ có dấu cách hoặc dấu gạch nối vẫn gõ được.
-- **Test:** unit cho lõi trò chơi (khoá mục tiêu, va chạm, đợt, combo, điểm) chạy bằng đồng hồ giả; integration lưu điểm cao chỉ khi cao hơn; component màn bắt đầu và kết quả; E2E chơi một đợt bằng bàn phím; thủ công 360 px, dark, giảm chuyển động, đo fps.
+  - Kiểu Nói: trình duyệt không hỗ trợ nhận dạng giọng nói (Firefox, một số WebView như Zalo) thì ẩn lựa chọn Nói và mở modal hướng dẫn trình duyệt có sẵn; chỉ xin quyền micro khi người học chọn Nói; bị chặn micro hoặc mất nhận dạng giữa ván thì tạm dừng và cho đổi sang kiểu Gõ mà không mất điểm đang có; tiếng ồn ra chữ không khớp mục tiêu nào thì bỏ qua, không trừ combo.
+- **Test:** unit cho lõi trò chơi (khoá mục tiêu, va chạm, đợt, combo, điểm, khớp kết quả nhận dạng với mục tiêu) chạy bằng đồng hồ giả; component kiểu Nói với bộ nhận dạng giả; integration lưu điểm cao chỉ khi cao hơn; component màn bắt đầu và kết quả; E2E chơi một đợt bằng bàn phím; thủ công 360 px, dark, giảm chuyển động, đo fps.
