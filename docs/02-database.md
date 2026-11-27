@@ -354,6 +354,8 @@ model AssignmentSubmission {
 
 - `ReminderLog` (việc 7.7): khoá chính `userId, kind, key` với `key` là ngày (`DAILY`) hoặc id bài giao (`ASSIGNMENT_DUE`), để job nhắc học chạy lại không gửi trùng. Ghi log trước rồi mới tạo thông báo.
 
+- `PushSubscription` (việc 7.8): `endpoint` duy nhất vì dịch vụ đẩy cấp mỗi trình duyệt một endpoint; một người có nhiều dòng (điện thoại, máy tính). Xoá người dùng thì xoá theo.
+
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường

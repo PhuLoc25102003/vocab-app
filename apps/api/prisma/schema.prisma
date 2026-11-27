@@ -70,6 +70,7 @@ model User {
   badges              UserBadge[]
   notifications       Notification[]
   reminderLogs        ReminderLog[]
+  pushSubscriptions   PushSubscription[]
 }
 
 model RefreshSession {
@@ -288,6 +289,20 @@ model ReminderLog {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, kind, key])
+}
+
+/// Một trình duyệt hoặc thiết bị đã cho phép thông báo đẩy. `endpoint` do dịch vụ đẩy cấp.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Attempt {

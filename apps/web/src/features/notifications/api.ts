@@ -1,7 +1,12 @@
 import {
   notificationListSchema,
+  pushConfigResponseSchema,
   unreadCountResponseSchema,
+  xpSummaryResponseSchema,
   type NotificationList,
+  type PushConfig,
+  type PushSubscriptionInput,
+  type XpSummary,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -29,4 +34,26 @@ export async function markNotificationRead(id: string): Promise<void> {
 
 export async function markAllNotificationsRead(): Promise<void> {
   await http('/notifications/read-all', { method: 'POST' });
+}
+
+export async function getPushConfig(): Promise<PushConfig> {
+  return pushConfigResponseSchema.parse(await http('/push/config')).data;
+}
+
+export async function savePushSubscription(input: PushSubscriptionInput): Promise<void> {
+  await http('/push/subscriptions', { method: 'POST', body: JSON.stringify(input) });
+}
+
+export async function removePushSubscription(endpoint: string): Promise<void> {
+  await http('/push/subscriptions/remove', { method: 'POST', body: JSON.stringify({ endpoint }) });
+}
+
+/**
+ * Cùng khoá và cùng kiểu dữ liệu với khối XP ở Tổng quan nên dùng chung cache, không gọi thêm API.
+ * Dùng để biết người học đã học chưa.
+ */
+export const XP_KEY = ['stats', 'xp'] as const;
+
+export async function getXpSummary(): Promise<XpSummary> {
+  return xpSummaryResponseSchema.parse(await http('/stats/xp')).data;
 }
