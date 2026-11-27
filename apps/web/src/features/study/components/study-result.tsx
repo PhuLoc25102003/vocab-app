@@ -78,7 +78,7 @@ export function StudyResult({
           />
         </p>
         <p className="font-medium">{t(encouragement(percent))}</p>
-        <SessionXp xpEarned={result.xpEarned} />
+        <SessionXp xpEarned={result.xpEarned} newBadges={result.newBadges} />
       </div>
 
       {wrong.length > 0 ? (

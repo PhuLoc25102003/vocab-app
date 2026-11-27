@@ -95,6 +95,8 @@ export const finishSessionResponseSchema = z.object({
     wrongCardIds: z.array(z.string()),
     /** Tổng XP của cả phiên. Khách, phiên offline và bản cũ của API trả 0. */
     xpEarned: z.number().default(0),
+    /** Mã huy hiệu vừa nhận sau phiên này. */
+    newBadges: z.array(z.string()).default([]),
   }),
 });
 export type SessionResult = z.infer<typeof finishSessionResponseSchema>['data'];

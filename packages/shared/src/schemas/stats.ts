@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BADGE_CODES, type BadgeCode } from '../study/badges';
 import { DAILY_GOAL_OPTIONS } from '../study/xp';
 import { vm } from '../validation';
 
@@ -71,3 +72,19 @@ export const updateDailyGoalSchema = z.object({
     }),
 });
 export type UpdateDailyGoalInput = z.infer<typeof updateDailyGoalSchema>;
+
+export const badgeCodeSchema = z
+  .string()
+  .refine((code): code is BadgeCode => (BADGE_CODES as readonly string[]).includes(code));
+
+export const badgeSchema = z.object({
+  code: badgeCodeSchema,
+  /** Số liệu hiện tại, tối đa bằng `target`. */
+  progress: z.number(),
+  target: z.number(),
+  /** Lúc nhận huy hiệu, `null` khi chưa có. */
+  earnedAt: z.coerce.date().nullable(),
+});
+export type Badge = z.infer<typeof badgeSchema>;
+
+export const badgeListResponseSchema = z.object({ data: z.array(badgeSchema) });

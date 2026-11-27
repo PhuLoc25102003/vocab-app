@@ -15,6 +15,7 @@ describe('StudyResult', () => {
           session: { correct: 3, total: 4 } as never,
           wrongCardIds: ['c2'],
           xpEarned: 0,
+          newBadges: [],
         }}
         questions={[
           { id: 'c1', cardId: 'c1', mode: 'MCQ', prompt: 'apple', expected: 'quả táo' },

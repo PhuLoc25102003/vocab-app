@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { XP_RULES } from '@vocab/shared';
 import { Sparkles } from 'lucide-react';
+import { BADGE_ICONS, isBadgeCode } from '@/components/common/badge-icon';
 import { useTranslation } from 'react-i18next';
 import { getXpSummary, SESSION_XP_KEY } from '../api';
 
@@ -10,7 +11,14 @@ import { getXpSummary, SESSION_XP_KEY } from '../api';
  * XP của phiên vừa xong trên màn kết quả. Lên cấp khi XP của phiên lớn hơn XP đã có trong cấp hiện
  * tại, vì XP trong cấp về 0 mỗi lần lên cấp.
  */
-export function SessionXp({ xpEarned }: { xpEarned: number }) {
+export function SessionXp({
+  xpEarned,
+  newBadges = [],
+}: {
+  xpEarned: number;
+  /** Mã huy hiệu vừa nhận sau phiên. */
+  newBadges?: readonly string[];
+}) {
   const { t } = useTranslation('study');
   // Khách và phiên offline có `xpEarned = 0`, không cần gọi API.
   const xp = useQuery({
@@ -20,7 +28,8 @@ export function SessionXp({ xpEarned }: { xpEarned: number }) {
     enabled: xpEarned > 0,
   });
 
-  if (xpEarned <= 0) {
+  const badges = newBadges.filter(isBadgeCode);
+  if (xpEarned <= 0 && badges.length === 0) {
     return null;
   }
   const summary = xp.data;
@@ -28,9 +37,11 @@ export function SessionXp({ xpEarned }: { xpEarned: number }) {
 
   return (
     <div role="status" className="flex flex-wrap items-center gap-2">
-      <span className="feedback-correct rounded-full bg-highlight px-3 py-1 font-semibold text-highlight-fg tabular-nums">
-        {t('xp.earned', { xp: xpEarned })}
-      </span>
+      {xpEarned > 0 ? (
+        <span className="feedback-correct rounded-full bg-highlight px-3 py-1 font-semibold text-highlight-fg tabular-nums">
+          {t('xp.earned', { xp: xpEarned })}
+        </span>
+      ) : null}
       {summary ? (
         leveledUp ? (
           <span className="feedback-correct inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1 font-semibold text-success">
@@ -47,6 +58,18 @@ export function SessionXp({ xpEarned }: { xpEarned: number }) {
           </span>
         )
       ) : null}
+      {badges.map((code) => {
+        const Icon = BADGE_ICONS[code];
+        return (
+          <span
+            key={code}
+            className="feedback-correct inline-flex items-center gap-1.5 rounded-full border border-border-strong bg-surface px-3 py-1 font-medium"
+          >
+            <Icon aria-hidden className="size-4 text-primary" />
+            {t('badges.new')}: {t(`badges.items.${code}.name`)}
+          </span>
+        );
+      })}
       {summary && summary.todayXp >= XP_RULES.dailyCap ? (
         <p className="w-full text-small text-text-muted">{t('xp.capReached')}</p>
       ) : null}

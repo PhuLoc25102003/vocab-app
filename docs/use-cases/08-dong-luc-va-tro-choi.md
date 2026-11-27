@@ -35,7 +35,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G3. Huy hiệu
 
-- **Việc:** 7.4. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chưa làm.
+- **Việc:** 7.4. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** danh sách huy hiệu và điều kiện trong shared, mỗi huy hiệu chỉ nhận một lần, hiện ở Tài khoản cả huy hiệu chưa có kèm điều kiện và tiến độ.
 - **Luồng chính:** học xong phiên đạt điều kiện, màn kết quả hiện thẻ "Huy hiệu mới", Tài khoản thêm huy hiệu đó.
 - **Ngoại lệ:** nhiều huy hiệu cùng lúc thì gộp một thông báo; xét lại không tạo bản trùng (khoá duy nhất).

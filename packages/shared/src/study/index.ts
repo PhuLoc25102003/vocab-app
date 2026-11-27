@@ -1,3 +1,4 @@
+export * from './badges';
 export * from './grading';
 export * from './modes/cloze';
 export * from './modes/dictation';

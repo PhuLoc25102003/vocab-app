@@ -292,5 +292,46 @@
       "saved": "Đã đổi mục tiêu thành {{xp}} XP mỗi ngày",
       "saveFailed": "Không đổi được mục tiêu, thử lại nhé"
     }
+  },
+  "badges": {
+    "title": "Huy hiệu",
+    "description": "Nhận huy hiệu khi đạt các mốc học tập.",
+    "loading": "Đang tải huy hiệu",
+    "failed": "Không tải được huy hiệu",
+    "count": "Đã có {{earned}} trên {{total}}",
+    "earnedOn": "Nhận ngày {{date}}",
+    "progress": "{{progress}}/{{target}}",
+    "locked": "Chưa đạt",
+    "new": "Huy hiệu mới",
+    "items": {
+      "mastered-100": {
+        "name": "Trăm từ vững",
+        "rule": "Thuộc 100 từ"
+      },
+      "streak-7": {
+        "name": "Một tuần bền bỉ",
+        "rule": "Học 7 ngày liên tiếp"
+      },
+      "streak-30": {
+        "name": "Tháng không nghỉ",
+        "rule": "Học 30 ngày liên tiếp"
+      },
+      "perfect-test": {
+        "name": "Điểm tuyệt đối",
+        "rule": "Làm đúng hết một bài Kiểm tra"
+      },
+      "sets-10": {
+        "name": "Nhà sưu tầm",
+        "rule": "Học xong 10 bộ từ khác nhau"
+      },
+      "goal-7": {
+        "name": "Đúng hẹn",
+        "rule": "Đạt mục tiêu XP trong 7 ngày"
+      },
+      "night-owl": {
+        "name": "Cú đêm",
+        "rule": "Học trong khoảng 23:00 đến 4:00"
+      }
+    }
   }
 }

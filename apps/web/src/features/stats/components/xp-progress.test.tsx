@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http } from '@/lib/http';
+import { BadgeList } from './badge-list';
 import { DailyGoalSettings } from './daily-goal-settings';
 import { XpProgress } from './xp-progress';
 
@@ -91,5 +92,24 @@ describe('DailyGoalSettings', () => {
       'aria-checked',
       'true',
     );
+  });
+});
+
+describe('BadgeList', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('hiện huy hiệu đã có và tiến độ huy hiệu chưa có', async () => {
+    vi.mocked(http).mockResolvedValue({
+      data: [
+        { code: 'streak-7', progress: 7, target: 7, earnedAt: '2026-11-20T03:00:00.000Z' },
+        { code: 'mastered-100', progress: 45, target: 100, earnedAt: null },
+      ],
+    });
+    renderWith(<BadgeList />);
+
+    expect(await screen.findByText('Đã có 1 trên 2')).toBeInTheDocument();
+    expect(screen.getByText('Một tuần bền bỉ')).toBeInTheDocument();
+    expect(screen.getByText(/^Nhận ngày/)).toBeInTheDocument();
+    expect(screen.getByText('45/100')).toBeInTheDocument();
   });
 });

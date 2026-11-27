@@ -11,6 +11,7 @@ import {
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import type { SetViewer } from '../sets/sets.repository';
+import { BadgeService } from '../progress/badge.service';
 import { StreakService } from '../progress/streak.service';
 import { StudyRepository, type GradedAnswer } from './study.repository';
 
@@ -55,6 +56,7 @@ export class StudyService {
   constructor(
     private readonly study: StudyRepository,
     private readonly streak: StreakService,
+    private readonly badges: BadgeService,
   ) {}
 
   async start(
@@ -204,12 +206,16 @@ export class StudyService {
     return ok({ results, ignored: answers.length - graded.length, xpEarned });
   }
 
-  async finish(id: string) {
+  async finish(id: string, userId: string) {
     const { correct, total, wrongCardIds } = summarize(await this.study.findAttempts(id));
     const session = await this.study.finishSession(id, correct, total, new Date());
     if (!session) {
       throw sessionNotFound();
     }
-    return ok({ session, wrongCardIds, xpEarned: await this.study.sumSessionXp(id) });
+    const [xpEarned, newBadges] = await Promise.all([
+      this.study.sumSessionXp(id),
+      this.badges.award(userId),
+    ]);
+    return ok({ session, wrongCardIds, xpEarned, newBadges });
   }
 }

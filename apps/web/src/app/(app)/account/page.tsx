@@ -3,6 +3,7 @@ import { LanguageSettings } from '@/components/common/language-switcher';
 import { SpeechSettings } from '@/components/common/speech-settings';
 import { PageHeader } from '@/components/common/page-header';
 import { AccountSettings } from '@/features/auth/components/account-settings';
+import { BadgeList } from '@/features/stats/components/badge-list';
 import { DailyGoalSettings } from '@/features/stats/components/daily-goal-settings';
 import { getT } from '@/lib/i18n/server';
 
@@ -17,6 +18,7 @@ export default async function AccountPage() {
     <>
       <PageHeader title={t('pages.account')} />
       <AccountSettings>
+        <BadgeList />
         <DailyGoalSettings />
         <LanguageSettings />
         <SpeechSettings />
