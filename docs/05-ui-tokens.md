@@ -164,6 +164,8 @@ Xoá mềm dùng thông báo có nút "Hoàn tác" thay cho hộp xác nhận. C
 
 Tailwind có `bg-game-sky`, `bg-game-panel`, `text-game-ink`, `text-game-ink-muted`, `border-game-glow`. Chữ đã gõ và mục tiêu đang khoá dùng `--highlight`, mục tiêu lớn dùng `--danger`.
 
+Bàn phím trong game của Mưa từ: phím `bg-game-sky`, viền `border-game-glow/30`, chữ `text-game-ink`, lúc bấm đổi sang `bg-game-glow/25` và `text-highlight`. Phím cao 48 px; 10 phím một hàng nên ở 360 px mỗi phím rộng khoảng 30 px, là ngoại lệ có chủ ý của quy tắc vùng bấm 44 px, giống bàn phím của điện thoại.
+
 ## Giọng văn trên giao diện
 
 - Nút nói rõ việc sẽ xảy ra: "Lưu bộ từ", "Bắt đầu ôn", "Nhập danh sách từ"; không dùng "Submit", "OK".
