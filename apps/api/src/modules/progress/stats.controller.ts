@@ -16,6 +16,12 @@ export class StatsController {
     return this.stats.overview(user);
   }
 
+  @Get('xp')
+  @ApiOperation({ summary: 'Tổng XP, cấp độ, XP hôm nay và mục tiêu ngày' })
+  xp(@CurrentUser() user: CurrentUserData) {
+    return this.stats.xp(user);
+  }
+
   @Get('sets/:id/cards')
   @ApiOperation({ summary: 'Mức nhớ và ngày ôn tiếp theo của từng thẻ trong bộ' })
   cardProgress(@Param('id') id: string, @CurrentUser() user: CurrentUserData) {

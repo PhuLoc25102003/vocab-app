@@ -11,7 +11,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G1. XP, cấp độ và mục tiêu ngày
 
-- **Việc:** 7.1, 7.2. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chưa làm.
+- **Việc:** 7.1, 7.2. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu, đã có API (7.1), chưa có giao diện (7.2).
 - **Phải có:**
   - XP chỉ do server tính từ đáp án đã chấm, client không gửi số XP.
   - Quy tắc nằm trong `@vocab/shared/study/xp.ts` để web hiện trước được số XP dự kiến mà vẫn khớp server.
@@ -20,9 +20,9 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 - **Luồng chính:** học xong phiên, màn kết quả hiện "+N XP", thanh cấp độ chạy tới mức mới; Tổng quan hiện vòng tròn mục tiêu ngày, đủ thì hiện "Hoàn thành hôm nay".
 - **Ngoại lệ:**
   - Khách học thử không có XP, màn kết quả mời đăng ký để lưu XP.
-  - Phiên offline gửi lên muộn được tính vào ngày phiên kết thúc, không phải ngày gửi.
+  - Phiên offline gửi lên muộn được tính vào lúc gửi lên, vì hàng đợi offline không gửi kèm thời điểm trả lời.
   - Học lại cùng thẻ đã đúng trong 10 phút không được cộng; vượt trần 500 XP một ngày thì vẫn lưu tiến độ học nhưng XP bằng 0, màn kết quả nói rõ lý do.
-  - Gửi lại cùng phiên (thử lại do mạng) không cộng trùng: khoá duy nhất theo phiên.
+  - Gửi lại cùng lô đáp án (thử lại do mạng) không cộng trùng: đáp án trùng đã bị bỏ qua trước khi tính XP.
 - **Test:** unit cho quy tắc XP và bảng cấp độ; integration kết thúc phiên cộng đúng XP, gửi lại không cộng trùng, trần ngày; component vòng tròn mục tiêu bốn trạng thái; thủ công giảm chuyển động.
 
 ## UC-G2. Chuỗi và thẻ giữ chuỗi

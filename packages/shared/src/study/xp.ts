@@ -1,0 +1,94 @@
+/** Quy tắc XP dùng chung: server cộng XP theo các hằng số này, web hiển thị cùng con số. */
+export const XP_RULES = {
+  /** Mỗi câu đúng. */
+  correct: 10,
+  /** Thêm khi trả lời đúng một thẻ đã đến hạn ôn. */
+  dueBonus: 5,
+  /** Cứ đủ số câu đúng liên tiếp này trong một phiên thì được thưởng. */
+  comboSize: 5,
+  comboBonus: 5,
+  /** Thẻ đã trả lời đúng trong khoảng này thì không được cộng lại. */
+  repeatWindowMs: 10 * 60_000,
+  /** Trần XP mỗi ngày học. */
+  dailyCap: 500,
+} as const;
+
+export const DAILY_GOAL_OPTIONS = [10, 20, 50] as const;
+export type DailyGoalXp = (typeof DAILY_GOAL_OPTIONS)[number];
+export const DEFAULT_DAILY_GOAL_XP: DailyGoalXp = 20;
+
+export interface XpAnswer {
+  isCorrect: boolean;
+  /** Thẻ đã có lịch ôn và đã tới hạn khi trả lời. */
+  wasDue: boolean;
+  /** Thẻ vừa được trả lời đúng trong `repeatWindowMs`. */
+  recentlyCorrect: boolean;
+}
+
+export interface XpScore {
+  /** XP được cộng sau khi áp trần ngày. */
+  xp: number;
+  /** Số câu đúng liên tiếp sau lô này, dùng cho lô kế tiếp. */
+  combo: number;
+}
+
+/**
+ * Tính XP cho một lô đáp án theo thứ tự trả lời. `comboBefore` là số câu đúng liên tiếp ở cuối
+ * các lô trước của cùng phiên, `earnedToday` là XP đã nhận trong ngày học hiện tại.
+ * Câu đúng lặp lại trong 10 phút không có XP và không tính vào chuỗi, nhưng cũng không làm đứt chuỗi.
+ */
+export function scoreAnswers(
+  answers: readonly XpAnswer[],
+  { comboBefore, earnedToday }: { comboBefore: number; earnedToday: number },
+): XpScore {
+  let raw = 0;
+  let combo = comboBefore;
+  for (const answer of answers) {
+    if (!answer.isCorrect) {
+      combo = 0;
+      continue;
+    }
+    if (answer.recentlyCorrect) {
+      continue;
+    }
+    raw += XP_RULES.correct + (answer.wasDue ? XP_RULES.dueBonus : 0);
+    combo += 1;
+    if (combo % XP_RULES.comboSize === 0) {
+      raw += XP_RULES.comboBonus;
+    }
+  }
+  const room = Math.max(0, XP_RULES.dailyCap - earnedToday);
+  return { xp: Math.min(raw, room), combo };
+}
+
+/** XP cần để đi từ cấp `level` lên cấp kế tiếp: 100, 150, 200, ... */
+export function xpForLevel(level: number): number {
+  return 100 + (level - 1) * 50;
+}
+
+export interface LevelInfo {
+  level: number;
+  /** XP đã có trong cấp hiện tại. */
+  xpIntoLevel: number;
+  /** XP cần để lên cấp kế tiếp. */
+  xpForNextLevel: number;
+}
+
+export function levelFromXp(totalXp: number): LevelInfo {
+  let level = 1;
+  let remaining = Math.max(0, Math.floor(totalXp));
+  while (remaining >= xpForLevel(level)) {
+    remaining -= xpForLevel(level);
+    level += 1;
+  }
+  return { level, xpIntoLevel: remaining, xpForNextLevel: xpForLevel(level) };
+}
+
+/** Số câu đúng liên tiếp ở cuối danh sách đáp án (thứ tự cũ trước). */
+export function trailingCombo(results: readonly boolean[]): number {
+  let combo = 0;
+  for (let index = results.length - 1; index >= 0 && results[index]; index -= 1) {
+    combo += 1;
+  }
+  return combo;
+}

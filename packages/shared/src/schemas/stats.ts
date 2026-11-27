@@ -43,3 +43,16 @@ export const cardProgressSchema = z.object({
 export type CardProgressItem = z.infer<typeof cardProgressSchema>;
 
 export const cardProgressListResponseSchema = z.object({ data: z.array(cardProgressSchema) });
+
+export const xpSummarySchema = z.object({
+  totalXp: z.number(),
+  level: z.number(),
+  xpIntoLevel: z.number(),
+  xpForNextLevel: z.number(),
+  /** XP trong ngày học hiện tại (giờ Việt Nam). */
+  todayXp: z.number(),
+  dailyGoalXp: z.number(),
+});
+export type XpSummary = z.infer<typeof xpSummarySchema>;
+
+export const xpSummaryResponseSchema = z.object({ data: xpSummarySchema });

@@ -12,3 +12,4 @@ export * from './registry';
 export * from './srs';
 export * from './stats';
 export * from './types';
+export * from './xp';
