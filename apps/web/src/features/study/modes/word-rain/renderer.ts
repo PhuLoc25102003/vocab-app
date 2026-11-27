@@ -1,4 +1,4 @@
-import type { RainEvent, RainState, Target } from './engine';
+import { isTypeable, type RainEvent, type RainState, type Target } from './engine';
 
 /**
  * Vẽ Mưa từ lên canvas 2D. Màu đọc từ biến CSS của design token nên đúng cả light và dark,
@@ -368,7 +368,7 @@ function drawTarget(
   const prompt = target.prompt.length > 28 ? `${target.prompt.slice(0, 27)}…` : target.prompt;
   const slots = target.answer
     .split('')
-    .map((char, index) => (index < target.typed ? char : char === ' ' ? ' ' : '_'))
+    .map((char, index) => (index < target.typed || !isTypeable(char) ? char : '_'))
     .join(' ');
   const promptWidth = ctx.measureText(prompt).width;
   ctx.font = `500 ${fontSize - 2}px ui-monospace, monospace`;
@@ -393,7 +393,7 @@ function drawTarget(
   ctx.font = `600 ${fontSize}px system-ui, sans-serif`;
   ctx.fillText(prompt, left + w / 2, top + 6);
   ctx.font = `500 ${fontSize - 2}px ui-monospace, monospace`;
-  ctx.fillStyle = target.typed > 0 ? palette.primary : palette.muted;
+  ctx.fillStyle = locked ? palette.primary : palette.muted;
   ctx.fillText(slots, left + w / 2, top + 8 + fontSize);
   if (target.boss && target.hits > 1) {
     ctx.fillStyle = palette.danger;

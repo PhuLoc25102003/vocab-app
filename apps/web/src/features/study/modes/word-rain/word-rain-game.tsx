@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import {
   comboMultiplier,
   createGame,
+  isTypeable,
   RAIN_RULES,
   releaseLock,
   setPaused,
@@ -100,7 +101,12 @@ export function WordRainGame({
       if (event.type === 'lock') {
         const target = next.targets.find(({ key }) => key === event.key);
         if (target) {
-          setAnnounce(t('wordRain.locked', { prompt: target.prompt, count: target.answer.length }));
+          setAnnounce(
+            t('wordRain.locked', {
+              prompt: target.prompt,
+              count: [...target.answer].filter(isTypeable).length,
+            }),
+          );
         }
       }
       if (event.type === 'wave') setAnnounce(t('wordRain.wave', { wave: event.wave }));

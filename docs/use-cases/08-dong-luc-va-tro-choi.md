@@ -85,9 +85,10 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 - **Phải có:**
   - Nghĩa rơi từ trên xuống trên drone địch, người học trả lời bằng từ tiếng Anh tương ứng để chiến đấu cơ bắn nổ. Có hai kiểu chơi chọn ở màn bắt đầu: **Gõ** và **Nói**.
   - Kiểu Gõ: gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất; mỗi ký tự đúng bắn một tia laser, đủ từ thì nổ.
+  - Chỉ chữ và số phải gõ, không phân biệt hoa thường và dấu (`cafe` khớp `Café`). Khoảng trắng, gạch nối, gạch chéo, ngoặc, dấu chấm được tự điền và hiện sẵn trên thẻ, nên cặp từ `hot - cold` chỉ cần gõ `hotcold`; người chơi gõ thừa dấu câu cũng không bị tính sai.
   - Kiểu Nói: đọc to từ, nhận dạng giọng nói khớp với bất kỳ mục tiêu nào đang rơi thì bắn mục tiêu gần đáy nhất có từ đó; hiện chữ vừa nghe được; tốc độ rơi chậm hơn kiểu Gõ để bù độ trễ nhận dạng; chấm theo quy tắc của chế độ Luyện nói.
   - Điểm cao tính riêng cho từng kiểu chơi.
-  - 3 khiên, đợt 10 mục tiêu nhanh dần, mục tiêu lớn sau mỗi 3 đợt, combo nhân điểm.
+  - 3 khiên, đợt 10 mục tiêu nhanh dần, mục tiêu lớn sau mỗi 3 đợt, combo nhân điểm. Tối đa 3 mục tiêu cùng lúc; kiểu Gõ rơi 16 giây ở đợt 1, nhanh nhất 8 giây, cứ 4,5 giây ra một mục tiêu, nhanh nhất 2,2 giây.
   - Điểm cao nhất theo từng bộ.
   - Chiến đấu cơ và hiệu ứng vẽ chi tiết, hiện đại, chỉ dùng màu từ design token, đúng light và dark.
   - Đạt 60 fps trên điện thoại tầm trung, tự giảm hiệu ứng khi tụt khung hình.
