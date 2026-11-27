@@ -9,7 +9,7 @@ describe('StudyModeGrid', () => {
 
     const start = screen.getByRole('link', { name: 'Bắt đầu học' });
     expect(start).toHaveAttribute('href', '/sets/s1/study/path');
-    expect(start).toHaveAccessibleDescription(/xem thẻ → trắc nghiệm → ghép cặp → luyện viết/);
+    expect(start).toHaveAccessibleDescription(/đi lần lượt mọi chế độ/);
     const items = within(screen.getByRole('list')).getAllByRole('link');
     expect(items).toHaveLength(STUDY_ENTRIES.length);
     expect(screen.getByRole('link', { name: /^Flashcard/ })).toHaveAttribute(

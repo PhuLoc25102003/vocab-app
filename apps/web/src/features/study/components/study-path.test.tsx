@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
 import { accountStudyBackend } from '../api';
-import { toPathStep } from '../path-steps';
+import { PATH_STEPS, toPathStep } from '../path-steps';
 import { StudyPath } from './study-path';
 
 const navigation = vi.hoisted(() => ({ replace: vi.fn() }));
@@ -32,7 +32,7 @@ describe('toPathStep', () => {
   it('đọc bước từ 1, giá trị lạ về bước đầu', () => {
     expect(toPathStep('3')).toBe(2);
     expect(toPathStep(undefined)).toBe(0);
-    expect(toPathStep('9')).toBe(0);
+    expect(toPathStep('11')).toBe(0);
     expect(toPathStep('abc')).toBe(0);
   });
 });
@@ -89,7 +89,7 @@ describe('StudyPath', () => {
     vi.mocked(accountStudyBackend.start).mockRejectedValue(
       new HttpError('Không có câu hỏi', 422, ERROR_CODES.NO_QUESTIONS_FOR_MODE),
     );
-    renderPath(3);
+    renderPath(PATH_STEPS.length - 1);
 
     await waitFor(() => expect(navigation.replace).toHaveBeenCalledWith('/sets/set1'));
   });
@@ -101,7 +101,7 @@ describe('StudyPath', () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={client}>
-        <StudyPath setId="set1" step={3} fromExplore />
+        <StudyPath setId="set1" step={PATH_STEPS.length - 1} fromExplore />
       </QueryClientProvider>,
     );
 

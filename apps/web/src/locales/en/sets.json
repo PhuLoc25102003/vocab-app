@@ -56,7 +56,7 @@
     "guestLabel": "Try it",
     "guestHint": "Try it without an account. Sign in to save progress and follow a study path.",
     "pathLabel": "Start studying",
-    "pathHint": "Start studying: cards → multiple choice → match → write, one after another."
+    "pathHint": "Start studying: go through every mode in order, from cards, multiple choice and writing to the test and Word rain."
   },
   "cards": {
     "title": "Cards",
