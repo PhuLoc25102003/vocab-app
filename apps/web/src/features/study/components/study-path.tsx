@@ -17,35 +17,49 @@ const stepHref = (setId: string, index: number, fromExplore?: boolean) =>
 
 function PathSteps({ current }: { current: number }) {
   const { t } = useTranslation('study');
+  const mode = PATH_STEPS[current]?.mode ?? 'FLASHCARD';
   return (
-    <ol aria-label={t('path.steps')} className="flex flex-wrap items-center gap-x-2 gap-y-1 pb-1">
-      {PATH_STEPS.map(({ mode }, index) => {
-        const done = index < current;
-        const active = index === current;
-        return (
-          <li
-            key={mode}
-            aria-current={active ? 'step' : undefined}
-            className={cn(
-              'flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-small',
-              done && 'border-primary bg-primary-soft text-primary',
-              active && 'border-primary bg-primary font-semibold text-primary-fg',
-              !done && !active && 'border-border text-text-muted',
-            )}
-          >
-            {done ? (
-              <Check aria-hidden className="size-3.5" />
-            ) : (
-              <span aria-hidden className="tabular-nums">
-                {index + 1}
-              </span>
-            )}
-            {t(`path.${mode}`)}
-            {done ? <span className="sr-only">{t('path.done')}</span> : null}
-          </li>
-        );
-      })}
-    </ol>
+    <>
+      {/* 10 bước dạng chip chiếm nhiều dòng trên điện thoại, nên ở đó chỉ hiện bước đang học. */}
+      <p className="pb-1 text-small font-medium text-text-muted sm:hidden">
+        {t('path.progress', {
+          step: current + 1,
+          total: PATH_STEPS.length,
+          mode: t(`path.${mode}`),
+        })}
+      </p>
+      <ol
+        aria-label={t('path.steps')}
+        className="hidden flex-wrap items-center gap-x-2 gap-y-1 pb-1 sm:flex"
+      >
+        {PATH_STEPS.map(({ mode }, index) => {
+          const done = index < current;
+          const active = index === current;
+          return (
+            <li
+              key={mode}
+              aria-current={active ? 'step' : undefined}
+              className={cn(
+                'flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-small',
+                done && 'border-primary bg-primary-soft text-primary',
+                active && 'border-primary bg-primary font-semibold text-primary-fg',
+                !done && !active && 'border-border text-text-muted',
+              )}
+            >
+              {done ? (
+                <Check aria-hidden className="size-3.5" />
+              ) : (
+                <span aria-hidden className="tabular-nums">
+                  {index + 1}
+                </span>
+              )}
+              {t(`path.${mode}`)}
+              {done ? <span className="sr-only">{t('path.done')}</span> : null}
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }
 

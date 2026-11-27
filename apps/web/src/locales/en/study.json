@@ -158,11 +158,18 @@
   "path": {
     "steps": "Path steps",
     "next": "Next step: {{step}}",
-    "finished": "You finished the path: cards, multiple choice, match and write.",
+    "finished": "You finished the whole path, from cards to Word rain.",
     "FLASHCARD": "Cards",
     "MCQ": "Multiple choice",
     "MATCH": "Match",
     "WRITE": "Write",
+    "LEARN": "Learn",
+    "DICTATION": "Dictation",
+    "CLOZE": "Fill in",
+    "SPEAK": "Speak",
+    "TEST": "Test",
+    "WORD_RAIN": "Word rain",
+    "progress": "Step {{step}}/{{total}}: {{mode}}",
     "done": " (done)"
   },
   "guest": {

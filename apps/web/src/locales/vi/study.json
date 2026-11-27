@@ -158,11 +158,18 @@
   "path": {
     "steps": "Các bước của lộ trình",
     "next": "Bước tiếp: {{step}}",
-    "finished": "Bạn đã đi hết lộ trình: xem thẻ, trắc nghiệm, ghép cặp và luyện viết.",
+    "finished": "Bạn đã đi hết lộ trình, từ xem thẻ đến Mưa từ.",
     "FLASHCARD": "Xem thẻ",
     "MCQ": "Trắc nghiệm",
     "MATCH": "Ghép cặp",
     "WRITE": "Luyện viết",
+    "LEARN": "Học kỹ",
+    "DICTATION": "Nghe viết",
+    "CLOZE": "Điền từ",
+    "SPEAK": "Luyện nói",
+    "TEST": "Kiểm tra",
+    "WORD_RAIN": "Mưa từ",
+    "progress": "Bước {{step}}/{{total}}: {{mode}}",
     "done": " (xong)"
   },
   "guest": {
