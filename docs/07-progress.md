@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      21 |      21 | Xong       |
-| **Toàn dự án**          |                                            | **208** | **212** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      22 |      25 | Đang làm   |
+| **Toàn dự án**          |                                            | **209** | **216** | **97%**    |
 
 ## Cách cập nhật
 
@@ -563,6 +563,10 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.16** Mưa từ không còn kẹt khi dùng bộ gõ tiếng Việt (Telex, VNI) hoặc bàn phím có gợi ý từ: ô gõ không do React điều khiển, không ghi đè chữ khi bộ gõ đang soạn (`compositionstart`, `compositionend`), so phần chữ thêm vào sau khi bỏ dấu (`input-diff.ts`, có unit test), xoá chữ vẫn bỏ khoá mục tiêu (#445).
 - [x] **7.17** Bàn phím ảo trong Mưa từ: QWERTY a–z và nút xoá, dùng token `game-*`, phím cao 48 px, mặc định bật trên màn cảm ứng (`pointer: coarse`) và không bật bàn phím máy (`inputMode="none"`), nút chuyển qua lại với bàn phím máy, nhớ lựa chọn trên thiết bị; gõ ra chữ có dấu khi đang ở bàn phím máy thì gợi ý chuyển sang bàn phím trong game (#445).
 - [x] **7.18** Bố cục khi bàn phím máy mở ở Viết, Nghe viết, Điền từ, Kiểm tra: `interactive-widget=resizes-content`, thu gọn khoảng cách khung học, cuộn câu hỏi và ô gõ vào vùng nhìn thấy, ẩn thanh nộp bài dính dưới của Kiểm tra khi đang gõ (#445).
+- [x] **7.19** Hộp thoại "Bộ từ học gần đây" của quản trị hiện tên chế độ theo `common:modes` (Mưa từ, Luyện nói...) thay vì mã như `WORD_RAIN` (#445).
+- [ ] **7.20** Mưa từ kiểu Nói nhận đúng khi đọc chuẩn: xem lại cách so lời nói với từ của mục tiêu (nhiều kết quả nhận dạng, chữ hoa, dấu câu, số, từ ghép) và độ lệch cho phép (#445).
+- [ ] **7.21** Chấm đáp án gõ không bắt học sinh gõ ký tự đặc biệt không có trên bàn phím (dấu nháy cong, gạch dài, dấu chấm lửng, ký hiệu): chuẩn hoá trong `@vocab/shared` cho mọi chế độ gõ (#445).
+- [ ] **7.22** Làm mới landing page: hiện đại hơn, giới thiệu đúng các tính năng hiện có (Mưa từ, XP, chuỗi, xếp hạng, lớp học, luyện nói, offline), dùng token màu hiện tại, đủ light, dark và 360 px (#445).
 
 ## Quyết định cần chốt
 

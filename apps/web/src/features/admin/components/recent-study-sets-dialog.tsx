@@ -17,7 +17,6 @@ interface RecentStudySetsDialogProps {
 
 export function RecentStudySetsDialog({ user, open, onOpenChange }: RecentStudySetsDialogProps) {
   const { t, i18n } = useTranslation('admin');
-  const { t: tStudy } = useTranslation('study');
   const titleId = useId();
   const descId = useId();
   const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
@@ -122,7 +121,7 @@ export function RecentStudySetsDialog({ user, open, onOpenChange }: RecentStudyS
                           >
                             <div className="flex flex-wrap items-center gap-2 min-w-0">
                               <span className="inline-flex items-center rounded-sm bg-primary-soft px-2 py-0.5 font-medium text-primary uppercase text-tiny">
-                                {tStudy(`chain.${m.mode}`, { defaultValue: m.mode })}
+                                {t(`common:modes.${m.mode}`, { defaultValue: m.mode })}
                               </span>
                               <span
                                 className={cn(
