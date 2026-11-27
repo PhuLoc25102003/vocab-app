@@ -45,6 +45,10 @@
     "speak": {
       "label": "Speak",
       "hint": "Say the term out loud, speech is recognized"
+    },
+    "word_rain": {
+      "label": "Word Rain",
+      "hint": "Shoot falling meanings by typing or saying the word"
     }
   },
   "grid": {

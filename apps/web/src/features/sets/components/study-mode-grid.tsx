@@ -7,6 +7,7 @@ import {
   Layers,
   ListChecks,
   Mic,
+  CloudRain,
   PenLine,
   Route as Route2,
   Shuffle,
@@ -31,6 +32,7 @@ const ICONS: Record<StudySlug, LucideIcon> = {
   match: Shuffle,
   test: ClipboardCheck,
   speak: Mic,
+  word_rain: CloudRain,
 };
 
 interface StudyModeGridProps {

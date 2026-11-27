@@ -81,7 +81,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G6. Chế độ Mưa từ
 
-- **Việc:** 7.11, 7.12a, 7.12b, 7.12c, 7.12d. **Người dùng:** người học, kể cả khách học thử (không lưu điểm cao). **Trạng thái:** Chưa làm.
+- **Việc:** 7.11, 7.12a, 7.12b, 7.12c, 7.12d. **Người dùng:** người học, kể cả khách học thử (không lưu điểm cao). **Trạng thái:** Đủ. Kết thúc sớm (hết khiên) thì từ chưa gặp được bỏ qua (`onSkip`), không tính sai.
 - **Phải có:**
   - Nghĩa rơi từ trên xuống trên drone địch, người học trả lời bằng từ tiếng Anh tương ứng để chiến đấu cơ bắn nổ. Có hai kiểu chơi chọn ở màn bắt đầu: **Gõ** và **Nói**.
   - Kiểu Gõ: gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất; mỗi ký tự đúng bắn một tia laser, đủ từ thì nổ.

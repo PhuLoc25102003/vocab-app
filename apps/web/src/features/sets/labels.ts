@@ -12,4 +12,5 @@ export const STUDY_ENTRIES = [
   { slug: 'match' },
   { slug: 'test' },
   { slug: 'speak' },
+  { slug: 'word_rain' },
 ] as const;
