@@ -2,12 +2,13 @@
 
 Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do quay lại mỗi ngày, được nhắc trước khi mất chuỗi, so được với bạn trong lớp và cả app, và có thêm chế độ trò chơi bắn máy bay. Không thêm tab vào thanh điều hướng vì thanh dưới ở 360 px đã đủ 5 ô.
 
-| Mã     | Vấn đề                                                                              | Nguồn | Mức | Việc          |
-| ------ | ----------------------------------------------------------------------------------- | ----- | --- | ------------- |
-| GAP-37 | Không có phần thưởng ngắn hạn: học xong chỉ thấy điểm phiên, không có XP hay cấp độ | Góp ý | Vừa | 7.1 đến 7.4   |
-| GAP-38 | Không so được với người khác trong lớp và cả app                                    | Góp ý | Vừa | 7.5, 7.6      |
-| GAP-39 | Không có gì nhắc học sinh quay lại, mất chuỗi là bỏ luôn                            | Góp ý | Cao | 7.3, 7.7–7.10 |
-| GAP-40 | Các chế độ học đều dạng hỏi đáp, thiếu chế độ trò chơi có nhịp nhanh                | Góp ý | Vừa | 7.11, 7.12    |
+| Mã     | Vấn đề                                                                                | Nguồn | Mức | Việc          |
+| ------ | ------------------------------------------------------------------------------------- | ----- | --- | ------------- |
+| GAP-37 | Không có phần thưởng ngắn hạn: học xong chỉ thấy điểm phiên, không có XP hay cấp độ   | Góp ý | Vừa | 7.1 đến 7.4   |
+| GAP-38 | Không so được với người khác trong lớp và cả app                                      | Góp ý | Vừa | 7.5, 7.6      |
+| GAP-39 | Không có gì nhắc học sinh quay lại, mất chuỗi là bỏ luôn                              | Góp ý | Cao | 7.3, 7.7–7.10 |
+| GAP-41 | Không có chỗ xem lại thông báo trong app: bài mới được giao, đến giờ ôn, huy hiệu mới | Góp ý | Vừa | 7.13          |
+| GAP-40 | Các chế độ học đều dạng hỏi đáp, thiếu chế độ trò chơi có nhịp nhanh                  | Góp ý | Vừa | 7.11, 7.12    |
 
 ## UC-G1. XP, cấp độ và mục tiêu ngày
 
@@ -51,7 +52,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
   - Người học tự ẩn khỏi bảng chung; giáo viên tắt được bảng của lớp.
 - **Luồng chính:** Tổng quan có khối "Xếp hạng tuần", bấm "Xem tất cả" mở `/leaderboard` với tab Toàn app và từng lớp; trang lớp có tab "Xếp hạng".
 - **Ngoại lệ:**
-  - Người không thuộc lớp gọi xếp hạng lớp nhận 403, lớp không tồn tại nhận 404.
+  - Người không thuộc lớp gọi xếp hạng lớp nhận 404 như lớp không tồn tại, để không lộ lớp của người khác.
   - Người đã ẩn vẫn thấy hạng của mình (ghi "Chỉ bạn thấy") và vẫn hiện trong bảng lớp.
   - Bảng lớp đã tắt thì học sinh không thấy tab, API trả lỗi nghiệp vụ.
   - Tài khoản bị khoá không hiện trên bảng.
@@ -101,3 +102,22 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
   - Từ có dấu cách hoặc dấu gạch nối vẫn gõ được.
   - Kiểu Nói: trình duyệt không hỗ trợ nhận dạng giọng nói (Firefox, một số WebView như Zalo) thì ẩn lựa chọn Nói và mở modal hướng dẫn trình duyệt có sẵn; chỉ xin quyền micro khi người học chọn Nói; bị chặn micro hoặc mất nhận dạng giữa ván thì tạm dừng và cho đổi sang kiểu Gõ mà không mất điểm đang có; tiếng ồn ra chữ không khớp mục tiêu nào thì bỏ qua, không trừ combo.
 - **Test:** unit cho lõi trò chơi (khoá mục tiêu, va chạm, đợt, combo, điểm, khớp kết quả nhận dạng với mục tiêu) chạy bằng đồng hồ giả; component kiểu Nói với bộ nhận dạng giả; integration lưu điểm cao chỉ khi cao hơn; component màn bắt đầu và kết quả; E2E chơi một đợt bằng bàn phím; thủ công 360 px, dark, giảm chuyển động, đo fps.
+
+## UC-G7. Chuông thông báo trong app
+
+- **Việc:** 7.13. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chưa làm.
+- **Phải có:**
+  - Nút chuông trên header cạnh ảnh đại diện, vùng bấm 44 px, có số chưa đọc (từ 10 trở lên hiện "9+") và `aria-label` đọc được số đó.
+  - Danh sách mới nhất trước: icon theo loại, nội dung ngắn, thời gian tương đối, chấm báo chưa đọc. Bấm thì đánh dấu đã đọc và mở đúng trang.
+  - Nút "Đánh dấu đã đọc hết".
+  - Trên máy tính mở popover dưới nút chuông; ở 360 px mở tấm đáy, không làm tràn header.
+  - Loại thông báo: bài tập mới (giáo viên giao cho lớp), bài tập sắp hết hạn, đến giờ ôn tập, nhận huy hiệu, đã dùng thẻ giữ chuỗi.
+  - Tự làm mới mỗi 60 giây và khi quay lại tab; không có WebSocket.
+- **Luồng chính:** giáo viên giao bài cho lớp 10A1, học sinh trong lớp thấy chuông có số 1, bấm vào thấy "Bài tập mới: Unit 5, hạn 20:00 thứ Sáu", bấm tiếp mở trang bài tập.
+- **Ngoại lệ:**
+  - Bài tập đã bị huỷ thì bấm vào mở trang Lớp học kèm thông báo bài đã huỷ, không ra trang lỗi.
+  - Học sinh rời lớp thì thông báo cũ của lớp vẫn còn nhưng không mở được bài, nói rõ lý do.
+  - Danh sách trống hiện "Chưa có thông báo nào"; lỗi tải có nút thử lại.
+  - Chỉ người nhận đọc và đánh dấu được thông báo của mình; id của người khác trả 404.
+  - Thông báo quá 90 ngày tự xoá.
+- **Test:** integration tạo thông báo khi giao bài, quyền đọc và đánh dấu, đếm chưa đọc; component chuông bốn trạng thái, bàn phím (Esc đóng, focus quay về nút); thủ công 360 px, dark.

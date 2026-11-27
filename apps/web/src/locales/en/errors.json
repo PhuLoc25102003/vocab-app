@@ -32,6 +32,7 @@
     "FOLDER_NOT_FOUND": "Folder not found.",
     "FOLDER_NAME_TAKEN": "You already have a folder with this name.",
     "CLASS_NOT_FOUND": "Class not found.",
+    "LEADERBOARD_DISABLED": "The teacher turned off the leaderboard for this class.",
     "CLASS_MEMBER_NOT_FOUND": "This student is not in the class.",
     "CLASS_TEACHER_CANNOT_JOIN": "The class teacher cannot join as a student.",
     "ASSIGNMENT_NOT_FOUND": "Assignment not found.",

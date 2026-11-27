@@ -38,6 +38,7 @@ export const updateClassSchema = z
     description: classDescriptionSchema.optional(),
     /** `true` lưu trữ lớp, `false` mở lại. */
     archived: z.boolean().optional(),
+    leaderboardEnabled: z.boolean().optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: vm('nothingChanged'),
@@ -69,6 +70,8 @@ export const classSchema = z.object({
   archivedAt: z.string().nullable(),
   createdAt: z.string(),
   memberCount: z.number(),
+  /** Học sinh trong lớp thấy bảng xếp hạng tuần. Bản cũ của API không có trường này. */
+  leaderboardEnabled: z.boolean().default(true),
 });
 export type Class = z.infer<typeof classSchema>;
 

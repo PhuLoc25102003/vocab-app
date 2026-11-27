@@ -12,5 +12,6 @@ export * from './import/template';
 export * from './schemas/admin';
 export * from './schemas/folder';
 export * from './schemas/class';
+export * from './schemas/leaderboard';
 export * from './schemas/upload';
 export * from './validation';

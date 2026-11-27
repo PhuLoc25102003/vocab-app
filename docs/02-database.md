@@ -64,6 +64,8 @@ model User {
   streakFreezes    Int     @default(1)
   /// Thứ Hai (YYYY-MM-DD, giờ Việt Nam) của lần cấp thẻ gần nhất, null khi chưa tính lần nào.
   streakFreezeWeek String?
+  /// Ẩn tên khỏi bảng xếp hạng chung, vẫn hiện trong bảng của lớp.
+  hideFromLeaderboard Boolean @default(false)
 
   refreshSessions RefreshSession[]
   passwordResetTokens PasswordResetToken[]
@@ -345,6 +347,8 @@ model AssignmentSubmission {
 - `User.streakFreezes`, `User.streakFreezeWeek` và `StreakFreezeDay` (việc 7.3): không có job hẹn giờ vì Render gói Free ngủ khi rảnh. `StreakService` cấp thẻ và dùng thẻ mỗi khi người học mở Tổng quan hoặc gửi đáp án. Cấp thẻ ghi bằng `updateMany` có điều kiện `streakFreezeWeek` cũ để hai request cùng lúc không cấp hai lần. Dùng thẻ là một transaction tạo `StreakFreezeDay` (khoá chính `userId, day`) rồi trừ `streakFreezes` khi còn lớn hơn 0.
 
 - `UserBadge` (việc 7.4): khoá chính `userId, code` nên trao lại không tạo bản trùng (`createMany` với `skipDuplicates`). Điều kiện huy hiệu tính lại từ dữ liệu sẵn có (`CardProgress`, `StudySession`, `XpEvent`, `Attempt`), không lưu bộ đếm riêng.
+
+- `User.hideFromLeaderboard`, `Class.leaderboardEnabled` (việc 7.5): bảng xếp hạng không có bảng riêng, cộng XP tuần từ `XpEvent` bằng một câu SQL có `row_number()` để vừa lấy top 50 vừa lấy hạng của người gọi.
 
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 

@@ -99,9 +99,9 @@ export class ClassesService {
     return ok(created);
   }
 
-  async update(id: string, { name, description, archived }: UpdateClassInput) {
+  async update(id: string, { name, description, archived, leaderboardEnabled }: UpdateClassInput) {
     const archivedAt = archived === undefined ? undefined : archived ? new Date() : null;
-    return ok(await this.classes.update(id, { name, description, archivedAt }));
+    return ok(await this.classes.update(id, { name, description, archivedAt, leaderboardEnabled }));
   }
 
   /** Mã cũ hết hiệu lực ngay, học sinh đã tham gia vẫn ở trong lớp. */

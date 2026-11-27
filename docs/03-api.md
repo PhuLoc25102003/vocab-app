@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`, `GET /leaderboard`, `GET /leaderboard/classes/:id`, `PUT /leaderboard/visibility`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -71,6 +71,9 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | GET    | /stats/xp                                      | Đã đăng nhập              | Tổng XP, cấp độ, XP hôm nay, mục tiêu ngày                 |
 | PUT    | /stats/xp/goal                                 | Đã đăng nhập              | Đổi mục tiêu XP mỗi ngày                                   |
 | GET    | /stats/badges                                  | Đã đăng nhập              | Mọi huy hiệu kèm tiến độ và lúc nhận                       |
+| GET    | /leaderboard                                   | Đã đăng nhập              | Bảng xếp hạng XP tuần của cả app                           |
+| GET    | /leaderboard/classes/:id                       | Giáo viên, thành viên lớp | Bảng xếp hạng XP tuần của lớp                              |
+| PUT    | /leaderboard/visibility                        | Đã đăng nhập              | Ẩn hoặc hiện tên tôi trên bảng chung                       |
 | GET    | /health                                        | Công khai                 | Kiểm tra API + kết nối DB                                  |
 | GET    | /admin/users                                   | ADMIN                     | Quản lý người dùng                                         |
 
@@ -190,6 +193,9 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `GET /stats/sets/:id` trả `{ data: { total, mastered, learning, notStarted, due } }`, trả 404 nếu không xem được bộ từ.
 - `GET /stats/sets/:id/cards` trả `{ data: [{ cardId, level, dueAt }] }` theo thứ tự thẻ cho người gọi: `level` là `new` (chưa học), `learning` hoặc `mastered` (khoảng ôn từ `MASTERED_INTERVAL_DAYS` ngày), `dueAt` là lần ôn tiếp theo hoặc `null`. Không xem được bộ từ trả 404.
 - `GET /stats/xp` trả `{ data: { totalXp, level, xpIntoLevel, xpForNextLevel, todayXp, dailyGoalXp } }`. Cấp 1 cần 100 XP để lên cấp 2, mỗi cấp sau cần thêm 50 XP. `todayXp` tính theo ngày học giờ Việt Nam.
+- `GET /leaderboard?week=current|previous` trả `{ data: { week, entries, me, hidden, enabled } }`. Tuần bắt đầu 00:00 thứ Hai giờ Việt Nam. `entries` là top 50 `{ rank, displayName, xp, isMe }` xếp theo XP tuần, bằng XP thì ai đạt sớm hơn đứng trên; `me` là dòng của người gọi kể cả khi ngoài top, `null` khi tuần đó chưa có XP. Chỉ trả tên hiển thị, không có email hay id. Tài khoản bị khoá không hiện. Người đã ẩn (`hideFromLeaderboard`) không hiện với người khác nhưng vẫn thấy hạng của mình (`hidden: true`).
+- `GET /leaderboard/classes/:id` cùng dạng, chỉ gồm học sinh của lớp, kể cả người đã ẩn khỏi bảng chung. Người không dạy và không học lớp đó nhận 404 `CLASS_NOT_FOUND`. Giáo viên tắt bảng (`PATCH /classes/:id` với `leaderboardEnabled: false`) thì học sinh nhận 403 `LEADERBOARD_DISABLED`, giáo viên và ADMIN vẫn xem được với `enabled: false`.
+- `PUT /leaderboard/visibility` nhận `{ hidden }`, trả `{ data: { hidden } }`.
 - `GET /stats/badges` trả `{ data: [{ code, progress, target, earnedAt }] }` theo thứ tự `BADGES` trong `packages/shared/src/study/badges.ts`; `progress` tối đa bằng `target`, `earnedAt` là `null` khi chưa có.
 - `PUT /stats/xp/goal` nhận `{ dailyGoalXp }` là 10, 20 hoặc 50, trả cùng dạng `GET /stats/xp`. Giá trị khác trả 400 `VALIDATION_ERROR`.
 - `GET /stats/overview` trả `{ data: { streakDays, masteredCards, learningCards, activity, answersToday, streakFreezes, frozenDays, dueCards, hardCards } }`. `streakFreezes` là số thẻ giữ chuỗi còn lại, `frozenDays` là các ngày trong 7 ngày gần nhất đã dùng thẻ. Trước khi tính, endpoint cấp thẻ của các thứ Hai đã qua (tối đa 2) và dùng 1 thẻ nếu người học bỏ lỡ đúng hôm qua; `POST /study/sessions/:id/answers` cũng làm việc này. Ngày dùng thẻ nối chuỗi nhưng không được tính thêm một ngày. `learningCards` là thẻ đã học nhưng chưa thuộc, `activity` là 7 phần tử `{ day, answers }` theo ngày học, ngày cũ nhất trước. Ngày học tính theo giờ Việt Nam (UTC+7). Chuỗi ngày vẫn giữ nếu hôm nay chưa học nhưng hôm qua có học. Thẻ đã thuộc là thẻ có `interval` từ 6 ngày. `hardCards` gồm tối đa 5 thẻ sai nhiều nhất, thuộc bộ từ người gọi còn xem được.
