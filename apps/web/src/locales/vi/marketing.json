@@ -35,6 +35,10 @@
     "speak": {
       "name": "Luyện nói",
       "description": "Đọc to từ, máy nghe và chấm."
+    },
+    "word_rain": {
+      "name": "Mưa từ",
+      "description": "Bắn hạ nghĩa đang rơi bằng cách gõ hoặc nói từ."
     }
   },
   "schedule": {
@@ -70,8 +74,9 @@
     }
   },
   "highlights": {
-    "modes": "9 chế độ học",
+    "modes": "10 chế độ học",
     "schedule": "Lịch ôn tự động",
+    "game": "Trò chơi Mưa từ",
     "free": "Miễn phí"
   },
   "start": {
@@ -85,12 +90,69 @@
   "hero": {
     "eyebrow": "Học từ vựng có lịch ôn riêng cho từng thẻ",
     "title": "Từ nào sắp quên, ôn đúng lúc đó.",
-    "description": "{{brand}} giúp bạn học từ vựng bằng flashcard, viết, nghe, nói và trắc nghiệm, rồi tự xếp lịch ôn để bạn nhớ lâu mà không phải học dồn.",
+    "description": "{{brand}} giúp bạn học từ vựng bằng flashcard, viết, nghe, nói, trắc nghiệm và trò chơi, rồi tự xếp lịch ôn để bạn nhớ lâu mà không phải học dồn.",
     "explore": "Khám phá bộ từ"
   },
   "modesSection": {
-    "title": "Chín cách luyện một bộ từ",
-    "description": "Đổi cách học để não không quen lối mòn: nhìn, viết, nghe, nói đều được."
+    "title": "Mười cách luyện một bộ từ",
+    "description": "Đổi cách học để não không quen lối mòn: nhìn, viết, nghe, nói, và cả chơi game."
+  },
+  "gameSection": {
+    "title": "Mưa từ: ôn từ như chơi game",
+    "description": "Nghĩa của từ rơi xuống, gõ hoặc nói đúng từ để bắn hạ trước khi chạm đất. Combo nhân điểm, mỗi bộ từ có kỷ lục riêng.",
+    "points": {
+      "type": "Bàn phím trong game, không lo bộ gõ tiếng Việt",
+      "speak": "Hoặc nói to từ, máy nghe và bắn",
+      "combo": "Combo nhân điểm tới x4, phá kỷ lục của bộ"
+    },
+    "preview": "Màn chơi Mưa từ mẫu: ba nghĩa đang rơi, người chơi đã gõ rem của từ remember.",
+    "score": "Điểm",
+    "combo": "Combo",
+    "drops": {
+      "first": "quả táo",
+      "second": "bầu trời",
+      "third": "con mèo",
+      "fourth": "tình bạn",
+      "fifth": "thư viện"
+    }
+  },
+  "featuresSection": {
+    "title": "Học vui, học đều mỗi ngày",
+    "description": "XP, chuỗi ngày và bảng xếp hạng giữ nhịp học; giáo viên giao bài và theo dõi cả lớp."
+  },
+  "pathSection": {
+    "title": "Một nút, mười bước",
+    "description": "Bấm Bắt đầu học, app dẫn bạn đi từ làm quen đến tự nhớ lại, rồi khép lại bằng một ván Mưa từ. Bước nào bộ từ chưa dùng được thì tự bỏ qua."
+  },
+  "features": {
+    "xp": {
+      "title": "XP và cấp độ",
+      "description": "Mỗi câu đúng cộng XP, đạt mục tiêu ngày để lên cấp.",
+      "level": "Cấp 7",
+      "gain": "+10 XP"
+    },
+    "streak": {
+      "title": "Chuỗi ngày học",
+      "description": "Học mỗi ngày để giữ chuỗi, có thẻ giữ chuỗi khi lỡ một hôm.",
+      "days": "5 ngày liền"
+    },
+    "badges": {
+      "title": "Huy hiệu",
+      "description": "Mở khoá huy hiệu khi đạt các mốc học tập."
+    },
+    "leaderboard": {
+      "title": "Bảng xếp hạng tuần",
+      "description": "So XP với bạn cùng lớp, làm mới mỗi tuần.",
+      "you": "Bạn"
+    },
+    "classes": {
+      "title": "Lớp học và bài tập",
+      "description": "Giáo viên giao bộ từ kèm chế độ, xem ai đã làm và đúng bao nhiêu."
+    },
+    "reminders": {
+      "title": "Nhắc học, học offline",
+      "description": "Thông báo và mail nhắc ôn; tải bộ từ về để học khi mất mạng."
+    }
   },
   "scheduleSection": {
     "title": "Lịch ôn tự giãn theo trí nhớ của bạn",

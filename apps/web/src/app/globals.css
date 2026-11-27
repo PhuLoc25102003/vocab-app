@@ -673,12 +673,177 @@
   }
 }
 
+/*
+ * Landing: chỉ dùng `translate`, `scale`, `opacity` để trình duyệt chạy trên GPU, máy yếu vẫn mượt.
+ * Khung trời đêm dùng token `--game-*` nên giống nhau ở light và dark.
+ */
+@keyframes landing-rain {
+  from {
+    translate: 0 -4rem;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  to {
+    translate: 0 var(--rain-depth, 22rem);
+    opacity: 0;
+  }
+}
+
+@keyframes landing-thrust {
+  0%,
+  100% {
+    scale: 1 0.8;
+  }
+  50% {
+    scale: 1 1.15;
+  }
+}
+
+@keyframes landing-marquee {
+  to {
+    translate: -50% 0;
+  }
+}
+
+@keyframes landing-grow {
+  0%,
+  15% {
+    scale: 0.35 1;
+  }
+  70%,
+  100% {
+    scale: 0.82 1;
+  }
+}
+
+@keyframes landing-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes landing-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.9;
+    scale: 1.06;
+  }
+}
+
+@keyframes landing-sweep {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 1000% 0;
+  }
+}
+
+@layer components {
+  .landing-sky {
+    background-color: var(--game-sky-top);
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, var(--game-ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 68% 12%, var(--game-ink) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 84% 42%, var(--game-glow) 50%, transparent 51%),
+      radial-gradient(1px 1px at 34% 64%, var(--game-ink-muted) 50%, transparent 51%),
+      radial-gradient(1px 1px at 52% 30%, var(--game-ink-muted) 50%, transparent 51%),
+      radial-gradient(120% 70% at 80% 110%, var(--game-sky-bottom), transparent 70%),
+      linear-gradient(180deg, var(--game-sky-top), var(--game-sky-bottom));
+  }
+
+  .landing-drop {
+    animation: landing-rain var(--rain-time, 9s) linear var(--rain-delay, 0s) infinite both;
+    will-change: translate, opacity;
+  }
+
+  .landing-lock::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 1px solid var(--highlight);
+    border-radius: inherit;
+    animation: landing-pulse 1.6s ease-in-out infinite;
+  }
+
+  .landing-caret {
+    animation: landing-blink 1s steps(1) infinite;
+  }
+
+  .landing-marquee {
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+
+  .landing-marquee-track {
+    animation: landing-marquee 48s linear infinite;
+  }
+
+  .landing-marquee:hover .landing-marquee-track,
+  .landing-marquee:focus-within .landing-marquee-track {
+    animation-play-state: paused;
+  }
+
+  .landing-grow {
+    transform-origin: left;
+    animation: landing-grow 4s ease-in-out infinite alternate;
+  }
+
+  .landing-flame {
+    animation: landing-pulse 2.4s ease-in-out infinite;
+  }
+
+  .landing-sweep {
+    animation: landing-sweep 5s ease-in-out infinite;
+  }
+
+  .landing-thrust {
+    transform-box: fill-box;
+    transform-origin: top;
+    animation: landing-thrust 0.35s ease-in-out infinite;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-float,
   .landing-float-slow,
   .landing-enter,
-  .landing-reveal {
+  .landing-reveal,
+  .landing-drop,
+  .landing-lock::after,
+  .landing-caret,
+  .landing-marquee-track,
+  .landing-grow,
+  .landing-flame,
+  .landing-thrust,
+  .landing-sweep {
     animation: none;
+  }
+
+  /* Không chạy thì xếp các chế độ thành nhiều dòng, bỏ bản lặp dùng cho vòng chạy. */
+  .landing-marquee {
+    mask-image: none;
+  }
+  .landing-marquee-track {
+    flex-wrap: wrap;
+    width: auto;
+  }
+  .landing-marquee-copy {
+    display: none;
+  }
+  .landing-marquee-list {
+    flex-wrap: wrap;
+  }
+  .landing-drop {
+    translate: 0 var(--rain-rest, 0);
   }
 }
 
