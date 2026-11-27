@@ -10,6 +10,8 @@ import {
   classResponseSchema,
   joinedClassListSchema,
   joinedClassResponseSchema,
+  leaderboardResponseSchema,
+  type Leaderboard,
   myAssignmentDetailResponseSchema,
   myAssignmentListSchema,
   submissionResponseSchema,
@@ -280,4 +282,13 @@ export async function listMemberResults(id: string, userId: string): Promise<Mem
 
 export async function getTeacherOverview(): Promise<TeacherOverview> {
   return teacherOverviewResponseSchema.parse(await http('/teacher/overview')).data;
+}
+
+/** Bảng xếp hạng XP tuần của lớp, giáo viên xem được kể cả khi đã tắt với học sinh. */
+export async function getClassLeaderboard(
+  id: string,
+  week: 'current' | 'previous',
+): Promise<Leaderboard> {
+  const path = `/leaderboard/classes/${encodeURIComponent(id)}?week=${week}`;
+  return leaderboardResponseSchema.parse(await http(path)).data;
 }

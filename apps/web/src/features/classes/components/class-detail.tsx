@@ -48,6 +48,7 @@ import { HttpError } from '@/lib/http';
 import { classKeys, getClass, regenerateJoinCode, updateClass } from '../api';
 import { formatDate } from '../format';
 import { type AssignmentsView, ClassAssignments } from './class-assignments';
+import { ClassLeaderboard } from './class-leaderboard';
 import { ClassMembers } from './class-members';
 import { useTranslation } from 'react-i18next';
 
@@ -323,7 +324,7 @@ function ClassHeader({ klass }: { klass: Class }) {
   );
 }
 
-type ClassTab = 'assignments' | 'students';
+type ClassTab = 'assignments' | 'students' | 'leaderboard';
 
 function TabLink({ href, current, children }: { href: Route; current: boolean; children: string }) {
   return (
@@ -350,7 +351,9 @@ export function ClassDetail({ id }: { id: string }) {
     sort: assignmentListQuerySchema.shape.sort.parse(searchParams.get('asort') ?? undefined),
     page: readPage('apage'),
   };
-  const tab: ClassTab = searchParams.get('tab') === 'students' ? 'students' : 'assignments';
+  const requestedTab = searchParams.get('tab');
+  const tab: ClassTab =
+    requestedTab === 'students' || requestedTab === 'leaderboard' ? requestedTab : 'assignments';
   const memberQuery = (searchParams.get('q') ?? '').slice(0, CLASS_MEMBER_SEARCH_MAX_LENGTH);
   const memberSort = classMemberListQuerySchema.shape.sort.parse(
     searchParams.get('sort') ?? undefined,
@@ -366,7 +369,7 @@ export function ClassDetail({ id }: { id: string }) {
   }) => {
     const params = new URLSearchParams();
     const nextTab = next.tab ?? tab;
-    if (nextTab === 'students') params.set('tab', 'students');
+    if (nextTab !== 'assignments') params.set('tab', nextTab);
     if (next.q) params.set('q', next.q);
     if (next.sort && next.sort !== 'joinedAt') params.set('sort', next.sort);
     if ((next.page ?? 1) > 1) params.set('page', String(next.page));
@@ -421,9 +424,14 @@ export function ClassDetail({ id }: { id: string }) {
           <TabLink href={classHref({ tab: 'students' })} current={tab === 'students'}>
             {t('detail.studentsTab', { count: klass.data.memberCount })}
           </TabLink>
+          <TabLink href={classHref({ tab: 'leaderboard' })} current={tab === 'leaderboard'}>
+            {t('detail.leaderboardTab')}
+          </TabLink>
         </GlassTabGroup>
       </nav>
-      {tab === 'assignments' ? (
+      {tab === 'leaderboard' ? (
+        <ClassLeaderboard klass={klass.data} />
+      ) : tab === 'assignments' ? (
         <ClassAssignments
           classId={klass.data.id}
           archived={klass.data.archivedAt !== null}

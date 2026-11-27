@@ -26,6 +26,7 @@ const klass = (overrides: Partial<ClassListItem> = {}): ClassListItem => ({
   archivedAt: null,
   createdAt: '2026-11-01T00:00:00.000Z',
   memberCount: 12,
+  leaderboardEnabled: true,
   openAssignmentCount: 2,
   onTimeRate: 78,
   ...overrides,

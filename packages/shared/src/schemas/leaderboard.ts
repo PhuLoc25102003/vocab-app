@@ -33,3 +33,5 @@ export const leaderboardResponseSchema = z.object({ data: leaderboardSchema });
 
 export const leaderboardVisibilitySchema = z.object({ hidden: z.boolean() });
 export type LeaderboardVisibilityInput = z.infer<typeof leaderboardVisibilitySchema>;
+
+export const leaderboardVisibilityResponseSchema = z.object({ data: leaderboardVisibilitySchema });

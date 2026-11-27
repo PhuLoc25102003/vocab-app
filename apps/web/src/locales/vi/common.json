@@ -194,11 +194,40 @@
     "adminHiddenSets": "Quản lý bộ từ công khai",
     "adminHiddenSetsDescription": "Tìm kiếm, lọc bộ từ công khai đang hiển thị hoặc bị ẩn và kiểm duyệt nếu cần.",
     "adminClasses": "Lớp học & Học sinh",
-    "adminClassesDescription": "Quản lý toàn bộ lớp học của từng giáo viên và học sinh chưa tham gia lớp."
+    "adminClassesDescription": "Quản lý toàn bộ lớp học của từng giáo viên và học sinh chưa tham gia lớp.",
+    "leaderboard": "Xếp hạng"
   },
   "session": {
     "login": "Đăng nhập",
     "myPage": "Về trang của tôi",
     "home": "Về trang chủ"
+  },
+  "leaderboard": {
+    "title": "Xếp hạng tuần",
+    "description": "Xếp theo XP từ thứ Hai tuần này. Mỗi thứ Hai bảng bắt đầu lại.",
+    "rank": "Hạng",
+    "you": "(Bạn)",
+    "xp": "{{xp}} XP",
+    "loading": "Đang tải bảng xếp hạng",
+    "failed": "Không tải được bảng xếp hạng",
+    "empty": "Tuần này chưa ai có XP",
+    "emptyHint": "Học một phiên để đứng đầu bảng.",
+    "viewAll": "Xem tất cả",
+    "global": "Toàn app",
+    "scopes": "Chọn bảng xếp hạng",
+    "thisWeek": "Tuần này",
+    "lastWeek": "Tuần trước",
+    "weeks": "Chọn tuần",
+    "list": "Danh sách xếp hạng",
+    "hiddenNote": "Bạn đang ẩn tên khỏi bảng chung. Chỉ bạn thấy hạng của mình.",
+    "disabled": "Giáo viên đã tắt bảng xếp hạng của lớp này.",
+    "backToDashboard": "Về Tổng quan",
+    "visibility": {
+      "title": "Bảng xếp hạng",
+      "label": "Ẩn tôi khỏi bảng xếp hạng chung",
+      "hint": "Người khác sẽ không thấy tên bạn. Bạn vẫn có trong bảng của lớp.",
+      "saved": "Đã lưu cài đặt bảng xếp hạng",
+      "failed": "Không lưu được, thử lại nhé"
+    }
   }
 }
