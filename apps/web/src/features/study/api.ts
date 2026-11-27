@@ -10,6 +10,8 @@ import {
   type StartedSession,
   type StudyMode,
   type UserAnswer,
+  xpSummaryResponseSchema,
+  type XpSummary,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -67,4 +69,11 @@ export async function listDueSets({
 export async function getAssignmentProgress(assignmentId: string): Promise<MyAssignmentDetail> {
   const body = await http(`/classes/assignments/${encodeURIComponent(assignmentId)}`);
   return myAssignmentDetailResponseSchema.parse(body).data;
+}
+
+/** Cùng khoá với khối XP ở Tổng quan để hai nơi dùng chung cache. */
+export const SESSION_XP_KEY = ['stats', 'xp'] as const;
+
+export async function getXpSummary(): Promise<XpSummary> {
+  return xpSummaryResponseSchema.parse(await http('/stats/xp')).data;
 }

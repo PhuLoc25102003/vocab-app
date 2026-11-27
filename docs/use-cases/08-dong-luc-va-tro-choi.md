@@ -11,7 +11,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G1. XP, cấp độ và mục tiêu ngày
 
-- **Việc:** 7.1, 7.2. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu, đã có API (7.1), chưa có giao diện (7.2).
+- **Việc:** 7.1, 7.2. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:**
   - XP chỉ do server tính từ đáp án đã chấm, client không gửi số XP.
   - Quy tắc nằm trong `@vocab/shared/study/xp.ts` để web hiện trước được số XP dự kiến mà vẫn khớp server.

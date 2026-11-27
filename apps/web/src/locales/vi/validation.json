@@ -69,5 +69,6 @@
     "className": "Tên lớp",
     "classDescription": "Mô tả",
     "folderName": "Tên thư mục"
-  }
+  },
+  "dailyGoalInvalid": "Mục tiêu mỗi ngày phải là 10, 20 hoặc 50 XP."
 }

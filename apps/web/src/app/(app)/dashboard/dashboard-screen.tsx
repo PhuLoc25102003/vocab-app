@@ -9,6 +9,7 @@ import { ClassWork } from '@/features/classes/components/class-work';
 import { TeacherOverview } from '@/features/classes/components/teacher-overview';
 import { RecentSets } from '@/features/sets/components/recent-sets';
 import { StatsOverview } from '@/features/stats/components/stats-overview';
+import { XpProgress } from '@/features/stats/components/xp-progress';
 
 export function DashboardScreen() {
   const { t } = useTranslation('common');
@@ -104,6 +105,7 @@ export function DashboardScreen() {
     <>
       <PageHeader title={t('pages.dashboard')} />
       <ClassWork />
+      <XpProgress />
       <StatsOverview />
       <RecentSets />
     </>

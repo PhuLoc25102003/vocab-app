@@ -131,6 +131,29 @@ describe('XP', () => {
     expect(body.data.xpEarned).toBe(XP_RULES.correct + XP_RULES.dueBonus);
   });
 
+  it('kết thúc phiên trả tổng XP của phiên', async () => {
+    const id = await startSession();
+    await submit(id, [answer(cardIds[0]!, known)]);
+    await submit(id, [answer(cardIds[1]!, known)]);
+    const { body } = await server()
+      .patch(`/api/v1/study/sessions/${id}/finish`)
+      .set('Authorization', `Bearer ${user.token}`)
+      .expect(200);
+    expect(body.data.xpEarned).toBe(2 * XP_RULES.correct);
+  });
+
+  it('đổi mục tiêu ngày, từ chối giá trị ngoài 10, 20, 50', async () => {
+    const goal = (dailyGoalXp: unknown) =>
+      server()
+        .put('/api/v1/stats/xp/goal')
+        .set('Authorization', `Bearer ${user.token}`)
+        .send({ dailyGoalXp });
+    expect((await goal(50).expect(200)).body.data.dailyGoalXp).toBe(50);
+    expect((await summary()).body.data.dailyGoalXp).toBe(50);
+    await goal(30).expect(400);
+    await goal('20').expect(400);
+  });
+
   it('dừng ở trần XP của ngày', async () => {
     await prisma.xpEvent.create({ data: { userId: user.id, amount: XP_RULES.dailyCap - 5 } });
     const id = await startSession();

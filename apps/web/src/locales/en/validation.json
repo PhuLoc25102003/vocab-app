@@ -69,5 +69,6 @@
     "className": "The class name",
     "classDescription": "The description",
     "folderName": "The folder name"
-  }
+  },
+  "dailyGoalInvalid": "Daily goal must be 10, 20 or 50 XP."
 }

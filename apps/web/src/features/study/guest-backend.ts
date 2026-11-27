@@ -107,7 +107,7 @@ export function createGuestBackend({
         correct: firstResults.size - wrongCardIds.length,
       };
       await onFinish?.({ session: finished, answers: [...firstAnswers.values()] });
-      return { session: finished, wrongCardIds };
+      return { session: finished, wrongCardIds, xpEarned: 0 };
     },
   };
 }

@@ -238,6 +238,14 @@ export class StudyRepository extends BaseRepository {
     );
   }
 
+  async sumSessionXp(sessionId: string): Promise<number> {
+    const { _sum } = await this.prisma.xpEvent.aggregate({
+      where: { sessionId },
+      _sum: { amount: true },
+    });
+    return _sum.amount ?? 0;
+  }
+
   /** Chỉ phiên chưa kết thúc mới được ghi điểm, gọi lại không đổi kết quả cũ. */
   async finishSession(id: string, correct: number, total: number, now: Date) {
     await this.prisma.studySession.updateMany({

@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { DAILY_GOAL_OPTIONS } from '../study/xp';
+import { vm } from '../validation';
 
 export const statsOverviewSchema = z.object({
   streakDays: z.number(),
@@ -56,3 +58,12 @@ export const xpSummarySchema = z.object({
 export type XpSummary = z.infer<typeof xpSummarySchema>;
 
 export const xpSummaryResponseSchema = z.object({ data: xpSummarySchema });
+
+export const updateDailyGoalSchema = z.object({
+  dailyGoalXp: z
+    .number(vm('dailyGoalInvalid'))
+    .refine((value) => (DAILY_GOAL_OPTIONS as readonly number[]).includes(value), {
+      message: vm('dailyGoalInvalid'),
+    }),
+});
+export type UpdateDailyGoalInput = z.infer<typeof updateDailyGoalSchema>;

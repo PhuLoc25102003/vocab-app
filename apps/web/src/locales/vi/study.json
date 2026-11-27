@@ -258,5 +258,35 @@
     "masteredRule": "Đúng ở hai ngày khác nhau",
     "hardWords": "Từ hay sai",
     "wrongCount": "Sai {{count}} lần"
+  },
+  "xp": {
+    "title": "Tiến độ XP",
+    "loading": "Đang tải XP",
+    "failed": "Không tải được XP",
+    "level": "Cấp {{level}}",
+    "total": "{{xp}} XP",
+    "todayRing": "{{today}} trên {{goal}} XP hôm nay",
+    "today": "hôm nay",
+    "toNextLevel": "Còn {{xp}} XP để lên cấp {{level}}",
+    "levelBar": "Tiến độ lên cấp {{level}}",
+    "goalLeft": "Còn {{xp}} XP nữa là đạt mục tiêu hôm nay",
+    "goalDone": "Hoàn thành hôm nay 🎉",
+    "firstXp": "Trả lời đúng để nhận XP đầu tiên",
+    "changeGoal": "Đổi mục tiêu",
+    "earned": "+{{xp}} XP",
+    "levelUp": "Lên cấp {{level}}!",
+    "capReached": "Bạn đã đạt trần 500 XP hôm nay, tiến độ học vẫn được lưu.",
+    "goal": {
+      "title": "Mục tiêu mỗi ngày",
+      "description": "Số XP bạn muốn đạt mỗi ngày. Mỗi câu đúng được 10 XP.",
+      "option": "{{xp}} XP",
+      "names": {
+        "10": "Thong thả",
+        "20": "Vừa sức",
+        "50": "Chăm chỉ"
+      },
+      "saved": "Đã đổi mục tiêu thành {{xp}} XP mỗi ngày",
+      "saveFailed": "Không đổi được mục tiêu, thử lại nhé"
+    }
   }
 }
