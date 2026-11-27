@@ -20,15 +20,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       >
         {t('nav.skipToContent')}
       </a>
-      <div className="sticky top-3 z-20 mx-auto w-full max-w-[1120px] px-4 md:px-6 lg:px-8">
-        <header className="glass-overlay flex min-h-14 w-full items-center gap-4 rounded-full border border-border px-3.5 sm:px-5">
+      <div className="sticky top-3 z-20 mx-auto w-full max-w-[1120px] px-2 sm:px-4 md:px-6 lg:px-8">
+        <header className="glass-overlay flex min-h-14 w-full items-center gap-1.5 rounded-full border border-border px-2 sm:gap-3 sm:px-4 lg:gap-4 lg:px-5">
           <Logo href="/dashboard" />
-          <div className="hidden md:flex">
+          <div className="hidden shrink-0 md:flex">
             <Suspense fallback={<AppNavFallback />}>
               <AppNav />
             </Suspense>
           </div>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex shrink-0 items-center sm:gap-1">
             <LanguageToggle />
             <ThemeToggle />
             <SignedIn>

@@ -41,19 +41,19 @@ export function AccountMenu() {
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="glass-button-ghost flex min-h-11 min-w-11 items-center gap-2 rounded-full px-1 sm:pr-3">
+      <DropdownMenu.Trigger className="glass-button-ghost flex min-h-11 min-w-11 shrink-0 items-center gap-2 rounded-full px-1 sm:pr-3">
         <span
           aria-hidden
-          className="flex size-9 items-center justify-center rounded-full bg-primary text-small font-semibold text-primary-fg"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-small font-semibold text-primary-fg"
         >
           {initial}
         </span>
         {/* Tên đọc được là "Tài khoản: <tên>", phần chữ hiện trên nút nằm trong đó. */}
         <span className="sr-only">{t('menuLabel')}</span>
-        <span className="sr-only max-w-32 truncate text-small font-medium sm:not-sr-only sm:max-w-36">
+        <span className="sr-only text-small font-medium lg:not-sr-only lg:max-w-20 lg:truncate lg:whitespace-nowrap xl:max-w-28">
           {shortName}
         </span>
-        <ChevronDown aria-hidden className="hidden size-4 text-text-muted sm:inline" />
+        <ChevronDown aria-hidden className="hidden size-4 shrink-0 text-text-muted lg:inline" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
