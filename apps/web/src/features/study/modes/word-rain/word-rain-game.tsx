@@ -13,7 +13,14 @@ import {
   Trophy,
   Waves,
 } from 'lucide-react';
-import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CompositionEvent,
+  type KeyboardEvent,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { playGameSound } from '@/lib/sound';
@@ -31,6 +38,7 @@ import {
   type RainQuestion,
   type RainState,
 } from './engine';
+import { foldText, readInputChange } from './input-diff';
 import { applyEvents, createFx, drawFrame, readPalette, type Fx } from './renderer';
 import { useSpeechInput } from './use-speech-input';
 
@@ -91,8 +99,19 @@ export function WordRainGame({
   const [hud, setHud] = useState(initial);
   const [announce, setAnnounce] = useState('');
   /** Chữ đã gõ của mục tiêu đang khoá, hiện trong ô gõ (kể cả dấu câu được tự điền). */
-  const [typed, setTyped] = useState('');
   const typedRef = useRef('');
+  /** Phần chữ (đã bỏ dấu) của ô gõ đã đưa vào engine. */
+  const fedRef = useRef('');
+  /** Bộ gõ đang soạn chữ (Telex, VNI, gợi ý từ): không được ghi đè ô gõ lúc này. */
+  const composingRef = useRef(false);
+
+  // Ô gõ không do React điều khiển: ghi đè giá trị giữa lúc bộ gõ đang soạn chữ làm bàn phím bị kẹt.
+  const syncInput = () => {
+    const input = inputRef.current;
+    if (!input || composingRef.current) return;
+    if (input.value !== typedRef.current) input.value = typedRef.current;
+    fedRef.current = foldText(typedRef.current);
+  };
   const [aimingAt, setAimingAt] = useState<string | null>(null);
   const [wrong, setWrong] = useState(false);
   const wrongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -103,7 +122,7 @@ export function WordRainGame({
     const lockedTarget = next.targets.find(({ key }) => key === next.lockedKey);
     const nextTyped = lockedTarget ? lockedTarget.answer.slice(0, lockedTarget.typed) : '';
     typedRef.current = nextTyped;
-    setTyped(nextTyped);
+    syncInput();
     setAimingAt(lockedTarget?.prompt ?? null);
     if (next.events.some(({ type }) => type === 'wrong')) {
       setWrong(true);
@@ -257,28 +276,34 @@ export function WordRainGame({
     [],
   );
 
-  const onInput = (event: ChangeEvent<HTMLInputElement>) => {
-    // Bàn phím ảo trên điện thoại không gửi `key` đáng tin, nên so ô gõ với chữ đã gõ để lấy phần mới.
-    // Ô gõ luôn hiện lại chữ đã gõ đúng của mục tiêu đang khoá; chữ sai không ở lại trong ô.
-    const value = event.currentTarget.value;
-    const current = typedRef.current;
-    if (value.length < current.length && current.startsWith(value)) {
+  // Bàn phím ảo trên điện thoại không gửi `key` đáng tin, nên so ô gõ với phần đã đưa vào engine.
+  // Ngoài lúc bộ gõ đang soạn chữ, ô gõ hiện lại chữ đã gõ đúng của mục tiêu đang khoá.
+  const consume = (value: string) => {
+    const change = readInputChange(fedRef.current, value);
+    fedRef.current = change.fed;
+    if (change.kind === 'delete') {
       update(releaseLock(stateRef.current));
-      return;
+    } else if (change.kind === 'type' && change.chars.length > 0) {
+      let next = stateRef.current;
+      for (const char of change.chars) next = typeChar(next, char);
+      update(next);
     }
-    const added = value.startsWith(current) ? value.slice(current.length) : value;
-    let next = stateRef.current;
-    for (const char of added) next = typeChar(next, char);
-    update(next);
+    syncInput();
+  };
+
+  const onInput = (event: ChangeEvent<HTMLInputElement>) => consume(event.currentTarget.value);
+
+  const onCompositionEnd = (event: CompositionEvent<HTMLInputElement>) => {
+    // Firefox gửi `input` cuối sau `compositionend`, nên đọc chữ còn lại trước khi trả ô gõ về.
+    consume(event.currentTarget.value);
+    composingRef.current = false;
+    syncInput();
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
       event.preventDefault();
       togglePause();
-    } else if (event.key === 'Backspace') {
-      event.preventDefault();
-      update(releaseLock(stateRef.current));
     }
   };
 
@@ -397,8 +422,12 @@ export function WordRainGame({
               autoCapitalize="off"
               spellCheck={false}
               enterKeyHint="go"
-              value={typed}
+              defaultValue=""
               onChange={onInput}
+              onCompositionStart={() => {
+                composingRef.current = true;
+              }}
+              onCompositionEnd={onCompositionEnd}
               onKeyDown={onKeyDown}
               aria-label={t('wordRain.input')}
               className={cn(

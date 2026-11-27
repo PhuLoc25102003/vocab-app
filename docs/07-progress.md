@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      18 |      18 | Xong       |
-| **Toàn dự án**          |                                            | **205** | **209** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      19 |      21 | Đang làm   |
+| **Toàn dự án**          |                                            | **206** | **212** | **97%**    |
 
 ## Cách cập nhật
 
@@ -557,6 +557,12 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 ### 7H. Hiệu năng
 
 - [x] **7.15** Giảm độ trễ khi mở trang, giữ nguyên giao diện và logic: script ở `<head>` gửi sẵn `POST /auth/refresh` lúc đọc HTML (chỉ trang trong app và có cookie phiên) để không đợi tải xong JS; bundle client chỉ có tiếng Việt, tiếng Anh tải khi cần (bớt khoảng 70 KB JS mỗi trang); trang Lớp học và Xếp hạng dùng chung một request `/classes/joined`. Số đo và việc còn lại ở `docs/perf-audit-2026-11-27.md`. (#444)
+
+### 7I. Bàn phím trên điện thoại
+
+- [x] **7.16** Mưa từ không còn kẹt khi dùng bộ gõ tiếng Việt (Telex, VNI) hoặc bàn phím có gợi ý từ: ô gõ không do React điều khiển, không ghi đè chữ khi bộ gõ đang soạn (`compositionstart`, `compositionend`), so phần chữ thêm vào sau khi bỏ dấu (`input-diff.ts`, có unit test), xoá chữ vẫn bỏ khoá mục tiêu (#445).
+- [ ] **7.17** Bàn phím ảo trong Mưa từ: QWERTY a–z và nút xoá, dùng token `game-*`, phím cao 48 px, mặc định bật trên màn cảm ứng (`pointer: coarse`) và không bật bàn phím máy (`inputMode="none"`), nút chuyển qua lại với bàn phím máy, nhớ lựa chọn trên thiết bị; gõ ra chữ có dấu khi đang ở bàn phím máy thì gợi ý chuyển sang bàn phím trong game (#445).
+- [ ] **7.18** Bố cục khi bàn phím máy mở ở Viết, Nghe viết, Điền từ, Kiểm tra: `interactive-widget=resizes-content`, thu gọn khoảng cách khung học, cuộn câu hỏi và ô gõ vào vùng nhìn thấy, ẩn thanh nộp bài dính dưới của Kiểm tra khi đang gõ (#445).
 
 ## Quyết định cần chốt
 
