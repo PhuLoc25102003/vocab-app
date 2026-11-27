@@ -138,6 +138,31 @@ describe('Mưa từ: lõi trò chơi', () => {
     expect(game.events).toContainEqual(expect.objectContaining({ type: 'destroy', boss: true }));
   });
 
+  it('dấu câu và khoảng trắng tự điền: cặp từ đối lập chỉ cần gõ chữ', () => {
+    let game = createGame(
+      [{ id: 'p1', prompt: 'nóng - lạnh', expected: 'hot - cold (adj.)' }],
+      'TYPE',
+      random,
+    );
+    game = spawnTargets(game, 1);
+    // Gõ khoảng trắng hay dấu gạch cũng không bị tính sai.
+    game = typeWord(game, 'hot -');
+    expect(game.combo).toBe(0);
+    expect(game.events).not.toContainEqual({ type: 'wrong' });
+    expect(game.targets[0]!.typed).toBe('hot - '.length);
+    game = typeWord(game, 'coldadj');
+    expect(game.status).toBe('won');
+    expect(game.results[0]).toMatchObject({ value: 'hot - cold (adj.)', isCorrect: true });
+    expect(game.score).toBe('hotcoldadj'.length * RAIN_RULES.pointsPerChar);
+  });
+
+  it('không phân biệt hoa thường và dấu khi gõ', () => {
+    let game = createGame([{ id: 'v1', prompt: 'quán cà phê', expected: 'Café' }], 'TYPE', random);
+    game = spawnTargets(game, 1);
+    game = typeWord(game, 'cafe');
+    expect(game.status).toBe('won');
+  });
+
   it('tạm dừng thì không rơi', () => {
     const game = setPaused(spawnTargets(createGame(questions, 'TYPE', random), 1), true);
     expect(tick(game, 100, random).targets[0]!.y).toBe(game.targets[0]!.y);

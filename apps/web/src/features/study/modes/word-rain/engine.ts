@@ -1,9 +1,4 @@
-import {
-  gradeSpokenText,
-  normalizeAnswer,
-  WORD_RAIN_SPOKEN_PREFIX,
-  type WordRainStyle,
-} from '@vocab/shared';
+import { gradeSpokenText, WORD_RAIN_SPOKEN_PREFIX, type WordRainStyle } from '@vocab/shared';
 
 /**
  * Lõi trò chơi Mưa từ: hàm thuần, không React, không canvas, không đọc đồng hồ. Mỗi khung hình
@@ -21,7 +16,7 @@ export interface Target {
   key: number;
   questionId: string;
   prompt: string;
-  /** Đáp án đã chuẩn hoá để so từng ký tự. */
+  /** Đáp án gốc (gộp khoảng trắng). Chỉ chữ và số phải gõ; dấu câu, khoảng trắng tự điền. */
   answer: string;
   x: number;
   y: number;
@@ -30,7 +25,7 @@ export interface Target {
   boss: boolean;
   /** Mục tiêu lớn cần gõ đủ 2 lần. */
   hits: number;
-  /** Số ký tự đã gõ đúng của lần hiện tại. */
+  /** Vị trí ký tự kế tiếp cần gõ trong `answer` của lần hiện tại. */
   typed: number;
   spawnedAt: number;
 }
@@ -86,14 +81,14 @@ export const RAIN_RULES = {
   bossEvery: 3,
   bossHits: 2,
   maxPerWave: 2,
-  maxOnScreen: 5,
+  maxOnScreen: 3,
   /** Thời gian rơi từ đỉnh xuống đất (giây) ở đợt 1, giảm dần theo đợt. Nói chậm hơn để bù độ trễ nhận dạng. */
-  fallSeconds: { TYPE: 10, SPEAK: 14 },
-  minFallSeconds: { TYPE: 4.5, SPEAK: 7 },
-  fallStep: 0.6,
-  spawnSeconds: 2.4,
-  minSpawnSeconds: 1,
-  spawnStep: 0.15,
+  fallSeconds: { TYPE: 16, SPEAK: 20 },
+  minFallSeconds: { TYPE: 8, SPEAK: 11 },
+  fallStep: 0.5,
+  spawnSeconds: 4.5,
+  minSpawnSeconds: 2.2,
+  spawnStep: 0.2,
   bossSlowdown: 1.4,
   pointsPerChar: 10,
   bossBonus: 100,
@@ -106,6 +101,27 @@ export function comboMultiplier(combo: number): number {
   if (combo >= 5) return 2;
   return 1;
 }
+
+const TYPEABLE = /[\p{L}\p{N}]/u;
+
+/** Chữ và số phải gõ; khoảng trắng, gạch nối, gạch chéo, ngoặc... được tự điền. */
+export function isTypeable(char: string): boolean {
+  return TYPEABLE.test(char);
+}
+
+/** So ký tự không phân biệt hoa thường và dấu: gõ `e` khớp `é`, gõ `d` khớp `đ`. */
+export function foldChar(char: string): string {
+  return char.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/đ/g, 'd');
+}
+
+/** Vị trí ký tự cần gõ đầu tiên tính từ `from`, bỏ qua ký tự tự điền. */
+export function nextTypeable(answer: string, from: number): number {
+  let index = from;
+  while (index < answer.length && !isTypeable(answer[index]!)) index += 1;
+  return index;
+}
+
+const typeableLength = (answer: string) => [...answer].filter(isTypeable).length;
 
 function shuffle<T>(items: readonly T[], random: () => number): T[] {
   const copy = [...items];
@@ -194,18 +210,19 @@ function spawn(state: RainState, random: () => number): void {
   const question = takeNext(state, random, isBoss);
   if (!question) return;
   const speed = 1 / (fallSeconds(state) * (isBoss ? RAIN_RULES.bossSlowdown : 1));
+  const answer = question.expected.normalize('NFC').replace(/\s+/g, ' ').trim();
   state.targets.push({
     key: state.nextKey,
     questionId: question.id,
     prompt: question.prompt,
-    answer: normalizeAnswer(question.expected),
+    answer,
     // Chừa lề để thẻ nghĩa không chạm mép khung.
     x: 0.12 + random() * 0.76,
     y: 0,
     speed,
     boss: isBoss,
     hits: isBoss ? RAIN_RULES.bossHits : 1,
-    typed: 0,
+    typed: nextTypeable(answer, 0),
     spawnedAt: state.clock,
   });
   state.nextKey += 1;
@@ -284,7 +301,7 @@ function destroy(state: RainState, target: Target, value: string): void {
   state.combo += 1;
   state.bestCombo = Math.max(state.bestCombo, state.combo);
   const points =
-    target.answer.length * RAIN_RULES.pointsPerChar * comboMultiplier(state.combo) +
+    typeableLength(target.answer) * RAIN_RULES.pointsPerChar * comboMultiplier(state.combo) +
     (target.boss ? RAIN_RULES.bossBonus : 0);
   state.score += points;
   state.events.push({ type: 'destroy', key: target.key, boss: target.boss, points });
@@ -299,17 +316,20 @@ function destroy(state: RainState, target: Target, value: string): void {
   if (state.lockedKey === target.key) state.lockedKey = null;
 }
 
-/** Kiểu Gõ: một ký tự. Chưa khoá thì khoá mục tiêu khớp gần đất nhất; gõ đủ thì bắn hạ. */
+/**
+ * Kiểu Gõ: một ký tự. Chưa khoá thì khoá mục tiêu khớp gần đất nhất; gõ đủ thì bắn hạ.
+ * Khoảng trắng và dấu câu người chơi gõ được bỏ qua, không tính sai.
+ */
 export function typeChar(previous: RainState, char: string): RainState {
-  if (previous.status !== 'playing' || char.length === 0) return { ...previous, events: [] };
+  if (previous.status !== 'playing' || !isTypeable(char)) return { ...previous, events: [] };
   const state = clone(previous);
-  const key = normalizeAnswer(char) || (char === ' ' ? ' ' : '');
-  if (!key) return state;
+  const key = foldChar(char);
+  const expectedAt = (target: Target) => foldChar(target.answer[target.typed] ?? '');
 
   let target = state.targets.find(({ key: targetKey }) => targetKey === state.lockedKey);
   if (!target) {
     target = state.targets
-      .filter(({ answer }) => answer.startsWith(key))
+      .filter((candidate) => expectedAt(candidate) === key)
       .sort((a, b) => b.y - a.y)[0];
     if (!target) {
       state.combo = 0;
@@ -320,18 +340,18 @@ export function typeChar(previous: RainState, char: string): RainState {
     state.events.push({ type: 'lock', key: target.key });
   }
 
-  if (target.answer[target.typed] !== key) {
+  if (expectedAt(target) !== key) {
     state.combo = 0;
     state.events.push({ type: 'wrong' });
     return state;
   }
-  target.typed += 1;
+  target.typed = nextTypeable(target.answer, target.typed + 1);
   state.events.push({ type: 'shot', key: target.key });
   if (target.typed < target.answer.length) return state;
 
   target.hits -= 1;
   if (target.hits > 0) {
-    target.typed = 0;
+    target.typed = nextTypeable(target.answer, 0);
     state.events.push({ type: 'hit', key: target.key });
     return state;
   }
@@ -344,7 +364,7 @@ export function typeChar(previous: RainState, char: string): RainState {
 export function releaseLock(previous: RainState): RainState {
   const state = clone(previous);
   const target = state.targets.find(({ key }) => key === state.lockedKey);
-  if (target) target.typed = 0;
+  if (target) target.typed = nextTypeable(target.answer, 0);
   state.lockedKey = null;
   return state;
 }
