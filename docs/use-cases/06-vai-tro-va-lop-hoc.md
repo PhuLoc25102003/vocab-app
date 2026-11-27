@@ -348,7 +348,7 @@ Tài khoản
   - Cột Bộ từ gần đây: Nút bấm hiển thị số bộ từ đã học gần đây kèm icon `BookOpen`, khi bấm mở `RecentStudySetsDialog` xem chi tiết danh sách bộ từ, chế độ học, điểm số chính xác (%) và thời gian học, kèm link xem trực tiếp bộ từ.
   - Thanh công cụ lọc: Bổ sung tab trạng thái "Đang online" (`status=online`) giúp quản trị viên rà soát ngay người dùng đang trực tuyến.
 - **ADMIN xếp lớp cho học sinh (7.14)**:
-  - Nút "Xếp lớp" ở mỗi dòng của bảng "Học sinh chưa tham gia lớp học nào" (`/admin/classes`) và nút icon cùng chức năng ở dòng học sinh của bảng Người dùng (`/admin/users`); tài khoản giáo viên và quản trị không có nút.
+  - Nút "Xếp lớp" ở mỗi dòng của bảng "Học sinh chưa tham gia lớp học nào" (`/admin/classes`). Trang Người dùng không có nút này để bảng gọn.
   - Hộp thoại "Xếp lớp cho {tên}" chọn lớp bằng ô chọn có tìm kiếm (tên lớp, dòng phụ là giáo viên và số học sinh), chỉ liệt kê lớp đang hoạt động mà học sinh chưa ở trong; không có lớp nào thì báo rõ. Chưa chọn lớp mà bấm "Xếp vào lớp" thì báo "Chọn một lớp".
   - Học sinh vào lớp ngay, không cần mã tham gia, thấy bài được giao của lớp; xong thì làm mới tổng quan lớp, danh sách người dùng và số liệu, báo "Đã xếp {tên} vào lớp {lớp}" hoặc "đã ở trong lớp" nếu xếp lại.
   - Lỗi: lớp đã lưu trữ (`CLASS_ARCHIVED`), tài khoản không phải học sinh (`USER_NOT_STUDENT`), lớp hoặc người dùng không còn.

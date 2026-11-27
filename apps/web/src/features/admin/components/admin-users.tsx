@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { BookOpen, GraduationCap, Lock, ShieldCheck, Unlock, User, UserPlus } from 'lucide-react';
+import { BookOpen, GraduationCap, Lock, ShieldCheck, Unlock, User } from 'lucide-react';
 import { DataTableContainer, DataTableHeader, DataTableRow } from '@/components/common/data-table';
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
@@ -40,7 +40,6 @@ import {
   unlockUser,
   type AdminUsersView,
 } from '../api';
-import { AssignClassDialog } from './assign-class-dialog';
 import { LockDialog } from './lock-dialog';
 import { RecentStudySetsDialog } from './recent-study-sets-dialog';
 
@@ -78,7 +77,7 @@ function readView(params: URLSearchParams): AdminUsersView {
 }
 
 const USER_GRID =
-  'minmax(200px, 1.4fr) minmax(140px, 1fr) minmax(130px, 0.9fr) minmax(110px, 0.8fr) minmax(268px, 1.6fr)';
+  'minmax(200px, 1.4fr) minmax(140px, 1fr) minmax(130px, 0.9fr) minmax(110px, 0.8fr) minmax(220px, 1.5fr)';
 
 function RoleBadge({ role }: { role: Role }) {
   const { t } = useTranslation('admin');
@@ -111,7 +110,6 @@ function UserRow({ user }: { user: AdminUser }) {
   const queryClient = useQueryClient();
   const [locking, setLocking] = useState(false);
   const [recentSetsOpen, setRecentSetsOpen] = useState(false);
-  const [assigning, setAssigning] = useState(false);
   const unlock = useMutation({
     mutationFn: () => unlockUser(user.id),
     onSuccess: async () => {
@@ -226,20 +224,6 @@ function UserRow({ user }: { user: AdminUser }) {
 
       {/* Cột 5: Thao tác (Đổi vai trò + Khoá / Mở khoá, căn phải) */}
       <div className="flex items-center justify-end gap-2">
-        {user.role === 'STUDENT' ? (
-          <Button
-            variant="secondary"
-            size="icon"
-            className="size-9 shrink-0"
-            aria-label={t('assignClass.label', { name: user.displayName })}
-            title={t('assignClass.button')}
-            onClick={() => setAssigning(true)}
-          >
-            <UserPlus aria-hidden className="size-4 text-primary" />
-          </Button>
-        ) : (
-          <div className="size-9 shrink-0" />
-        )}
         <div className="w-32 sm:w-36 shrink-0">
           <Select
             aria-label={t('roleOf', { email: user.email })}
@@ -285,9 +269,6 @@ function UserRow({ user }: { user: AdminUser }) {
         )}
       </div>
       <LockDialog user={user} open={locking && !locked} onOpenChange={setLocking} />
-      {user.role === 'STUDENT' ? (
-        <AssignClassDialog student={user} open={assigning} onOpenChange={setAssigning} />
-      ) : null}
     </DataTableRow>
   );
 }
@@ -342,7 +323,7 @@ export function AdminUsers() {
     );
   } else {
     body = (
-      <DataTableContainer minWidth="min-w-[920px]">
+      <DataTableContainer minWidth="min-w-[900px]">
         <DataTableHeader
           gridTemplateColumns={USER_GRID}
           columns={[

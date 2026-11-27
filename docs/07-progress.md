@@ -552,7 +552,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7G. Quản trị lớp học
 
-- [x] **7.14** ADMIN xếp lớp cho học sinh: `POST /admin/classes/:id/members` nhận `{ userId }` (lớp phải đang hoạt động, tài khoản phải là học sinh, xếp lại thì giữ ngày tham gia cũ), mã lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`; hộp thoại "Xếp lớp" chọn lớp có tìm kiếm, mở từ bảng học sinh chưa có lớp và từ dòng học sinh ở trang Người dùng. Cập nhật `docs/03-api.md` (UC trong `docs/use-cases/06-vai-tro-va-lop-hoc.md`).
+- [x] **7.14** ADMIN xếp lớp cho học sinh: `POST /admin/classes/:id/members` nhận `{ userId }` (lớp phải đang hoạt động, tài khoản phải là học sinh, xếp lại thì giữ ngày tham gia cũ), mã lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`; hộp thoại "Xếp lớp" chọn lớp có tìm kiếm, mở từ nút "Xếp lớp" ở bảng học sinh chưa có lớp (`/admin/classes`). Cập nhật `docs/03-api.md` (UC trong `docs/use-cases/06-vai-tro-va-lop-hoc.md`).
 
 ## Quyết định cần chốt
 
