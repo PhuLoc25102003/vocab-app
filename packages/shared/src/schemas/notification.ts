@@ -48,3 +48,38 @@ export const unreadCountResponseSchema = z.object({ data: z.object({ count: z.nu
 
 /** Thông báo cũ hơn số ngày này bị xoá. */
 export const NOTIFICATION_RETENTION_DAYS = 90;
+
+/** Loại thông báo được gửi thêm qua Web Push, theo thứ tự ưu tiên khi một người có nhiều nhắc. */
+export const PUSH_NOTIFICATION_TYPES = [
+  'ASSIGNMENT_DUE',
+  'ASSIGNMENT_NEW',
+  'REVIEW_DUE',
+] as const satisfies readonly NotificationType[];
+
+export const pushSubscriptionSchema = z.object({
+  endpoint: z.url().max(2048),
+  keys: z.object({
+    p256dh: z.string().min(1).max(256),
+    auth: z.string().min(1).max(128),
+  }),
+});
+export type PushSubscriptionInput = z.infer<typeof pushSubscriptionSchema>;
+
+export const pushUnsubscribeSchema = z.object({ endpoint: z.url().max(2048) });
+export type PushUnsubscribeInput = z.infer<typeof pushUnsubscribeSchema>;
+
+export const pushConfigResponseSchema = z.object({
+  data: z.object({
+    /** Máy chủ đã có khoá VAPID. */
+    enabled: z.boolean(),
+    publicKey: z.string(),
+  }),
+});
+export type PushConfig = z.infer<typeof pushConfigResponseSchema>['data'];
+
+/** Nội dung gửi tới service worker; câu chữ do service worker dựng theo ngôn ngữ. */
+export interface PushPayload {
+  type: NotificationType;
+  data: NotificationData;
+  href: string | null;
+}

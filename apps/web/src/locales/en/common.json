@@ -250,5 +250,22 @@
       "REVIEW_DUE_streak": "Your {{streakDays}}-day streak is about to end! {{count}} cards to review",
       "REVIEW_DUE_streakOnly": "Your {{streakDays}}-day streak is about to end! Study one session to keep it"
     }
+  },
+  "push": {
+    "promptTitle": "Get a reminder every evening?",
+    "promptBody": "We'll nudge you at 8 pm when cards are due or your streak is at risk. Turn it off any time in Account.",
+    "enable": "Turn on reminders",
+    "later": "Not now",
+    "enabled": "Reminders are on for this device",
+    "failed": "Could not turn on reminders, please try again",
+    "deniedToast": "Your browser is blocking notifications. Allow them in the site settings.",
+    "settingsTitle": "Notifications",
+    "settingsDescription": "Streak, due-card and assignment reminders at 8 pm.",
+    "deviceLabel": "Push notifications on this device",
+    "deviceHint": "Shows even when the page is closed. Turn it on for each device.",
+    "unsupported": "This browser doesn't support push notifications. Reminders still appear in the bell.",
+    "iosInstall": "On iPhone, tap Share then Add to Home Screen, and open the app from that icon to turn on notifications (iOS 16.4+).",
+    "serverOff": "Push notifications aren't set up on the server yet. Reminders still appear in the bell.",
+    "denied": "Notifications are blocked for this site. Allow them again in your browser's site settings."
   }
 }

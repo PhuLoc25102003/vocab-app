@@ -15,6 +15,9 @@ vi.mock('@/features/classes/components/class-work', () => ({
   ClassWork: () => <div data-testid="class-work">Class Work</div>,
 }));
 
+vi.mock('@/features/notifications/components/push-prompt', () => ({
+  PushPrompt: () => null,
+}));
 vi.mock('@/features/leaderboard/components/leaderboard-preview', () => ({
   LeaderboardPreview: () => <div data-testid="leaderboard-preview">Leaderboard</div>,
 }));

@@ -61,7 +61,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G5. Nhắc học miễn phí
 
-- **Việc:** 7.7 đến 7.10. **Người dùng:** người đã đăng nhập; hệ thống. **Trạng thái:** Thiếu: đã có job và thông báo trong chuông (7.7), chưa có Web Push, mail và cài đặt (7.8 đến 7.10).
+- **Việc:** 7.7 đến 7.10. **Người dùng:** người đã đăng nhập; hệ thống. **Trạng thái:** Thiếu: đã có job, chuông (7.7) và Web Push (7.8); chưa có mail và cài đặt từng loại (7.9, 7.10).
 - **Phải có:**
   - Job chạy lúc 20:00 giờ Việt Nam do GitHub Actions gọi, vì Render gói Free ngủ khi rảnh nên hẹn giờ trong API không chạy đúng giờ.
   - Endpoint job chỉ chạy khi header bí mật đúng; chạy lại trong ngày không gửi trùng.

@@ -250,5 +250,22 @@
       "REVIEW_DUE_streak": "Chuỗi {{streakDays}} ngày sắp mất! Còn {{count}} thẻ cần ôn",
       "REVIEW_DUE_streakOnly": "Chuỗi {{streakDays}} ngày sắp mất! Học một phiên để giữ chuỗi"
     }
+  },
+  "push": {
+    "promptTitle": "Bật nhắc học mỗi tối?",
+    "promptBody": "Mình sẽ nhắc bạn lúc 20:00 khi có thẻ cần ôn hoặc chuỗi sắp mất. Bạn tắt được bất cứ lúc nào ở Tài khoản.",
+    "enable": "Bật nhắc học",
+    "later": "Để sau",
+    "enabled": "Đã bật nhắc học trên thiết bị này",
+    "failed": "Không bật được nhắc học, thử lại nhé",
+    "deniedToast": "Trình duyệt đang chặn thông báo. Mở cài đặt trang web để cho phép.",
+    "settingsTitle": "Thông báo",
+    "settingsDescription": "Nhắc giữ chuỗi, thẻ đến hạn và bài tập sắp hết hạn lúc 20:00.",
+    "deviceLabel": "Thông báo đẩy trên thiết bị này",
+    "deviceHint": "Hiện cả khi đã đóng trang. Mỗi thiết bị bật riêng.",
+    "unsupported": "Trình duyệt này chưa hỗ trợ thông báo đẩy. Bạn vẫn thấy nhắc học trong chuông.",
+    "iosInstall": "Trên iPhone, hãy bấm Chia sẻ rồi Thêm vào màn hình chính, mở app từ biểu tượng đó để bật thông báo (iOS 16.4 trở lên).",
+    "serverOff": "Máy chủ chưa bật thông báo đẩy. Bạn vẫn thấy nhắc học trong chuông.",
+    "denied": "Bạn đã chặn thông báo cho trang này. Mở cài đặt trang web của trình duyệt để cho phép lại."
   }
 }

@@ -43,6 +43,13 @@ const envSchema = z.object({
     .trim()
     .refine((value) => value === '' || value.length >= 32, 'JOBS_SECRET cần ít nhất 32 ký tự')
     .default(''),
+  /**
+   * Khoá VAPID cho Web Push, tạo bằng `npx web-push generate-vapid-keys`. Thiếu một biến thì tắt
+   * thông báo đẩy, nhắc học vẫn có trong chuông. `VAPID_SUBJECT` là `mailto:` hoặc địa chỉ web.
+   */
+  VAPID_PUBLIC_KEY: z.string().trim().default(''),
+  VAPID_PRIVATE_KEY: z.string().trim().default(''),
+  VAPID_SUBJECT: z.string().trim().default(''),
   /** Upstash Redis REST, dùng chung bộ đếm rate limit giữa các instance. Để trống thì đếm trong bộ nhớ. */
   UPSTASH_REDIS_REST_URL: z
     .string()

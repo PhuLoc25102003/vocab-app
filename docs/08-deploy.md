@@ -133,6 +133,15 @@ Render gói Free ngủ khi rảnh nên API không tự hẹn giờ. Workflow `.g
 
 Lịch của GitHub Actions có thể trễ vài phút đến vài chục phút khi GitHub đông.
 
+## Web Push (việc 7.8)
+
+Miễn phí, không cần tài khoản dịch vụ. Thiếu khoá thì thông báo đẩy tắt, nhắc học vẫn có trong chuông.
+
+1. Tạo cặp khoá một lần: `npx web-push generate-vapid-keys`. Giữ nguyên cặp khoá này, đổi khoá thì mọi đăng ký cũ hết hiệu lực.
+2. Render, **Environment**: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (ví dụ `mailto:<email quản trị>`).
+3. Service worker chỉ đăng ký ở bản production, nên thử Web Push trên bản deploy, không thử ở `npm run dev`.
+4. iPhone, iPad chỉ nhận thông báo khi người dùng thêm app vào màn hình chính và dùng iOS 16.4 trở lên.
+
 ## Google OAuth
 
 Web dùng nút đăng nhập của Google, API kiểm tra token với cùng Client ID. Đặt Client ID ở cả hai nơi: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` trên Vercel, `GOOGLE_CLIENT_ID` trên Render. Hai giá trị khác nhau thì API từ chối đăng nhập.
