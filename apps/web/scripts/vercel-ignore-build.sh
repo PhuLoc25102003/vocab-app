@@ -10,8 +10,12 @@ case "$VERCEL_GIT_COMMIT_REF" in
     ;;
 esac
 
-# Thư mục hiện tại là apps/web. Không so được với commit trước thì vẫn build cho chắc.
-if git diff --quiet HEAD^ HEAD -- . ../../packages/shared ../../package.json ../../package-lock.json ../../turbo.json; then
+# Thư mục hiện tại là apps/web. So với bản deploy thành công gần nhất của nhánh
+# (`VERCEL_GIT_PREVIOUS_SHA`), không chỉ commit cuối: merge kiểu rebase đẩy nhiều commit một lúc,
+# commit cuối có thể chỉ đổi API trong khi các commit trước đổi web.
+# Không có hoặc không so được (clone nông thiếu commit đó) thì vẫn build cho chắc.
+BASE="${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}"
+if git diff --quiet "$BASE" HEAD -- . ../../packages/shared ../../package.json ../../package-lock.json ../../turbo.json; then
   echo "Commit không đổi web, bỏ qua build"
   exit 0
 fi

@@ -45,7 +45,7 @@ Biến môi trường: `NEXT_PUBLIC_API_URL=/api/v1`, `API_INTERNAL_URL=https://
 
 Lần deploy đầu khi tạo project luôn lên Production. Các lần sau chỉ nhánh trong **Settings**, **Environments**, **Production**, **Branch Tracking** mới lên Production, nhánh khác thành Preview. Đặt nhánh này là `develop` cho đến khi phát hành vào `main`, giống Render. Bản Preview cần lên ngay thì dùng **Promote to Production**.
 
-Gói Free giới hạn 100 lần deploy mỗi ngày, mỗi lần push lên nhánh PR từng tạo một bản Preview và làm hết lượt (`api-deployments-free-per-day`). `apps/web/vercel.json` đặt `ignoreCommand` chạy `scripts/vercel-ignore-build.sh`: chỉ build khi push vào `develop` hoặc `main` và commit có đổi `apps/web`, `packages/shared`, `package.json`, `package-lock.json` hoặc `turbo.json`. Nhánh PR không có bản Preview, CI (Verify, E2E) vẫn kiểm tra như cũ. Cần Preview cho một nhánh thì bấm **Redeploy** trên Vercel hoặc tạm thêm nhánh vào script.
+Gói Free giới hạn 100 lần deploy mỗi ngày, mỗi lần push lên nhánh PR từng tạo một bản Preview và làm hết lượt (`api-deployments-free-per-day`). `apps/web/vercel.json` đặt `ignoreCommand` chạy `scripts/vercel-ignore-build.sh`: chỉ build khi push vào `develop` hoặc `main` và có thay đổi ở `apps/web`, `packages/shared`, `package.json`, `package-lock.json` hoặc `turbo.json` kể từ bản deploy thành công gần nhất của nhánh (`VERCEL_GIT_PREVIOUS_SHA`; không có thì so với commit trước). So với bản deploy gần nhất vì merge kiểu rebase đẩy nhiều commit một lúc, commit cuối có thể chỉ đổi API. Nhánh PR không có bản Preview, CI (Verify, E2E) vẫn kiểm tra như cũ. Cần Preview cho một nhánh thì bấm **Redeploy** trên Vercel hoặc tạm thêm nhánh vào script.
 
 Hiện web chạy ở `https://vocab-app-nine-psi.vercel.app`.
 
