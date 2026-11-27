@@ -5,15 +5,18 @@ import {
   CircleAlert,
   Crosshair,
   Flame,
+  Keyboard,
   Mic,
   Pause,
   Play,
   Shield,
   ShieldOff,
+  Smartphone,
   Trophy,
   Waves,
 } from 'lucide-react';
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -39,6 +42,7 @@ import {
   type RainState,
 } from './engine';
 import { foldText, readInputChange } from './input-diff';
+import { RainKeyboard } from './rain-keyboard';
 import { applyEvents, createFx, drawFrame, readPalette, type Fx } from './renderer';
 import { useSpeechInput } from './use-speech-input';
 
@@ -78,6 +82,31 @@ function useViewportHeight(): number | null {
   return height;
 }
 
+const KEYBOARD_KEY = 'vocab.wordRain.keyboard';
+
+/** Bàn phím trong game hay bàn phím máy: theo lựa chọn đã lưu, mặc định bật trên màn cảm ứng. */
+function readKeyboardChoice(): boolean {
+  try {
+    const saved = window.localStorage.getItem(KEYBOARD_KEY);
+    if (saved === 'game') return true;
+    if (saved === 'device') return false;
+  } catch {
+    // Không đọc được bộ nhớ trình duyệt thì dùng mặc định.
+  }
+  return window.matchMedia?.('(pointer: coarse)').matches ?? false;
+}
+
+function saveKeyboardChoice(useGame: boolean) {
+  try {
+    window.localStorage.setItem(KEYBOARD_KEY, useGame ? 'game' : 'device');
+  } catch {
+    // Chế độ riêng tư có thể chặn bộ nhớ, lựa chọn chỉ giữ trong ván này.
+  }
+}
+
+/** Chiều cao thêm của bàn phím trong game (3 hàng phím 48 px), trừ khỏi khung chơi. */
+const GAME_KEYBOARD_HEIGHT = 168;
+
 export function WordRainGame({
   questions,
   style,
@@ -104,6 +133,8 @@ export function WordRainGame({
   const fedRef = useRef('');
   /** Bộ gõ đang soạn chữ (Telex, VNI, gợi ý từ): không được ghi đè ô gõ lúc này. */
   const composingRef = useRef(false);
+  const [gameKeyboard, setGameKeyboard] = useState(readKeyboardChoice);
+  const [imeHint, setImeHint] = useState(false);
 
   // Ô gõ không do React điều khiển: ghi đè giá trị giữa lúc bộ gõ đang soạn chữ làm bàn phím bị kẹt.
   const syncInput = () => {
@@ -291,7 +322,40 @@ export function WordRainGame({
     syncInput();
   };
 
-  const onInput = (event: ChangeEvent<HTMLInputElement>) => consume(event.currentTarget.value);
+  const onInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    // Chữ có dấu trong khi đáp án đều không dấu: gần như chắc chắn đang bật bộ gõ tiếng Việt.
+    if (!gameKeyboard && foldText(value) !== value.toLowerCase()) {
+      const plain = stateRef.current.targets.every(
+        ({ answer }) => foldText(answer) === answer.toLowerCase(),
+      );
+      if (plain) setImeHint(true);
+    }
+    consume(value);
+  };
+
+  // Bàn phím trong game dùng `memo`: giữ callback cố định để HUD làm mới 10 lần mỗi giây không vẽ lại 27 phím.
+  const updateRef = useRef(update);
+  useEffect(() => {
+    updateRef.current = update;
+  });
+  const pressKey = useCallback(
+    (char: string) => updateRef.current(typeChar(stateRef.current, char)),
+    [],
+  );
+  const pressDelete = useCallback(() => updateRef.current(releaseLock(stateRef.current)), []);
+
+  const chooseKeyboard = (useGame: boolean) => {
+    setGameKeyboard(useGame);
+    setImeHint(false);
+    saveKeyboardChoice(useGame);
+    // Đổi `inputMode` ngay trong lúc bấm rồi focus lại, để điện thoại ẩn hoặc hiện bàn phím máy.
+    const input = inputRef.current;
+    if (!input) return;
+    input.inputMode = useGame ? 'none' : 'text';
+    input.blur();
+    input.focus();
+  };
 
   const onCompositionEnd = (event: CompositionEvent<HTMLInputElement>) => {
     // Firefox gửi `input` cuối sau `compositionend`, nên đọc chữ còn lại trước khi trả ô gõ về.
@@ -317,7 +381,15 @@ export function WordRainGame({
         className="relative"
         style={{
           height: viewportHeight
-            ? Math.max(320, Math.min(620, viewportHeight - 210))
+            ? Math.max(
+                320,
+                Math.min(
+                  620,
+                  viewportHeight -
+                    210 -
+                    (style === 'TYPE' && gameKeyboard ? GAME_KEYBOARD_HEIGHT : 0),
+                ),
+              )
             : 'min(68vh, 620px)',
         }}
         onClick={() => style === 'TYPE' && inputRef.current?.focus()}
@@ -403,20 +475,33 @@ export function WordRainGame({
       {/* Bảng điều khiển dính liền khung chơi: ô gõ hoặc trạng thái micro. */}
       <div className="border-t border-game-glow/25 bg-game-panel p-3">
         {style === 'TYPE' ? (
-          <label className="flex flex-col gap-2">
-            <span className="flex min-h-5 items-center gap-2 text-small text-game-ink-muted">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-small text-game-ink-muted">
               <Crosshair
                 aria-hidden
                 className={cn('size-4 shrink-0', aimingAt ? 'text-highlight' : 'text-game-glow')}
               />
-              <span className="min-w-0 truncate">
+              <span className="min-w-0 flex-1 truncate">
                 {aimingAt ? t('wordRain.aiming', { prompt: aimingAt }) : t('wordRain.typeHint')}
               </span>
-            </span>
+              <Button
+                variant="ghost"
+                onPointerDown={(event) => event.preventDefault()}
+                onClick={() => chooseKeyboard(!gameKeyboard)}
+                className="h-11 shrink-0 gap-1.5 px-3 text-small text-game-ink-muted hover:bg-game-sky hover:text-highlight"
+              >
+                {gameKeyboard ? (
+                  <Smartphone aria-hidden className="size-4" />
+                ) : (
+                  <Keyboard aria-hidden className="size-4" />
+                )}
+                {gameKeyboard ? t('wordRain.useDeviceKeyboard') : t('wordRain.useGameKeyboard')}
+              </Button>
+            </div>
             <input
               ref={inputRef}
               type="text"
-              inputMode="text"
+              inputMode={gameKeyboard ? 'none' : 'text'}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -435,7 +520,20 @@ export function WordRainGame({
                 wrong ? 'feedback-wrong border-danger' : 'border-game-glow/40',
               )}
             />
-          </label>
+            {imeHint && !gameKeyboard ? (
+              <div
+                role="status"
+                className="flex flex-wrap items-center gap-2 rounded-md border border-highlight/40 bg-game-sky p-3 text-small"
+              >
+                <CircleAlert aria-hidden className="size-4 shrink-0 text-highlight" />
+                <span className="min-w-0 flex-1">{t('wordRain.imeHint')}</span>
+                <Button variant="secondary" onClick={() => chooseKeyboard(true)}>
+                  {t('wordRain.useGameKeyboard')}
+                </Button>
+              </div>
+            ) : null}
+            {gameKeyboard ? <RainKeyboard onKey={pressKey} onDelete={pressDelete} /> : null}
+          </div>
         ) : (
           <div role="status" className="flex min-h-12 flex-wrap items-center gap-2 text-small">
             <Mic
