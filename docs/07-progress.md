@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       0 |      14 | Chưa làm   |
-| **Toàn dự án**          |                                            | **187** | **205** | **91%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       0 |      15 | Chưa làm   |
+| **Toàn dự án**          |                                            | **187** | **206** | **91%**    |
 
 ## Cách cập nhật
 
@@ -543,10 +543,11 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7F. Chế độ Mưa từ
 
-- [ ] **7.11** Strategy và API cho chế độ Mưa từ (`WORD_RAIN`): enum mới, đăng ký trong registry của `@vocab/shared`, chấm đáp án gõ (bỏ dấu cách thừa, không phân biệt hoa thường), kết quả cập nhật `CardProgress` và XP như chế độ Viết; bảng `GameHighScore` (người dùng, bộ, chế độ, điểm, đợt cao nhất), `GET /sets/:id/high-score` và lưu điểm khi kết thúc phiên; bộ cần ít nhất 4 thẻ; giao bài cho lớp dùng được chế độ này. Theo skill `study-mode` (UC-G6).
+- [ ] **7.11** Strategy và API cho chế độ Mưa từ (`WORD_RAIN`): enum mới, đăng ký trong registry của `@vocab/shared`, chấm đáp án theo hai kiểu chơi `TYPE` (gõ, bỏ dấu cách thừa, không phân biệt hoa thường, kết quả như chế độ Viết) và `SPEAK` (nói, chấm như chế độ Luyện nói), kết quả cập nhật `CardProgress` và XP; bảng `GameHighScore` (người dùng, bộ, chế độ, kiểu chơi, điểm, đợt cao nhất, điểm cao tính riêng từng kiểu chơi), `GET /sets/:id/high-score` và lưu điểm khi kết thúc phiên; bộ cần ít nhất 4 thẻ; giao bài cho lớp dùng được chế độ này. Theo skill `study-mode` (UC-G6).
 - [ ] **7.12a** Lõi trò chơi Mưa từ (hàm thuần, có unit test): vòng lặp `requestAnimationFrame` theo thời gian thực, sinh "mục tiêu" mang nghĩa rơi từ trên xuống, gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất, gõ đúng từng ký tự thì bắn, gõ đủ thì nổ, gõ sai thì mất combo; 3 khiên, mục tiêu chạm đáy mất 1 khiên; đợt 10 mục tiêu, tốc độ và mật độ tăng dần theo đợt; cuối mỗi 3 đợt có mục tiêu lớn là từ dài nhất trong bộ, cần gõ 2 lần; combo nhân điểm x2, x3, x4; tạm dừng bằng `Esc` hoặc khi rời tab; từ rơi trùng nhau không quá 2 lần một đợt. Cần 7.11 (UC-G6).
 - [ ] **7.12b** Đồ hoạ chiến đấu cơ hiện đại: vẽ bằng canvas hoặc SVG theo design token (đọc màu từ biến CSS, đúng light và dark): chiến đấu cơ cánh tam giác nhìn từ dưới lên, buồng lái kính phản sáng, hai động cơ phun lửa có hạt, máy bay xoay mũi về mục tiêu đang khoá; mục tiêu là drone địch mang thẻ nghĩa, chữ đã gõ đổi màu; đạn laser theo từng ký tự, nổ bằng hạt và sóng xung kích, rung màn nhẹ; nền trời đêm nhiều lớp chuyển động thị sai (sao, mây, thành phố mờ); HUD: điểm, combo, khiên, đợt, điểm cao nhất; âm thanh bắn và nổ bằng Web Audio theo công tắc âm thanh có sẵn; giảm chuyển động thì tắt rung, giảm hạt và thị sai; giữ 60 fps trên điện thoại tầm trung, tự giảm hiệu ứng khi tụt khung hình. Cần 7.12a (UC-G6).
-- [ ] **7.12c** Hoàn thiện Mưa từ: màn bắt đầu (luật chơi, điểm cao nhất của bộ, nút Bắt đầu), mobile 360 px dùng ô nhập ẩn luôn được focus và tính lại khung chơi theo `visualViewport` khi bàn phím hiện, màn kết quả chung kèm "Kỷ lục mới", danh sách từ bị lọt để học lại; thẻ chế độ trong lưới chế độ học; `aria-live` đọc nghĩa của mục tiêu đang khoá; E2E chơi một đợt bằng bàn phím. Cần 7.12b (UC-G6).
+- [ ] **7.12d** Kiểu chơi Nói cho Mưa từ: dùng lại `lib/speech-recognition.ts` của Luyện nói, nghe liên tục kèm kết quả tạm, nói đúng từ của bất kỳ mục tiêu nào đang rơi thì bắn mục tiêu gần đáy nhất có từ đó (không cần khoá trước), chấp nhận lệch nhẹ theo quy tắc chấm của Luyện nói; bong bóng hiện chữ vừa nghe được, chỉ báo micro đang nghe; đường tốc độ chậm hơn kiểu gõ để bù độ trễ nhận dạng; chỉ xin quyền micro khi chọn kiểu Nói; trình duyệt không hỗ trợ thì ẩn kiểu Nói và mở modal hướng dẫn trình duyệt có sẵn; bị chặn micro hoặc mất kết nối nhận dạng giữa ván thì tạm dừng và cho chuyển sang kiểu gõ. Cần 7.12a, 7.12b (UC-G6).
+- [ ] **7.12c** Hoàn thiện Mưa từ: màn bắt đầu (chọn kiểu chơi Gõ hoặc Nói, luật chơi, điểm cao nhất của bộ theo kiểu chơi, nút Bắt đầu), mobile 360 px dùng ô nhập ẩn luôn được focus và tính lại khung chơi theo `visualViewport` khi bàn phím hiện, màn kết quả chung kèm "Kỷ lục mới", danh sách từ bị lọt để học lại; thẻ chế độ trong lưới chế độ học; `aria-live` đọc nghĩa của mục tiêu đang khoá; E2E chơi một đợt bằng bàn phím. Cần 7.12b (UC-G6).
 
 ## Quyết định cần chốt
 
