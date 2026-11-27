@@ -194,7 +194,8 @@ describe('AdminClasses', () => {
     expect(await screen.findByText('Chọn một lớp')).toBeInTheDocument();
     expect(assignStudentToClass).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('combobox', { name: 'Lớp' }));
+    // Tìm được theo tên giáo viên, không chỉ tên lớp.
+    await user.type(screen.getByRole('combobox', { name: 'Lớp' }), 'thay hung');
     await user.click(await screen.findByRole('option', { name: /Tiếng Anh 8A1/ }));
     await user.click(screen.getByRole('button', { name: 'Xếp vào lớp' }));
 

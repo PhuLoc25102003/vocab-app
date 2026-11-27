@@ -10,6 +10,8 @@ export interface ComboboxOption {
   label: string;
   /** Dòng phụ dưới nhãn, ví dụ "12 thẻ · Riêng tư". */
   description?: string;
+  /** Chữ tìm được thêm ngoài nhãn, ví dụ tên giáo viên của lớp. Không hiển thị. */
+  keywords?: string;
 }
 
 interface ComboboxProps {
@@ -25,6 +27,11 @@ interface ComboboxProps {
   name?: string;
   disabled?: boolean;
   onBlur?: () => void;
+  /**
+   * Danh sách nằm trong luồng trang thay vì nổi lên trên: dùng trong hộp thoại có thân cuộn được,
+   * nơi danh sách nổi bị cắt. Hộp thoại chỉ cao thêm khi danh sách đang mở.
+   */
+  inline?: boolean;
 }
 
 /** Bỏ dấu, `đ` thành `d`, chữ thường: gõ "tieng viet" vẫn ra "Tiếng Việt". */
@@ -54,6 +61,7 @@ export function Combobox({
   name,
   disabled = false,
   onBlur,
+  inline = false,
 }: ComboboxProps) {
   const { t } = useTranslation();
   const id = useId();
@@ -69,7 +77,9 @@ export function Combobox({
   const matches = useMemo(() => {
     const needle = normalizeSearch(query ?? '');
     return needle
-      ? options.filter((option) => normalizeSearch(option.label).includes(needle))
+      ? options.filter((option) =>
+          normalizeSearch(`${option.label} ${option.keywords ?? ''}`).includes(needle),
+        )
       : options;
   }, [options, query]);
   const activeOption = open ? matches[Math.min(active, matches.length - 1)] : undefined;
@@ -183,7 +193,7 @@ export function Combobox({
             if (open) close();
             else show();
           }}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-text-muted"
+          className="absolute top-0 right-0 flex h-11 w-11 items-center justify-center text-text-muted"
         >
           <ChevronDown
             aria-hidden
@@ -198,7 +208,10 @@ export function Combobox({
           role="listbox"
           aria-label={t('combobox.options', { label })}
           hidden={!open}
-          className="glass-overlay glass-pop absolute inset-x-0 top-full z-10 mt-1.5 max-h-64 origin-top overflow-y-auto overscroll-contain rounded-menu p-1.5"
+          className={cn(
+            'glass-overlay glass-pop mt-1.5 max-h-64 origin-top overflow-y-auto overscroll-contain rounded-menu p-1.5',
+            inline ? 'relative' : 'absolute inset-x-0 top-full z-10',
+          )}
         >
           {matches.length === 0 ? (
             <li role="presentation" className="px-3 py-2 text-small text-text-muted">

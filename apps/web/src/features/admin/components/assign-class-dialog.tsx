@@ -62,6 +62,7 @@ export function AssignClassDialog({ student, open, onOpenChange }: AssignClassDi
     .map((klass) => ({
       value: klass.id,
       label: klass.name,
+      keywords: klass.teacher ? `${klass.teacher.displayName} ${klass.teacher.email}` : undefined,
       description: t('assignClass.classOption', {
         teacher: klass.teacher?.displayName ?? '—',
         count: klass.memberCount,
@@ -99,21 +100,19 @@ export function AssignClassDialog({ student, open, onOpenChange }: AssignClassDi
       ) : options.length === 0 ? (
         <p className="text-small text-text-muted">{t('assignClass.noClasses')}</p>
       ) : (
-        // Thân hộp thoại cuộn được nên danh sách thả xuống bị cắt; chừa đủ chỗ cho danh sách cao tối đa.
-        <div className="min-h-84">
-          <Combobox
-            label={t('assignClass.field')}
-            options={options}
-            value={classId}
-            onChange={(value) => {
-              setClassId(value);
-              setTouched(true);
-            }}
-            placeholder={t('assignClass.placeholder')}
-            emptyText={t('assignClass.empty')}
-            error={missing ? t('assignClass.required') : undefined}
-          />
-        </div>
+        <Combobox
+          label={t('assignClass.field')}
+          options={options}
+          value={classId}
+          onChange={(value) => {
+            setClassId(value);
+            setTouched(true);
+          }}
+          placeholder={t('assignClass.placeholder')}
+          emptyText={t('assignClass.empty')}
+          error={missing ? t('assignClass.required') : undefined}
+          inline
+        />
       )}
     </FormDialog>
   );
