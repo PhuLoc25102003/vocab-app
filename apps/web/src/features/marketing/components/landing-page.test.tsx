@@ -9,13 +9,23 @@ vi.mock('@/components/common/language-switcher', () => ({ LanguageToggle: () => 
 describe('LandingPage', () => {
   afterEach(clearSessionMarker);
 
-  it('giới thiệu sản phẩm, đủ chín chế độ học và lịch ôn', () => {
+  it('giới thiệu sản phẩm, đủ mười chế độ học, trò chơi và lịch ôn', () => {
     render(<LandingPage />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('ôn đúng lúc');
     expect(screen.getByRole('heading', { name: /Lịch ôn tự giãn/ })).toBeInTheDocument();
-    for (const mode of ['Flashcard', 'Học kỹ', 'Viết', 'Nghe viết', 'Trắc nghiệm', 'Luyện nói']) {
-      expect(screen.getByText(mode)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Một nút, mười bước' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Bảng xếp hạng tuần' })).toBeInTheDocument();
+    for (const mode of [
+      'Flashcard',
+      'Học kỹ',
+      'Viết',
+      'Nghe viết',
+      'Trắc nghiệm',
+      'Luyện nói',
+      'Mưa từ',
+    ]) {
+      expect(screen.getAllByText(mode).length).toBeGreaterThan(0);
     }
   });
 

@@ -35,6 +35,10 @@
     "speak": {
       "name": "Speak",
       "description": "Say the term out loud and get it checked."
+    },
+    "word_rain": {
+      "name": "Word rain",
+      "description": "Shoot down falling meanings by typing or saying the word."
     }
   },
   "schedule": {
@@ -70,8 +74,9 @@
     }
   },
   "highlights": {
-    "modes": "9 study modes",
+    "modes": "10 study modes",
     "schedule": "Automatic review schedule",
+    "game": "Word rain game",
     "free": "Free"
   },
   "start": {
@@ -85,12 +90,69 @@
   "hero": {
     "eyebrow": "Vocabulary practice with a review schedule for every card",
     "title": "Review each word right before you forget it.",
-    "description": "{{brand}} helps you learn vocabulary with flashcards, writing, listening, speaking and quizzes, then schedules reviews so you remember for good without cramming.",
+    "description": "{{brand}} helps you learn vocabulary with flashcards, writing, listening, speaking, quizzes and a game, then schedules reviews so you remember for longer without cramming.",
     "explore": "Explore sets"
   },
   "modesSection": {
-    "title": "Nine ways to practise a set",
-    "description": "Switch it up so your brain stays engaged: see, write, listen and speak."
+    "title": "Ten ways to practise a set",
+    "description": "Switch it up so your brain stays engaged: see, write, listen, speak, and even play."
+  },
+  "gameSection": {
+    "title": "Word rain: review like a game",
+    "description": "Meanings fall from the sky. Type or say the right word to shoot them down before they land. Combos multiply your score and every set keeps its own record.",
+    "points": {
+      "type": "An in-game keyboard, no input method trouble",
+      "speak": "Or say the word out loud and it fires",
+      "combo": "Combos up to x4, beat the record for the set"
+    },
+    "preview": "Sample Word rain screen: three meanings falling, the player has typed rem of remember.",
+    "score": "Score",
+    "combo": "Combo",
+    "drops": {
+      "first": "a red fruit",
+      "second": "above the clouds",
+      "third": "a small pet",
+      "fourth": "being friends",
+      "fifth": "a room of books"
+    }
+  },
+  "featuresSection": {
+    "title": "Fun, steady learning every day",
+    "description": "XP, streaks and leaderboards keep the rhythm; teachers assign work and follow the whole class."
+  },
+  "pathSection": {
+    "title": "One button, ten steps",
+    "description": "Press Start studying and the app walks you from first look to recall, then ends with a round of Word rain. Steps a set cannot use yet are skipped."
+  },
+  "features": {
+    "xp": {
+      "title": "XP and levels",
+      "description": "Every right answer earns XP; hit your daily goal to level up.",
+      "level": "Level 7",
+      "gain": "+10 XP"
+    },
+    "streak": {
+      "title": "Daily streak",
+      "description": "Study every day to keep the streak, with a freeze when you miss one.",
+      "days": "5 days in a row"
+    },
+    "badges": {
+      "title": "Badges",
+      "description": "Unlock badges as you reach learning milestones."
+    },
+    "leaderboard": {
+      "title": "Weekly leaderboard",
+      "description": "Compare XP with classmates, reset every week.",
+      "you": "You"
+    },
+    "classes": {
+      "title": "Classes and assignments",
+      "description": "Teachers assign a set with modes and see who finished and how well."
+    },
+    "reminders": {
+      "title": "Reminders and offline",
+      "description": "Notifications and emails remind you to review; download sets to study offline."
+    }
   },
   "scheduleSection": {
     "title": "A review schedule that follows your memory",
