@@ -1,7 +1,18 @@
 'use client';
 
 import type { WordRainStyle } from '@vocab/shared';
-import { Flame, Pause, Play, Shield, ShieldOff, Trophy, Waves } from 'lucide-react';
+import {
+  CircleAlert,
+  Crosshair,
+  Flame,
+  Mic,
+  Pause,
+  Play,
+  Shield,
+  ShieldOff,
+  Trophy,
+  Waves,
+} from 'lucide-react';
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -79,10 +90,26 @@ export function WordRainGame({
   const finishedRef = useRef(false);
   const [hud, setHud] = useState(initial);
   const [announce, setAnnounce] = useState('');
+  /** Chữ đã gõ của mục tiêu đang khoá, hiện trong ô gõ (kể cả dấu câu được tự điền). */
+  const [typed, setTyped] = useState('');
+  const typedRef = useRef('');
+  const [aimingAt, setAimingAt] = useState<string | null>(null);
+  const [wrong, setWrong] = useState(false);
+  const wrongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const update = (next: RainState) => {
     const previous = stateRef.current;
     stateRef.current = next;
+    const lockedTarget = next.targets.find(({ key }) => key === next.lockedKey);
+    const nextTyped = lockedTarget ? lockedTarget.answer.slice(0, lockedTarget.typed) : '';
+    typedRef.current = nextTyped;
+    setTyped(nextTyped);
+    setAimingAt(lockedTarget?.prompt ?? null);
+    if (next.events.some(({ type }) => type === 'wrong')) {
+      setWrong(true);
+      if (wrongTimer.current) clearTimeout(wrongTimer.current);
+      wrongTimer.current = setTimeout(() => setWrong(false), 260);
+    }
     const canvas = canvasRef.current;
     if (canvas) {
       applyEvents(
@@ -223,12 +250,25 @@ export function WordRainGame({
     if (paused) inputRef.current?.focus();
   };
 
+  useEffect(
+    () => () => {
+      if (wrongTimer.current) clearTimeout(wrongTimer.current);
+    },
+    [],
+  );
+
   const onInput = (event: ChangeEvent<HTMLInputElement>) => {
-    // Bàn phím ảo trên điện thoại không gửi `key` đáng tin, nên đọc chữ mới trong ô rồi xoá đi.
-    const chars = event.currentTarget.value;
-    event.currentTarget.value = '';
+    // Bàn phím ảo trên điện thoại không gửi `key` đáng tin, nên so ô gõ với chữ đã gõ để lấy phần mới.
+    // Ô gõ luôn hiện lại chữ đã gõ đúng của mục tiêu đang khoá; chữ sai không ở lại trong ô.
+    const value = event.currentTarget.value;
+    const current = typedRef.current;
+    if (value.length < current.length && current.startsWith(value)) {
+      update(releaseLock(stateRef.current));
+      return;
+    }
+    const added = value.startsWith(current) ? value.slice(current.length) : value;
     let next = stateRef.current;
-    for (const char of chars) next = typeChar(next, char);
+    for (const char of added) next = typeChar(next, char);
     update(next);
   };
 
@@ -246,128 +286,156 @@ export function WordRainGame({
   const multiplier = comboMultiplier(hud.combo);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div
-        className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"
-        aria-label={t('wordRain.hud')}
-      >
-        <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-small">
-          <div className="flex items-center gap-1.5">
-            <dt className="sr-only">{t('wordRain.score')}</dt>
-            <Trophy aria-hidden className="size-4 text-highlight" />
-            <dd className="font-semibold tabular-nums">{hud.score}</dd>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <dt className="sr-only">{t('wordRain.combo')}</dt>
-            <Flame
-              aria-hidden
-              className={cn('size-4', hud.combo > 0 ? 'text-danger' : 'text-text-muted')}
-            />
-            <dd className="tabular-nums">
-              {hud.combo}
-              {multiplier > 1 ? (
-                <span className="ml-1 font-semibold text-primary">×{multiplier}</span>
-              ) : null}
-            </dd>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <dt className="sr-only">{t('wordRain.waveLabel')}</dt>
-            <Waves aria-hidden className="size-4 text-primary" />
-            <dd className="tabular-nums">{hud.wave}</dd>
-          </div>
-          <div className="flex items-center gap-1">
-            <dt className="sr-only">{t('wordRain.shields', { count: hud.shields })}</dt>
-            {Array.from({ length: RAIN_RULES.shields }, (_, index) =>
-              index < hud.shields ? (
-                <Shield key={index} aria-hidden className="size-4 fill-primary-soft text-primary" />
-              ) : (
-                <ShieldOff key={index} aria-hidden className="size-4 text-text-muted" />
-              ),
-            )}
-            <dd className="sr-only">{hud.shields}</dd>
-          </div>
-          {best !== null ? (
-            <div className="text-text-muted tabular-nums">
-              {t('wordRain.best', { score: best })}
-            </div>
-          ) : null}
-        </dl>
-        <Button
-          variant="secondary"
-          size="icon"
-          aria-label={paused ? t('wordRain.resume') : t('wordRain.pause')}
-          onClick={togglePause}
-        >
-          {paused ? (
-            <Play aria-hidden className="size-5" />
-          ) : (
-            <Pause aria-hidden className="size-5" />
-          )}
-        </Button>
-      </div>
-
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border bg-game-sky text-game-ink">
       <div
         ref={frameRef}
-        className="relative overflow-hidden rounded-lg border border-border"
+        className="relative"
         style={{
           height: viewportHeight
-            ? Math.max(320, Math.min(620, viewportHeight - 190))
-            : 'min(70vh, 620px)',
+            ? Math.max(320, Math.min(620, viewportHeight - 210))
+            : 'min(68vh, 620px)',
         }}
         onClick={() => style === 'TYPE' && inputRef.current?.focus()}
       >
         <canvas ref={canvasRef} className="block size-full" aria-hidden />
+
+        {/* HUD phủ lên đỉnh khung chơi; renderer chừa khoảng này để mục tiêu không bị che. */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2 sm:p-3"
+          aria-label={t('wordRain.hud')}
+        >
+          <dl className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-full border border-game-glow/30 bg-game-panel px-3 py-1.5 text-small">
+            <div className="flex items-center gap-1.5">
+              <dt className="sr-only">{t('wordRain.score')}</dt>
+              <Trophy aria-hidden className="size-4 text-highlight" />
+              <dd className="font-semibold tabular-nums">{hud.score}</dd>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <dt className="sr-only">{t('wordRain.combo')}</dt>
+              <Flame
+                aria-hidden
+                className={cn('size-4', hud.combo > 0 ? 'text-highlight' : 'text-game-ink-muted')}
+              />
+              <dd className="tabular-nums">
+                {hud.combo}
+                {multiplier > 1 ? (
+                  <span className="ml-1 font-semibold text-highlight">×{multiplier}</span>
+                ) : null}
+              </dd>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <dt className="sr-only">{t('wordRain.waveLabel')}</dt>
+              <Waves aria-hidden className="size-4 text-game-glow" />
+              <dd className="tabular-nums">{hud.wave}</dd>
+            </div>
+            <div className="flex items-center gap-1">
+              <dt className="sr-only">{t('wordRain.shields', { count: hud.shields })}</dt>
+              {Array.from({ length: RAIN_RULES.shields }, (_, index) =>
+                index < hud.shields ? (
+                  <Shield
+                    key={index}
+                    aria-hidden
+                    className="size-4 fill-game-glow/25 text-game-glow"
+                  />
+                ) : (
+                  <ShieldOff key={index} aria-hidden className="size-4 text-game-ink-muted" />
+                ),
+              )}
+              <dd className="sr-only">{hud.shields}</dd>
+            </div>
+            {best !== null ? (
+              <div className="hidden text-game-ink-muted tabular-nums sm:block">
+                {t('wordRain.best', { score: best })}
+              </div>
+            ) : null}
+          </dl>
+          <Button
+            variant="secondary"
+            size="icon"
+            aria-label={paused ? t('wordRain.resume') : t('wordRain.pause')}
+            onClick={(event) => {
+              event.stopPropagation();
+              togglePause();
+            }}
+            className="pointer-events-auto rounded-full border-game-glow/30 bg-game-panel text-game-ink hover:bg-game-panel hover:text-highlight"
+          >
+            {paused ? (
+              <Play aria-hidden className="size-5" />
+            ) : (
+              <Pause aria-hidden className="size-5" />
+            )}
+          </Button>
+        </div>
+
         {paused ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-overlay p-4 text-center">
-            <p className="text-h3 text-text">{t('wordRain.paused')}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-game-panel p-4 text-center">
+            <p className="text-h3 text-game-ink">{t('wordRain.paused')}</p>
             <Button onClick={togglePause}>{t('wordRain.resume')}</Button>
           </div>
         ) : null}
       </div>
 
-      {style === 'TYPE' ? (
-        <label className="flex flex-col gap-1">
-          <span className="text-small text-text-muted">{t('wordRain.typeHint')}</span>
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="text"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            enterKeyHint="go"
-            onChange={onInput}
-            onKeyDown={onKeyDown}
-            aria-label={t('wordRain.input')}
-            className="min-h-11 rounded-md border border-border-strong bg-surface px-3 text-body font-card"
-          />
-        </label>
-      ) : (
-        <div role="status" className="flex min-h-11 flex-wrap items-center gap-2 text-small">
-          <span
-            aria-hidden
-            className={cn(
-              'size-2.5 rounded-full',
-              speech.listening ? 'bg-danger motion-safe:animate-pulse' : 'bg-text-muted',
-            )}
-          />
-          <span>{speech.listening ? t('wordRain.listening') : t('wordRain.micIdle')}</span>
-          {speech.heard ? (
-            <span className="rounded-full bg-primary-soft px-3 py-1 font-medium text-primary">
-              “{speech.heard}”
+      {/* Bảng điều khiển dính liền khung chơi: ô gõ hoặc trạng thái micro. */}
+      <div className="border-t border-game-glow/25 bg-game-panel p-3">
+        {style === 'TYPE' ? (
+          <label className="flex flex-col gap-2">
+            <span className="flex min-h-5 items-center gap-2 text-small text-game-ink-muted">
+              <Crosshair
+                aria-hidden
+                className={cn('size-4 shrink-0', aimingAt ? 'text-highlight' : 'text-game-glow')}
+              />
+              <span className="min-w-0 truncate">
+                {aimingAt ? t('wordRain.aiming', { prompt: aimingAt }) : t('wordRain.typeHint')}
+              </span>
             </span>
-          ) : null}
-          {speech.error ? (
-            <span className="flex flex-wrap items-center gap-2 text-danger">
-              {t(speech.error === 'denied' ? 'wordRain.micDenied' : 'wordRain.micFailed')}
-              <Button variant="secondary" onClick={onSwitchToTyping}>
-                {t('wordRain.switchToTyping')}
-              </Button>
-            </span>
-          ) : null}
-        </div>
-      )}
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              enterKeyHint="go"
+              value={typed}
+              onChange={onInput}
+              onKeyDown={onKeyDown}
+              aria-label={t('wordRain.input')}
+              className={cn(
+                'min-h-12 w-full rounded-md border bg-game-sky px-4 font-card text-h3 tracking-wide text-highlight caret-highlight outline-none transition-colors duration-fast focus-visible:border-highlight',
+                wrong ? 'feedback-wrong border-danger' : 'border-game-glow/40',
+              )}
+            />
+          </label>
+        ) : (
+          <div role="status" className="flex min-h-12 flex-wrap items-center gap-2 text-small">
+            <Mic
+              aria-hidden
+              className={cn(
+                'size-4',
+                speech.listening
+                  ? 'text-highlight motion-safe:animate-pulse'
+                  : 'text-game-ink-muted',
+              )}
+            />
+            <span>{speech.listening ? t('wordRain.listening') : t('wordRain.micIdle')}</span>
+            {speech.heard ? (
+              <span className="rounded-full border border-game-glow/30 bg-game-sky px-3 py-1 font-medium text-highlight">
+                “{speech.heard}”
+              </span>
+            ) : null}
+            {speech.error ? (
+              <span className="flex flex-wrap items-center gap-2">
+                <CircleAlert aria-hidden className="size-4 text-danger" />
+                {t(speech.error === 'denied' ? 'wordRain.micDenied' : 'wordRain.micFailed')}
+                <Button variant="secondary" onClick={onSwitchToTyping}>
+                  {t('wordRain.switchToTyping')}
+                </Button>
+              </span>
+            ) : null}
+          </div>
+        )}
+      </div>
       <p aria-live="polite" className="sr-only">
         {announce}
       </p>

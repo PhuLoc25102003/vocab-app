@@ -150,6 +150,19 @@ Xoá mềm dùng thông báo có nút "Hoàn tác" thay cho hộp xác nhận. C
 - Dialog cảnh báo trình duyệt `UnsupportedSpeechDialog` (6.18): Modal hiển thị khi trình duyệt không hỗ trợ Web Speech API trong chế độ Luyện nói, gợi ý trình duyệt phù hợp.
 - Chữ nhỏ trên `.paper-grid` đặt trên nền `bg-surface` để dòng kẻ không cắt qua chữ.
 - Nút phát âm nằm cố định một vị trí trên thẻ, không làm lật thẻ khi bấm.
+- Mưa từ (7.12): khung chơi luôn là bầu trời đêm ở cả light và dark, dùng nhóm token `--game-*`:
+
+| Token               | Light                 | Dark                 | Dùng cho                          |
+| ------------------- | --------------------- | -------------------- | --------------------------------- |
+| `--game-sky-top`    | `#0b1533`             | `#04070f`            | Đỉnh trời, mặt đất, thành phố     |
+| `--game-sky-bottom` | `#1d3a7a`             | `#0f1f42`            | Chân trời                         |
+| `--game-ink`        | `#f1f5f9`             | như light            | Chữ trên khung chơi, thân máy bay |
+| `--game-ink-muted`  | `#a5b4cf`             | như light            | Ô chữ chưa gõ, dấu câu tự điền    |
+| `--game-panel`      | `rgb(10 18 40 / .84)` | `rgb(6 10 22 / .86)` | Thẻ nghĩa, HUD, thanh gõ          |
+| `--game-steel`      | `#475569`             | như light            | Cánh máy bay, thân drone          |
+| `--game-glow`       | `#38bdf8`             | như light            | Tia laser, lưới mặt đất, viền thẻ |
+
+Tailwind có `bg-game-sky`, `bg-game-panel`, `text-game-ink`, `text-game-ink-muted`, `border-game-glow`. Chữ đã gõ và mục tiêu đang khoá dùng `--highlight`, mục tiêu lớn dùng `--danger`.
 
 ## Giọng văn trên giao diện
 
