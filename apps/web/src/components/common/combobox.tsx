@@ -33,7 +33,7 @@ interface ComboboxProps {
    * nơi danh sách nổi bị cắt. Hộp thoại chỉ cao thêm khi danh sách đang mở.
    */
   inline?: boolean;
-  /** Chờ người dùng ngừng gõ bấy nhiêu mili giây rồi mới lọc danh sách. Mặc định lọc ngay. */
+  /** Chờ người dùng ngừng gõ bấy nhiêu mili giây rồi mới lọc danh sách; 0 là lọc ngay. */
   debounceMs?: number;
 }
 
@@ -47,6 +47,9 @@ export function normalizeSearch(text: string): string {
     .toLocaleLowerCase('vi')
     .trim();
 }
+
+/** Thời gian chờ mặc định của mọi ô chọn có tìm kiếm. */
+export const COMBOBOX_DEBOUNCE_MS = 250;
 
 function filterOptions(options: ComboboxOption[], text: string): ComboboxOption[] {
   const needle = normalizeSearch(text);
@@ -74,7 +77,7 @@ export function Combobox({
   disabled = false,
   onBlur,
   inline = false,
-  debounceMs = 0,
+  debounceMs = COMBOBOX_DEBOUNCE_MS,
 }: ComboboxProps) {
   const { t } = useTranslation();
   const id = useId();

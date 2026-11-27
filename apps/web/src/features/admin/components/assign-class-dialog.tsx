@@ -112,7 +112,6 @@ export function AssignClassDialog({ student, open, onOpenChange }: AssignClassDi
           emptyText={t('assignClass.empty')}
           error={missing ? t('assignClass.required') : undefined}
           inline
-          debounceMs={250}
         />
       )}
     </FormDialog>

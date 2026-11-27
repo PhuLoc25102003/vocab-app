@@ -60,7 +60,7 @@ describe('Combobox', () => {
     await userEvent.click(input);
     expect(input).toHaveAttribute('aria-expanded', 'true');
     await userEvent.keyboard('viet');
-    expect(screen.getAllByRole('option')).toHaveLength(1);
+    await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(1));
     await userEvent.keyboard('{Enter}');
 
     expect(screen.getByText('vi', { selector: 'output' })).toBeInTheDocument();
@@ -86,6 +86,6 @@ describe('Combobox', () => {
     render(<Harness />);
     await userEvent.click(screen.getByRole('combobox', { name: 'Ngôn ngữ' }));
     await userEvent.keyboard('xyz');
-    expect(screen.getByText('Không có kết quả')).toBeInTheDocument();
+    expect(await screen.findByText('Không có kết quả')).toBeInTheDocument();
   });
 });

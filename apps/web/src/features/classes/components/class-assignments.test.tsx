@@ -177,7 +177,9 @@ describe('ClassAssignments', () => {
     // Gõ ngay trong ô chọn để lọc, không có ô tìm kiếm riêng.
     await userEvent.click(picker);
     await userEvent.keyboard('unit');
-    expect(within(dialog).queryByRole('option', { name: /Nháp/ })).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(within(dialog).queryByRole('option', { name: /Nháp/ })).not.toBeInTheDocument(),
+    );
     await userEvent.keyboard('{Enter}');
     expect(picker).toHaveValue('Unit 1');
     // Mặc định là lộ trình đề xuất; bỏ Flashcard và Ghép cặp, đưa Luyện viết lên đầu.
