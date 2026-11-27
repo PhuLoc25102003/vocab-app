@@ -403,7 +403,13 @@ describe('study sessions', () => {
       const first = await finish(id, owner.token).expect(200);
       const second = await finish(id, owner.token).expect(200);
 
-      expect(second.body).toEqual(first.body);
+      // Huy hiệu chỉ báo ở lần kết thúc đầu (ví dụ `night-owl` khi chạy test ban đêm),
+      // nên so phần còn lại và kiểm tra lần gọi lại không báo trùng huy hiệu.
+      expect({ ...second.body.data, newBadges: [] }).toEqual({
+        ...first.body.data,
+        newBadges: [],
+      });
+      expect(second.body.data.newBadges).toEqual([]);
     });
 
     it('trả 401, 403 và 404 đúng trường hợp', async () => {
