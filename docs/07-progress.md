@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      26 |      26 | Xong       |
-| **Toàn dự án**          |                                            | **213** | **217** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      27 |      27 | Xong       |
+| **Toàn dự án**          |                                            | **214** | **218** | **98%**    |
 
 ## Cách cập nhật
 
@@ -568,6 +568,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.21** Chấm đáp án gõ không bắt gõ ký tự không có trên bàn phím: `gradeText` ở `@vocab/shared` đổi nháy cong, gạch dài, dấu chấm lửng về dạng thường, bỏ dấu câu và ký hiệu khi so (`o'clock` gõ `oclock`, `e-mail` gõ `email`, `well-known` gõ `well known`), quy chữ Latin ngoại (ñ, ü, ç, ß...) về chữ gốc; chữ tiếng Việt có dấu vẫn chấm đúng dấu. Áp dụng cho mọi chế độ gõ ở cả web và API (#445).
 - [x] **7.22** Làm mới landing page: hero là khung trời đêm Mưa từ (nghĩa rơi bằng CSS, chiến đấu cơ của game vẽ lại bằng SVG `fighter-jet.tsx` theo `drawJet`, tia laser vào nghĩa đang khoá, thanh gõ), dải 10 chế độ chạy ngang (dừng khi rê chuột hoặc focus), khu bento "Học vui, học đều mỗi ngày" (thanh XP chạy, chuỗi ngày, xếp hạng tuần, huy hiệu, lớp học, nhắc học và offline), lộ trình "Một nút, mười bước", lịch ôn và lời mời cuối trang; mỗi phần một khung riêng; chuyển động chỉ dùng `translate`, `scale`, `opacity` và tắt hết khi `prefers-reduced-motion` (#445).
 - [x] **7.23** Lộ trình "Bắt đầu học" đi hết 10 chế độ theo thứ tự từ dễ đến khó (Xem thẻ, Trắc nghiệm, Ghép cặp, Học kỹ, Luyện viết, Nghe viết, Điền từ, Luyện nói, Kiểm tra, Mưa từ), bước không dùng được thì bỏ qua; ở điện thoại thanh bước gọn thành "Bước n/10: tên bước" (UC trong `docs/use-cases/05-lo-trinh.md`, #445).
+- [x] **7.24** Kiểm tra: bỏ bảng số câu ở đầu trang (cuộn xuống là mất), chuyển vào thanh nộp bài dính dưới; bấm "Đã trả lời x/y câu" để mở hoặc gập lưới câu (`aria-expanded`, chuyển động mở ra tắt khi giảm chuyển động), bấm một câu thì cuộn tới và gập lại; thêm thanh tiến độ mảnh (#445).
 
 ## Quyết định cần chốt
 

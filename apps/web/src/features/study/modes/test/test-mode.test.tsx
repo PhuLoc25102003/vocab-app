@@ -31,6 +31,18 @@ function setup() {
 }
 
 describe('TestModeView', () => {
+  it('bảng câu nằm ở thanh nộp bài, bấm số câu đã làm để mở và gập', async () => {
+    Element.prototype.scrollIntoView = vi.fn();
+    setup();
+    const toggle = screen.getByRole('button', { name: /Đã trả lời 0\/3 câu/ });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Câu 2' }));
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('không chấm trước khi nộp, nộp thì gửi đáp án cả phần theo thứ tự', async () => {
     const onAnswer = setup();
 

@@ -1,8 +1,8 @@
 'use client';
 
 import type { Question } from '@vocab/shared';
-import { Check, ClipboardCheck, ListChecks, PenLine } from 'lucide-react';
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { Check, ChevronUp, ClipboardCheck, ListChecks, PenLine } from 'lucide-react';
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { AudioButton } from '@/components/common/audio-button';
 import { CardImage } from '@/components/common/card-image';
 import { FormError } from '@/components/common/form-message';
@@ -24,6 +24,8 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
   const [items] = useState<Question[]>(() => (round?.length ? round : [question]));
   const [values, setValues] = useState<Record<string, string>>({});
   const [confirmBlank, setConfirmBlank] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const paletteId = useId();
   const shownAt = useRef(0);
   const submitted = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -73,45 +75,6 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="flex flex-1 flex-col gap-6">
-      {/* Thanh điều hướng nhanh và tiến độ bài thi */}
-      <section
-        aria-label={t('test.jumpTo')}
-        className="glass-surface flex flex-col gap-3 rounded-2xl border border-border p-4 shadow-sm"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <ClipboardCheck aria-hidden className="size-5 text-primary" />
-            <span className="font-semibold text-text">
-              {t('test.answeredCount', { answered: answeredCount, total: items.length })}
-            </span>
-          </div>
-          <span className="text-small text-text-muted">
-            {Math.round((answeredCount / (items.length || 1)) * 100)}%
-          </span>
-        </div>
-
-        {/* Thanh Palette các câu hỏi để nhảy nhanh */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {items.map((item, index) => {
-            const isDone = Boolean(values[item.id]?.trim());
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollToQuestion(index)}
-                aria-label={t('test.question', { number: index + 1 })}
-                className={cn(
-                  'flex size-11 items-center justify-center rounded-full text-tiny font-semibold',
-                  isDone ? 'glass-button-tint' : 'glass-button text-text-muted hover:text-text',
-                )}
-              >
-                {index + 1}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
       {/* Danh sách câu hỏi */}
       <ol className="flex flex-col gap-6">
         {items.map((item, index) => {
@@ -259,31 +222,84 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
         })}
       </ol>
 
-      {/* Thanh nộp bài dính phía dưới (Sticky Footer) */}
-      <div className="glass-overlay sticky bottom-4 z-20 mt-4 flex group-data-[typing=true]/study:hidden flex-col gap-3 rounded-sheet p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-0.5">
-          <div className="flex items-center gap-2">
-            <span className="text-small font-semibold">
-              {t('test.answeredCount', {
-                answered: answeredCount,
-                total: items.length,
-              })}
-            </span>
-            {blankCount === 0 ? (
-              <span className="flex items-center gap-1 text-tiny text-success font-medium">
-                <Check className="size-3.5" /> {t('test.allAnswered')}
-              </span>
-            ) : null}
-          </div>
-          {confirmBlank ? (
-            <FormError>{t('test.blank', { count: blankCount })}</FormError>
-          ) : (
-            <p className="text-tiny text-text-muted">{t('test.intro')}</p>
+      {/* Thanh nộp bài dính dưới: bấm số câu đã làm để mở bảng nhảy tới từng câu, ở đâu cũng dùng được. */}
+      <div className="glass-overlay sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-sheet p-4 group-data-[typing=true]/study:hidden">
+        <div
+          id={paletteId}
+          className={cn(
+            'grid transition-[grid-template-rows] duration-base ease-standard motion-reduce:transition-none',
+            paletteOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
           )}
+        >
+          <div inert={!paletteOpen} className="min-h-0 overflow-hidden">
+            <div
+              role="group"
+              aria-label={t('test.jumpTo')}
+              className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto pb-1"
+            >
+              {items.map((item, index) => {
+                const isDone = Boolean(values[item.id]?.trim());
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setPaletteOpen(false);
+                      scrollToQuestion(index);
+                    }}
+                    aria-label={t('test.question', { number: index + 1 })}
+                    className={cn(
+                      'flex size-11 items-center justify-center rounded-full text-tiny font-semibold',
+                      isDone ? 'glass-button-tint' : 'glass-button text-text-muted hover:text-text',
+                    )}
+                  >
+                    {index + 1}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <Button type="submit" className="h-11 w-full shrink-0 font-semibold sm:w-auto px-8">
-          {t(confirmBlank ? 'test.submitAnyway' : 'test.submit')}
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-col gap-1">
+            <button
+              type="button"
+              aria-expanded={paletteOpen}
+              aria-controls={paletteId}
+              onClick={() => setPaletteOpen((open) => !open)}
+              className="-mx-2 flex min-h-11 items-center gap-2 rounded-md px-2 text-left text-small font-semibold hover:bg-primary-soft"
+            >
+              <ClipboardCheck aria-hidden className="size-5 shrink-0 text-primary" />
+              <span className="min-w-0 flex-1">
+                {t('test.answeredCount', { answered: answeredCount, total: items.length })}
+              </span>
+              {blankCount === 0 ? (
+                <Check aria-label={t('test.allAnswered')} className="size-4 text-success" />
+              ) : null}
+              <ChevronUp
+                aria-hidden
+                className={cn(
+                  'size-4 shrink-0 text-text-muted transition-transform duration-fast motion-reduce:transition-none',
+                  paletteOpen ? '' : 'rotate-180',
+                )}
+              />
+            </button>
+            <span aria-hidden className="h-1 overflow-hidden rounded-full bg-border">
+              <span
+                className="block h-full bg-primary transition-[width] duration-base ease-standard"
+                style={{ width: `${Math.round((answeredCount / (items.length || 1)) * 100)}%` }}
+              />
+            </span>
+            {confirmBlank ? (
+              <FormError>{t('test.blank', { count: blankCount })}</FormError>
+            ) : (
+              <p className="text-tiny text-text-muted">{t('test.intro')}</p>
+            )}
+          </div>
+          <Button type="submit" className="h-11 w-full shrink-0 px-8 font-semibold sm:w-auto">
+            {t(confirmBlank ? 'test.submitAnyway' : 'test.submit')}
+          </Button>
+        </div>
       </div>
     </form>
   );
