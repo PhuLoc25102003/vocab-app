@@ -32,6 +32,13 @@ export class NotificationsRepository extends BaseRepository {
     });
   }
 
+  async createMany(rows: readonly ({ userId: string } & NewNotification)[]) {
+    if (rows.length === 0) return;
+    await this.prisma.notification.createMany({
+      data: rows.map(({ userId, type, data, href }) => ({ userId, type, data, href })),
+    });
+  }
+
   /** Tên lớp và id học sinh trong lớp. */
   findClassMembers(classId: string) {
     return this.prisma.class.findUnique({

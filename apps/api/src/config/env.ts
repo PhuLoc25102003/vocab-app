@@ -34,6 +34,15 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().trim().default(''),
   /** Địa chỉ web để tạo liên kết trong thư. Để trống thì lấy origin đầu tiên của CORS_ORIGINS. */
   WEB_ORIGIN: z.string().trim().default(''),
+  /**
+   * Khoá bí mật cho `POST /internal/jobs/*` (GitHub Actions gọi theo lịch). Để trống thì tắt các
+   * endpoint job. Tạo bằng `openssl rand -hex 32`.
+   */
+  JOBS_SECRET: z
+    .string()
+    .trim()
+    .refine((value) => value === '' || value.length >= 32, 'JOBS_SECRET cần ít nhất 32 ký tự')
+    .default(''),
   /** Upstash Redis REST, dùng chung bộ đếm rate limit giữa các instance. Để trống thì đếm trong bộ nhớ. */
   UPSTASH_REDIS_REST_URL: z
     .string()

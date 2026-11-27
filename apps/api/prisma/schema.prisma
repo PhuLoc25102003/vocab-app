@@ -69,6 +69,7 @@ model User {
   streakFreezeDays    StreakFreezeDay[]
   badges              UserBadge[]
   notifications       Notification[]
+  reminderLogs        ReminderLog[]
 }
 
 model RefreshSession {
@@ -268,6 +269,25 @@ model Notification {
 
   @@index([userId, createdAt])
   @@index([userId, readAt])
+}
+
+enum ReminderKind {
+  /// Nhắc giữ chuỗi và ôn thẻ đến hạn, tối đa một lần mỗi ngày học; `key` là ngày YYYY-MM-DD.
+  DAILY
+  /// Bài tập sắp hết hạn, một lần cho mỗi bài; `key` là id bài giao.
+  ASSIGNMENT_DUE
+}
+
+/// Đã nhắc ai, việc gì, để job chạy lại không gửi trùng.
+model ReminderLog {
+  userId    String
+  kind      ReminderKind
+  key       String
+  createdAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, kind, key])
 }
 
 model Attempt {

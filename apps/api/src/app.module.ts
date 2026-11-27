@@ -21,6 +21,7 @@ import { ClassesModule } from './modules/classes/classes.module';
 import { FoldersModule } from './modules/folders/folders.module';
 import { ImportModule } from './modules/import/import.module';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
+import { JobsModule } from './modules/jobs/jobs.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { SetsModule } from './modules/sets/sets.module';
@@ -48,6 +49,7 @@ import { UsersModule } from './modules/users/users.module';
     ProgressModule,
     LeaderboardModule,
     NotificationsModule,
+    JobsModule,
     HealthModule,
     UploadsModule,
   ],

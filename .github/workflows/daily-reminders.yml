@@ -1,0 +1,29 @@
+name: Daily reminders
+
+# 13:00 UTC là 20:00 giờ Việt Nam. Render gói Free ngủ khi rảnh nên lần gọi này cũng đánh thức API;
+# khởi động lạnh có thể mất khoảng 90 giây, vì vậy thời gian chờ dài và có thử lại.
+on:
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call the reminder job
+        env:
+          API_URL: ${{ secrets.REMINDERS_API_URL }}
+          JOBS_SECRET: ${{ secrets.JOBS_SECRET }}
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$JOBS_SECRET" ]; then
+            echo "Chưa cấu hình REMINDERS_API_URL hoặc JOBS_SECRET, bỏ qua."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error \
+            --max-time 180 --retry 3 --retry-delay 30 --retry-all-errors \
+            -X POST "$API_URL/api/v1/internal/jobs/daily-reminders" \
+            -H "X-Job-Secret: $JOBS_SECRET"
