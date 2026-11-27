@@ -1,6 +1,6 @@
 # Tiến độ dự án
 
-Cập nhật lần cuối: 2026-11-24
+Cập nhật lần cuối: 2026-11-27
 
 **Đang ở:** Đã hoàn thành các việc 6.10 đến 6.18 (ảnh minh hoạ, kiểm tra, cân đối banner #419, đồng bộ bảng #420, context menu & import #421, sticky header & offline đa chế độ #422, trung tâm quản trị toàn diện #423, giọng đọc tự nhiên #424, sticky table header và tối ưu mobile 6.17 #425, tối ưu nhận diện luyện nói, modal cảnh báo trình duyệt, trộn thẻ ngẫu nhiên mặc định và tối ưu nút chi tiết bộ từ mobile 6.18 #426). Còn phát hành vào `main` (1.35) và đo Lighthouse trên production (1.34).
 
@@ -8,8 +8,9 @@ Cập nhật lần cuối: 2026-11-24
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
-2. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
+1. Giai đoạn 7, làm từ 7.1 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
+3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
 ## Tổng quan
 
@@ -23,8 +24,9 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 3. Lớp học              | Giáo viên giao bài và xem kết quả          |      14 |      14 | Xong       |
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
-| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      19 |      19 | Xong       |
-| **Toàn dự án**          |                                            | **184** | **188** | **98%**    |
+| 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       0 |      14 | Chưa làm   |
+| **Toàn dự án**          |                                            | **187** | **205** | **91%**    |
 
 ## Cách cập nhật
 
@@ -509,6 +511,42 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
     - Mọi lần phát âm tự động và thủ công trong phiên học ngay lập tức áp dụng tốc độ đọc vừa chọn trên cả Web Speech API lẫn Audio fallback.
   - **Tích hợp nút nghe chậm trực tiếp trên câu hỏi của các chế độ học (`AudioButton`)**:
     - Kích hoạt `withSlow` cho `AudioButton` trên tất cả các chế độ học (Flashcard, Trắc nghiệm, Tự luận, Luyện nói, Kiểm tra, Nghe viết), cung cấp icon ốc sên bên cạnh loa để nghe chậm ngay tại chỗ mà không cần thao tác chuyển đổi chung.
+
+## Giai đoạn 7: Động lực học tập và trò chơi
+
+**Xong khi:** học sinh có lý do quay lại mỗi ngày (XP, mục tiêu ngày, chuỗi có thẻ giữ chuỗi, huy hiệu), thấy mình đứng ở đâu so với cả app và cả lớp, được nhắc trước khi mất chuỗi qua Web Push hoặc mail mà không tốn phí dịch vụ, và có chế độ trò chơi Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`. Không thêm tab mới vào thanh điều hướng: các khối mới nằm ở Tổng quan, Tài khoản và trang lớp.
+
+### 7A. XP, cấp độ và mục tiêu ngày
+
+- [ ] **7.1** Nền XP: bảng `XpEvent` (người dùng, số XP, nguồn, phiên học, thời điểm) và cột `User.dailyGoalXp` (mặc định 20); quy tắc tính trong `@vocab/shared` (`study/xp.ts`): đúng +10, ôn thẻ đến hạn đúng +5, mỗi 5 câu đúng liên tiếp +5, không cộng lại thẻ đã đúng trong 10 phút, trần 500 XP mỗi ngày, bảng cấp độ; server cộng XP khi kết thúc phiên trong cùng transaction, phiên offline gửi lên cũng được tính; `GET /me/xp` (tổng, cấp, XP hôm nay, mục tiêu); ngày tính theo giờ Việt Nam. Cập nhật `docs/02-database.md`, `docs/03-api.md` (UC-G1).
+- [ ] **7.2** Giao diện XP: khối XP và cấp độ trên Tổng quan, vòng tròn mục tiêu ngày, đủ mục tiêu thì hiện "Hoàn thành hôm nay"; chọn mục tiêu 10, 20 hoặc 50 XP ở Tài khoản; màn kết quả hiện XP vừa nhận và hiệu ứng lên cấp (tắt khi giảm chuyển động). Cần 7.1 (UC-G1).
+
+### 7B. Chuỗi và thẻ giữ chuỗi
+
+- [ ] **7.3** Thẻ giữ chuỗi: mỗi thứ Hai được 1 thẻ, giữ tối đa 2; bỏ lỡ đúng 1 ngày thì tự dùng thẻ, ngày đó tính là giữ chuỗi; bảng `StreakFreeze` ghi ngày đã dùng; `GET /stats/overview` trả số thẻ còn và các ngày đã dùng; Tổng quan hiện ❄️ trên lịch 7 ngày và thông báo "Đã dùng thẻ giữ chuỗi hôm qua". Cần 7.1 (UC-G2).
+
+### 7C. Huy hiệu
+
+- [ ] **7.4** Huy hiệu: danh sách và điều kiện trong `@vocab/shared` (ví dụ 100 từ đã thuộc, chuỗi 7 và 30 ngày, Kiểm tra 100%, học 10 bộ, đạt mục tiêu ngày 7 lần, cú đêm học sau 23h), bảng `UserBadge` (khoá duy nhất người dùng và mã huy hiệu), xét sau mỗi phiên, `GET /me/badges`; lưới huy hiệu ở Tài khoản (đã có và chưa có kèm điều kiện), thông báo khi nhận ở màn kết quả. Cần 7.1 (UC-G3).
+
+### 7D. Bảng xếp hạng
+
+- [ ] **7.5** API xếp hạng tuần: `GET /leaderboard?scope=global|class&classId=&week=current|previous` trả top 50 theo XP tuần (thứ Hai 00:00 giờ Việt Nam) kèm hạng của tôi; cột `User.hideFromLeaderboard` và `Class.leaderboardEnabled` (mặc định bật); xếp hạng lớp chỉ cho thành viên và giáo viên của lớp (`@CheckOwnership` hoặc guard thành viên); chỉ trả tên hiển thị và ảnh đại diện; cache Redis ngắn khi có. Cần 7.1 (UC-G4).
+- [ ] **7.6** Giao diện xếp hạng: khối "Xếp hạng tuần" trên Tổng quan (top 3 và hạng của tôi) có link tới trang `/leaderboard` (tab Toàn app và từng lớp đã tham gia, xem tuần trước); tab "Xếp hạng" ở trang lớp, công tắc bật tắt cho giáo viên; công tắc "Ẩn tôi khỏi bảng xếp hạng chung" ở Tài khoản. Cần 7.5 (UC-G4).
+
+### 7E. Nhắc học miễn phí
+
+- [ ] **7.7** Nền job hằng ngày: `POST /internal/jobs/daily-reminders` là `@Public` nhưng bắt buộc header `X-Job-Secret` khớp `JOBS_SECRET` (so sánh an toàn thời gian); GitHub Actions chạy theo lịch 13:00 UTC (20:00 giờ Việt Nam) gọi endpoint, đồng thời đánh thức Render gói Free; bảng `NotificationLog` (khoá duy nhất người dùng, loại, ngày) để chạy lại không gửi trùng; chọn người cần nhắc: chuỗi từ 3 ngày mà hôm nay chưa học, có từ 10 thẻ đến hạn, bài tập hết hạn trong 24 giờ mà chưa nộp. Thêm biến vào `.env.example`, `env.ts`, `docs/08-deploy.md` (UC-G5).
+- [ ] **7.8** Web Push: khoá `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (thiếu thì tắt tính năng), bảng `PushSubscription`, `POST /me/push-subscriptions` và `DELETE`, gửi bằng thư viện `web-push`, xoá đăng ký khi dịch vụ đẩy trả 404 hoặc 410; service worker xử lý `push` và `notificationclick` mở đúng trang (Ôn hôm nay, bài tập); nút "Bật nhắc học" chỉ hỏi quyền sau khi học xong phiên đầu tiên hoặc khi người học tự bấm, không hỏi lúc vừa vào web; hướng dẫn riêng cho iPhone (thêm vào màn hình chính, iOS 16.4+). Cần 7.7 (UC-G5).
+- [ ] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
+- [ ] **7.10** Cài đặt thông báo: nhóm "Thông báo" ở Tài khoản bật tắt từng loại (chuỗi, ôn tập, bài tập) theo từng kênh (Web Push, mail), trạng thái quyền của trình duyệt và nút gửi thử; trang huỷ nhận mở từ link trong mail không cần đăng nhập. Cần 7.8, 7.9 (UC-G5).
+
+### 7F. Chế độ Mưa từ
+
+- [ ] **7.11** Strategy và API cho chế độ Mưa từ (`WORD_RAIN`): enum mới, đăng ký trong registry của `@vocab/shared`, chấm đáp án gõ (bỏ dấu cách thừa, không phân biệt hoa thường), kết quả cập nhật `CardProgress` và XP như chế độ Viết; bảng `GameHighScore` (người dùng, bộ, chế độ, điểm, đợt cao nhất), `GET /sets/:id/high-score` và lưu điểm khi kết thúc phiên; bộ cần ít nhất 4 thẻ; giao bài cho lớp dùng được chế độ này. Theo skill `study-mode` (UC-G6).
+- [ ] **7.12a** Lõi trò chơi Mưa từ (hàm thuần, có unit test): vòng lặp `requestAnimationFrame` theo thời gian thực, sinh "mục tiêu" mang nghĩa rơi từ trên xuống, gõ chữ đầu thì khoá mục tiêu khớp gần đáy nhất, gõ đúng từng ký tự thì bắn, gõ đủ thì nổ, gõ sai thì mất combo; 3 khiên, mục tiêu chạm đáy mất 1 khiên; đợt 10 mục tiêu, tốc độ và mật độ tăng dần theo đợt; cuối mỗi 3 đợt có mục tiêu lớn là từ dài nhất trong bộ, cần gõ 2 lần; combo nhân điểm x2, x3, x4; tạm dừng bằng `Esc` hoặc khi rời tab; từ rơi trùng nhau không quá 2 lần một đợt. Cần 7.11 (UC-G6).
+- [ ] **7.12b** Đồ hoạ chiến đấu cơ hiện đại: vẽ bằng canvas hoặc SVG theo design token (đọc màu từ biến CSS, đúng light và dark): chiến đấu cơ cánh tam giác nhìn từ dưới lên, buồng lái kính phản sáng, hai động cơ phun lửa có hạt, máy bay xoay mũi về mục tiêu đang khoá; mục tiêu là drone địch mang thẻ nghĩa, chữ đã gõ đổi màu; đạn laser theo từng ký tự, nổ bằng hạt và sóng xung kích, rung màn nhẹ; nền trời đêm nhiều lớp chuyển động thị sai (sao, mây, thành phố mờ); HUD: điểm, combo, khiên, đợt, điểm cao nhất; âm thanh bắn và nổ bằng Web Audio theo công tắc âm thanh có sẵn; giảm chuyển động thì tắt rung, giảm hạt và thị sai; giữ 60 fps trên điện thoại tầm trung, tự giảm hiệu ứng khi tụt khung hình. Cần 7.12a (UC-G6).
+- [ ] **7.12c** Hoàn thiện Mưa từ: màn bắt đầu (luật chơi, điểm cao nhất của bộ, nút Bắt đầu), mobile 360 px dùng ô nhập ẩn luôn được focus và tính lại khung chơi theo `visualViewport` khi bàn phím hiện, màn kết quả chung kèm "Kỷ lục mới", danh sách từ bị lọt để học lại; thẻ chế độ trong lưới chế độ học; `aria-live` đọc nghĩa của mục tiêu đang khoá; E2E chơi một đợt bằng bàn phím. Cần 7.12b (UC-G6).
 
 ## Quyết định cần chốt
 
