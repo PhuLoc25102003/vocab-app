@@ -246,7 +246,9 @@
       "ASSIGNMENT_DUE": "Due soon: {{setTitle}}, due {{dueAt}}",
       "REVIEW_DUE": "Time to review: {{count}} cards are waiting",
       "BADGE_EARNED": "You earned the {{badge}} badge",
-      "STREAK_FROZEN": "A streak freeze covered {{day}}, your streak is safe"
+      "STREAK_FROZEN": "A streak freeze covered {{day}}, your streak is safe",
+      "REVIEW_DUE_streak": "Your {{streakDays}}-day streak is about to end! {{count}} cards to review",
+      "REVIEW_DUE_streakOnly": "Your {{streakDays}}-day streak is about to end! Study one session to keep it"
     }
   }
 }

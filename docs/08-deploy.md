@@ -122,6 +122,17 @@ Làm sau khi phát hành vào `main`, vì staging sẽ theo `develop`.
 
 Sentry đã hoãn khỏi MVP theo quyết định ngày 2026-11-20: xem lỗi bằng log của Render (**Logs**) và Vercel (**Logs**). Muốn biết khi API sập thì tạo monitor miễn phí ở uptimerobot.com gọi `https://<api>/api/v1/health` mỗi 5 phút và gửi email khi lỗi.
 
+## Job nhắc học hằng ngày (việc 7.7)
+
+Render gói Free ngủ khi rảnh nên API không tự hẹn giờ. Workflow `.github/workflows/daily-reminders.yml` chạy lúc 13:00 UTC (20:00 giờ Việt Nam), gọi `POST /api/v1/internal/jobs/daily-reminders` kèm header `X-Job-Secret`; lần gọi này cũng đánh thức API.
+
+1. Tạo khoá: `openssl rand -hex 32`.
+2. Render, **Environment**: thêm `JOBS_SECRET` bằng khoá vừa tạo. Để trống thì endpoint trả 404 và không có nhắc học.
+3. GitHub, **Settings**, **Secrets and variables**, **Actions**: thêm `JOBS_SECRET` (cùng khoá) và `REMINDERS_API_URL` (ví dụ `https://vocab-app-rj0t.onrender.com`, không có `/api/v1`). Thiếu một trong hai thì workflow bỏ qua, không báo lỗi.
+4. Chạy thử: tab **Actions**, **Daily reminders**, **Run workflow**. Chạy lại trong ngày không gửi trùng nhờ bảng `ReminderLog`.
+
+Lịch của GitHub Actions có thể trễ vài phút đến vài chục phút khi GitHub đông.
+
 ## Google OAuth
 
 Web dùng nút đăng nhập của Google, API kiểm tra token với cùng Client ID. Đặt Client ID ở cả hai nơi: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` trên Vercel, `GOOGLE_CLIENT_ID` trên Render. Hai giá trị khác nhau thì API từ chối đăng nhập.

@@ -352,6 +352,8 @@ model AssignmentSubmission {
 
 - `Notification` (việc 7.13): `type` là enum, `data` là JSON nhỏ (tên bộ, tên lớp, hạn, mã huy hiệu) để web dịch câu theo ngôn ngữ. Index `userId, createdAt` cho danh sách và `userId, readAt` cho số chưa đọc. Không có job dọn: thông báo quá 90 ngày bị xoá khi người nhận mở chuông.
 
+- `ReminderLog` (việc 7.7): khoá chính `userId, kind, key` với `key` là ngày (`DAILY`) hoặc id bài giao (`ASSIGNMENT_DUE`), để job nhắc học chạy lại không gửi trùng. Ghi log trước rồi mới tạo thông báo.
+
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường

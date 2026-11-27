@@ -61,7 +61,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G5. Nhắc học miễn phí
 
-- **Việc:** 7.7 đến 7.10. **Người dùng:** người đã đăng nhập; hệ thống. **Trạng thái:** Chưa làm.
+- **Việc:** 7.7 đến 7.10. **Người dùng:** người đã đăng nhập; hệ thống. **Trạng thái:** Thiếu: đã có job và thông báo trong chuông (7.7), chưa có Web Push, mail và cài đặt (7.8 đến 7.10).
 - **Phải có:**
   - Job chạy lúc 20:00 giờ Việt Nam do GitHub Actions gọi, vì Render gói Free ngủ khi rảnh nên hẹn giờ trong API không chạy đúng giờ.
   - Endpoint job chỉ chạy khi header bí mật đúng; chạy lại trong ngày không gửi trùng.
@@ -105,7 +105,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G7. Chuông thông báo trong app
 
-- **Việc:** 7.13. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu: đã có chuông và thông báo giao bài, huy hiệu, thẻ giữ chuỗi; "Đến giờ ôn tập" và "Bài tập sắp hết hạn" chờ job 7.7.
+- **Việc:** 7.13. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:**
   - Nút chuông trên header cạnh ảnh đại diện, vùng bấm 44 px, có số chưa đọc (từ 10 trở lên hiện "9+") và `aria-label` đọc được số đó.
   - Danh sách mới nhất trước: icon theo loại, nội dung ngắn, thời gian tương đối, chấm báo chưa đọc. Bấm thì đánh dấu đã đọc và mở đúng trang.

@@ -17,6 +17,7 @@ export default defineConfig({
       JWT_ACCESS_SECRET: 'test-only-access-secret-at-least-32-chars',
       JWT_REFRESH_SECRET: 'test-only-refresh-secret-at-least-32-chars',
       GOOGLE_CLIENT_ID: 'test-google-client-id',
+      JOBS_SECRET: 'test-only-jobs-secret-at-least-32-characters',
     },
   },
 });

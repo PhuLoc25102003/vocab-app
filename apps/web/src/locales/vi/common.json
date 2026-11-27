@@ -246,7 +246,9 @@
       "ASSIGNMENT_DUE": "Sắp hết hạn: {{setTitle}}, hạn {{dueAt}}",
       "REVIEW_DUE": "Đến giờ ôn tập: {{count}} thẻ đang chờ bạn",
       "BADGE_EARNED": "Bạn vừa nhận huy hiệu {{badge}}",
-      "STREAK_FROZEN": "Đã dùng 1 thẻ giữ chuỗi cho ngày {{day}}, chuỗi vẫn được giữ"
+      "STREAK_FROZEN": "Đã dùng 1 thẻ giữ chuỗi cho ngày {{day}}, chuỗi vẫn được giữ",
+      "REVIEW_DUE_streak": "Chuỗi {{streakDays}} ngày sắp mất! Còn {{count}} thẻ cần ôn",
+      "REVIEW_DUE_streakOnly": "Chuỗi {{streakDays}} ngày sắp mất! Học một phiên để giữ chuỗi"
     }
   }
 }

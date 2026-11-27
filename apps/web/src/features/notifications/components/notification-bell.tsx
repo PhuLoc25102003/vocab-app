@@ -65,8 +65,19 @@ function useNotificationText() {
         );
       case 'ASSIGNMENT_DUE':
         return t('notifications.types.ASSIGNMENT_DUE', { setTitle: value('setTitle'), dueAt });
-      case 'REVIEW_DUE':
-        return t('notifications.types.REVIEW_DUE', { count: Number(value('count')) || 0 });
+      case 'REVIEW_DUE': {
+        const count = Number(value('count')) || 0;
+        const streakDays = Number(value('streakDays')) || 0;
+        if (streakDays > 0) {
+          return t(
+            count > 0
+              ? 'notifications.types.REVIEW_DUE_streak'
+              : 'notifications.types.REVIEW_DUE_streakOnly',
+            { streakDays, count },
+          );
+        }
+        return t('notifications.types.REVIEW_DUE', { count });
+      }
       case 'BADGE_EARNED': {
         const code = value('code');
         const badge = isBadgeCode(code) ? tStudy(`badges.items.${code}.name`) : code;

@@ -63,6 +63,15 @@ export class NotificationsService {
     }
   }
 
+  /** Mỗi người một thông báo riêng, ví dụ job nhắc học. */
+  async notifyEach(rows: readonly ({ userId: string } & NewNotification)[]): Promise<void> {
+    try {
+      await this.notifications.createMany(rows);
+    } catch (error) {
+      this.logger.error('Không tạo được thông báo nhắc học', error);
+    }
+  }
+
   /** Thông báo bài tập mới cho mọi học sinh trong lớp. */
   async notifyNewAssignment(
     classId: string,
