@@ -229,5 +229,24 @@
       "saved": "Leaderboard setting saved",
       "failed": "Could not save, please try again"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "open": "Notifications, {{count}} unread",
+    "openNone": "Notifications",
+    "markAll": "Mark all as read",
+    "empty": "No notifications yet",
+    "loading": "Loading notifications",
+    "failed": "Could not load notifications",
+    "retry": "Try again",
+    "unread": "Unread",
+    "types": {
+      "ASSIGNMENT_NEW": "New assignment in {{className}}: {{setTitle}}",
+      "ASSIGNMENT_NEW_due": "New assignment in {{className}}: {{setTitle}}, due {{dueAt}}",
+      "ASSIGNMENT_DUE": "Due soon: {{setTitle}}, due {{dueAt}}",
+      "REVIEW_DUE": "Time to review: {{count}} cards are waiting",
+      "BADGE_EARNED": "You earned the {{badge}} badge",
+      "STREAK_FROZEN": "A streak freeze covered {{day}}, your streak is safe"
+    }
   }
 }

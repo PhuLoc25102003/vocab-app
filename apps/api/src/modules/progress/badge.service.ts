@@ -7,6 +7,7 @@ import {
   type BadgeMetrics,
 } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
+import { NotificationsService } from '../notifications/notifications.service';
 import { BadgeRepository } from './badge.repository';
 import { StatsRepository } from './stats.repository';
 import { StreakRepository } from './streak.repository';
@@ -17,6 +18,7 @@ export class BadgeService {
     private readonly badges: BadgeRepository,
     private readonly stats: StatsRepository,
     private readonly streak: StreakRepository,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async list(userId: string) {
@@ -45,6 +47,13 @@ export class BadgeService {
     const fresh = earnedBadges(metrics).filter((code) => !has.has(code));
     if (fresh.length > 0) {
       await this.badges.addBadges(userId, fresh, now);
+      for (const code of fresh) {
+        await this.notifications.notify([userId], {
+          type: 'BADGE_EARNED',
+          data: { code },
+          href: '/account#badges-title',
+        });
+      }
     }
     return fresh;
   }

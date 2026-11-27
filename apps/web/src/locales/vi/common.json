@@ -229,5 +229,24 @@
       "saved": "Đã lưu cài đặt bảng xếp hạng",
       "failed": "Không lưu được, thử lại nhé"
     }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "open": "Thông báo, {{count}} chưa đọc",
+    "openNone": "Thông báo",
+    "markAll": "Đánh dấu đã đọc hết",
+    "empty": "Chưa có thông báo nào",
+    "loading": "Đang tải thông báo",
+    "failed": "Không tải được thông báo",
+    "retry": "Thử lại",
+    "unread": "Chưa đọc",
+    "types": {
+      "ASSIGNMENT_NEW": "Bài tập mới ở lớp {{className}}: {{setTitle}}",
+      "ASSIGNMENT_NEW_due": "Bài tập mới ở lớp {{className}}: {{setTitle}}, hạn {{dueAt}}",
+      "ASSIGNMENT_DUE": "Sắp hết hạn: {{setTitle}}, hạn {{dueAt}}",
+      "REVIEW_DUE": "Đến giờ ôn tập: {{count}} thẻ đang chờ bạn",
+      "BADGE_EARNED": "Bạn vừa nhận huy hiệu {{badge}}",
+      "STREAK_FROZEN": "Đã dùng 1 thẻ giữ chuỗi cho ngày {{day}}, chuỗi vẫn được giữ"
+    }
   }
 }

@@ -2,7 +2,7 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`, `GET /leaderboard`, `GET /leaderboard/classes/:id`, `PUT /leaderboard/visibility`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`, `GET /leaderboard`, `GET /leaderboard/classes/:id`, `PUT /leaderboard/visibility`, `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `POST /notifications/read-all`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
@@ -74,6 +74,10 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | GET    | /leaderboard                                   | Đã đăng nhập              | Bảng xếp hạng XP tuần của cả app                           |
 | GET    | /leaderboard/classes/:id                       | Giáo viên, thành viên lớp | Bảng xếp hạng XP tuần của lớp                              |
 | PUT    | /leaderboard/visibility                        | Đã đăng nhập              | Ẩn hoặc hiện tên tôi trên bảng chung                       |
+| GET    | /notifications                                 | Đã đăng nhập              | Thông báo của tôi, mới nhất trước                          |
+| GET    | /notifications/unread-count                    | Đã đăng nhập              | Số thông báo chưa đọc                                      |
+| PATCH  | /notifications/:id/read                        | Người nhận                | Đánh dấu đã đọc                                            |
+| POST   | /notifications/read-all                        | Đã đăng nhập              | Đánh dấu đã đọc hết                                        |
 | GET    | /health                                        | Công khai                 | Kiểm tra API + kết nối DB                                  |
 | GET    | /admin/users                                   | ADMIN                     | Quản lý người dùng                                         |
 
@@ -195,6 +199,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `GET /stats/xp` trả `{ data: { totalXp, level, xpIntoLevel, xpForNextLevel, todayXp, dailyGoalXp } }`. Cấp 1 cần 100 XP để lên cấp 2, mỗi cấp sau cần thêm 50 XP. `todayXp` tính theo ngày học giờ Việt Nam.
 - `GET /leaderboard?week=current|previous` trả `{ data: { week, entries, me, hidden, enabled } }`. Tuần bắt đầu 00:00 thứ Hai giờ Việt Nam. `entries` là top 50 `{ rank, displayName, xp, isMe }` xếp theo XP tuần, bằng XP thì ai đạt sớm hơn đứng trên; `me` là dòng của người gọi kể cả khi ngoài top, `null` khi tuần đó chưa có XP. Chỉ trả tên hiển thị, không có email hay id. Tài khoản bị khoá không hiện. Người đã ẩn (`hideFromLeaderboard`) không hiện với người khác nhưng vẫn thấy hạng của mình (`hidden: true`).
 - `GET /leaderboard/classes/:id` cùng dạng, chỉ gồm học sinh của lớp, kể cả người đã ẩn khỏi bảng chung. Người không dạy và không học lớp đó nhận 404 `CLASS_NOT_FOUND`. Giáo viên tắt bảng (`PATCH /classes/:id` với `leaderboardEnabled: false`) thì học sinh nhận 403 `LEADERBOARD_DISABLED`, giáo viên và ADMIN vẫn xem được với `enabled: false`.
+- `GET /notifications?page&limit` trả `{ data: [{ id, type, data, href, readAt, createdAt }], meta }`, mới nhất trước, `sort` bị bỏ qua. `type` là `ASSIGNMENT_NEW`, `ASSIGNMENT_DUE`, `REVIEW_DUE`, `BADGE_EARNED` hoặc `STREAK_FROZEN`; web dựng câu từ `type` và `data` theo ngôn ngữ đang dùng. Mỗi lần gọi xoá thông báo quá 90 ngày của người gọi. `GET /notifications/unread-count` trả `{ data: { count } }`. `PATCH /notifications/:id/read` và `POST /notifications/read-all` trả 204; id của người khác hoặc không tồn tại trả 404 `NOT_FOUND`. Server tạo thông báo khi giáo viên giao bài (mỗi học sinh của lớp một thông báo), khi nhận huy hiệu và khi dùng thẻ giữ chuỗi; lỗi tạo thông báo chỉ ghi log, không làm hỏng việc chính.
 - `PUT /leaderboard/visibility` nhận `{ hidden }`, trả `{ data: { hidden } }`.
 - `GET /stats/badges` trả `{ data: [{ code, progress, target, earnedAt }] }` theo thứ tự `BADGES` trong `packages/shared/src/study/badges.ts`; `progress` tối đa bằng `target`, `earnedAt` là `null` khi chưa có.
 - `PUT /stats/xp/goal` nhận `{ dailyGoalXp }` là 10, 20 hoặc 50, trả cùng dạng `GET /stats/xp`. Giá trị khác trả 400 `VALIDATION_ERROR`.
