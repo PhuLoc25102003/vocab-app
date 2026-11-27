@@ -52,5 +52,7 @@
     "INTERNAL_ERROR": "Máy chủ gặp lỗi. Hãy thử lại sau.",
     "SERVICE_UNAVAILABLE": "Dịch vụ đang bận. Hãy thử lại sau.",
     "DB_UNAVAILABLE": "Dịch vụ đang bận. Hãy thử lại sau."
-  }
+  },
+  "globalErrorTitle": "Đã có lỗi xảy ra",
+  "globalErrorDesc": "Hãy thử lại. Nếu vẫn lỗi, tải lại trang sau ít phút."
 }

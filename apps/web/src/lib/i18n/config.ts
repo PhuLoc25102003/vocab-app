@@ -1,25 +1,6 @@
 import { createInstance, type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enCommon from '@/locales/en/common.json';
-import enMarketing from '@/locales/en/marketing.json';
-import enAdmin from '@/locales/en/admin.json';
-import enAccount from '@/locales/en/account.json';
-import enAuth from '@/locales/en/auth.json';
-import enClasses from '@/locales/en/classes.json';
-import enStudy from '@/locales/en/study.json';
-import enSets from '@/locales/en/sets.json';
-import enErrors from '@/locales/en/errors.json';
-import enValidation from '@/locales/en/validation.json';
-import viCommon from '@/locales/vi/common.json';
-import viMarketing from '@/locales/vi/marketing.json';
-import viAdmin from '@/locales/vi/admin.json';
-import viAccount from '@/locales/vi/account.json';
-import viAuth from '@/locales/vi/auth.json';
-import viClasses from '@/locales/vi/classes.json';
-import viStudy from '@/locales/vi/study.json';
-import viSets from '@/locales/vi/sets.json';
-import viErrors from '@/locales/vi/errors.json';
-import viValidation from '@/locales/vi/validation.json';
+import { vi, type Messages } from './messages-vi';
 
 /** Hai ngôn ngữ giao diện, `vi` mặc định (ADR 0003). */
 export const LOCALES = ['vi', 'en'] as const;
@@ -30,35 +11,9 @@ export const DEFAULT_LOCALE: Locale = 'vi';
 export const LOCALE_COOKIE = 'vocab.locale';
 export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-/** Mỗi feature một namespace; thêm file JSON vào cả `vi` và `en` rồi khai báo ở đây. */
-export const resources = {
-  vi: {
-    common: viCommon,
-    marketing: viMarketing,
-    admin: viAdmin,
-    account: viAccount,
-    auth: viAuth,
-    classes: viClasses,
-    study: viStudy,
-    sets: viSets,
-    errors: viErrors,
-    validation: viValidation,
-  },
-  en: {
-    common: enCommon,
-    marketing: enMarketing,
-    admin: enAdmin,
-    account: enAccount,
-    auth: enAuth,
-    classes: enClasses,
-    study: enStudy,
-    sets: enSets,
-    errors: enErrors,
-    validation: enValidation,
-  },
-} as const;
-
-export type Namespace = keyof (typeof resources)['vi'];
+/** Mỗi feature một namespace; thêm file JSON vào cả `vi` và `en` rồi khai báo ở `messages-*.ts`. */
+export type Namespace = keyof Messages;
+export type Bundles = Partial<Record<Locale, Messages>>;
 export const DEFAULT_NAMESPACE: Namespace = 'common';
 
 /** Mã `Intl` cho ngày giờ và số. */
@@ -76,17 +31,18 @@ export function toLocale(value: unknown): Locale {
 
 /**
  * Instance i18next riêng: server tạo mỗi request một cái, client tạo một cái cho cả cây React.
- * Chuỗi import tĩnh nên khởi tạo xong ngay, không cần chờ.
+ * Chuỗi có sẵn nên khởi tạo xong ngay, không cần chờ. Mặc định chỉ có tiếng Việt; server truyền
+ * `resources` đủ hai ngôn ngữ, client nhận thêm tiếng Anh khi trang mở bằng tiếng Anh.
  */
-export function createI18n(locale: Locale): i18n {
+export function createI18n(locale: Locale, bundles: Bundles = { vi }): i18n {
   const instance = createInstance();
   void instance.use(initReactI18next).init({
     lng: locale,
     fallbackLng: DEFAULT_LOCALE,
     supportedLngs: LOCALES,
-    resources,
+    resources: bundles,
     defaultNS: DEFAULT_NAMESPACE,
-    ns: Object.keys(resources.vi),
+    ns: Object.keys(vi),
     interpolation: { escapeValue: false },
     initAsync: false,
     returnNull: false,
@@ -95,4 +51,13 @@ export function createI18n(locale: Locale): i18n {
     },
   });
   return instance;
+}
+
+/** Tải bộ chuỗi tiếng Anh vào instance nếu chưa có, gọi trước khi `changeLanguage('en')`. */
+export async function loadLocale(instance: i18n, locale: Locale): Promise<void> {
+  if (instance.hasResourceBundle(locale, DEFAULT_NAMESPACE)) return;
+  const { en } = await import('./messages-en');
+  for (const [namespace, messages] of Object.entries(en)) {
+    instance.addResourceBundle(locale, namespace, messages, true, true);
+  }
 }

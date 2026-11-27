@@ -12,13 +12,21 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => navigation.params,
   useRouter: () => ({ push: navigation.push }),
 }));
-vi.mock('../api', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../api')>()),
-  joinClass: vi.fn(),
-  leaveClass: vi.fn(),
-  listJoinedClasses: vi.fn(),
-  listMyAssignments: vi.fn(),
-}));
+vi.mock('../api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../api')>();
+  const listJoinedClasses = vi.fn();
+  return {
+    ...actual,
+    joinClass: vi.fn(),
+    leaveClass: vi.fn(),
+    listJoinedClasses,
+    listMyAssignments: vi.fn(),
+    allJoinedClassesQuery: {
+      ...actual.allJoinedClassesQuery,
+      queryFn: () => listJoinedClasses(1, { limit: actual.ALL_JOINED_LIMIT }),
+    },
+  };
+});
 
 const joined: JoinedClass = {
   id: 'c1',

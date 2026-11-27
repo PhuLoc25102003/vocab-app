@@ -226,6 +226,26 @@ export async function listJoinedClasses(
   return joinedClassListSchema.parse(await http(`/classes/joined?${params.toString()}`));
 }
 
+/** Tối đa số lớp một trang cho phép, đủ cho một học sinh. */
+export const ALL_JOINED_LIMIT = 100;
+
+/**
+ * Mọi lớp đã tham gia trong một request. Ô lọc lớp và trang đầu danh sách lớp dùng chung, tab của
+ * Xếp hạng (`joinedClassesQuery`) cũng dùng đúng khoá này, nên chỉ gọi API một lần.
+ */
+export const allJoinedClassesQuery = {
+  queryKey: classKeys.joinedQuery(1, '', ALL_JOINED_LIMIT),
+  queryFn: () => listJoinedClasses(1, { limit: ALL_JOINED_LIMIT }),
+};
+
+/** Trang 1 của danh sách lớp lấy từ danh sách đầy đủ, cùng thứ tự với API. */
+export function firstJoinedPage(list: JoinedClassList): JoinedClassList {
+  return {
+    data: list.data.slice(0, JOINED_PAGE_SIZE),
+    meta: { ...list.meta, limit: JOINED_PAGE_SIZE },
+  };
+}
+
 export const MY_ASSIGNMENTS_PAGE_SIZE = 20;
 
 /** Bài cần làm, máy chủ đã xếp: bỏ lỡ, chưa nộp theo hạn, đã nộp. */

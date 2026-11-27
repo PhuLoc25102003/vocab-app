@@ -3,6 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpError } from '@/lib/http';
 import { createI18n } from '@/lib/i18n/config';
+import { resources } from '@/lib/i18n/resources';
 import { loginWithGoogle } from '../api';
 import { refreshSession } from '../session';
 import { useAuthStore } from '../store';
@@ -232,7 +233,7 @@ describe('GoogleSignIn', () => {
     });
 
     it('dịch thông báo lỗi và đặt locale tiếng Anh cho nút Google khi giao diện là tiếng Anh', async () => {
-      createI18n('en');
+      createI18n('en', resources);
       navigation.params = new URLSearchParams(`google_error=${ERROR_CODES.ACCOUNT_LOCKED}`);
       const client = stubGoogle();
 

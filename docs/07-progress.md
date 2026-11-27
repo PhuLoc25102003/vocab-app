@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7 đã xong, chờ merge PR #440 và cấu hình biến môi trường nhắc học theo `docs/08-deploy.md`. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7 đã xong. Cần bạn: chạy thử workflow Daily reminders, bật thử push ở Tài khoản, và tạo monitor UptimeRobot gọi `/api/v1/health` mỗi 5 phút để API Render không ngủ (`docs/perf-audit-2026-11-27.md`).
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      17 |      17 | Xong       |
-| **Toàn dự án**          |                                            | **204** | **208** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      18 |      18 | Xong       |
+| **Toàn dự án**          |                                            | **205** | **209** | **98%**    |
 
 ## Cách cập nhật
 
@@ -552,7 +552,11 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7G. Quản trị lớp học
 
-- [x] **7.14** ADMIN xếp lớp cho học sinh: `POST /admin/classes/:id/members` nhận `{ userId }` (lớp phải đang hoạt động, tài khoản phải là học sinh, xếp lại thì giữ ngày tham gia cũ), mã lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`; hộp thoại "Xếp lớp" chọn lớp có tìm kiếm, mở từ nút "Xếp lớp" ở bảng học sinh chưa có lớp (`/admin/classes`). Cập nhật `docs/03-api.md` (UC trong `docs/use-cases/06-vai-tro-va-lop-hoc.md`).
+- [x] **7.14** ADMIN xếp lớp cho học sinh: `POST /admin/classes/:id/members` nhận `{ userId }` (lớp phải đang hoạt động, tài khoản phải là học sinh, xếp lại thì giữ ngày tham gia cũ), mã lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`; hộp thoại "Xếp lớp" chọn lớp có tìm kiếm, mở từ nút "Xếp lớp" ở bảng học sinh chưa có lớp (`/admin/classes`). Cập nhật `docs/03-api.md` (UC trong `docs/use-cases/06-vai-tro-va-lop-hoc.md`). (#443)
+
+### 7H. Hiệu năng
+
+- [x] **7.15** Giảm độ trễ khi mở trang, giữ nguyên giao diện và logic: script ở `<head>` gửi sẵn `POST /auth/refresh` lúc đọc HTML (chỉ trang trong app và có cookie phiên) để không đợi tải xong JS; bundle client chỉ có tiếng Việt, tiếng Anh tải khi cần (bớt khoảng 70 KB JS mỗi trang); trang Lớp học và Xếp hạng dùng chung một request `/classes/joined`. Số đo và việc còn lại ở `docs/perf-audit-2026-11-27.md`. (#444)
 
 ## Quyết định cần chốt
 

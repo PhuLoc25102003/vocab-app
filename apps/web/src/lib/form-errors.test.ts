@@ -2,7 +2,8 @@ import { ERROR_CODES } from '@vocab/shared';
 import { afterEach, describe, expect, it } from 'vitest';
 import { formErrorMessage } from './form-errors';
 import { HttpError } from './http';
-import { createI18n, resources } from './i18n/config';
+import { createI18n } from './i18n/config';
+import { resources } from './i18n/resources';
 
 describe('formErrorMessage', () => {
   afterEach(() => {
@@ -26,7 +27,7 @@ describe('formErrorMessage', () => {
   });
 
   it('tiếng Anh dịch theo mã, mã lạ thì dùng thông báo của máy chủ', () => {
-    createI18n('en');
+    createI18n('en', resources);
     expect(formErrorMessage(new HttpError('Không tìm thấy lớp', 404, 'CLASS_NOT_FOUND'))).toBe(
       'Class not found.',
     );
