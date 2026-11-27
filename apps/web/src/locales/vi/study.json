@@ -257,7 +257,11 @@
     "keepStudying": "Học tiếp",
     "masteredRule": "Đúng ở hai ngày khác nhau",
     "hardWords": "Từ hay sai",
-    "wrongCount": "Sai {{count}} lần"
+    "wrongCount": "Sai {{count}} lần",
+    "freezesHeld": "{{count}} thẻ giữ chuỗi",
+    "freezesHint": "Mỗi thứ Hai được thêm 1 thẻ, giữ tối đa 2. Bỏ lỡ 1 ngày thì tự dùng thẻ.",
+    "freezeUsed": "Hôm qua bạn chưa học nên app đã dùng 1 thẻ giữ chuỗi. Chuỗi {{days}} ngày vẫn được giữ.",
+    "frozenDay": "Đã dùng thẻ giữ chuỗi"
   },
   "xp": {
     "title": "Tiến độ XP",

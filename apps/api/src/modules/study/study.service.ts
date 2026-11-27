@@ -11,6 +11,7 @@ import {
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import type { SetViewer } from '../sets/sets.repository';
+import { StreakService } from '../progress/streak.service';
 import { StudyRepository, type GradedAnswer } from './study.repository';
 
 function setNotFound(): AppError {
@@ -51,7 +52,10 @@ function summarize(attempts: { cardId: string; isCorrect: boolean }[]) {
 
 @Injectable()
 export class StudyService {
-  constructor(private readonly study: StudyRepository) {}
+  constructor(
+    private readonly study: StudyRepository,
+    private readonly streak: StreakService,
+  ) {}
 
   async start(
     viewer: SetViewer,
@@ -191,8 +195,12 @@ export class StudyService {
       return isNew;
     });
 
-    const xpEarned =
-      fresh.length > 0 ? await this.study.saveAnswers(viewer.id, id, fresh, new Date()) : 0;
+    const now = new Date();
+    const xpEarned = fresh.length > 0 ? await this.study.saveAnswers(viewer.id, id, fresh, now) : 0;
+    if (fresh.length > 0) {
+      // Học hôm nay mà bỏ lỡ hôm qua thì dùng thẻ giữ chuỗi ngay, không chờ mở Tổng quan.
+      await this.streak.refresh(viewer.id, now);
+    }
     return ok({ results, ignored: answers.length - graded.length, xpEarned });
   }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Award, BookOpen, Flame, TrendingUp } from 'lucide-react';
+import { Award, BookOpen, Flame, Snowflake, TrendingUp } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { EmptyState } from '@/components/common/empty-state';
@@ -62,8 +62,19 @@ export function StatsOverview() {
     );
   }
 
-  const { streakDays, masteredCards, learningCards, activity, answersToday, dueCards, hardCards } =
-    stats.data;
+  const {
+    streakDays,
+    masteredCards,
+    learningCards,
+    activity,
+    answersToday,
+    dueCards,
+    hardCards,
+    streakFreezes,
+    frozenDays,
+  } = stats.data;
+  const yesterday = activity.at(-2)?.day;
+  const usedFreezeYesterday = yesterday !== undefined && frozenDays.includes(yesterday);
   if (
     streakDays === 0 &&
     masteredCards === 0 &&
@@ -119,6 +130,15 @@ export function StatsOverview() {
           )}
         </Button>
       </div>
+      {usedFreezeYesterday ? (
+        <p
+          role="status"
+          className="flex items-start gap-2 rounded-lg border border-border bg-surface px-4 py-3 text-small"
+        >
+          <Snowflake aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+          {t('stats.freezeUsed', { days: streakDays })}
+        </p>
+      ) : null}
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {items.map(({ label, value }) => {
           const style = STAT_STYLES[label];
@@ -132,6 +152,15 @@ export function StatsOverview() {
               <dd className="col-start-1 row-start-1 text-h2 font-bold tabular-nums text-text">
                 {value}
               </dd>
+              {label === 'stats.streak' ? (
+                <dd
+                  title={t('stats.freezesHint')}
+                  className="col-span-2 row-start-3 flex items-center gap-1 text-small text-text-muted tabular-nums"
+                >
+                  <Snowflake aria-hidden className="size-3.5 text-primary" />
+                  {t('stats.freezesHeld', { count: streakFreezes })}
+                </dd>
+              ) : null}
               {label === 'stats.masteredWords' ? (
                 <dd className="col-span-2 row-start-3 text-small text-text-muted">
                   {t('stats.masteredRule')}
@@ -152,7 +181,7 @@ export function StatsOverview() {
         })}
       </dl>
       <div className="grid gap-6 lg:grid-cols-2">
-        <ActivityChart activity={activity} />
+        <ActivityChart activity={activity} frozenDays={frozenDays} />
         <MasteryBar mastered={masteredCards} learning={learningCards} />
       </div>
 

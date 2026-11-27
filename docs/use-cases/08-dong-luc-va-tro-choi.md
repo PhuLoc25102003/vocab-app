@@ -27,7 +27,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G2. Chuỗi và thẻ giữ chuỗi
 
-- **Việc:** 7.3. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chưa làm.
+- **Việc:** 7.3. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** mỗi thứ Hai nhận 1 thẻ, giữ tối đa 2; bỏ lỡ đúng 1 ngày thì tự dùng 1 thẻ; ngày dùng thẻ hiện ❄️ trên lịch 7 ngày.
 - **Luồng chính:** học sinh quên học thứ Ba, thứ Tư mở app thấy "Đã dùng thẻ giữ chuỗi hôm qua, chuỗi vẫn là 9 ngày, còn 1 thẻ".
 - **Ngoại lệ:** bỏ lỡ 2 ngày liên tiếp mà chỉ còn 1 thẻ thì chuỗi về 0, không dùng thẻ phí; tài khoản mới nhận thẻ đầu tiên ngay khi tạo.

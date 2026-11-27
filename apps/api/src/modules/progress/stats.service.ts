@@ -13,6 +13,7 @@ import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import type { SetViewer } from '../sets/sets.repository';
 import { StatsRepository } from './stats.repository';
+import { StreakService } from './streak.service';
 
 /** Số ngày của biểu đồ hoạt động, tính cả hôm nay. */
 const ACTIVITY_DAYS = 7;
@@ -20,7 +21,10 @@ const DAY_MS = 86_400_000;
 
 @Injectable()
 export class StatsService {
-  constructor(private readonly stats: StatsRepository) {}
+  constructor(
+    private readonly stats: StatsRepository,
+    private readonly streak: StreakService,
+  ) {}
 
   async xp(viewer: SetViewer) {
     const [sums, dailyGoalXp] = await Promise.all([
@@ -44,6 +48,8 @@ export class StatsService {
     const now = new Date();
     const today = startOfStudyDay(now);
     const weekStart = new Date(today.getTime() - (ACTIVITY_DAYS - 1) * DAY_MS);
+    // Cấp và dùng thẻ giữ chuỗi trước khi đọc ngày học, để chuỗi hiển thị đã tính thẻ.
+    const freezes = await this.streak.refresh(viewer.id, now);
     const [days, masteredCards, learningCards, byDay, answersToday, dueCards, hardCards] =
       await Promise.all([
         this.stats.findStudyDays(viewer.id),
@@ -55,7 +61,9 @@ export class StatsService {
         this.stats.findHardCards(viewer),
       ]);
     return ok({
-      streakDays: computeStreak(days, now),
+      streakDays: computeStreak(days, now, freezes.frozenDays),
+      streakFreezes: freezes.held,
+      frozenDays: freezes.frozenDays.filter((day) => day >= toStudyDay(weekStart)),
       masteredCards,
       learningCards,
       activity: Array.from({ length: ACTIVITY_DAYS }, (_, index) => {

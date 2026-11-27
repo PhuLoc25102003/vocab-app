@@ -257,7 +257,11 @@
     "keepStudying": "Keep studying",
     "masteredRule": "Right on two different days",
     "hardWords": "Often missed",
-    "wrongCount": "Missed {{count}} times"
+    "wrongCount": "Missed {{count}} times",
+    "freezesHeld": "{{count}} streak freezes",
+    "freezesHint": "You get 1 more every Monday, up to 2. Missing a day uses one automatically.",
+    "freezeUsed": "You missed yesterday, so a streak freeze was used. Your {{days}}-day streak is safe.",
+    "frozenDay": "Streak freeze used"
   },
   "xp": {
     "title": "XP progress",

@@ -10,6 +10,10 @@ export const statsOverviewSchema = z.object({
   /** Số câu trả lời 7 ngày gần nhất, ngày cũ nhất trước. */
   activity: z.array(z.object({ day: z.string(), answers: z.number() })).default([]),
   answersToday: z.number(),
+  /** Số thẻ giữ chuỗi còn lại. Bản cũ của API không có trường này. */
+  streakFreezes: z.number().default(0),
+  /** Các ngày trong 7 ngày gần nhất đã dùng thẻ giữ chuỗi. */
+  frozenDays: z.array(z.string()).default([]),
   dueCards: z.number(),
   hardCards: z.array(
     z.object({

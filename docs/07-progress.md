@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm tiếp từ 7.3 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp từ 7.4 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       2 |      15 | Đang làm   |
-| **Toàn dự án**          |                                            | **189** | **206** | **92%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       3 |      15 | Đang làm   |
+| **Toàn dự án**          |                                            | **190** | **206** | **92%**    |
 
 ## Cách cập nhật
 
@@ -523,7 +523,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7B. Chuỗi và thẻ giữ chuỗi
 
-- [ ] **7.3** Thẻ giữ chuỗi: mỗi thứ Hai được 1 thẻ, giữ tối đa 2; bỏ lỡ đúng 1 ngày thì tự dùng thẻ, ngày đó tính là giữ chuỗi; bảng `StreakFreeze` ghi ngày đã dùng; `GET /stats/overview` trả số thẻ còn và các ngày đã dùng; Tổng quan hiện ❄️ trên lịch 7 ngày và thông báo "Đã dùng thẻ giữ chuỗi hôm qua". Cần 7.1 (UC-G2).
+- [x] **7.3** Thẻ giữ chuỗi: mỗi thứ Hai được 1 thẻ, giữ tối đa 2; bỏ lỡ đúng 1 ngày thì tự dùng thẻ, ngày đó tính là giữ chuỗi; bảng `StreakFreezeDay` ghi ngày đã dùng, cấp và dùng thẻ khi mở Tổng quan hoặc gửi đáp án (không cần cron); `GET /stats/overview` trả số thẻ còn và các ngày đã dùng; Tổng quan hiện ❄️ trên lịch 7 ngày, số thẻ còn ở ô Chuỗi ngày và thông báo khi đã dùng thẻ hôm qua. Cần 7.1 (UC-G2).
 
 ### 7C. Huy hiệu
 

@@ -1,6 +1,7 @@
 'use client';
 
 import type { StatsOverview } from '@vocab/shared';
+import { Snowflake } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const WEEKDAYS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
@@ -11,8 +12,16 @@ function weekday(day: string): string {
 }
 
 /** Cột số câu trả lời 7 ngày, một màu, có bảng cho trình đọc màn hình. */
-export function ActivityChart({ activity }: { activity: StatsOverview['activity'] }) {
+export function ActivityChart({
+  activity,
+  frozenDays = [],
+}: {
+  activity: StatsOverview['activity'];
+  /** Ngày đã dùng thẻ giữ chuỗi, hiện biểu tượng bông tuyết thay số câu. */
+  frozenDays?: readonly string[];
+}) {
   const { t } = useTranslation('study');
+  const frozen = new Set(frozenDays);
   const max = Math.max(1, ...activity.map(({ answers }) => answers));
   return (
     <figure className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
@@ -20,13 +29,22 @@ export function ActivityChart({ activity }: { activity: StatsOverview['activity'
       <div aria-hidden className="flex items-end gap-2" style={{ height: BAR_AREA_PX + 40 }}>
         {activity.map(({ day, answers }, index) => {
           const today = index === activity.length - 1;
+          const isFrozen = frozen.has(day);
           return (
             <div
               key={day}
-              title={t('stats.dayAnswers', { day: weekday(day), count: answers })}
+              title={
+                isFrozen
+                  ? `${weekday(day)}: ${t('stats.frozenDay')}`
+                  : t('stats.dayAnswers', { day: weekday(day), count: answers })
+              }
               className="flex flex-1 flex-col items-center justify-end gap-1"
             >
-              <span className="text-tiny text-text-muted tabular-nums">{answers}</span>
+              {isFrozen ? (
+                <Snowflake className="size-3.5 text-primary" />
+              ) : (
+                <span className="text-tiny text-text-muted tabular-nums">{answers}</span>
+              )}
               <span
                 className="w-full max-w-8 rounded-t-sm bg-primary transition-[height] duration-base ease-standard"
                 style={{ height: answers > 0 ? Math.max(4, (answers / max) * BAR_AREA_PX) : 2 }}
@@ -50,7 +68,7 @@ export function ActivityChart({ activity }: { activity: StatsOverview['activity'
           {activity.map(({ day, answers }) => (
             <tr key={day}>
               <th scope="row">{day}</th>
-              <td>{answers}</td>
+              <td>{frozen.has(day) ? t('stats.frozenDay') : answers}</td>
             </tr>
           ))}
         </tbody>
