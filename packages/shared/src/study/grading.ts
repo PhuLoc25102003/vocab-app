@@ -67,7 +67,99 @@ export function normalizeSpokenText(value: string): string {
     .normalize('NFC')
     .replace(/[.,/#!$%^&*;:{}=\-_`~()?"'“”‘’]/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim()
+    .split(' ')
+    .map(canonicalSpokenToken)
+    .join(' ');
+}
+
+const ONES = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+];
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+/** Máy nhận dạng hay trả số ("4", "12") thay cho chữ: đổi số 0 đến 100 về chữ tiếng Anh. */
+function numberToWords(value: number): string {
+  if (value < 20) return ONES[value]!;
+  if (value === 100) return 'one hundred';
+  const unit = value % 10;
+  return unit === 0
+    ? TENS[Math.floor(value / 10)]!
+    : `${TENS[Math.floor(value / 10)]} ${ONES[unit]}`;
+}
+
+/**
+ * Từ đồng âm tiếng Anh mà máy nhận dạng không phân biệt được khi chỉ nghe một từ:
+ * đọc đúng "two" máy vẫn có thể ghi "to" hoặc "too". Mỗi nhóm quy về từ đầu tiên.
+ */
+const HOMOPHONE_GROUPS = [
+  ['two', 'to', 'too'],
+  ['four', 'for'],
+  ['eight', 'ate'],
+  ['one', 'won'],
+  ['right', 'write'],
+  ['see', 'sea'],
+  ['buy', 'by', 'bye'],
+  ['hear', 'here'],
+  ['know', 'no'],
+  ['new', 'knew'],
+  ['sun', 'son'],
+  ['meet', 'meat'],
+  ['blue', 'blew'],
+  ['flower', 'flour'],
+  ['week', 'weak'],
+  ['wait', 'weight'],
+  ['pair', 'pear'],
+  ['male', 'mail'],
+  ['road', 'rode'],
+  ['hour', 'our'],
+  ['there', 'their'],
+  ['tail', 'tale'],
+  ['sale', 'sail'],
+  ['piece', 'peace'],
+  ['plane', 'plain'],
+  ['whole', 'hole'],
+  ['bear', 'bare'],
+  ['deer', 'dear'],
+  ['night', 'knight'],
+  ['eye', 'i'],
+  ['be', 'bee'],
+  ['wear', 'where'],
+  ['would', 'wood'],
+  ['made', 'maid'],
+  ['steal', 'steel'],
+];
+const HOMOPHONES = new Map(
+  HOMOPHONE_GROUPS.flatMap((group) => group.map((word) => [word, group[0]!] as const)),
+);
+
+function canonicalSpokenToken(token: string): string {
+  if (/^\d{1,3}$/.test(token) && Number(token) <= 100) {
+    return numberToWords(Number(token))
+      .split(' ')
+      .map((word) => HOMOPHONES.get(word) ?? word)
+      .join(' ');
+  }
+  return HOMOPHONES.get(token) ?? token;
 }
 
 /** Tách các phương án hợp lệ từ expected (xử lý ngoặc đơn, gạch chéo) */
@@ -150,6 +242,10 @@ export function gradeSpokenText(expected: string, value: string): GradeResult {
     // 3. Dung sai gõ máy / nhận diện ngữ âm (Fuzzy match)
     const dist = levenshteinDistance(spoken, cand);
     const maxLen = Math.max(spoken.length, cand.length);
+    // Từ 3 ký tự: máy hay nghe nhầm phụ âm hoặc nguyên âm (cat thành cap), cho lệch 1 ký tự nếu giữ chữ đầu
+    if (maxLen === 3 && dist <= 1 && spoken[0] === cand[0] && !cand.includes(' ')) {
+      return { isCorrect: true, expected };
+    }
     // Từ ngắn (4-5 ký tự): cho phép sai lệch tối đa 1 ký tự
     if (maxLen >= 4 && maxLen <= 5 && dist <= 1) {
       return { isCorrect: true, expected };
