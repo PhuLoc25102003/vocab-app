@@ -53,6 +53,8 @@ model User {
   streakFreezes    Int     @default(1)
   /// Thứ Hai (YYYY-MM-DD, giờ Việt Nam) của lần cấp thẻ gần nhất, null khi chưa tính lần nào.
   streakFreezeWeek String?
+  /// Ẩn tên khỏi bảng xếp hạng chung, vẫn hiện trong bảng của lớp.
+  hideFromLeaderboard Boolean @default(false)
 
   refreshSessions     RefreshSession[]
   passwordResetTokens PasswordResetToken[]
@@ -265,6 +267,8 @@ model Class {
   description String?
   joinCode    String    @unique
   archivedAt  DateTime?
+  /// Giáo viên tắt thì học sinh không xem được bảng xếp hạng của lớp.
+  leaderboardEnabled Boolean @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

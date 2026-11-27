@@ -20,6 +20,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { FoldersModule } from './modules/folders/folders.module';
 import { ImportModule } from './modules/import/import.module';
+import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 import { ProgressModule } from './modules/progress/progress.module';
 import { SetsModule } from './modules/sets/sets.module';
 import { StudyModule } from './modules/study/study.module';
@@ -44,6 +45,7 @@ import { UsersModule } from './modules/users/users.module';
     ImportModule,
     StudyModule,
     ProgressModule,
+    LeaderboardModule,
     HealthModule,
     UploadsModule,
   ],

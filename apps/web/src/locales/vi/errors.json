@@ -32,6 +32,7 @@
     "FOLDER_NOT_FOUND": "Không tìm thấy thư mục.",
     "FOLDER_NAME_TAKEN": "Bạn đã có thư mục tên này.",
     "CLASS_NOT_FOUND": "Không tìm thấy lớp.",
+    "LEADERBOARD_DISABLED": "Giáo viên đã tắt bảng xếp hạng của lớp này.",
     "CLASS_MEMBER_NOT_FOUND": "Học sinh không ở trong lớp.",
     "CLASS_TEACHER_CANNOT_JOIN": "Giáo viên của lớp không tham gia lớp như học sinh được.",
     "ASSIGNMENT_NOT_FOUND": "Không tìm thấy bài giao.",

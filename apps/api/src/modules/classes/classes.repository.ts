@@ -11,6 +11,7 @@ const CLASS_SELECT = {
   description: true,
   joinCode: true,
   archivedAt: true,
+  leaderboardEnabled: true,
   createdAt: true,
   _count: { select: { members: true } },
 } as const;
@@ -21,6 +22,7 @@ interface ClassRow {
   description: string | null;
   joinCode: string;
   archivedAt: Date | null;
+  leaderboardEnabled: boolean;
   createdAt: Date;
   _count: { members: number };
 }
@@ -39,6 +41,7 @@ export interface ClassChanges {
   description?: string | null;
   archivedAt?: Date | null;
   joinCode?: string;
+  leaderboardEnabled?: boolean;
 }
 
 @Injectable()

@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm tiếp từ 7.5 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp 7.6 (giao diện xếp hạng), rồi 7.13 (chuông thông báo), 7.7 đến 7.10 (nhắc học), cuối cùng chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       4 |      15 | Đang làm   |
-| **Toàn dự án**          |                                            | **191** | **206** | **93%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       5 |      16 | Đang làm   |
+| **Toàn dự án**          |                                            | **192** | **207** | **93%**    |
 
 ## Cách cập nhật
 
@@ -531,11 +531,12 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7D. Bảng xếp hạng
 
-- [ ] **7.5** API xếp hạng tuần: `GET /leaderboard?scope=global|class&classId=&week=current|previous` trả top 50 theo XP tuần (thứ Hai 00:00 giờ Việt Nam) kèm hạng của tôi; cột `User.hideFromLeaderboard` và `Class.leaderboardEnabled` (mặc định bật); xếp hạng lớp chỉ cho thành viên và giáo viên của lớp (`@CheckOwnership` hoặc guard thành viên); chỉ trả tên hiển thị và ảnh đại diện; cache Redis ngắn khi có. Cần 7.1 (UC-G4).
+- [x] **7.5** API xếp hạng tuần: `GET /leaderboard?week=current|previous` và `GET /leaderboard/classes/:id` trả top 50 theo XP tuần (thứ Hai 00:00 giờ Việt Nam) kèm hạng của tôi; cột `User.hideFromLeaderboard` và `Class.leaderboardEnabled` (mặc định bật); xếp hạng lớp chỉ cho thành viên và giáo viên của lớp (lọc ngay trong truy vấn, người ngoài nhận 404); `PUT /leaderboard/visibility`; chỉ trả tên hiển thị. Cần 7.1 (UC-G4).
 - [ ] **7.6** Giao diện xếp hạng: khối "Xếp hạng tuần" trên Tổng quan (top 3 và hạng của tôi) có link tới trang `/leaderboard` (tab Toàn app và từng lớp đã tham gia, xem tuần trước); tab "Xếp hạng" ở trang lớp, công tắc bật tắt cho giáo viên; công tắc "Ẩn tôi khỏi bảng xếp hạng chung" ở Tài khoản. Cần 7.5 (UC-G4).
 
 ### 7E. Nhắc học miễn phí
 
+- [ ] **7.13** Chuông thông báo trong app: bảng `Notification` (người nhận, loại, dữ liệu JSON, đường dẫn mở, `readAt`), API `GET /notifications` (phân trang, mới nhất trước), `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `POST /notifications/read-all`; tạo thông báo khi giáo viên giao bài cho lớp (mỗi học sinh một thông báo), khi nhận huy hiệu, khi dùng thẻ giữ chuỗi; job 7.7 thêm thông báo "Đến giờ ôn tập" và "Bài tập sắp hết hạn"; nút chuông trên header cạnh ảnh đại diện có số chưa đọc, bấm mở danh sách (popover trên máy tính, tấm đáy trên 360 px), bấm thông báo thì đánh dấu đã đọc và mở đúng trang; tự làm mới mỗi 60 giây và khi quay lại tab; xoá thông báo cũ quá 90 ngày. Làm trước 7.7 (UC-G7).
 - [ ] **7.7** Nền job hằng ngày: `POST /internal/jobs/daily-reminders` là `@Public` nhưng bắt buộc header `X-Job-Secret` khớp `JOBS_SECRET` (so sánh an toàn thời gian); GitHub Actions chạy theo lịch 13:00 UTC (20:00 giờ Việt Nam) gọi endpoint, đồng thời đánh thức Render gói Free; bảng `NotificationLog` (khoá duy nhất người dùng, loại, ngày) để chạy lại không gửi trùng; chọn người cần nhắc: chuỗi từ 3 ngày mà hôm nay chưa học, có từ 10 thẻ đến hạn, bài tập hết hạn trong 24 giờ mà chưa nộp. Thêm biến vào `.env.example`, `env.ts`, `docs/08-deploy.md` (UC-G5).
 - [ ] **7.8** Web Push: khoá `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (thiếu thì tắt tính năng), bảng `PushSubscription`, `POST /me/push-subscriptions` và `DELETE`, gửi bằng thư viện `web-push`, xoá đăng ký khi dịch vụ đẩy trả 404 hoặc 410; service worker xử lý `push` và `notificationclick` mở đúng trang (Ôn hôm nay, bài tập); nút "Bật nhắc học" chỉ hỏi quyền sau khi học xong phiên đầu tiên hoặc khi người học tự bấm, không hỏi lúc vừa vào web; hướng dẫn riêng cho iPhone (thêm vào màn hình chính, iOS 16.4+). Cần 7.7 (UC-G5).
 - [ ] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
