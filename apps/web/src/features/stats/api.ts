@@ -1,4 +1,6 @@
 import {
+  badgeListResponseSchema,
+  type Badge,
   cardProgressListResponseSchema,
   setProgressResponseSchema,
   type CardProgressItem,
@@ -13,6 +15,10 @@ import { http } from '@/lib/http';
 
 export async function getStatsOverview(): Promise<StatsOverview> {
   return statsOverviewResponseSchema.parse(await http('/stats/overview')).data;
+}
+
+export async function getBadges(): Promise<Badge[]> {
+  return badgeListResponseSchema.parse(await http('/stats/badges')).data;
 }
 
 export const XP_SUMMARY_KEY = ['stats', 'xp'] as const;

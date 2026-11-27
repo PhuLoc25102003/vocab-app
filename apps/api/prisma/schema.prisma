@@ -65,6 +65,7 @@ model User {
   submissions         AssignmentSubmission[]
   xpEvents            XpEvent[]
   streakFreezeDays    StreakFreezeDay[]
+  badges              UserBadge[]
 }
 
 model RefreshSession {
@@ -228,6 +229,17 @@ model StreakFreezeDay {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, day])
+}
+
+/// Huy hiệu đã nhận. `code` là mã trong `BADGES` của `@vocab/shared`, không dùng enum để thêm huy hiệu không cần migration.
+model UserBadge {
+  userId   String
+  code     String
+  earnedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, code])
 }
 
 model Attempt {

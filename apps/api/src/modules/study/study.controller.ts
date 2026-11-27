@@ -41,7 +41,7 @@ export class StudyController {
   @Patch(':id/finish')
   @CheckOwnership('session')
   @ApiOperation({ summary: 'Kết thúc phiên học và trả kết quả' })
-  finish(@Param('id') id: string) {
-    return this.study.finish(id);
+  finish(@Param('id') id: string, @CurrentUser() user: CurrentUserData) {
+    return this.study.finish(id, user.id);
   }
 }

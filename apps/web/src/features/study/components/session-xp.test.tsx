@@ -36,4 +36,10 @@ describe('SessionXp', () => {
     expect(screen.getByText('+40 XP')).toBeInTheDocument();
     expect(await screen.findByText('Lên cấp 3!')).toBeInTheDocument();
   });
+
+  it('hiện huy hiệu mới, bỏ qua mã không biết', () => {
+    renderWith(<SessionXp xpEarned={0} newBadges={['streak-7', 'unknown']} />);
+    expect(screen.getByText('Huy hiệu mới: Một tuần bền bỉ')).toBeInTheDocument();
+    expect(screen.queryByText(/unknown/)).not.toBeInTheDocument();
+  });
 });

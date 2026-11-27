@@ -292,5 +292,46 @@
       "saved": "Daily goal set to {{xp}} XP",
       "saveFailed": "Could not change the goal, please try again"
     }
+  },
+  "badges": {
+    "title": "Badges",
+    "description": "Earn badges as you hit study milestones.",
+    "loading": "Loading badges",
+    "failed": "Could not load badges",
+    "count": "{{earned}} of {{total}} earned",
+    "earnedOn": "Earned {{date}}",
+    "progress": "{{progress}}/{{target}}",
+    "locked": "Not yet",
+    "new": "New badge",
+    "items": {
+      "mastered-100": {
+        "name": "100 words strong",
+        "rule": "Master 100 words"
+      },
+      "streak-7": {
+        "name": "One-week streak",
+        "rule": "Study 7 days in a row"
+      },
+      "streak-30": {
+        "name": "30-day streak",
+        "rule": "Study 30 days in a row"
+      },
+      "perfect-test": {
+        "name": "Perfect score",
+        "rule": "Get every question right in a Test"
+      },
+      "sets-10": {
+        "name": "Collector",
+        "rule": "Finish 10 different sets"
+      },
+      "goal-7": {
+        "name": "On target",
+        "rule": "Hit your daily XP goal on 7 days"
+      },
+      "night-owl": {
+        "name": "Night owl",
+        "rule": "Study between 11 pm and 4 am"
+      }
+    }
   }
 }

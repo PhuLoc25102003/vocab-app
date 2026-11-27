@@ -5,13 +5,17 @@ import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { BadgeService } from './badge.service';
 import { StatsService } from './stats.service';
 
 @ApiTags('stats')
 @ApiBearerAuth()
 @Controller('stats')
 export class StatsController {
-  constructor(private readonly stats: StatsService) {}
+  constructor(
+    private readonly stats: StatsService,
+    private readonly badges: BadgeService,
+  ) {}
 
   @Get('overview')
   @ApiOperation({ summary: 'Streak, số từ đã thuộc và từ hay sai' })
@@ -23,6 +27,12 @@ export class StatsController {
   @ApiOperation({ summary: 'Tổng XP, cấp độ, XP hôm nay và mục tiêu ngày' })
   xp(@CurrentUser() user: CurrentUserData) {
     return this.stats.xp(user);
+  }
+
+  @Get('badges')
+  @ApiOperation({ summary: 'Mọi huy hiệu kèm tiến độ và lúc nhận' })
+  badgeList(@CurrentUser() user: CurrentUserData) {
+    return this.badges.list(user.id);
   }
 
   @Put('xp/goal')

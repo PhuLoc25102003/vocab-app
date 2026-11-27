@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm tiếp từ 7.4 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp từ 7.5 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       3 |      15 | Đang làm   |
-| **Toàn dự án**          |                                            | **190** | **206** | **92%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       4 |      15 | Đang làm   |
+| **Toàn dự án**          |                                            | **191** | **206** | **93%**    |
 
 ## Cách cập nhật
 
@@ -527,7 +527,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7C. Huy hiệu
 
-- [ ] **7.4** Huy hiệu: danh sách và điều kiện trong `@vocab/shared` (ví dụ 100 từ đã thuộc, chuỗi 7 và 30 ngày, Kiểm tra 100%, học 10 bộ, đạt mục tiêu ngày 7 lần, cú đêm học sau 23h), bảng `UserBadge` (khoá duy nhất người dùng và mã huy hiệu), xét sau mỗi phiên, `GET /me/badges`; lưới huy hiệu ở Tài khoản (đã có và chưa có kèm điều kiện), thông báo khi nhận ở màn kết quả. Cần 7.1 (UC-G3).
+- [x] **7.4** Huy hiệu: danh sách và điều kiện trong `@vocab/shared` (ví dụ 100 từ đã thuộc, chuỗi 7 và 30 ngày, Kiểm tra 100%, học 10 bộ, đạt mục tiêu ngày 7 lần, cú đêm học sau 23h), bảng `UserBadge` (khoá duy nhất người dùng và mã huy hiệu), xét khi kết thúc phiên và trả `newBadges`, `GET /stats/badges`; danh sách huy hiệu dạng dòng ở Tài khoản (đã có và chưa có kèm điều kiện và tiến độ), thông báo khi nhận ở màn kết quả. Cần 7.1 (UC-G3).
 
 ### 7D. Bảng xếp hạng
 
