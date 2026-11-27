@@ -70,6 +70,7 @@ self.addEventListener('fetch', (event) => {
 const PUSH_TEXT = {
   vi: {
     title: 'Nhớ Từ',
+    TEST: () => 'Thông báo thử: nhắc học đã hoạt động trên thiết bị này.',
     ASSIGNMENT_NEW: (d) => `Bài tập mới ở lớp ${d.className}: ${d.setTitle}`,
     ASSIGNMENT_DUE: (d) => `Sắp hết hạn: ${d.setTitle}. Làm ngay để kịp nộp nhé.`,
     REVIEW_DUE: (d) =>
@@ -79,6 +80,7 @@ const PUSH_TEXT = {
   },
   en: {
     title: 'Nhớ Từ',
+    TEST: () => 'Test notification: reminders work on this device.',
     ASSIGNMENT_NEW: (d) => `New assignment in ${d.className}: ${d.setTitle}`,
     ASSIGNMENT_DUE: (d) => `Due soon: ${d.setTitle}. Finish it in time.`,
     REVIEW_DUE: (d) =>

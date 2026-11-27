@@ -266,7 +266,20 @@
     "unsupported": "This browser doesn't support push notifications. Reminders still appear in the bell.",
     "iosInstall": "On iPhone, tap Share then Add to Home Screen, and open the app from that icon to turn on notifications (iOS 16.4+).",
     "serverOff": "Push notifications aren't set up on the server yet. Reminders still appear in the bell.",
-    "denied": "Notifications are blocked for this site. Allow them again in your browser's site settings."
+    "denied": "Notifications are blocked for this site. Allow them again in your browser's site settings.",
+    "typesLabel": "What to remind, and how",
+    "typeReview": "Streak and reviews",
+    "typeAssignment": "Class assignments",
+    "channelPush": "Push",
+    "channelEmail": "Email",
+    "switchLabel": "{{type}}, {{channel}}",
+    "prefsSaved": "Notification settings saved",
+    "prefsFailed": "Could not save, please try again",
+    "test": "Send a test",
+    "testSent": "Test sent, check your device",
+    "testFailed": "Could not send the test",
+    "testTitle": "Test notification",
+    "testBody": "Reminders work on this device."
   },
   "unsubscribe": {
     "title": "Unsubscribe from reminders",

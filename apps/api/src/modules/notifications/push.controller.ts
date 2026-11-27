@@ -35,6 +35,13 @@ export class PushController {
     await this.push.subscribe(user.id, dto);
   }
 
+  @Post('test')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Gửi thử thông báo đẩy tới mọi thiết bị của tôi' })
+  sendTest(@CurrentUser() user: CurrentUserData) {
+    return this.push.sendTest(user.id);
+  }
+
   @Post('subscriptions/remove')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Huỷ đăng ký thông báo đẩy của trình duyệt này' })

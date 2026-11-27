@@ -79,7 +79,8 @@ export type PushConfig = z.infer<typeof pushConfigResponseSchema>['data'];
 
 /** Nội dung gửi tới service worker; câu chữ do service worker dựng theo ngôn ngữ. */
 export interface PushPayload {
-  type: NotificationType;
+  /** `TEST` là thông báo gửi thử từ trang Tài khoản. */
+  type: NotificationType | 'TEST';
   data: NotificationData;
   href: string | null;
 }
