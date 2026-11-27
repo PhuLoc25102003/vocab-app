@@ -162,4 +162,34 @@ export class AdminClassesRepository extends BaseRepository {
       totalUnassignedStudents: unassignedStudents.length,
     };
   }
+
+  findClass(id: string) {
+    return this.prisma.class.findUnique({
+      where: { id },
+      select: { id: true, name: true, archivedAt: true },
+    });
+  }
+
+  findUser(id: string) {
+    return this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      select: { id: true, displayName: true, role: true },
+    });
+  }
+
+  /** Thêm thành viên; đã có thì giữ ngày tham gia cũ. `created` cho biết có bản ghi mới hay không. */
+  async addMember(classId: string, userId: string) {
+    const existing = await this.prisma.classMember.findUnique({
+      where: { classId_userId: { classId, userId } },
+      select: { joinedAt: true },
+    });
+    if (existing) return { joinedAt: existing.joinedAt, created: false };
+    const row = await this.prisma.classMember.upsert({
+      where: { classId_userId: { classId, userId } },
+      create: { classId, userId },
+      update: {},
+      select: { joinedAt: true },
+    });
+    return { joinedAt: row.joinedAt, created: true };
+  }
 }

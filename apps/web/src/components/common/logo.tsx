@@ -54,7 +54,7 @@ export function Logo({ href }: { href: Route }) {
   return (
     <Link
       href={href}
-      className="group flex min-h-11 shrink-0 items-center gap-2.5 font-card text-h3 font-bold tracking-tight text-text"
+      className="group flex min-h-11 shrink-0 items-center gap-1.5 font-card text-body font-bold tracking-tight text-text sm:gap-2.5 sm:text-h3"
     >
       <LogoMark />
       <span>{BRAND_NAME}</span>

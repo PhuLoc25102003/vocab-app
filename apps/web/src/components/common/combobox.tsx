@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown } from 'lucide-react';
 import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +11,8 @@ export interface ComboboxOption {
   label: string;
   /** Dòng phụ dưới nhãn, ví dụ "12 thẻ · Riêng tư". */
   description?: string;
+  /** Chữ tìm được thêm ngoài nhãn, ví dụ tên giáo viên của lớp. Không hiển thị. */
+  keywords?: string;
 }
 
 interface ComboboxProps {
@@ -25,6 +28,13 @@ interface ComboboxProps {
   name?: string;
   disabled?: boolean;
   onBlur?: () => void;
+  /**
+   * Danh sách nằm trong luồng trang thay vì nổi lên trên: dùng trong hộp thoại có thân cuộn được,
+   * nơi danh sách nổi bị cắt. Hộp thoại chỉ cao thêm khi danh sách đang mở.
+   */
+  inline?: boolean;
+  /** Chờ người dùng ngừng gõ bấy nhiêu mili giây rồi mới lọc danh sách; 0 là lọc ngay. */
+  debounceMs?: number;
 }
 
 /** Bỏ dấu, `đ` thành `d`, chữ thường: gõ "tieng viet" vẫn ra "Tiếng Việt". */
@@ -36,6 +46,18 @@ export function normalizeSearch(text: string): string {
     .replace(/Đ/g, 'D')
     .toLocaleLowerCase('vi')
     .trim();
+}
+
+/** Thời gian chờ mặc định của mọi ô chọn có tìm kiếm. */
+export const COMBOBOX_DEBOUNCE_MS = 250;
+
+function filterOptions(options: ComboboxOption[], text: string): ComboboxOption[] {
+  const needle = normalizeSearch(text);
+  return needle
+    ? options.filter((option) =>
+        normalizeSearch(`${option.label} ${option.keywords ?? ''}`).includes(needle),
+      )
+    : options;
 }
 
 /**
@@ -54,6 +76,8 @@ export function Combobox({
   name,
   disabled = false,
   onBlur,
+  inline = false,
+  debounceMs = COMBOBOX_DEBOUNCE_MS,
 }: ComboboxProps) {
   const { t } = useTranslation();
   const id = useId();
@@ -66,12 +90,10 @@ export function Combobox({
   const [active, setActive] = useState(0);
 
   const selected = options.find((option) => option.value === value);
-  const matches = useMemo(() => {
-    const needle = normalizeSearch(query ?? '');
-    return needle
-      ? options.filter((option) => normalizeSearch(option.label).includes(needle))
-      : options;
-  }, [options, query]);
+  const filterText = useDebouncedValue(query ?? '', debounceMs);
+  const matches = useMemo(() => filterOptions(options, filterText), [options, filterText]);
+  /** Đang chờ debounce: danh sách chưa theo kịp chữ vừa gõ. */
+  const stale = normalizeSearch(filterText) !== normalizeSearch(query ?? '');
   const activeOption = open ? matches[Math.min(active, matches.length - 1)] : undefined;
   const optionId = (index: number) => `${id}-option-${index}`;
 
@@ -113,7 +135,9 @@ export function Combobox({
         if (open) {
           // Không gửi form khi đang chọn trong danh sách.
           event.preventDefault();
-          if (activeOption) choose(activeOption);
+          // Bấm Enter trước khi hết thời gian chờ thì lọc ngay theo chữ đang có.
+          const option = stale ? filterOptions(options, query ?? '')[0] : activeOption;
+          if (option) choose(option);
         }
         break;
       case 'Escape':
@@ -183,7 +207,7 @@ export function Combobox({
             if (open) close();
             else show();
           }}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-text-muted"
+          className="absolute top-0 right-0 flex h-11 w-11 items-center justify-center text-text-muted"
         >
           <ChevronDown
             aria-hidden
@@ -198,7 +222,10 @@ export function Combobox({
           role="listbox"
           aria-label={t('combobox.options', { label })}
           hidden={!open}
-          className="glass-overlay glass-pop absolute inset-x-0 top-full z-10 mt-1.5 max-h-64 origin-top overflow-y-auto overscroll-contain rounded-menu p-1.5"
+          className={cn(
+            'glass-overlay glass-pop mt-1.5 max-h-64 origin-top overflow-y-auto overscroll-contain rounded-menu p-1.5',
+            inline ? 'relative' : 'absolute inset-x-0 top-full z-10',
+          )}
         >
           {matches.length === 0 ? (
             <li role="presentation" className="px-3 py-2 text-small text-text-muted">

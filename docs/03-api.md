@@ -58,6 +58,7 @@ Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, ti�
 | GET    | /admin/stats                                   | ADMIN                       | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
 | PATCH  | /admin/sets/:id/hide                           | ADMIN                       | Ẩn bộ từ vi phạm kèm lý do                                 |
 | PATCH  | /admin/sets/:id/unhide                         | ADMIN                       | Bỏ ẩn bộ từ                                                |
+| POST   | /admin/classes/:id/members                     | ADMIN                       | Xếp học sinh vào lớp, không cần mã tham gia                |
 | POST   | /import/preview                                | Đã đăng nhập                | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
 | POST   | /sets/:id/import                               | Chủ                         | Lưu kết quả đã xem trước                                   |
 | GET    | /uploads/config                                | Đã đăng nhập                | Tải ảnh đã bật chưa, giới hạn ảnh                          |
@@ -191,6 +192,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 
 - `GET /admin/users` nhận `page`, `limit`, `sort` (`createdAt`, `email`, `displayName`, mặc định `-createdAt`) `q` (tìm trong email hoặc tên, không phân biệt hoa thường, tối đa 100 ký tự), `role` (`STUDENT`, `TEACHER`, `ADMIN`) và `status` (`active` là chưa khoá, `locked` là đang khoá; việc 5.35), trả `{ data: [{ id, email, displayName, role, createdAt, lockedAt, lockReason, lockedById }], meta }`. Không trả hash mật khẩu.
 - `PATCH /admin/users/:id/role` nhận `{ role }` (`STUDENT`, `TEACHER`, `ADMIN`), trả người dùng sau khi đổi. ADMIN tự đổi vai trò của mình trả 422 `CANNOT_CHANGE_OWN_ROLE` để hệ thống luôn còn ADMIN; người không tồn tại trả 404 `USER_NOT_FOUND`. Quyền mới có hiệu lực ngay vì API đọc vai trò từ database ở mỗi request.
+- `POST /admin/classes/:id/members` (7.14) nhận `{ userId }`, xếp học sinh vào lớp như khi nhập mã, trả `{ data: { classId, className, userId, displayName, joinedAt, alreadyMember } }`. Đã ở trong lớp thì giữ ngày tham gia cũ và `alreadyMember: true`. Lớp không có trả 404 `CLASS_NOT_FOUND`, lớp đã lưu trữ trả 409 `CLASS_ARCHIVED`, người dùng không có hoặc đã xoá trả 404 `USER_NOT_FOUND`, tài khoản không phải học sinh trả 422 `USER_NOT_STUDENT`.
 - `PATCH /admin/users/:id/lock` nhận `{ reason }` (1 đến 500 ký tự), lưu thời điểm, lý do và id ADMIN, tăng `tokenVersion` và xoá mọi phiên refresh nên tài khoản bị đăng xuất ngay, trả 200 `{ data: user }`. Tự khoá mình trả 422 `CANNOT_LOCK_SELF`. `PATCH /admin/users/:id/unlock` xoá ba trường khoá. Không tìm thấy trả 404 `USER_NOT_FOUND`.
 - Tài khoản bị khoá đăng nhập bằng mật khẩu hoặc Google trả 403 `ACCOUNT_LOCKED`, chỉ sau khi mật khẩu đúng. Refresh trả 401 và access token cũ bị `AuthGuard` từ chối.
 

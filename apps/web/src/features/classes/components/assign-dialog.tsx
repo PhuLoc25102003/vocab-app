@@ -158,6 +158,7 @@ export function AssignDialog({
           onChange={setPickedClassId}
           error={errors.classId}
           options={classes.map(({ id, name }) => ({ value: id, label: name }))}
+          inline
         />
       )}
       {sets.isPending ? (
@@ -183,6 +184,7 @@ export function AssignDialog({
               setShare(false);
             }}
             error={errors.setId}
+            inline
             options={sets.data.map((set) => ({
               value: set.id,
               label: set.title,

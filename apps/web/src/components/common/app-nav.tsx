@@ -70,7 +70,7 @@ function NavLinks({
       className="glass-overlay fixed inset-x-3 bottom-3 z-30 rounded-full border border-border px-1.5 md:static md:inset-auto md:border-0 md:bg-transparent md:bg-none md:px-0 md:shadow-none md:backdrop-blur-none"
     >
       <GlassTabGroup>
-        <ul className="grid grid-cols-5 md:flex md:gap-2">
+        <ul className="grid grid-cols-5 md:flex md:gap-0.5 lg:gap-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const current = isCurrent(pathname, href, fromExplore, fromReview);
             return (
@@ -79,7 +79,7 @@ function NavLinks({
                   href={href}
                   aria-current={current ? 'page' : undefined}
                   className={cn(
-                    'glass-button-ghost relative isolate flex min-h-16 flex-col items-center justify-center gap-1 rounded-full text-tiny md:min-h-11 md:flex-row md:gap-2 md:px-3 md:text-small',
+                    'glass-button-ghost relative isolate flex min-h-16 flex-col items-center justify-center gap-1 rounded-full text-tiny md:min-h-11 md:flex-row md:gap-1.5 md:px-2.5 md:text-small xl:px-3',
                     current
                       ? 'font-semibold text-primary'
                       : 'font-medium text-text-muted hover:text-text',
@@ -87,7 +87,7 @@ function NavLinks({
                 >
                   {current ? <GlassTabIndicator /> : null}
                   <Icon aria-hidden className="size-5 shrink-0" />
-                  <span className="max-w-full truncate px-0.5 text-center whitespace-nowrap">
+                  <span className="max-w-full truncate px-0.5 text-center whitespace-nowrap md:sr-only lg:not-sr-only lg:whitespace-nowrap">
                     {t(`nav.${label}`)}
                   </span>
                 </Link>

@@ -35,6 +35,8 @@
     "LEADERBOARD_DISABLED": "Giáo viên đã tắt bảng xếp hạng của lớp này.",
     "UNSUBSCRIBE_TOKEN_INVALID": "Liên kết huỷ nhận mail không hợp lệ. Bạn có thể tắt mail nhắc học trong trang Tài khoản.",
     "CLASS_MEMBER_NOT_FOUND": "Học sinh không ở trong lớp.",
+    "CLASS_ARCHIVED": "Lớp này đã lưu trữ nên không thêm học sinh được.",
+    "USER_NOT_STUDENT": "Chỉ xếp lớp được cho tài khoản học sinh.",
     "CLASS_TEACHER_CANNOT_JOIN": "Giáo viên của lớp không tham gia lớp như học sinh được.",
     "ASSIGNMENT_NOT_FOUND": "Không tìm thấy bài giao.",
     "ASSIGNMENT_INCOMPLETE": "Hãy làm xong mọi chế độ trước khi nộp.",
