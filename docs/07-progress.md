@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm tiếp 7.9 và 7.10 (nhắc học), cuối cùng chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp 7.10 (nhắc học), cuối cùng chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       9 |      16 | Đang làm   |
-| **Toàn dự án**          |                                            | **196** | **207** | **95%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      10 |      16 | Đang làm   |
+| **Toàn dự án**          |                                            | **197** | **207** | **95%**    |
 
 ## Cách cập nhật
 
@@ -539,7 +539,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.13** Chuông thông báo trong app: bảng `Notification` (người nhận, loại, dữ liệu JSON, đường dẫn mở, `readAt`), API `GET /notifications` (phân trang, mới nhất trước), `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `POST /notifications/read-all`; tạo thông báo khi giáo viên giao bài cho lớp (mỗi học sinh một thông báo), khi nhận huy hiệu, khi dùng thẻ giữ chuỗi; job 7.7 thêm thông báo "Đến giờ ôn tập" và "Bài tập sắp hết hạn"; nút chuông trên header cạnh ảnh đại diện có số chưa đọc, bấm mở danh sách (menu nổi dùng lại `Menu`, ở 360 px gần đủ chiều rộng màn hình), bấm thông báo thì đánh dấu đã đọc và mở đúng trang; tự làm mới mỗi 60 giây và khi quay lại tab; xoá thông báo cũ quá 90 ngày. Làm trước 7.7 (UC-G7).
 - [x] **7.7** Nền job hằng ngày: `POST /internal/jobs/daily-reminders` là `@Public` nhưng bắt buộc header `X-Job-Secret` khớp `JOBS_SECRET` (so sánh an toàn thời gian); GitHub Actions chạy theo lịch 13:00 UTC (20:00 giờ Việt Nam) gọi endpoint, đồng thời đánh thức Render gói Free; bảng `ReminderLog` (khoá duy nhất người dùng, loại, ngày hoặc bài) để chạy lại không gửi trùng; tạo thông báo `REVIEW_DUE` và `ASSIGNMENT_DUE` vào chuông; chọn người cần nhắc: chuỗi từ 3 ngày mà hôm nay chưa học, có từ 10 thẻ đến hạn, bài tập hết hạn trong 24 giờ mà chưa nộp. Thêm biến vào `.env.example`, `env.ts`, `docs/08-deploy.md` (UC-G5).
 - [x] **7.8** Web Push: khoá `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (thiếu thì tắt tính năng), bảng `PushSubscription`, `GET /push/config`, `POST /push/subscriptions` và `/push/subscriptions/remove`, gửi bằng thư viện `web-push`, xoá đăng ký khi dịch vụ đẩy trả 404 hoặc 410; service worker xử lý `push` và `notificationclick` mở đúng trang (Ôn hôm nay, bài tập); thẻ "Bật nhắc học mỗi tối?" ở Tổng quan chỉ hiện khi đã có XP (đã học ít nhất một phiên), chỉ hỏi quyền khi người học tự bấm; công tắc thiết bị này ở nhóm Thông báo của Tài khoản; hướng dẫn riêng cho iPhone (thêm vào màn hình chính, iOS 16.4+). Cần 7.7 (UC-G5).
-- [ ] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
+- [x] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
 - [ ] **7.10** Cài đặt thông báo: nhóm "Thông báo" ở Tài khoản bật tắt từng loại (chuỗi, ôn tập, bài tập) theo từng kênh (Web Push, mail), trạng thái quyền của trình duyệt và nút gửi thử; trang huỷ nhận mở từ link trong mail không cần đăng nhập. Cần 7.8, 7.9 (UC-G5).
 
 ### 7F. Chế độ Mưa từ

@@ -1,17 +1,22 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ERROR_CODES,
   NOTIFICATION_RETENTION_DAYS,
   notificationDataSchema,
+  notificationPrefsSchema,
   PUSH_NOTIFICATION_TYPES,
+  type NotificationPrefs,
   type NotificationType,
   type Pagination,
   type PushPayload,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
+import type { Env } from '../../config/env';
 import { NotificationsRepository, type NewNotification } from './notifications.repository';
 import { PushService } from './push.service';
+import { readUnsubscribeToken } from './unsubscribe-token';
 
 const DAY_MS = 86_400_000;
 
@@ -39,7 +44,37 @@ export class NotificationsService {
   constructor(
     private readonly notifications: NotificationsRepository,
     private readonly push: PushService,
+    private readonly config: ConfigService<Env, true>,
   ) {}
+
+  async prefs(userId: string): Promise<NotificationPrefs> {
+    const row = await this.notifications.findPrefs(userId);
+    return notificationPrefsSchema
+      .catch(notificationPrefsSchema.parse({}))
+      .parse(row?.notificationPrefs ?? {});
+  }
+
+  async updatePrefs(userId: string, changes: Partial<NotificationPrefs>) {
+    const next = { ...(await this.prefs(userId)), ...changes };
+    await this.notifications.savePrefs(userId, next);
+    return ok(next);
+  }
+
+  /** Link "Huỷ nhận mail" trong mail nhắc học: tắt mọi mail nhắc, không cần đăng nhập. */
+  async unsubscribe(token: string): Promise<void> {
+    const userId = readUnsubscribeToken(
+      token,
+      this.config.get('JWT_REFRESH_SECRET', { infer: true }),
+    );
+    if (!userId || !(await this.notifications.findPrefs(userId))) {
+      throw new AppError(
+        ERROR_CODES.UNSUBSCRIBE_TOKEN_INVALID,
+        'Liên kết huỷ nhận mail không hợp lệ',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.updatePrefs(userId, { reviewEmail: false, assignmentEmail: false });
+  }
 
   async list(userId: string, query: Pagination) {
     const now = new Date();

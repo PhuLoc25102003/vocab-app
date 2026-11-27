@@ -267,5 +267,13 @@
     "iosInstall": "Trên iPhone, hãy bấm Chia sẻ rồi Thêm vào màn hình chính, mở app từ biểu tượng đó để bật thông báo (iOS 16.4 trở lên).",
     "serverOff": "Máy chủ chưa bật thông báo đẩy. Bạn vẫn thấy nhắc học trong chuông.",
     "denied": "Bạn đã chặn thông báo cho trang này. Mở cài đặt trang web của trình duyệt để cho phép lại."
+  },
+  "unsubscribe": {
+    "title": "Huỷ nhận mail nhắc học",
+    "description": "Bạn sẽ không nhận mail nhắc giữ chuỗi, ôn tập và bài tập nữa. Thông báo trong app vẫn còn.",
+    "confirm": "Huỷ nhận mail",
+    "done": "Đã huỷ nhận mail nhắc học. Bạn có thể bật lại ở trang Tài khoản.",
+    "missing": "Liên kết thiếu mã. Hãy mở lại liên kết trong mail, hoặc tắt mail ở trang Tài khoản.",
+    "goHome": "Về trang chủ"
   }
 }

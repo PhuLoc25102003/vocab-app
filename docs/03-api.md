@@ -2,88 +2,89 @@
 
 Nguồn: tách từ `spec-source.md`, đã đối chiếu với code. REST, tiền tố `/api/v1`, cổng local 4000.
 
-**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`, `GET /leaderboard`, `GET /leaderboard/classes/:id`, `PUT /leaderboard/visibility`, `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `POST /notifications/read-all`, `POST /internal/jobs/daily-reminders`, `GET /push/config`, `POST /push/subscriptions`, `POST /push/subscriptions/remove`. Các endpoint còn lại là hợp đồng cần làm theo.
+**Đã có:** `GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `POST /auth/google/redirect`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`, `POST /auth/forgot-password`, `POST /auth/reset-password`, `GET`, `PATCH`, `DELETE /users/me`, các endpoint `/sets`, `/study/sessions`, `GET /review/due`, `GET /stats/overview`, `GET /stats/xp`, `PUT /stats/xp/goal`, `GET /stats/badges`, `GET /leaderboard`, `GET /leaderboard/classes/:id`, `PUT /leaderboard/visibility`, `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/:id/read`, `POST /notifications/read-all`, `POST /internal/jobs/daily-reminders`, `GET /push/config`, `POST /push/subscriptions`, `POST /push/subscriptions/remove`, `POST /notifications/unsubscribe`. Các endpoint còn lại là hợp đồng cần làm theo.
 
 ## Danh sách endpoint
 
-| Method | Path                                           | Quyền                     | Mô tả                                                      |
-| ------ | ---------------------------------------------- | ------------------------- | ---------------------------------------------------------- |
-| POST   | /auth/register                                 | Công khai                 | Đăng ký email + mật khẩu, trả 202                          |
-| POST   | /auth/login                                    | Công khai                 | Trả access token, đặt cookie refresh                       |
-| POST   | /auth/google                                   | Công khai                 | Đăng nhập bằng Google ID token                             |
-| POST   | /auth/google/redirect                          | Công khai                 | Nhận kết quả đăng nhập Google ở chế độ redirect (mobile)   |
-| POST   | /auth/refresh                                  | Cookie refresh            | Cấp cặp token mới (rotation)                               |
-| POST   | /auth/logout                                   | Đã đăng nhập              | Thu hồi refresh session hiện tại                           |
-| POST   | /auth/logout-all                               | Đã đăng nhập              | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
-| POST   | /auth/forgot-password                          | Công khai                 | Gửi email liên kết đặt lại mật khẩu, trả 202               |
-| POST   | /auth/reset-password                           | Công khai                 | Đặt mật khẩu mới bằng token trong email                    |
-| GET    | /users/me                                      | Đã đăng nhập              | Thông tin tài khoản                                        |
-| PATCH  | /users/me                                      | Đã đăng nhập              | Sửa tên, mật khẩu                                          |
-| DELETE | /users/me                                      | Đã đăng nhập              | Xoá hẳn tài khoản và dữ liệu                               |
-| GET    | /sets                                          | Đã đăng nhập              | Bộ từ của tôi, phân trang                                  |
-| GET    | /sets/public                                   | Công khai                 | Tìm bộ từ công khai                                        |
-| POST   | /sets                                          | STUDENT+                  | Tạo bộ từ kèm danh sách thẻ                                |
-| GET    | /sets/:id                                      | Chủ, ADMIN hoặc bộ PUBLIC | Chi tiết + thẻ                                             |
-| PATCH  | /sets/:id                                      | Chủ, ADMIN                | Sửa thông tin                                              |
-| DELETE | /sets/:id                                      | Chủ, ADMIN                | Xoá mềm                                                    |
-| POST   | /sets/:id/duplicate                            | Đã đăng nhập              | Sao chép bộ từ xem được về tài khoản                       |
-| PUT    | /sets/:id/cards                                | Chủ, ADMIN                | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
-| GET    | /folders                                       | Đã đăng nhập              | Thư mục của tôi kèm số bộ từ                               |
-| POST   | /folders                                       | Đã đăng nhập              | Tạo thư mục                                                |
-| PATCH  | /folders/:id                                   | Chủ                       | Đổi tên thư mục                                            |
-| DELETE | /folders/:id                                   | Chủ                       | Xoá thư mục, giữ bộ từ                                     |
-| GET    | /classes                                       | TEACHER, ADMIN            | Lớp tôi dạy kèm số thành viên, tìm và sắp xếp              |
-| POST   | /classes                                       | TEACHER, ADMIN            | Tạo lớp, server sinh mã tham gia                           |
-| GET    | /classes/:id                                   | Giáo viên của lớp, ADMIN  | Chi tiết lớp                                               |
-| PATCH  | /classes/:id                                   | Giáo viên của lớp, ADMIN  | Sửa tên, mô tả, lưu trữ hoặc mở lại lớp                    |
-| POST   | /classes/:id/join-code                         | Giáo viên của lớp, ADMIN  | Đổi mã tham gia                                            |
-| POST   | /classes/join                                  | Đã đăng nhập              | Tham gia lớp bằng mã                                       |
-| GET    | /classes/joined                                | Đã đăng nhập              | Lớp tôi đã tham gia                                        |
-| GET    | /classes/assignments                           | Đã đăng nhập              | Bài cần làm ở các lớp đã tham gia, kèm trạng thái          |
-| DELETE | /classes/:id/members/me                        | Thành viên                | Rời lớp                                                    |
-| GET    | /classes/:id/members                           | Giáo viên của lớp, ADMIN  | Thành viên của lớp                                         |
-| GET    | /classes/:id/members/:userId                   | Giáo viên của lớp, ADMIN  | Một học sinh: tên, ngày vào lớp, số liệu bài giao          |
-| DELETE | /classes/:id/members/:userId                   | Giáo viên của lớp, ADMIN  | Xoá học sinh khỏi lớp                                      |
-| GET    | /classes/:id/assignments                       | Giáo viên của lớp, ADMIN  | Bài đã giao: lọc còn hạn, hết hạn, tìm, sắp xếp, x/y nộp   |
-| POST   | /classes/:id/assignments                       | Giáo viên của lớp, ADMIN  | Giao bộ từ kèm chế độ và hạn nộp                           |
-| DELETE | /classes/:id/assignments/:assignmentId         | Giáo viên của lớp, ADMIN  | Huỷ bài giao                                               |
-| GET    | /classes/:id/assignments/:assignmentId/summary | Giáo viên của lớp, ADMIN  | Số liệu cả lớp của bài giao                                |
-| GET    | /classes/:id/assignments/:assignmentId/results | Giáo viên của lớp, ADMIN  | Kết quả từng học sinh của bài giao                         |
-| GET    | /classes/:id/members/:userId/results           | Giáo viên của lớp, ADMIN  | Kết quả một học sinh qua các bài giao của lớp              |
-| GET    | /teacher/overview                              | TEACHER, ADMIN            | Tổng quan giáo viên của các lớp đang dạy                   |
-| GET    | /admin/users                                   | ADMIN                     | Danh sách người dùng, tìm, lọc vai trò và trạng thái       |
-| PATCH  | /admin/users/:id/lock                          | ADMIN                     | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
-| PATCH  | /admin/users/:id/unlock                        | ADMIN                     | Mở khoá tài khoản                                          |
-| PATCH  | /admin/users/:id/role                          | ADMIN                     | Đổi vai trò, ví dụ cấp giáo viên                           |
-| GET    | /admin/stats                                   | ADMIN                     | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
-| PATCH  | /admin/sets/:id/hide                           | ADMIN                     | Ẩn bộ từ vi phạm kèm lý do                                 |
-| PATCH  | /admin/sets/:id/unhide                         | ADMIN                     | Bỏ ẩn bộ từ                                                |
-| POST   | /import/preview                                | Đã đăng nhập              | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
-| POST   | /sets/:id/import                               | Chủ                       | Lưu kết quả đã xem trước                                   |
-| GET    | /uploads/config                                | Đã đăng nhập              | Tải ảnh đã bật chưa, giới hạn ảnh                          |
-| POST   | /uploads/presign                               | Đã đăng nhập              | URL ký sẵn 5 phút để tải ảnh lên R2                        |
-| POST   | /study/sessions                                | Đã đăng nhập              | Bắt đầu phiên, trả câu hỏi theo mode                       |
-| POST   | /study/sessions/:id/answers                    | Chủ phiên                 | Gửi đáp án theo lô, cập nhật SRS                           |
-| PATCH  | /study/sessions/:id/finish                     | Chủ phiên                 | Kết thúc, trả kết quả                                      |
-| GET    | /review/due                                    | Đã đăng nhập              | Thẻ đến hạn ôn hôm nay                                     |
-| GET    | /stats/sets/:id                                | Người xem được bộ từ      | Tiến độ của tôi trong bộ từ                                |
-| GET    | /stats/overview                                | Đã đăng nhập              | Streak, số từ đã thuộc, từ hay sai                         |
-| GET    | /stats/xp                                      | Đã đăng nhập              | Tổng XP, cấp độ, XP hôm nay, mục tiêu ngày                 |
-| PUT    | /stats/xp/goal                                 | Đã đăng nhập              | Đổi mục tiêu XP mỗi ngày                                   |
-| GET    | /stats/badges                                  | Đã đăng nhập              | Mọi huy hiệu kèm tiến độ và lúc nhận                       |
-| GET    | /leaderboard                                   | Đã đăng nhập              | Bảng xếp hạng XP tuần của cả app                           |
-| GET    | /leaderboard/classes/:id                       | Giáo viên, thành viên lớp | Bảng xếp hạng XP tuần của lớp                              |
-| PUT    | /leaderboard/visibility                        | Đã đăng nhập              | Ẩn hoặc hiện tên tôi trên bảng chung                       |
-| GET    | /notifications                                 | Đã đăng nhập              | Thông báo của tôi, mới nhất trước                          |
-| GET    | /notifications/unread-count                    | Đã đăng nhập              | Số thông báo chưa đọc                                      |
-| PATCH  | /notifications/:id/read                        | Người nhận                | Đánh dấu đã đọc                                            |
-| POST   | /notifications/read-all                        | Đã đăng nhập              | Đánh dấu đã đọc hết                                        |
-| POST   | /internal/jobs/daily-reminders                 | Header `X-Job-Secret`     | Job nhắc học, GitHub Actions gọi lúc 20:00                 |
-| GET    | /push/config                                   | Đã đăng nhập              | Web Push có bật không, khoá công khai VAPID                |
-| POST   | /push/subscriptions                            | Đã đăng nhập              | Lưu đăng ký thông báo đẩy của trình duyệt                  |
-| POST   | /push/subscriptions/remove                     | Đã đăng nhập              | Huỷ đăng ký thông báo đẩy                                  |
-| GET    | /health                                        | Công khai                 | Kiểm tra API + kết nối DB                                  |
-| GET    | /admin/users                                   | ADMIN                     | Quản lý người dùng                                         |
+| Method | Path                                           | Quyền                       | Mô tả                                                      |
+| ------ | ---------------------------------------------- | --------------------------- | ---------------------------------------------------------- |
+| POST   | /auth/register                                 | Công khai                   | Đăng ký email + mật khẩu, trả 202                          |
+| POST   | /auth/login                                    | Công khai                   | Trả access token, đặt cookie refresh                       |
+| POST   | /auth/google                                   | Công khai                   | Đăng nhập bằng Google ID token                             |
+| POST   | /auth/google/redirect                          | Công khai                   | Nhận kết quả đăng nhập Google ở chế độ redirect (mobile)   |
+| POST   | /auth/refresh                                  | Cookie refresh              | Cấp cặp token mới (rotation)                               |
+| POST   | /auth/logout                                   | Đã đăng nhập                | Thu hồi refresh session hiện tại                           |
+| POST   | /auth/logout-all                               | Đã đăng nhập                | Tăng `tokenVersion`, đăng xuất mọi thiết bị                |
+| POST   | /auth/forgot-password                          | Công khai                   | Gửi email liên kết đặt lại mật khẩu, trả 202               |
+| POST   | /auth/reset-password                           | Công khai                   | Đặt mật khẩu mới bằng token trong email                    |
+| GET    | /users/me                                      | Đã đăng nhập                | Thông tin tài khoản                                        |
+| PATCH  | /users/me                                      | Đã đăng nhập                | Sửa tên, mật khẩu                                          |
+| DELETE | /users/me                                      | Đã đăng nhập                | Xoá hẳn tài khoản và dữ liệu                               |
+| GET    | /sets                                          | Đã đăng nhập                | Bộ từ của tôi, phân trang                                  |
+| GET    | /sets/public                                   | Công khai                   | Tìm bộ từ công khai                                        |
+| POST   | /sets                                          | STUDENT+                    | Tạo bộ từ kèm danh sách thẻ                                |
+| GET    | /sets/:id                                      | Chủ, ADMIN hoặc bộ PUBLIC   | Chi tiết + thẻ                                             |
+| PATCH  | /sets/:id                                      | Chủ, ADMIN                  | Sửa thông tin                                              |
+| DELETE | /sets/:id                                      | Chủ, ADMIN                  | Xoá mềm                                                    |
+| POST   | /sets/:id/duplicate                            | Đã đăng nhập                | Sao chép bộ từ xem được về tài khoản                       |
+| PUT    | /sets/:id/cards                                | Chủ, ADMIN                  | Lưu toàn bộ thẻ (thêm, sửa, xoá, đổi thứ tự)               |
+| GET    | /folders                                       | Đã đăng nhập                | Thư mục của tôi kèm số bộ từ                               |
+| POST   | /folders                                       | Đã đăng nhập                | Tạo thư mục                                                |
+| PATCH  | /folders/:id                                   | Chủ                         | Đổi tên thư mục                                            |
+| DELETE | /folders/:id                                   | Chủ                         | Xoá thư mục, giữ bộ từ                                     |
+| GET    | /classes                                       | TEACHER, ADMIN              | Lớp tôi dạy kèm số thành viên, tìm và sắp xếp              |
+| POST   | /classes                                       | TEACHER, ADMIN              | Tạo lớp, server sinh mã tham gia                           |
+| GET    | /classes/:id                                   | Giáo viên của lớp, ADMIN    | Chi tiết lớp                                               |
+| PATCH  | /classes/:id                                   | Giáo viên của lớp, ADMIN    | Sửa tên, mô tả, lưu trữ hoặc mở lại lớp                    |
+| POST   | /classes/:id/join-code                         | Giáo viên của lớp, ADMIN    | Đổi mã tham gia                                            |
+| POST   | /classes/join                                  | Đã đăng nhập                | Tham gia lớp bằng mã                                       |
+| GET    | /classes/joined                                | Đã đăng nhập                | Lớp tôi đã tham gia                                        |
+| GET    | /classes/assignments                           | Đã đăng nhập                | Bài cần làm ở các lớp đã tham gia, kèm trạng thái          |
+| DELETE | /classes/:id/members/me                        | Thành viên                  | Rời lớp                                                    |
+| GET    | /classes/:id/members                           | Giáo viên của lớp, ADMIN    | Thành viên của lớp                                         |
+| GET    | /classes/:id/members/:userId                   | Giáo viên của lớp, ADMIN    | Một học sinh: tên, ngày vào lớp, số liệu bài giao          |
+| DELETE | /classes/:id/members/:userId                   | Giáo viên của lớp, ADMIN    | Xoá học sinh khỏi lớp                                      |
+| GET    | /classes/:id/assignments                       | Giáo viên của lớp, ADMIN    | Bài đã giao: lọc còn hạn, hết hạn, tìm, sắp xếp, x/y nộp   |
+| POST   | /classes/:id/assignments                       | Giáo viên của lớp, ADMIN    | Giao bộ từ kèm chế độ và hạn nộp                           |
+| DELETE | /classes/:id/assignments/:assignmentId         | Giáo viên của lớp, ADMIN    | Huỷ bài giao                                               |
+| GET    | /classes/:id/assignments/:assignmentId/summary | Giáo viên của lớp, ADMIN    | Số liệu cả lớp của bài giao                                |
+| GET    | /classes/:id/assignments/:assignmentId/results | Giáo viên của lớp, ADMIN    | Kết quả từng học sinh của bài giao                         |
+| GET    | /classes/:id/members/:userId/results           | Giáo viên của lớp, ADMIN    | Kết quả một học sinh qua các bài giao của lớp              |
+| GET    | /teacher/overview                              | TEACHER, ADMIN              | Tổng quan giáo viên của các lớp đang dạy                   |
+| GET    | /admin/users                                   | ADMIN                       | Danh sách người dùng, tìm, lọc vai trò và trạng thái       |
+| PATCH  | /admin/users/:id/lock                          | ADMIN                       | Khoá tài khoản kèm lý do, huỷ mọi phiên                    |
+| PATCH  | /admin/users/:id/unlock                        | ADMIN                       | Mở khoá tài khoản                                          |
+| PATCH  | /admin/users/:id/role                          | ADMIN                       | Đổi vai trò, ví dụ cấp giáo viên                           |
+| GET    | /admin/stats                                   | ADMIN                       | Số người dùng, tài khoản khoá, bộ từ, bộ bị ẩn             |
+| PATCH  | /admin/sets/:id/hide                           | ADMIN                       | Ẩn bộ từ vi phạm kèm lý do                                 |
+| PATCH  | /admin/sets/:id/unhide                         | ADMIN                       | Bỏ ẩn bộ từ                                                |
+| POST   | /import/preview                                | Đã đăng nhập                | Phân tích text/CSV/XLSX, trả danh sách thẻ + lỗi từng dòng |
+| POST   | /sets/:id/import                               | Chủ                         | Lưu kết quả đã xem trước                                   |
+| GET    | /uploads/config                                | Đã đăng nhập                | Tải ảnh đã bật chưa, giới hạn ảnh                          |
+| POST   | /uploads/presign                               | Đã đăng nhập                | URL ký sẵn 5 phút để tải ảnh lên R2                        |
+| POST   | /study/sessions                                | Đã đăng nhập                | Bắt đầu phiên, trả câu hỏi theo mode                       |
+| POST   | /study/sessions/:id/answers                    | Chủ phiên                   | Gửi đáp án theo lô, cập nhật SRS                           |
+| PATCH  | /study/sessions/:id/finish                     | Chủ phiên                   | Kết thúc, trả kết quả                                      |
+| GET    | /review/due                                    | Đã đăng nhập                | Thẻ đến hạn ôn hôm nay                                     |
+| GET    | /stats/sets/:id                                | Người xem được bộ từ        | Tiến độ của tôi trong bộ từ                                |
+| GET    | /stats/overview                                | Đã đăng nhập                | Streak, số từ đã thuộc, từ hay sai                         |
+| GET    | /stats/xp                                      | Đã đăng nhập                | Tổng XP, cấp độ, XP hôm nay, mục tiêu ngày                 |
+| PUT    | /stats/xp/goal                                 | Đã đăng nhập                | Đổi mục tiêu XP mỗi ngày                                   |
+| GET    | /stats/badges                                  | Đã đăng nhập                | Mọi huy hiệu kèm tiến độ và lúc nhận                       |
+| GET    | /leaderboard                                   | Đã đăng nhập                | Bảng xếp hạng XP tuần của cả app                           |
+| GET    | /leaderboard/classes/:id                       | Giáo viên, thành viên lớp   | Bảng xếp hạng XP tuần của lớp                              |
+| PUT    | /leaderboard/visibility                        | Đã đăng nhập                | Ẩn hoặc hiện tên tôi trên bảng chung                       |
+| GET    | /notifications                                 | Đã đăng nhập                | Thông báo của tôi, mới nhất trước                          |
+| GET    | /notifications/unread-count                    | Đã đăng nhập                | Số thông báo chưa đọc                                      |
+| PATCH  | /notifications/:id/read                        | Người nhận                  | Đánh dấu đã đọc                                            |
+| POST   | /notifications/read-all                        | Đã đăng nhập                | Đánh dấu đã đọc hết                                        |
+| POST   | /internal/jobs/daily-reminders                 | Header `X-Job-Secret`       | Job nhắc học, GitHub Actions gọi lúc 20:00                 |
+| POST   | /notifications/unsubscribe                     | Công khai, token trong mail | Huỷ nhận mail nhắc học                                     |
+| GET    | /push/config                                   | Đã đăng nhập                | Web Push có bật không, khoá công khai VAPID                |
+| POST   | /push/subscriptions                            | Đã đăng nhập                | Lưu đăng ký thông báo đẩy của trình duyệt                  |
+| POST   | /push/subscriptions/remove                     | Đã đăng nhập                | Huỷ đăng ký thông báo đẩy                                  |
+| GET    | /health                                        | Công khai                   | Kiểm tra API + kết nối DB                                  |
+| GET    | /admin/users                                   | ADMIN                       | Quản lý người dùng                                         |
 
 ## Chuẩn request / response
 
@@ -206,6 +207,7 @@ Lỗi (do `AllExceptionsFilter` trả về):
 - `GET /notifications?page&limit` trả `{ data: [{ id, type, data, href, readAt, createdAt }], meta }`, mới nhất trước, `sort` bị bỏ qua. `type` là `ASSIGNMENT_NEW`, `ASSIGNMENT_DUE`, `REVIEW_DUE`, `BADGE_EARNED` hoặc `STREAK_FROZEN`; web dựng câu từ `type` và `data` theo ngôn ngữ đang dùng. Mỗi lần gọi xoá thông báo quá 90 ngày của người gọi. `GET /notifications/unread-count` trả `{ data: { count } }`. `PATCH /notifications/:id/read` và `POST /notifications/read-all` trả 204; id của người khác hoặc không tồn tại trả 404 `NOT_FOUND`. Server tạo thông báo khi giáo viên giao bài (mỗi học sinh của lớp một thông báo), khi nhận huy hiệu và khi dùng thẻ giữ chuỗi; lỗi tạo thông báo chỉ ghi log, không làm hỏng việc chính.
 - `POST /internal/jobs/daily-reminders` là `@Public()` nhưng `JobSecretGuard` đòi header `X-Job-Secret` khớp `JOBS_SECRET`: thiếu hoặc sai trả 401, chưa cấu hình khoá trả 404. Không tính rate limit. Job chọn người chưa học hôm nay mà có chuỗi từ 3 ngày hoặc có từ 10 thẻ đến hạn (một thông báo `REVIEW_DUE` mỗi người mỗi ngày, `data: { count, streakDays }`), và học sinh chưa nộp bài hết hạn trong 24 giờ tới (một `ASSIGNMENT_DUE` mỗi bài). Mỗi lần chạy tối đa 2.000 người mỗi loại. Trả `{ data: { daily, assignments } }` là số nhắc đã tạo; chạy lại trong ngày trả 0.
 - Web Push (việc 7.8): `GET /push/config` trả `{ data: { enabled, publicKey } }`, `enabled` là `false` khi thiếu khoá VAPID. `POST /push/subscriptions` nhận `{ endpoint, keys: { p256dh, auth } }` từ `PushSubscription.toJSON()` của trình duyệt, lưu theo `endpoint` (cùng máy đăng nhập tài khoản khác thì chuyển chủ), trả 204. `POST /push/subscriptions/remove` nhận `{ endpoint }`, chỉ xoá đăng ký của người gọi. Thông báo loại `ASSIGNMENT_DUE`, `ASSIGNMENT_NEW`, `REVIEW_DUE` được đẩy thêm qua Web Push, mỗi người tối đa một push mỗi lần (ưu tiên theo thứ tự đó); nội dung là `{ type, data, href }`, câu chữ do `public/sw.js` dựng theo ngôn ngữ. Dịch vụ đẩy trả 404 hoặc 410 thì xoá đăng ký.
+- Mail nhắc học (việc 7.9): job 7.7 gửi thêm mail qua `Mailer` (Brevo free), mỗi người tối đa một mail gộp các nhắc. Nhắc chuỗi và ôn chỉ gửi mail khi người đó không nhận Web Push; bài tập sắp hết hạn luôn gửi. Hạn mức `MAIL_DAILY_LIMIT` (mặc định 300) trừ 50 mail chừa cho quên mật khẩu, đếm theo bảng `EmailLog` trong ngày học; hết hạn mức thì bỏ người ưu tiên thấp (bài tập, rồi chuỗi, rồi thẻ đến hạn). Mail viết theo `User.locale` (lấy từ cookie `vocab.locale` mỗi khi đăng nhập gọi API). Kết quả job có thêm `emails`. `POST /notifications/unsubscribe` nhận `{ token }` từ link trong mail (HMAC theo `JWT_REFRESH_SECRET`), tắt `reviewEmail` và `assignmentEmail`, trả 204; token sai trả 400 `UNSUBSCRIBE_TOKEN_INVALID`.
 - `PUT /leaderboard/visibility` nhận `{ hidden }`, trả `{ data: { hidden } }`.
 - `GET /stats/badges` trả `{ data: [{ code, progress, target, earnedAt }] }` theo thứ tự `BADGES` trong `packages/shared/src/study/badges.ts`; `progress` tối đa bằng `target`, `earnedAt` là `null` khi chưa có.
 - `PUT /stats/xp/goal` nhận `{ dailyGoalXp }` là 10, 20 hoặc 50, trả cùng dạng `GET /stats/xp`. Giá trị khác trả 400 `VALIDATION_ERROR`.

@@ -133,6 +133,10 @@ Render gói Free ngủ khi rảnh nên API không tự hẹn giờ. Workflow `.g
 
 Lịch của GitHub Actions có thể trễ vài phút đến vài chục phút khi GitHub đông.
 
+## Mail nhắc học (việc 7.9)
+
+Dùng lại `BREVO_API_KEY` và `EMAIL_FROM` của quên mật khẩu. `MAIL_DAILY_LIMIT` là hạn mức mỗi ngày của gói Brevo (gói free khoảng 300, xem lại trên Brevo); job chừa 50 mail cho quên mật khẩu. Địa chỉ gửi là `@gmail.com` thì mail dễ vào Spam, nên dùng tên miền riêng đã cấu hình SPF và DKIM trong Brevo khi có.
+
 ## Web Push (việc 7.8)
 
 Miễn phí, không cần tài khoản dịch vụ. Thiếu khoá thì thông báo đẩy tắt, nhắc học vẫn có trong chuông.

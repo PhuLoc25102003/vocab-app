@@ -57,3 +57,12 @@ export const XP_KEY = ['stats', 'xp'] as const;
 export async function getXpSummary(): Promise<XpSummary> {
   return xpSummaryResponseSchema.parse(await http('/stats/xp')).data;
 }
+
+/** Huỷ nhận mail nhắc học bằng token trong mail, không cần đăng nhập. */
+export async function unsubscribeReminders(token: string): Promise<void> {
+  await http('/notifications/unsubscribe', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+    skipAuth: true,
+  });
+}

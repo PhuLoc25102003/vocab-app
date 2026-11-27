@@ -55,6 +55,10 @@ model User {
   streakFreezeWeek String?
   /// Ẩn tên khỏi bảng xếp hạng chung, vẫn hiện trong bảng của lớp.
   hideFromLeaderboard Boolean @default(false)
+  /// Ngôn ngữ giao diện gần nhất (`vi`, `en`), lấy từ cookie `vocab.locale`; dùng cho mail.
+  locale            String?
+  /// Bật tắt từng loại nhắc theo kênh, xem `notificationPrefsSchema` trong `@vocab/shared`.
+  notificationPrefs Json    @default("{}")
 
   refreshSessions     RefreshSession[]
   passwordResetTokens PasswordResetToken[]
@@ -71,6 +75,7 @@ model User {
   notifications       Notification[]
   reminderLogs        ReminderLog[]
   pushSubscriptions   PushSubscription[]
+  emailLogs           EmailLog[]
 }
 
 model RefreshSession {
@@ -302,6 +307,18 @@ model PushSubscription {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+/// Mỗi mail nhắc học đã gửi, để đếm hạn mức Brevo free trong ngày.
+model EmailLog {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
   @@index([userId])
 }
 

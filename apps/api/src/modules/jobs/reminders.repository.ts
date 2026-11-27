@@ -76,6 +76,29 @@ export class RemindersRepository extends BaseRepository {
       LIMIT ${REMINDER_BATCH}::int`;
   }
 
+  /** Người nhận mail: email, tên, ngôn ngữ, cài đặt nhắc và có Web Push không. */
+  findMailTargets(userIds: readonly string[]) {
+    return this.prisma.user.findMany({
+      where: { id: { in: [...userIds] }, deletedAt: null, lockedAt: null },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        locale: true,
+        notificationPrefs: true,
+        _count: { select: { pushSubscriptions: true } },
+      },
+    });
+  }
+
+  countEmailsSince(since: Date) {
+    return this.prisma.emailLog.count({ where: { createdAt: { gte: since } } });
+  }
+
+  async logEmail(userId: string): Promise<void> {
+    await this.prisma.emailLog.create({ data: { userId }, select: { id: true } });
+  }
+
   async logReminders(
     rows: readonly { userId: string; kind: 'DAILY' | 'ASSIGNMENT_DUE'; key: string }[],
   ) {

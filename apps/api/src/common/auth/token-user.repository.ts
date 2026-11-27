@@ -7,6 +7,7 @@ export interface TokenUser {
   id: string;
   role: Role;
   tokenVersion: number;
+  locale: string | null;
 }
 
 @Injectable()
@@ -19,7 +20,11 @@ export class TokenUserRepository extends BaseRepository {
     return this.prisma.user.findFirst({
       // Tài khoản bị khoá coi như không còn hiệu lực.
       where: { id, deletedAt: null, lockedAt: null },
-      select: { id: true, role: true, tokenVersion: true },
+      select: { id: true, role: true, tokenVersion: true, locale: true },
     });
+  }
+
+  async setLocale(id: string, locale: string): Promise<void> {
+    await this.prisma.user.update({ where: { id }, data: { locale }, select: { id: true } });
   }
 }

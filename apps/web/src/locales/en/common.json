@@ -267,5 +267,13 @@
     "iosInstall": "On iPhone, tap Share then Add to Home Screen, and open the app from that icon to turn on notifications (iOS 16.4+).",
     "serverOff": "Push notifications aren't set up on the server yet. Reminders still appear in the bell.",
     "denied": "Notifications are blocked for this site. Allow them again in your browser's site settings."
+  },
+  "unsubscribe": {
+    "title": "Unsubscribe from reminders",
+    "description": "You'll stop getting streak, review and assignment reminder emails. In-app notifications stay on.",
+    "confirm": "Unsubscribe",
+    "done": "You're unsubscribed. You can turn reminders back on in Account.",
+    "missing": "This link is missing its code. Open the link from the email again, or turn emails off in Account.",
+    "goHome": "Go to home page"
   }
 }

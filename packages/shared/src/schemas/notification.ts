@@ -83,3 +83,22 @@ export interface PushPayload {
   data: NotificationData;
   href: string | null;
 }
+
+/** Bật tắt nhắc học theo loại và kênh. Thiếu khoá thì coi như bật. */
+export const notificationPrefsSchema = z.object({
+  /** Nhắc giữ chuỗi và ôn thẻ đến hạn. */
+  reviewPush: z.boolean().default(true),
+  reviewEmail: z.boolean().default(true),
+  /** Bài tập mới và bài tập sắp hết hạn. */
+  assignmentPush: z.boolean().default(true),
+  assignmentEmail: z.boolean().default(true),
+});
+export type NotificationPrefs = z.infer<typeof notificationPrefsSchema>;
+
+export const notificationPrefsResponseSchema = z.object({ data: notificationPrefsSchema });
+
+export const updateNotificationPrefsSchema = notificationPrefsSchema.partial();
+export type UpdateNotificationPrefsInput = z.infer<typeof updateNotificationPrefsSchema>;
+
+export const unsubscribeSchema = z.object({ token: z.string().min(1).max(512) });
+export type UnsubscribeInput = z.infer<typeof unsubscribeSchema>;
