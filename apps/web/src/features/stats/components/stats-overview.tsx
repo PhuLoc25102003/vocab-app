@@ -74,7 +74,9 @@ export function StatsOverview() {
     frozenDays,
   } = stats.data;
   const yesterday = activity.at(-2)?.day;
-  const usedFreezeYesterday = yesterday !== undefined && frozenDays.includes(yesterday);
+  // Chỉ báo khi thẻ thật sự giữ được một chuỗi đang có.
+  const usedFreezeYesterday =
+    streakDays > 0 && yesterday !== undefined && frozenDays.includes(yesterday);
   if (
     streakDays === 0 &&
     masteredCards === 0 &&

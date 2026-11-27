@@ -194,11 +194,40 @@
     "adminHiddenSets": "Public sets management",
     "adminHiddenSetsDescription": "Search, filter visible or hidden public sets, and moderate as needed.",
     "adminClasses": "Classes & Students",
-    "adminClassesDescription": "Manage all classes by teacher and unassigned students."
+    "adminClassesDescription": "Manage all classes by teacher and unassigned students.",
+    "leaderboard": "Leaderboard"
   },
   "session": {
     "login": "Sign in",
     "myPage": "To my page",
     "home": "To home"
+  },
+  "leaderboard": {
+    "title": "Weekly leaderboard",
+    "description": "Ranked by XP since Monday. The board resets every Monday.",
+    "rank": "Rank",
+    "you": "(You)",
+    "xp": "{{xp}} XP",
+    "loading": "Loading leaderboard",
+    "failed": "Could not load the leaderboard",
+    "empty": "No one has XP yet this week",
+    "emptyHint": "Finish a session to take the top spot.",
+    "viewAll": "View all",
+    "global": "Everyone",
+    "scopes": "Choose a leaderboard",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "weeks": "Choose a week",
+    "list": "Rankings",
+    "hiddenNote": "You are hidden from the public board. Only you can see your rank.",
+    "disabled": "The teacher turned off this class leaderboard.",
+    "backToDashboard": "Back to dashboard",
+    "visibility": {
+      "title": "Leaderboard",
+      "label": "Hide me from the public leaderboard",
+      "hint": "Others won't see your name. You still appear on class boards.",
+      "saved": "Leaderboard setting saved",
+      "failed": "Could not save, please try again"
+    }
   }
 }

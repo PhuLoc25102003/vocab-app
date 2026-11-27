@@ -316,7 +316,12 @@
     "failed": "Could not load the class",
     "sections": "Class sections",
     "assignmentsTab": "Assignments",
-    "studentsTab": "Students ({{count}})"
+    "studentsTab": "Students ({{count}})",
+    "leaderboardTab": "Leaderboard",
+    "leaderboardSwitch": "Show the leaderboard to students",
+    "leaderboardSwitchHint": "Turn off if you don't want students to compare XP. You can still see it.",
+    "leaderboardSaved": "Leaderboard setting saved",
+    "leaderboardSaveFailed": "Could not save, please try again"
   },
   "members": {
     "sort": {

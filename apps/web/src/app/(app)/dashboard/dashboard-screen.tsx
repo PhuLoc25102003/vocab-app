@@ -10,6 +10,7 @@ import { TeacherOverview } from '@/features/classes/components/teacher-overview'
 import { RecentSets } from '@/features/sets/components/recent-sets';
 import { StatsOverview } from '@/features/stats/components/stats-overview';
 import { XpProgress } from '@/features/stats/components/xp-progress';
+import { LeaderboardPreview } from '@/features/leaderboard/components/leaderboard-preview';
 
 export function DashboardScreen() {
   const { t } = useTranslation('common');
@@ -105,7 +106,10 @@ export function DashboardScreen() {
     <>
       <PageHeader title={t('pages.dashboard')} />
       <ClassWork />
-      <XpProgress />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <XpProgress />
+        <LeaderboardPreview />
+      </div>
       <StatsOverview />
       <RecentSets />
     </>

@@ -74,6 +74,7 @@ describe('TeacherOverview', () => {
           archivedAt: null,
           createdAt: '2026-11-01T00:00:00.000Z',
           memberCount: 32,
+          leaderboardEnabled: true,
           openAssignmentCount: 2,
           onTimeRate: 78,
         },

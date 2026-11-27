@@ -44,7 +44,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G4. Bảng xếp hạng
 
-- **Việc:** 7.5, 7.6. **Người dùng:** người đã đăng nhập; giáo viên của lớp. **Trạng thái:** Chưa làm.
+- **Việc:** 7.5, 7.6. **Người dùng:** người đã đăng nhập; giáo viên của lớp. **Trạng thái:** Đủ.
 - **Phải có:**
   - Xếp theo XP của tuần hiện tại, làm mới lúc 00:00 thứ Hai giờ Việt Nam, xem được tuần trước.
   - Top 50 và hạng của tôi kể cả khi ngoài top 50.

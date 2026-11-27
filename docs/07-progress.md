@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm tiếp 7.6 (giao diện xếp hạng), rồi 7.13 (chuông thông báo), 7.7 đến 7.10 (nhắc học), cuối cùng chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp 7.13 (chuông thông báo), 7.7 đến 7.10 (nhắc học), cuối cùng chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       5 |      16 | Đang làm   |
-| **Toàn dự án**          |                                            | **192** | **207** | **93%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       6 |      16 | Đang làm   |
+| **Toàn dự án**          |                                            | **193** | **207** | **93%**    |
 
 ## Cách cập nhật
 
@@ -532,7 +532,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 ### 7D. Bảng xếp hạng
 
 - [x] **7.5** API xếp hạng tuần: `GET /leaderboard?week=current|previous` và `GET /leaderboard/classes/:id` trả top 50 theo XP tuần (thứ Hai 00:00 giờ Việt Nam) kèm hạng của tôi; cột `User.hideFromLeaderboard` và `Class.leaderboardEnabled` (mặc định bật); xếp hạng lớp chỉ cho thành viên và giáo viên của lớp (lọc ngay trong truy vấn, người ngoài nhận 404); `PUT /leaderboard/visibility`; chỉ trả tên hiển thị. Cần 7.1 (UC-G4).
-- [ ] **7.6** Giao diện xếp hạng: khối "Xếp hạng tuần" trên Tổng quan (top 3 và hạng của tôi) có link tới trang `/leaderboard` (tab Toàn app và từng lớp đã tham gia, xem tuần trước); tab "Xếp hạng" ở trang lớp, công tắc bật tắt cho giáo viên; công tắc "Ẩn tôi khỏi bảng xếp hạng chung" ở Tài khoản. Cần 7.5 (UC-G4).
+- [x] **7.6** Giao diện xếp hạng: khối "Xếp hạng tuần" trên Tổng quan (top 3 và hạng của tôi) có link tới trang `/leaderboard` (tab Toàn app và từng lớp đã tham gia, xem tuần trước); tab "Xếp hạng" ở trang lớp, công tắc bật tắt cho giáo viên; công tắc "Ẩn tôi khỏi bảng xếp hạng chung" ở Tài khoản. Cần 7.5 (UC-G4).
 
 ### 7E. Nhắc học miễn phí
 

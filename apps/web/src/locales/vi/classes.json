@@ -316,7 +316,12 @@
     "failed": "Không tải được lớp",
     "sections": "Mục của lớp",
     "assignmentsTab": "Bài tập",
-    "studentsTab": "Học sinh ({{count}})"
+    "studentsTab": "Học sinh ({{count}})",
+    "leaderboardTab": "Xếp hạng",
+    "leaderboardSwitch": "Hiện bảng xếp hạng cho học sinh",
+    "leaderboardSwitchHint": "Tắt nếu bạn không muốn học sinh so sánh XP với nhau. Bạn vẫn xem được.",
+    "leaderboardSaved": "Đã lưu cài đặt bảng xếp hạng",
+    "leaderboardSaveFailed": "Không lưu được, thử lại nhé"
   },
   "members": {
     "sort": {

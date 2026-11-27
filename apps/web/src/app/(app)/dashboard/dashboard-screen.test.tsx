@@ -15,6 +15,9 @@ vi.mock('@/features/classes/components/class-work', () => ({
   ClassWork: () => <div data-testid="class-work">Class Work</div>,
 }));
 
+vi.mock('@/features/leaderboard/components/leaderboard-preview', () => ({
+  LeaderboardPreview: () => <div data-testid="leaderboard-preview">Leaderboard</div>,
+}));
 vi.mock('@/features/stats/components/xp-progress', () => ({
   XpProgress: () => <div data-testid="xp-progress">XP</div>,
 }));
@@ -93,6 +96,7 @@ describe('DashboardScreen', () => {
     expect(screen.queryByTestId('teacher-overview')).not.toBeInTheDocument();
     expect(screen.getByTestId('class-work')).toBeInTheDocument();
     expect(screen.getByTestId('xp-progress')).toBeInTheDocument();
+    expect(screen.getByTestId('leaderboard-preview')).toBeInTheDocument();
     expect(screen.getByTestId('stats-overview')).toBeInTheDocument();
     expect(screen.getByTestId('recent-sets')).toBeInTheDocument();
   });

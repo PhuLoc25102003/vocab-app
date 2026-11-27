@@ -50,6 +50,7 @@ export const config = {
     '/review/:path*',
     '/account/:path*',
     '/classes/:path*',
+    '/leaderboard/:path*',
     '/login',
     '/register',
     '/public/sets/:id',

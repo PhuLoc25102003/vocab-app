@@ -53,7 +53,7 @@ export function BadgeList() {
             const Icon = BADGE_ICONS[code];
             const earned = earnedAt !== null;
             return (
-              <li key={code} className="flex items-center gap-3 py-3">
+              <li key={code} className="flex items-start gap-3 py-3">
                 <span
                   aria-hidden
                   className={cn(
@@ -64,25 +64,24 @@ export function BadgeList() {
                   <Icon className="size-5" />
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className={cn('font-medium', !earned && 'text-text-muted')}>
+                  <span className={cn('font-medium break-words', !earned && 'text-text-muted')}>
                     {t(`badges.items.${code}.name`)}
                   </span>
-                  <span className="text-small text-text-muted">
+                  <span className="text-small text-text-muted break-words">
                     {t(`badges.items.${code}.rule`)}
                   </span>
-                </div>
-                <span className="shrink-0 text-right text-small tabular-nums">
                   {earned ? (
-                    <span className="text-success">
+                    <span className="text-small font-medium text-success">
                       {t('badges.earnedOn', { date: date.format(earnedAt) })}
                     </span>
-                  ) : (
-                    <span className="text-text-muted">
-                      <span className="sr-only">{t('badges.locked')} </span>
-                      {t('badges.progress', { progress, target })}
-                    </span>
-                  )}
-                </span>
+                  ) : null}
+                </div>
+                {earned ? null : (
+                  <span className="shrink-0 pt-0.5 text-small text-text-muted tabular-nums">
+                    <span className="sr-only">{t('badges.locked')} </span>
+                    {t('badges.progress', { progress, target })}
+                  </span>
+                )}
               </li>
             );
           })}

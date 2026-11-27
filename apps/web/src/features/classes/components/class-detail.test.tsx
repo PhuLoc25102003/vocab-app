@@ -39,6 +39,7 @@ const klass: Class = {
   archivedAt: null,
   createdAt: '2026-11-01T00:00:00.000Z',
   memberCount: 1,
+  leaderboardEnabled: true,
 };
 const members = {
   data: [
