@@ -13,6 +13,17 @@ import { XpProgress } from '@/features/stats/components/xp-progress';
 import { LeaderboardPreview } from '@/features/leaderboard/components/leaderboard-preview';
 import { PushPrompt } from '@/features/notifications/components/push-prompt';
 
+/** XP và xếp hạng tuần, dùng chung cho mọi vai trò để cùng một bố cục. */
+function MotivationRow() {
+  return (
+    // grid-cols-1 là minmax(0, 1fr): cột co theo màn hình, tên dài tự xuống dòng ở 360 px.
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <XpProgress />
+      <LeaderboardPreview />
+    </div>
+  );
+}
+
 export function DashboardScreen() {
   const { t } = useTranslation('common');
   const user = useAuthStore((state) => state.user);
@@ -22,6 +33,7 @@ export function DashboardScreen() {
       <div className="flex flex-col gap-8">
         {/* Dashboard quản trị ở trên cùng */}
         <AdminOverview />
+        <MotivationRow />
 
         {/* Khối gập mở rõ ràng cho Giáo viên & Học sinh */}
         <details className="group rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors duration-fast hover:border-primary/50 sm:p-5">
@@ -69,6 +81,7 @@ export function DashboardScreen() {
     return (
       <div className="flex flex-col gap-8">
         <TeacherOverview />
+        <MotivationRow />
         <details className="group rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors duration-fast hover:border-primary/50 sm:p-5">
           <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 select-none">
             <div className="flex items-center gap-3">
@@ -108,11 +121,7 @@ export function DashboardScreen() {
       <PageHeader title={t('pages.dashboard')} />
       <ClassWork />
       <PushPrompt />
-      {/* grid-cols-1 là minmax(0, 1fr): cột co theo màn hình, tên dài tự xuống dòng ở 360 px. */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <XpProgress />
-        <LeaderboardPreview />
-      </div>
+      <MotivationRow />
       <StatsOverview />
       <RecentSets />
     </>
