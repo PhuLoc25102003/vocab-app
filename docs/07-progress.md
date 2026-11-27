@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      16 |      16 | Xong       |
-| **Toàn dự án**          |                                            | **203** | **207** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      17 |      17 | Xong       |
+| **Toàn dự án**          |                                            | **204** | **208** | **98%**    |
 
 ## Cách cập nhật
 
@@ -549,6 +549,10 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.12b** Đồ hoạ chiến đấu cơ hiện đại: vẽ bằng canvas hoặc SVG theo design token (đọc màu từ biến CSS, đúng light và dark): chiến đấu cơ cánh tam giác nhìn từ dưới lên, buồng lái kính phản sáng, hai động cơ phun lửa có hạt, máy bay xoay mũi về mục tiêu đang khoá; mục tiêu là drone địch mang thẻ nghĩa, chữ đã gõ đổi màu; đạn laser theo từng ký tự, nổ bằng hạt và sóng xung kích, rung màn nhẹ; nền trời đêm nhiều lớp chuyển động thị sai (sao, mây, thành phố mờ); HUD: điểm, combo, khiên, đợt, điểm cao nhất; âm thanh bắn và nổ bằng Web Audio theo công tắc âm thanh có sẵn; giảm chuyển động thì tắt rung, giảm hạt và thị sai; giữ 60 fps trên điện thoại tầm trung, tự giảm hiệu ứng khi tụt khung hình. Cần 7.12a (UC-G6).
 - [x] **7.12d** Kiểu chơi Nói cho Mưa từ: dùng lại `lib/speech-recognition.ts` của Luyện nói, nghe liên tục kèm kết quả tạm, nói đúng từ của bất kỳ mục tiêu nào đang rơi thì bắn mục tiêu gần đáy nhất có từ đó (không cần khoá trước), chấp nhận lệch nhẹ theo quy tắc chấm của Luyện nói; bong bóng hiện chữ vừa nghe được, chỉ báo micro đang nghe; đường tốc độ chậm hơn kiểu gõ để bù độ trễ nhận dạng; chỉ xin quyền micro khi chọn kiểu Nói; trình duyệt không hỗ trợ thì ẩn kiểu Nói và mở modal hướng dẫn trình duyệt có sẵn; bị chặn micro hoặc mất kết nối nhận dạng giữa ván thì tạm dừng và cho chuyển sang kiểu gõ. Cần 7.12a, 7.12b (UC-G6).
 - [x] **7.12c** Hoàn thiện Mưa từ: màn bắt đầu (chọn kiểu chơi Gõ hoặc Nói, luật chơi, điểm cao nhất của bộ theo kiểu chơi, nút Bắt đầu), mobile 360 px dùng ô nhập ẩn luôn được focus và tính lại khung chơi theo `visualViewport` khi bàn phím hiện, màn kết quả chung kèm "Kỷ lục mới", danh sách từ bị lọt để học lại; thẻ chế độ trong lưới chế độ học; `aria-live` đọc nghĩa của mục tiêu đang khoá; E2E chơi một đợt bằng bàn phím. Cần 7.12b (UC-G6).
+
+### 7G. Quản trị lớp học
+
+- [x] **7.14** ADMIN xếp lớp cho học sinh: `POST /admin/classes/:id/members` nhận `{ userId }` (lớp phải đang hoạt động, tài khoản phải là học sinh, xếp lại thì giữ ngày tham gia cũ), mã lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`; hộp thoại "Xếp lớp" chọn lớp có tìm kiếm, mở từ bảng học sinh chưa có lớp và từ dòng học sinh ở trang Người dùng. Cập nhật `docs/03-api.md` (UC trong `docs/use-cases/06-vai-tro-va-lop-hoc.md`).
 
 ## Quyết định cần chốt
 

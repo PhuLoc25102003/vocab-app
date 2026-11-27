@@ -185,6 +185,23 @@
     "unhide": "Unhide",
     "unhideSuccess": "Unhid set “{{title}}”."
   },
+  "assignClass": {
+    "button": "Add to class",
+    "label": "Add {{name}} to a class",
+    "title": "Add {{name}} to a class",
+    "description": "The student joins right away without a join code and sees the class's assignments.",
+    "field": "Class",
+    "placeholder": "Search by class or teacher",
+    "empty": "No class matches",
+    "noClasses": "There are no active classes yet.",
+    "classOption": "Teacher {{teacher}} · {{count}} students",
+    "required": "Choose a class",
+    "submit": "Add to class",
+    "loading": "Loading classes",
+    "failed": "Could not load classes",
+    "done": "Added {{name}} to {{className}}",
+    "already": "{{name}} is already in {{className}}"
+  },
   "classes": {
     "totalClasses": "Total classes",
     "totalStudentsInClasses": "Students in classes",

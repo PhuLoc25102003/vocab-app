@@ -3,12 +3,13 @@ import type { AdminClassesOverview } from '@vocab/shared';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getAdminClassesOverview } from '../api';
+import { assignStudentToClass, getAdminClassesOverview } from '../api';
 import { AdminClasses } from './admin-classes';
 
 vi.mock('../api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../api')>()),
   getAdminClassesOverview: vi.fn(),
+  assignStudentToClass: vi.fn(),
 }));
 
 const mockOverview: AdminClassesOverview = {
@@ -168,5 +169,35 @@ describe('AdminClasses', () => {
     expect(
       screen.getByText('Không tìm thấy giáo viên hoặc lớp học nào khớp với từ khoá.'),
     ).toBeInTheDocument();
+  });
+
+  it('xếp học sinh chưa có lớp vào một lớp đang hoạt động', async () => {
+    const user = userEvent.setup();
+    vi.mocked(getAdminClassesOverview).mockResolvedValue(mockOverview);
+    vi.mocked(assignStudentToClass).mockResolvedValue({
+      classId: 'c1',
+      className: 'Tiếng Anh 8A1',
+      userId: 's3',
+      displayName: 'Trần Thị C',
+      joinedAt: '2026-11-27T00:00:00.000Z',
+      alreadyMember: false,
+    });
+
+    renderPage();
+
+    await user.click(await screen.findByRole('button', { name: 'Xếp lớp cho Trần Thị C' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Xếp lớp cho Trần Thị C' });
+    expect(dialog).toBeInTheDocument();
+
+    // Chưa chọn lớp thì báo lỗi, không gọi API.
+    await user.click(screen.getByRole('button', { name: 'Xếp vào lớp' }));
+    expect(await screen.findByText('Chọn một lớp')).toBeInTheDocument();
+    expect(assignStudentToClass).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('combobox', { name: 'Lớp' }));
+    await user.click(await screen.findByRole('option', { name: /Tiếng Anh 8A1/ }));
+    await user.click(screen.getByRole('button', { name: 'Xếp vào lớp' }));
+
+    expect(assignStudentToClass).toHaveBeenCalledWith('c1', 's3');
   });
 });

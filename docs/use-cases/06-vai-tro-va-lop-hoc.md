@@ -347,6 +347,11 @@ Tài khoản
   - Cột Trạng thái: Kết hợp nhãn trạng thái tài khoản (`Đang hoạt động` / `Đã khoá`) cùng badge `Online` (xanh) / `Offline` (xám).
   - Cột Bộ từ gần đây: Nút bấm hiển thị số bộ từ đã học gần đây kèm icon `BookOpen`, khi bấm mở `RecentStudySetsDialog` xem chi tiết danh sách bộ từ, chế độ học, điểm số chính xác (%) và thời gian học, kèm link xem trực tiếp bộ từ.
   - Thanh công cụ lọc: Bổ sung tab trạng thái "Đang online" (`status=online`) giúp quản trị viên rà soát ngay người dùng đang trực tuyến.
+- **ADMIN xếp lớp cho học sinh (7.14)**:
+  - Nút "Xếp lớp" ở mỗi dòng của bảng "Học sinh chưa tham gia lớp học nào" (`/admin/classes`) và nút icon cùng chức năng ở dòng học sinh của bảng Người dùng (`/admin/users`); tài khoản giáo viên và quản trị không có nút.
+  - Hộp thoại "Xếp lớp cho {tên}" chọn lớp bằng ô chọn có tìm kiếm (tên lớp, dòng phụ là giáo viên và số học sinh), chỉ liệt kê lớp đang hoạt động mà học sinh chưa ở trong; không có lớp nào thì báo rõ. Chưa chọn lớp mà bấm "Xếp vào lớp" thì báo "Chọn một lớp".
+  - Học sinh vào lớp ngay, không cần mã tham gia, thấy bài được giao của lớp; xong thì làm mới tổng quan lớp, danh sách người dùng và số liệu, báo "Đã xếp {tên} vào lớp {lớp}" hoặc "đã ở trong lớp" nếu xếp lại.
+  - Lỗi: lớp đã lưu trữ (`CLASS_ARCHIVED`), tài khoản không phải học sinh (`USER_NOT_STUDENT`), lớp hoặc người dùng không còn.
 - **Khối tóm tắt Ôn hôm nay (`ReviewSummary` & `ReviewModePicker`)**:
   - Kích thước tổng thể quá lớn trên mobile: padding `p-6` và các chip chế độ chiếm tới 4-5 hàng, nuốt trọn màn hình đầu tiên. Giảm padding trên mobile còn `p-4 sm:p-6 md:p-8`, kích thước chip gọn gàng (`h-9` hoặc `min-h-9`), cỡ chữ số thẻ `text-card` co giãn hợp lý.
   - Khắc phục triệt để hiện tượng nhảy layout (Layout Shift) khi chọn/nhả chế độ ôn **trên cả PC lẫn Mobile**: trước đây khi một chế độ được chọn, chip chèn thêm số thứ tự `<span className="tabular-nums">{order + 1}.</span>`, làm bề rộng chip phình to thêm ~18 px. Khi bật/tắt (kể cả trên màn hình PC lớn hay điện thoại), chip tự phình/co khiến các chip xung quanh bị đẩy rớt dòng hoặc nhảy hàng giật cục, và số thứ tự các chip khác bị tính lại làm toàn bộ khối giật liên tục. Giải pháp: Cố định kích thước badge thứ tự/trạng thái (dùng vòng tròn/indicator kích thước cố định `w-5 h-5` trong mọi trạng thái: khi chưa chọn hiện viền tròn mờ, khi chọn hiện số thứ tự), đảm bảo **chiều rộng chip không bao giờ thay đổi khi bật/tắt trên mọi thiết bị (PC, tablet, mobile)**, loại bỏ hoàn toàn layout shift. Nút "Chọn tất cả" / "Chỉ Flashcard" giữ bề rộng ổn định hoặc đặt thành hàng điều khiển riêng biệt dưới các chip.
@@ -367,6 +372,7 @@ Mọi thay đổi theo kiểu thêm (quy tắc 13).
 | `GET /classes/:id/members` thêm số liệu, `sort`, `q`           | `onTime`, `late`, `missed`, `pending`, `avgScore`, `lastActiveAt`                                          |
 | `GET /teacher/overview`                                        | Ô số liệu, cần chú ý, sắp đến hạn, bài vừa nộp                                                             |
 | `GET /admin/stats` mở rộng và `GET /admin/stats/daily?days=30` | Tăng trưởng, hoạt động, vai trò, hàng chờ rà                                                               |
+| `POST /admin/classes/:id/members` (7.14)                       | ADMIN xếp học sinh vào lớp; lỗi `CLASS_ARCHIVED`, `USER_NOT_STUDENT`                                       |
 
 ## 7. Cách test chung
 

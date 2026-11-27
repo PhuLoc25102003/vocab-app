@@ -276,3 +276,19 @@ export const adminStatsSchema = z.object({
 });
 export type AdminStats = z.infer<typeof adminStatsSchema>;
 export const adminStatsResponseSchema = z.object({ data: adminStatsSchema });
+
+/** ADMIN xếp một học sinh vào lớp, không cần mã tham gia. */
+export const adminAssignClassSchema = z.object({ userId: z.string().trim().min(1).max(64) });
+export type AdminAssignClassInput = z.infer<typeof adminAssignClassSchema>;
+
+export const adminAssignClassResultSchema = z.object({
+  classId: z.string(),
+  className: z.string(),
+  userId: z.string(),
+  displayName: z.string(),
+  joinedAt: z.string(),
+  /** Học sinh đã ở trong lớp từ trước: không tạo bản ghi mới, giữ ngày tham gia cũ. */
+  alreadyMember: z.boolean(),
+});
+export type AdminAssignClassResult = z.infer<typeof adminAssignClassResultSchema>;
+export const adminAssignClassResponseSchema = z.object({ data: adminAssignClassResultSchema });

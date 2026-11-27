@@ -10,6 +10,7 @@ import {
   Unlock,
   UserCheck,
   UserMinus,
+  UserPlus,
   Users,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -29,6 +30,7 @@ import { HttpError } from '@/lib/http';
 import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
 import { cn } from '@/lib/utils';
 import { adminKeys, getAdminClassesOverview, unlockUser } from '../api';
+import { AssignClassDialog } from './assign-class-dialog';
 import { LockDialog } from './lock-dialog';
 
 const TEACHERS_PAGE_SIZE = 5;
@@ -40,7 +42,7 @@ const CLASS_GRID =
   'minmax(170px, 1.8fr) minmax(120px, 1fr) minmax(110px, 0.9fr) minmax(130px, 1fr) minmax(120px, 0.9fr) minmax(175px, 1.3fr)';
 const CLASS_STUDENT_GRID = 'minmax(180px, 1.5fr) minmax(200px, 1.8fr) minmax(150px, 1fr)';
 const UNASSIGNED_GRID =
-  'minmax(170px, 1.4fr) minmax(190px, 1.6fr) minmax(130px, 1fr) minmax(140px, 1.1fr) minmax(110px, 0.9fr)';
+  'minmax(170px, 1.4fr) minmax(190px, 1.6fr) minmax(130px, 1fr) minmax(140px, 1.1fr) minmax(230px, 1.4fr)';
 
 type TeacherFilterTab = 'all' | 'has_classes' | 'no_classes';
 type TeacherSortOption = 'name_asc' | 'most_classes' | 'most_students' | 'newest';
@@ -335,6 +337,7 @@ function UnassignedStudentRow({
   const queryClient = useQueryClient();
   const initial = student.displayName.trim().charAt(0).toLocaleUpperCase('vi') || '?';
   const isLocked = Boolean(student.lockedAt);
+  const [assigning, setAssigning] = useState(false);
 
   const createdDate = new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'vi-VN', {
     dateStyle: 'medium',
@@ -406,8 +409,17 @@ function UnassignedStudentRow({
         ) : null}
       </div>
 
-      {/* Cột 5 (Action): Thao tác Khoá / Mở khoá (đồng bộ với trang Người dùng) */}
-      <div className="flex justify-end">
+      {/* Cột 5 (Action): Xếp lớp, Khoá / Mở khoá (đồng bộ với trang Người dùng) */}
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="secondary"
+          className="gap-1.5 text-small whitespace-nowrap h-9 px-3"
+          aria-label={t('assignClass.label', { name: student.displayName })}
+          onClick={() => setAssigning(true)}
+        >
+          <UserPlus aria-hidden className="size-4 shrink-0 text-primary" />
+          {t('assignClass.button')}
+        </Button>
         {isLocked ? (
           <Button
             variant="secondary"
@@ -429,6 +441,7 @@ function UnassignedStudentRow({
           </Button>
         )}
       </div>
+      <AssignClassDialog student={student} open={assigning} onOpenChange={setAssigning} />
     </DataTableRow>
   );
 }
@@ -791,7 +804,7 @@ export function AdminClasses() {
             />
           )
         ) : (
-          <DataTableContainer minWidth="min-w-[840px]">
+          <DataTableContainer minWidth="min-w-[940px]">
             <DataTableHeader
               gridTemplateColumns={UNASSIGNED_GRID}
               columns={[

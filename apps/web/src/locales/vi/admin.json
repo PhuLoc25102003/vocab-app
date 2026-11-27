@@ -185,6 +185,23 @@
     "unhide": "Bỏ ẩn",
     "unhideSuccess": "Đã bỏ ẩn bộ từ “{{title}}”."
   },
+  "assignClass": {
+    "button": "Xếp lớp",
+    "label": "Xếp lớp cho {{name}}",
+    "title": "Xếp lớp cho {{name}}",
+    "description": "Học sinh vào lớp ngay, không cần mã tham gia, và thấy bài được giao của lớp.",
+    "field": "Lớp",
+    "placeholder": "Tìm theo tên lớp hoặc giáo viên",
+    "empty": "Không có lớp nào khớp",
+    "noClasses": "Chưa có lớp nào đang hoạt động để xếp.",
+    "classOption": "GV {{teacher}} · {{count}} học sinh",
+    "required": "Chọn một lớp",
+    "submit": "Xếp vào lớp",
+    "loading": "Đang tải danh sách lớp",
+    "failed": "Không tải được danh sách lớp",
+    "done": "Đã xếp {{name}} vào lớp {{className}}",
+    "already": "{{name}} đã ở trong lớp {{className}}"
+  },
   "classes": {
     "totalClasses": "Tổng số lớp học",
     "totalStudentsInClasses": "Học sinh trong lớp",

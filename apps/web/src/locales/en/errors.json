@@ -35,6 +35,8 @@
     "LEADERBOARD_DISABLED": "The teacher turned off the leaderboard for this class.",
     "UNSUBSCRIBE_TOKEN_INVALID": "This unsubscribe link is invalid. You can turn off reminder emails in Account.",
     "CLASS_MEMBER_NOT_FOUND": "This student is not in the class.",
+    "CLASS_ARCHIVED": "This class is archived and cannot take new students.",
+    "USER_NOT_STUDENT": "Only student accounts can be added to a class.",
     "CLASS_TEACHER_CANNOT_JOIN": "The class teacher cannot join as a student.",
     "ASSIGNMENT_NOT_FOUND": "Assignment not found.",
     "ASSIGNMENT_INCOMPLETE": "Finish every mode before submitting.",

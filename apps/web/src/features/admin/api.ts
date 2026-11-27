@@ -1,4 +1,5 @@
 import {
+  adminAssignClassResponseSchema,
   adminClassesOverviewResponseSchema,
   adminHiddenSetListResponseSchema,
   adminSetListResponseSchema,
@@ -6,6 +7,7 @@ import {
   adminUserListResponseSchema,
   adminUserResponseSchema,
   hiddenSetResponseSchema,
+  type AdminAssignClassResult,
   type AdminClassesOverview,
   type AdminHiddenSetList,
   type AdminSetList,
@@ -95,6 +97,18 @@ export async function listHiddenSets(view: AdminHiddenSetsView): Promise<AdminHi
 export async function getAdminClassesOverview(): Promise<AdminClassesOverview> {
   const body = await http('/admin/classes/overview');
   return adminClassesOverviewResponseSchema.parse(body).data;
+}
+
+/** Xếp học sinh vào lớp; đã ở trong lớp thì `alreadyMember` là true. */
+export async function assignStudentToClass(
+  classId: string,
+  userId: string,
+): Promise<AdminAssignClassResult> {
+  const body = await http(`/admin/classes/${encodeURIComponent(classId)}/members`, {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
+  });
+  return adminAssignClassResponseSchema.parse(body).data;
 }
 
 export async function lockUser(id: string, reason: string): Promise<AdminUser> {
