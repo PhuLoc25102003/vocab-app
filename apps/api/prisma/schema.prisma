@@ -49,6 +49,10 @@ model User {
   lockedById   String?
   /// Mục tiêu XP mỗi ngày người học chọn: 10, 20 hoặc 50.
   dailyGoalXp  Int       @default(20)
+  /// Thẻ giữ chuỗi còn lại, tối đa 2. Tài khoản mới có sẵn 1 thẻ.
+  streakFreezes    Int     @default(1)
+  /// Thứ Hai (YYYY-MM-DD, giờ Việt Nam) của lần cấp thẻ gần nhất, null khi chưa tính lần nào.
+  streakFreezeWeek String?
 
   refreshSessions     RefreshSession[]
   passwordResetTokens PasswordResetToken[]
@@ -60,6 +64,7 @@ model User {
   classMembers        ClassMember[]
   submissions         AssignmentSubmission[]
   xpEvents            XpEvent[]
+  streakFreezeDays    StreakFreezeDay[]
 }
 
 model RefreshSession {
@@ -211,6 +216,18 @@ model XpEvent {
   @@index([userId, createdAt])
   @@index([createdAt])
   @@index([sessionId])
+}
+
+/// Ngày người học bỏ lỡ nhưng đã dùng thẻ giữ chuỗi, nên chuỗi không bị đứt.
+model StreakFreezeDay {
+  userId    String
+  /// Ngày học dạng YYYY-MM-DD theo giờ Việt Nam.
+  day       String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day])
 }
 
 model Attempt {

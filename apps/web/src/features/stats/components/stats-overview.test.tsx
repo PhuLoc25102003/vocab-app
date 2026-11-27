@@ -80,4 +80,35 @@ describe('StatsOverview', () => {
 
     expect(await screen.findByText('Ngày học liên tiếp')).toBeInTheDocument();
   });
+
+  it('báo đã dùng thẻ giữ chuỗi hôm qua và đánh dấu ngày đó trên biểu đồ', async () => {
+    const days = [
+      '2026-11-14',
+      '2026-11-15',
+      '2026-11-16',
+      '2026-11-17',
+      '2026-11-18',
+      '2026-11-19',
+      '2026-11-20',
+    ];
+    vi.mocked(http).mockResolvedValue({
+      data: {
+        ...emptyStats,
+        streakDays: 4,
+        activity: days.map((day) => ({ day, answers: day === '2026-11-19' ? 0 : 3 })),
+        answersToday: 3,
+        streakFreezes: 1,
+        frozenDays: ['2026-11-19'],
+      },
+    });
+    renderStats();
+
+    expect(
+      await screen.findByText(
+        'Hôm qua bạn chưa học nên app đã dùng 1 thẻ giữ chuỗi. Chuỗi 4 ngày vẫn được giữ.',
+      ),
+    ).toHaveAttribute('role', 'status');
+    expect(screen.getByText('1 thẻ giữ chuỗi')).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: 'Đã dùng thẻ giữ chuỗi' })).toBeInTheDocument();
+  });
 });
