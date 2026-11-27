@@ -1,7 +1,12 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createAssignmentSchema, studyModeSchema, type StudyMode } from '@vocab/shared';
+import {
+  createAssignmentSchema,
+  studyModeSchema,
+  WORD_RAIN_MIN_CARDS,
+  type StudyMode,
+} from '@vocab/shared';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -121,7 +126,13 @@ export function AssignDialog({
   };
 
   const others = studyModeSchema.options.filter((mode) => !modes.includes(mode));
-  const tooFewCards = (mode: StudyMode) => mode === 'MATCH' && (selected?.cardCount ?? 2) < 2;
+  const tooFewCards = (mode: StudyMode) => {
+    const cardCount = selected?.cardCount ?? WORD_RAIN_MIN_CARDS;
+    return (
+      (mode === 'MATCH' && cardCount < 2) ||
+      (mode === 'WORD_RAIN' && cardCount < WORD_RAIN_MIN_CARDS)
+    );
+  };
 
   return (
     <FormDialog

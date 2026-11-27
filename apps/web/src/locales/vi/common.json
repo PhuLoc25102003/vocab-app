@@ -139,7 +139,8 @@
     "MCQ": "Trắc nghiệm",
     "MATCH": "Ghép cặp",
     "TEST": "Kiểm tra",
-    "SPEAK": "Luyện nói"
+    "SPEAK": "Luyện nói",
+    "WORD_RAIN": "Mưa từ"
   },
   "roles": {
     "STUDENT": "Học sinh",

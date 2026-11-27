@@ -9,6 +9,7 @@ import {
   type ProgressStatus,
   type StudyMode,
   type Submission,
+  WORD_RAIN_MIN_CARDS,
 } from '@vocab/shared';
 import { ok, paginated } from '../../common/base/pagination';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
@@ -41,6 +42,14 @@ export class AssignmentsService {
         'Bộ từ đang riêng tư. Đồng ý cho học sinh trong lớp xem bộ này để giao.',
         HttpStatus.UNPROCESSABLE_ENTITY,
         [{ path: 'shareToClass', code: 'private', message: 'Bộ từ đang riêng tư' }],
+      );
+    }
+    if (dto.modes.includes('WORD_RAIN') && set.cardCount < WORD_RAIN_MIN_CARDS) {
+      throw new AppError(
+        ERROR_CODES.VALIDATION_ERROR,
+        `Mưa từ cần bộ có ít nhất ${WORD_RAIN_MIN_CARDS} thẻ`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        [{ path: 'modes', code: 'too_few_cards', message: 'Mưa từ cần ít nhất 4 thẻ' }],
       );
     }
     if (dto.modes.includes('MATCH') && set.cardCount < 2) {

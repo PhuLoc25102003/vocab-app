@@ -22,7 +22,7 @@ Mỗi vai trò có Tổng quan riêng (giai đoạn 5, `docs/use-cases/06-vai-tr
 - Chế độ Flashcard, Viết, Nghe – viết, Trắc nghiệm; nghe phát âm.
 - Lưu tiến độ từng thẻ; trang "Ôn hôm nay".
 
-**Để sau MVP:** lớp học, luyện nói, PWA offline. Chế độ Learn (2.7, 2.13), Kiểm tra (2.10), Điền từ (2.8) và Ghép cặp (2.9) đã có.
+**Để sau MVP:** lớp học, luyện nói, PWA offline. Chế độ Learn (2.7, 2.13), Kiểm tra (2.10), Điền từ (2.8) và Ghép cặp (2.9) đã có. Trò chơi Mưa từ (`WORD_RAIN`, 7.11, 7.12) chơi bằng gõ hoặc nói.
 
 ## Kiến trúc hệ thống
 

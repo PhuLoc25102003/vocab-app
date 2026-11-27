@@ -11,6 +11,7 @@ export const studyModeSchema = z.enum([
   'MATCH',
   'TEST',
   'SPEAK',
+  'WORD_RAIN',
 ]);
 export type StudyMode = z.infer<typeof studyModeSchema>;
 
@@ -25,6 +26,7 @@ export const STUDY_MODE_LABELS: Record<StudyMode, string> = {
   MATCH: 'Ghép cặp',
   TEST: 'Kiểm tra',
   SPEAK: 'Luyện nói',
+  WORD_RAIN: 'Mưa từ',
 };
 
 export interface StudyCard {
