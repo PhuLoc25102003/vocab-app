@@ -108,7 +108,8 @@ export function DashboardScreen() {
       <PageHeader title={t('pages.dashboard')} />
       <ClassWork />
       <PushPrompt />
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* grid-cols-1 là minmax(0, 1fr): cột co theo màn hình, tên dài tự xuống dòng ở 360 px. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <XpProgress />
         <LeaderboardPreview />
       </div>
