@@ -50,8 +50,23 @@ export async function auditPage(page: Page, label: string): Promise<string[]> {
     const controls = document.querySelectorAll(
       'a[href], button, input:not([type=hidden]), select, textarea, [role=button]',
     );
+    const viewport = document.documentElement.clientWidth;
+    // Phần tử lá vượt mép phải, để báo lỗi tràn ngang chỉ ra đúng chỗ cần sửa.
+    const wide = [...document.querySelectorAll('body *')]
+      .filter(
+        (element) => isVisible(element) && element.getBoundingClientRect().right > viewport + 0.5,
+      )
+      .filter(
+        (element) =>
+          ![...element.children].some(
+            (child) => child.getBoundingClientRect().right > viewport + 0.5,
+          ),
+      )
+      .slice(0, 3)
+      .map(name);
     return {
-      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      wide,
+      overflow: document.documentElement.scrollWidth - viewport,
       small: [...controls]
         .filter((element) => isVisible(element) && !element.closest('.sr-only'))
         .filter((element) => {
@@ -66,7 +81,7 @@ export async function auditPage(page: Page, label: string): Promise<string[]> {
   }, MIN_TARGET_PX);
 
   if (layout.overflow > 0) {
-    issues.push(`${label}: tràn ngang ${layout.overflow}px`);
+    issues.push(`${label}: tràn ngang ${layout.overflow}px ${layout.wide.join(', ')}`);
   }
   issues.push(...layout.small.map((item) => `${label}: vùng bấm nhỏ ${item}`));
   return issues;
