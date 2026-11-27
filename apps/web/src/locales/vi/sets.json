@@ -45,6 +45,10 @@
     "speak": {
       "label": "Luyện nói",
       "hint": "Đọc to từ, máy nhận giọng nói"
+    },
+    "word_rain": {
+      "label": "Mưa từ",
+      "hint": "Bắn hạ nghĩa đang rơi bằng cách gõ hoặc nói từ"
     }
   },
   "grid": {

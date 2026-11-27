@@ -272,6 +272,7 @@ export function StudyShell({
   const result = useStudyStore((state) => state.result);
   const begin = useStudyStore((state) => state.begin);
   const answer = useStudyStore((state) => state.answer);
+  const skip = useStudyStore((state) => state.skip);
   const record = useStudyStore((state) => state.record);
   const finish = useStudyStore((state) => state.finish);
   const syncAnswers = useAnswerSync(backend);
@@ -417,6 +418,9 @@ export function StudyShell({
       question={question}
       languages={languages}
       onAnswer={answer}
+      onSkip={skip}
+      sessionId={session?.id}
+      setId={session?.setId}
       onChecked={record}
       round={questions.slice(position, position + (STUDY_ROUND_SIZE[mode] ?? 1))}
     />,

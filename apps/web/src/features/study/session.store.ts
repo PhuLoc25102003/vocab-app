@@ -55,6 +55,8 @@ interface StudyState {
   begin: (started: StartedSession, options?: BeginOptions) => void;
   record: (answer: UserAnswer) => void;
   answer: (answer: UserAnswer) => void;
+  /** Đi tiếp mà không ghi đáp án, cho câu người học chưa gặp (ví dụ trò chơi kết thúc sớm). */
+  skip: () => void;
   acknowledge: (sessionId: string, count: number) => void;
   finish: (result: SessionResult) => void;
 }
@@ -123,6 +125,7 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     set(({ position, recorded, pending }) =>
       recorded === position ? {} : { recorded: position, pending: [...pending, answer] },
     ),
+  skip: () => set(({ position }) => ({ position: position + 1 })),
   answer: (answer) =>
     set(({ position, recorded, pending }) => ({
       position: position + 1,

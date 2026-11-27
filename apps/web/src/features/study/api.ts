@@ -12,6 +12,11 @@ import {
   type UserAnswer,
   xpSummaryResponseSchema,
   type XpSummary,
+  wordRainHighScoreResponseSchema,
+  wordRainScoreResponseSchema,
+  type WordRainScoreInput,
+  type WordRainScoreResult,
+  type WordRainStyle,
 } from '@vocab/shared';
 import { http } from '@/lib/http';
 
@@ -76,4 +81,25 @@ export const SESSION_XP_KEY = ['stats', 'xp'] as const;
 
 export async function getXpSummary(): Promise<XpSummary> {
   return xpSummaryResponseSchema.parse(await http('/stats/xp')).data;
+}
+
+export const wordRainKeys = {
+  best: (setId: string, style: WordRainStyle) => ['word-rain', 'best', setId, style] as const,
+};
+
+/** Điểm cao nhất của tôi ở Mưa từ trong bộ, `null` khi chưa chơi. */
+export async function getWordRainBest(setId: string, style: WordRainStyle) {
+  const path = `/sets/${encodeURIComponent(setId)}/word-rain/high-score?style=${style}`;
+  return wordRainHighScoreResponseSchema.parse(await http(path)).data;
+}
+
+export async function saveWordRainScore(
+  sessionId: string,
+  input: WordRainScoreInput,
+): Promise<WordRainScoreResult> {
+  const body = await http(`/study/sessions/${encodeURIComponent(sessionId)}/word-rain/score`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  return wordRainScoreResponseSchema.parse(body).data;
 }

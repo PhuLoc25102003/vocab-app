@@ -68,3 +68,36 @@ export function playCorrectSound(): void {
     // Thiết bị không phát được âm thanh: bỏ qua.
   }
 }
+
+const GAME_TONES = {
+  /** Tiếng bắn: một tiếng tách cao, rất ngắn. */
+  shot: { type: 'square', from: 1200, to: 600, duration: 0.05, gain: 0.03 },
+  /** Tiếng nổ: trầm, trượt xuống. */
+  boom: { type: 'sawtooth', from: 220, to: 50, duration: 0.28, gain: 0.06 },
+  /** Mục tiêu lọt: hai nhịp trầm. */
+  miss: { type: 'triangle', from: 180, to: 110, duration: 0.3, gain: 0.07 },
+} as const;
+
+/** Âm thanh của trò chơi Mưa từ, theo cùng công tắc âm thanh ở Tài khoản. */
+export function playGameSound(kind: keyof typeof GAME_TONES): void {
+  const Context = audioContextClass();
+  if (!Context || !loadSoundEnabled()) return;
+  try {
+    context ??= new Context();
+    if (context.state === 'suspended') void context.resume();
+    const tone = GAME_TONES[kind];
+    const now = context.currentTime;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = tone.type;
+    oscillator.frequency.setValueAtTime(tone.from, now);
+    oscillator.frequency.exponentialRampToValueAtTime(tone.to, now + tone.duration);
+    gain.gain.setValueAtTime(tone.gain, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + tone.duration);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + tone.duration + 0.02);
+  } catch {
+    // Thiết bị không phát được âm thanh: bỏ qua.
+  }
+}
