@@ -34,7 +34,11 @@ const notoSerif = Noto_Serif({
   preload: false,
 });
 
-export const viewport: Viewport = { themeColor: BRAND_COLORS.primary };
+// Bàn phím máy mở thì thu cả trang lại thay vì phủ lên, để câu hỏi và ô gõ còn nhìn thấy.
+export const viewport: Viewport = {
+  themeColor: BRAND_COLORS.primary,
+  interactiveWidget: 'resizes-content',
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT('marketing');

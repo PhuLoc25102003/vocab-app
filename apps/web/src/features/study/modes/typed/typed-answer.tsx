@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import type { StudyModeProps } from '../views';
 import { diffAnswer } from './answer-diff';
 import { playCorrectSound } from '@/lib/sound';
+import { revealAboveKeyboard } from '@/lib/use-typing-focus';
 import { useTranslation } from 'react-i18next';
 
 const MAX_ANSWER_LENGTH = 500;
@@ -45,6 +46,7 @@ export function TypedAnswer({
   const answered = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     shownAt.current = Date.now();
@@ -80,8 +82,14 @@ export function TypedAnswer({
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-1 flex-col gap-6">
-      <div className="glass-surface flex flex-col gap-6 rounded-2xl border border-border p-6 sm:p-8 shadow-sm">
+    <form
+      onSubmit={submit}
+      className="flex flex-1 flex-col gap-6 group-data-[typing=true]/study:gap-3"
+    >
+      <div
+        ref={cardRef}
+        className="glass-surface flex scroll-mt-2 flex-col gap-6 rounded-2xl border border-border p-6 shadow-sm group-data-[typing=true]/study:gap-3 group-data-[typing=true]/study:p-4 sm:p-8"
+      >
         {typeof prompt === 'function' ? prompt(result) : prompt}
 
         <div className="flex flex-col gap-2">
@@ -100,6 +108,7 @@ export function TypedAnswer({
             autoCorrect="off"
             spellCheck={false}
             onChange={(event) => setValue(event.target.value)}
+            onFocus={() => revealAboveKeyboard(cardRef.current)}
             className="h-12 text-body"
           />
         </div>

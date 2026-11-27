@@ -9,6 +9,7 @@ import { FormError } from '@/components/common/form-message';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { revealAboveKeyboard } from '@/lib/use-typing-focus';
 import type { StudyModeProps } from '../views';
 import { useTranslation } from 'react-i18next';
 
@@ -124,7 +125,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
               key={item.id}
               id={`test-q-${index}`}
               className={cn(
-                'glass-surface group relative flex flex-col gap-5 rounded-2xl border p-5 transition-all sm:p-6',
+                'glass-surface group relative flex scroll-mt-2 flex-col gap-5 rounded-2xl border p-5 transition-all sm:p-6',
                 isAnswered
                   ? 'border-border-strong/60 shadow-sm'
                   : 'border-border hover:border-border-strong',
@@ -248,6 +249,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
                     data-answer=""
                     onChange={(event) => setValue(item.id, event.target.value)}
                     onKeyDown={focusNext}
+                    onFocus={(event) => revealAboveKeyboard(event.currentTarget.closest('li'))}
                     className="h-12 rounded-lg border-border-strong px-4 text-base focus-visible:ring-primary"
                   />
                 </div>
@@ -258,7 +260,7 @@ export function TestModeView({ question, round, languages, onAnswer }: StudyMode
       </ol>
 
       {/* Thanh nộp bài dính phía dưới (Sticky Footer) */}
-      <div className="glass-overlay sticky bottom-4 z-20 mt-4 flex flex-col gap-3 rounded-sheet p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="glass-overlay sticky bottom-4 z-20 mt-4 flex group-data-[typing=true]/study:hidden flex-col gap-3 rounded-sheet p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
             <span className="text-small font-semibold">

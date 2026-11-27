@@ -13,6 +13,7 @@ import { LoadingState } from '@/components/common/loading-state';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HttpError } from '@/lib/http';
+import { useTypingFocus } from '@/lib/use-typing-focus';
 import { cn } from '@/lib/utils';
 import type { StudyBackend } from '../api';
 import { useAnswerSync } from '../hooks/use-answer-sync';
@@ -118,8 +119,12 @@ function StudyFrame({
   children: ReactNode;
 }) {
   const { t } = useTranslation('study');
+  const typing = useTypingFocus();
   return (
-    <div className="fixed inset-0 z-30 flex flex-col overflow-y-auto bg-bg">
+    <div
+      data-typing={typing}
+      className="group/study fixed inset-0 z-30 flex flex-col overflow-y-auto bg-bg"
+    >
       <header className="mx-auto flex w-full max-w-[720px] items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2">
         {onExit ? (
           <Button variant="ghost" size="icon" onClick={onExit} aria-label={t('shell.exit')}>
@@ -151,7 +156,12 @@ function StudyFrame({
         <ShuffleToggle />
       </header>
       {header ? <div className="mx-auto w-full max-w-[720px] px-4">{header}</div> : null}
-      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col gap-6 px-4 py-6">
+      <div
+        className={cn(
+          'mx-auto flex w-full max-w-[720px] flex-1 flex-col px-4',
+          typing ? 'gap-3 py-2' : 'gap-6 py-6',
+        )}
+      >
         {children}
       </div>
     </div>
