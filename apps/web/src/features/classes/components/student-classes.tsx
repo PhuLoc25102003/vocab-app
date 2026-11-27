@@ -48,7 +48,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formErrorMessage } from '@/lib/form-errors';
 import { HttpError } from '@/lib/http';
 import {
+  allJoinedClassesQuery,
   classKeys,
+  firstJoinedPage,
   JOINED_PAGE_SIZE,
   joinClass,
   leaveClass,
@@ -61,8 +63,6 @@ import { formatDateTime } from '../format';
 import { AssignmentRow } from './assignment-row';
 import { PROGRESS_STATUS } from './status-label';
 import { useTranslation } from 'react-i18next';
-
-const CLASS_OPTIONS_LIMIT = 100;
 
 const assignmentHref = ({ id }: MyAssignment) => `/classes/assignments/${id}` as Route;
 
@@ -224,10 +224,7 @@ function MyAssignments({ view }: { view: ClassesView }) {
     queryFn: () => listMyAssignments(view.bpage, filter),
   });
   // Ô lọc lớp lấy tối đa 100 lớp đã tham gia, đủ cho một học sinh.
-  const classes = useQuery({
-    queryKey: classKeys.joinedQuery(1, '', CLASS_OPTIONS_LIMIT),
-    queryFn: () => listJoinedClasses(1, { limit: CLASS_OPTIONS_LIMIT }),
-  });
+  const classes = useQuery(allJoinedClassesQuery);
   const filtered = Boolean(view.classId || view.q);
   const counts = assignments.data?.counts;
 
@@ -398,10 +395,16 @@ function JoinedRow({ item }: { item: JoinedClass }) {
 function JoinedClasses({ view }: { view: ClassesView }) {
   const { t } = useTranslation('classes');
   const router = useRouter();
-  const joined = useQuery({
-    queryKey: classKeys.joinedQuery(view.cpage, view.cq, JOINED_PAGE_SIZE),
-    queryFn: () => listJoinedClasses(view.cpage, { q: view.cq || undefined }),
-  });
+  // Trang đầu không tìm kiếm cắt từ danh sách đầy đủ mà ô lọc lớp đã tải, không gọi API thêm.
+  const firstPage = view.cpage === 1 && !view.cq;
+  const joined = useQuery(
+    firstPage
+      ? { ...allJoinedClassesQuery, select: firstJoinedPage }
+      : {
+          queryKey: classKeys.joinedQuery(view.cpage, view.cq, JOINED_PAGE_SIZE),
+          queryFn: () => listJoinedClasses(view.cpage, { q: view.cq || undefined }),
+        },
+  );
 
   let body;
   if (joined.isPending) {

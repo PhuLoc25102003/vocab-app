@@ -5,8 +5,8 @@ import { apiErrorSchema } from '@vocab/shared';
  * Server của web không gọi được đường dẫn tương đối, nên dùng `API_INTERNAL_URL` nếu có.
  * Biến không có tiền tố `NEXT_PUBLIC_` luôn rỗng ở trình duyệt.
  */
-const API_URL =
-  process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+export const BROWSER_API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api/v1';
+const API_URL = process.env.API_INTERNAL_URL ?? BROWSER_API_URL;
 
 export class HttpError extends Error {
   constructor(
@@ -53,7 +53,11 @@ async function send<T>(path: string, init: RequestInit, token: string | null): P
     headers,
     credentials: 'include',
   });
+  return readResponse<T>(response);
+}
 
+/** Đọc body hoặc ném `HttpError` theo dạng lỗi chung của API. */
+export async function readResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) {
     return undefined as T;
   }

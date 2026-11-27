@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { BackLink } from '@/components/common/back-link';
 import { PageHeader } from '@/components/common/page-header';
 import { GlassTabGroup, GlassTabIndicator } from '@/components/ui/glass-tabs';
-import { getLeaderboardClasses, leaderboardKeys, type LeaderboardWeek } from '../api';
+import { joinedClassesQuery, type LeaderboardWeek } from '../api';
 import { LeaderboardBoard } from './leaderboard-board';
 
 function TabLink({ href, current, children }: { href: Route; current: boolean; children: string }) {
@@ -31,7 +31,8 @@ const tabBar =
 export function LeaderboardScreen() {
   const { t } = useTranslation('common');
   const searchParams = useSearchParams();
-  const classes = useQuery({ queryKey: leaderboardKeys.classes, queryFn: getLeaderboardClasses });
+  // Dùng chung cache lớp đã tham gia với trang Lớp học.
+  const classes = useQuery({ ...joinedClassesQuery, select: (list) => list.data });
   const requested = searchParams.get('scope') ?? 'global';
   // Lớp không còn trong danh sách (đã rời lớp) thì quay về bảng chung.
   const scope =

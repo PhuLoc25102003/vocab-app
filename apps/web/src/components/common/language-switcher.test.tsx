@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { en } from '@/lib/i18n/messages-en';
 import { I18nProvider } from '@/lib/i18n/provider';
 import { LanguageSettings, LanguageToggle } from './language-switcher';
 
@@ -31,7 +32,7 @@ describe('đổi ngôn ngữ', () => {
 
   it('Tài khoản: chọn ngôn ngữ, chọn lại ngôn ngữ đang dùng thì không làm gì', async () => {
     render(
-      <I18nProvider locale="en">
+      <I18nProvider locale="en" en={en}>
         <LanguageSettings />
       </I18nProvider>,
     );

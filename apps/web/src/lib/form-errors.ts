@@ -1,6 +1,7 @@
 import { ERROR_CODES } from '@vocab/shared';
 import { getI18n } from 'react-i18next';
-import { DEFAULT_LOCALE, type Locale, resources, toLocale } from './i18n/config';
+import { DEFAULT_LOCALE, type Locale, toLocale } from './i18n/config';
+import { errorMessages } from './i18n/error-messages';
 import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 import { HttpError } from './http';
 
@@ -38,7 +39,7 @@ export function resolveCurrentLocale(forcedLocale?: Locale): Locale {
  */
 export function formErrorMessage(error: unknown, forcedLocale?: Locale): string {
   const locale = resolveCurrentLocale(forcedLocale);
-  const errors = resources[locale].errors;
+  const errors = errorMessages[locale];
   if (!(error instanceof HttpError)) return errors.network;
   const codes: Partial<Record<string, string>> = errors.codes;
   if (locale === DEFAULT_LOCALE && error.message) return error.message;
@@ -48,7 +49,7 @@ export function formErrorMessage(error: unknown, forcedLocale?: Locale): string 
 /** Thông báo khi chỉ có mã lỗi, ví dụ mã trên URL sau khi API chuyển hướng về web. */
 export function errorCodeMessage(code: string, forcedLocale?: Locale): string {
   const locale = resolveCurrentLocale(forcedLocale);
-  const errors = resources[locale].errors;
+  const errors = errorMessages[locale];
   const codes: Partial<Record<string, string>> = errors.codes;
   return codes[code] ?? codes[ERROR_CODES.INTERNAL_ERROR] ?? errors.network;
 }

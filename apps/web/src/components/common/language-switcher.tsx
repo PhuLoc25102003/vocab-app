@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   LOCALE_COOKIE,
   LOCALE_COOKIE_MAX_AGE,
+  loadLocale,
   LOCALES,
   type Locale,
   toLocale,
@@ -22,7 +23,10 @@ function useSwitchLocale() {
     if (next === current) return;
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE}; samesite=lax`;
     document.documentElement.lang = next;
-    void i18n.changeLanguage(next);
+    // Bộ chuỗi tiếng Anh tải khi cần; lỗi mạng thì vẫn đổi, chuỗi thiếu dùng tiếng Việt.
+    void loadLocale(i18n, next)
+      .catch(() => undefined)
+      .then(() => i18n.changeLanguage(next));
     router.refresh();
   };
   return { current, change };

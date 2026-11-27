@@ -3,8 +3,7 @@
 import { ErrorState } from '@/components/common/error-state';
 import { themeInitScript } from '@/lib/theme';
 import { LOCALE_COOKIE } from '@/lib/i18n/config';
-import viCommon from '@/locales/vi/common.json';
-import enCommon from '@/locales/en/common.json';
+import { errorMessages } from '@/lib/i18n/error-messages';
 import { useState } from 'react';
 import './globals.css';
 
@@ -14,7 +13,8 @@ export default function GlobalError({ retry }: { retry: () => void }) {
     () => typeof document !== 'undefined' && document.cookie.includes(`${LOCALE_COOKIE}=en`),
   );
 
-  const dict = isEn ? enCommon.pages : viCommon.pages;
+  // Chỉ đọc namespace `errors` nhỏ, không kéo cả `common` của hai ngôn ngữ vào bundle chung.
+  const dict = isEn ? errorMessages.en : errorMessages.vi;
   const title = dict.globalErrorTitle;
   const description = dict.globalErrorDesc;
 

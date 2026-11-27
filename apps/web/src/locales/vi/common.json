@@ -188,8 +188,6 @@
     "notFoundTitle": "Không tìm thấy trang",
     "notFoundDesc": "Đường dẫn này không tồn tại hoặc đã được đổi.",
     "offlineTitle": "Mất kết nối",
-    "globalErrorTitle": "Đã có lỗi xảy ra",
-    "globalErrorDesc": "Hãy thử lại. Nếu vẫn lỗi, tải lại trang sau ít phút.",
     "backToDashboard": "Quay lại Tổng quan",
     "adminUsersDescription": "Tìm, đổi vai trò, khoá hoặc mở khoá tài khoản.",
     "adminHiddenSets": "Quản lý bộ từ công khai",

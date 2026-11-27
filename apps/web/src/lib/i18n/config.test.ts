@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createI18n, LOCALES, resources, toLocale } from './config';
+import { createI18n, LOCALES, loadLocale, toLocale } from './config';
+import { resources } from './resources';
 
 type Tree = { [key: string]: string | Tree };
 
@@ -26,8 +27,17 @@ describe('i18n', () => {
     expect(toLocale('en')).toBe('en');
     expect(toLocale('fr')).toBe('vi');
     expect(toLocale(undefined)).toBe('vi');
-    expect(createI18n('en').t('language.label')).toBe('Language');
+    expect(createI18n('en', resources).t('language.label')).toBe('Language');
     expect(createI18n('vi').t('language.label')).toBe('Ngôn ngữ');
+  });
+
+  it('client chỉ có sẵn tiếng Việt, tải tiếng Anh khi cần rồi mới đổi', async () => {
+    const instance = createI18n('vi');
+    expect(instance.hasResourceBundle('en', 'common')).toBe(false);
+    await loadLocale(instance, 'en');
+    await instance.changeLanguage('en');
+    expect(instance.t('language.label')).toBe('Language');
+    expect(instance.t('nav.dashboard')).toBe(resources.en.common.nav.dashboard);
   });
 
   it('khoá dịch có kiểu', () => {

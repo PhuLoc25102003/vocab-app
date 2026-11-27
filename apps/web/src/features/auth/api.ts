@@ -12,7 +12,8 @@ import {
   type RegisterInput,
   type ResetPasswordInput,
 } from '@vocab/shared';
-import { http } from '@/lib/http';
+import { takeEarlyRefresh } from '@/lib/early-refresh';
+import { http, readResponse } from '@/lib/http';
 
 export async function registerAccount(input: RegisterInput): Promise<void> {
   await http('/auth/register', { method: 'POST', body: JSON.stringify(input), skipAuth: true });
@@ -37,10 +38,11 @@ export async function loginWithGoogle(input: GoogleLoginInput): Promise<AuthSess
 }
 
 export async function refresh(): Promise<AuthSession> {
-  const { data } = await http<{ data: AuthSession }>('/auth/refresh', {
-    method: 'POST',
-    skipAuth: true,
-  });
+  // Lần đầu mở trang, script ở <head> đã gửi sẵn request này. Lỗi mạng thì gửi lại như thường.
+  const early = await takeEarlyRefresh()?.catch(() => null);
+  const { data } = early
+    ? await readResponse<{ data: AuthSession }>(early)
+    : await http<{ data: AuthSession }>('/auth/refresh', { method: 'POST', skipAuth: true });
   return data;
 }
 

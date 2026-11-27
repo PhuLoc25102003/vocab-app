@@ -1,6 +1,7 @@
 import { parseValidationMessage } from '@vocab/shared';
 import { getI18n } from 'react-i18next';
-import { resources, toLocale } from './i18n/config';
+import { toLocale } from './i18n/config';
+import { validationMessages } from './i18n/error-messages';
 
 type Table = Partial<Record<string, string>>;
 
@@ -14,7 +15,7 @@ export function translateValidation(message: string | undefined): string | undef
   if (!message) return message;
   const parsed = parseValidationMessage(message);
   if (!parsed) return message;
-  const { messages, fields, fieldTitles } = resources[toLocale(getI18n()?.language)].validation;
+  const { messages, fields, fieldTitles } = validationMessages[toLocale(getI18n()?.language)];
   const template = (messages as Table)[parsed.key];
   if (!template) return message;
   const values: Record<string, string> = {};

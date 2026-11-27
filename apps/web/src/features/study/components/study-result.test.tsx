@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { resources } from '@/lib/i18n/config';
+import { resources } from '@/lib/i18n/resources';
 import { encouragement, StudyResult } from './study-result';
 
 vi.mock('./session-xp', () => ({

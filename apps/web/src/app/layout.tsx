@@ -6,7 +6,10 @@ import { BRAND_NAME } from '@/components/common/logo';
 import { Providers } from '@/components/common/providers';
 import { ServiceWorkerRegistration } from '@/components/common/service-worker';
 import { BRAND_COLORS } from '@/lib/brand';
+import { earlyRefreshScript } from '@/lib/early-refresh';
+import { BROWSER_API_URL } from '@/lib/http';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config';
+import { en } from '@/lib/i18n/messages-en';
 import { I18nProvider } from '@/lib/i18n/provider';
 import { getLocale, getT } from '@/lib/i18n/server';
 import { themeInitScript } from '@/lib/theme';
@@ -49,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
 async function LocaleRoot({ children }: { children: ReactNode }) {
   const locale = await getLocale();
   return (
-    <I18nProvider locale={locale}>
+    <I18nProvider locale={locale} en={locale === 'en' ? en : undefined}>
       <Providers>{children}</Providers>
     </I18nProvider>
   );
@@ -68,6 +71,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="google" content="notranslate" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script dangerouslySetInnerHTML={{ __html: liquidGlassInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: earlyRefreshScript(BROWSER_API_URL) }} />
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <LiquidGlassFilter />

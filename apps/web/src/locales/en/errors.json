@@ -52,5 +52,7 @@
     "INTERNAL_ERROR": "Something went wrong on our side. Try again later.",
     "SERVICE_UNAVAILABLE": "The service is busy. Try again later.",
     "DB_UNAVAILABLE": "The service is busy. Try again later."
-  }
+  },
+  "globalErrorTitle": "An error occurred",
+  "globalErrorDesc": "Please try again. If the error persists, reload after a few minutes."
 }

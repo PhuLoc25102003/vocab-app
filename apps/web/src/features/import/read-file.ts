@@ -1,4 +1,4 @@
-import { resources } from '@/lib/i18n/config';
+import { vi } from '@/lib/i18n/messages-vi';
 
 export const IMPORT_FILE_MAX_BYTES = 2 * 1024 * 1024;
 
@@ -10,13 +10,13 @@ const TEXT_EXTENSIONS = ['.txt', '.csv'];
 const TEXT_TYPES = ['', 'text/plain', 'text/csv', 'application/csv', 'application/vnd.ms-excel'];
 const XLSX_TYPES = ['', XLSX_MIME, 'application/octet-stream'];
 
-export type ImportFileErrorCode = keyof (typeof resources)['vi']['sets']['import']['file'];
+export type ImportFileErrorCode = keyof (typeof vi)['sets']['import']['file'];
 
 /** `code` là khoá dịch ở `sets:import.file`; `message` giữ câu tiếng Việt cho log và test. */
 export class ImportFileError extends Error {
   override name = 'ImportFileError';
   constructor(readonly code: ImportFileErrorCode) {
-    super(resources.vi.sets.import.file[code]);
+    super(vi.sets.import.file[code]);
   }
 }
 

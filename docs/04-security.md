@@ -31,6 +31,8 @@ Access token sống 15 phút, chỉ nằm trong bộ nhớ trình duyệt; refre
 5. Token đã thu hồi được dùng lại sau 10 giây → có người đã lấy cắp: xoá cả family, bắt đăng nhập lại.
 6. Refresh thất bại → xoá state, chuyển về `/login?next=<trang cũ>`.
 
+Khi mở hoặc tải lại một trang trong app, access token chưa có trong bộ nhớ nên `AuthGate` phải refresh trước mọi API khác. Để không đợi tải xong JS, `earlyRefreshScript` (`lib/early-refresh.ts`) ở `<head>` gửi sẵn `POST /auth/refresh` lúc đọc HTML, chỉ khi có cookie `vocab_session` và đường dẫn thuộc nhóm `(app)`. Đây đúng là request `refresh()` sẽ gửi (cùng cookie, cùng kiểm tra `Origin`), `refresh()` dùng kết quả đó đúng một lần rồi xử lý 401, 409 như trên; request sớm lỗi mạng thì gửi lại như thường. Access token vẫn chỉ nằm trong bộ nhớ.
+
 ## Phân quyền: RBAC + quyền sở hữu
 
 Hai lớp kiểm tra, đều là guard dùng chung, không viết lại trong service:

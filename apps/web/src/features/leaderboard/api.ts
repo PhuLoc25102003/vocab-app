@@ -2,7 +2,7 @@ import {
   joinedClassListSchema,
   leaderboardResponseSchema,
   leaderboardVisibilityResponseSchema,
-  type JoinedClass,
+  type JoinedClassList,
   type Leaderboard,
   type LeaderboardQuery,
 } from '@vocab/shared';
@@ -13,7 +13,16 @@ export type LeaderboardWeek = LeaderboardQuery['week'];
 export const leaderboardKeys = {
   all: ['leaderboard'] as const,
   board: (scope: string, week: LeaderboardWeek) => ['leaderboard', scope, week] as const,
-  classes: ['leaderboard', 'classes'] as const,
+};
+
+/**
+ * Mọi lớp đã tham gia để làm tab. Cùng khoá và cùng dữ liệu với `allJoinedClassesQuery` của trang
+ * Lớp học (feature không import lẫn nhau), nên hai trang dùng chung một request.
+ */
+export const joinedClassesQuery = {
+  queryKey: ['classes', 'joined', 1, '', 100] as const,
+  queryFn: async (): Promise<JoinedClassList> =>
+    joinedClassListSchema.parse(await http('/classes/joined?page=1&limit=100')),
 };
 
 /** `scope` là `global` hoặc id của lớp. */
@@ -21,11 +30,6 @@ export async function getLeaderboard(scope: string, week: LeaderboardWeek): Prom
   const path =
     scope === 'global' ? '/leaderboard' : `/leaderboard/classes/${encodeURIComponent(scope)}`;
   return leaderboardResponseSchema.parse(await http(`${path}?week=${week}`)).data;
-}
-
-/** Lớp đã tham gia để làm tab, tối đa 100 lớp như giới hạn phân trang. */
-export async function getLeaderboardClasses(): Promise<JoinedClass[]> {
-  return joinedClassListSchema.parse(await http('/classes/joined?page=1&limit=100')).data;
 }
 
 export async function setLeaderboardHidden(hidden: boolean): Promise<boolean> {

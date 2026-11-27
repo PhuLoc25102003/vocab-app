@@ -10,6 +10,7 @@ Giao diện web hiện viết cứng tiếng Việt trong khoảng 150 file `.ts
 ## Quyết định
 
 - Dùng **`i18next`** và **`react-i18next`** trong `apps/web`, ghim phiên bản. Không dùng plugin tải file qua mạng: hai bộ chuỗi `vi` và `en` là JSON trong `apps/web/src/locales/<ngôn ngữ>/<namespace>.json`, import tĩnh, chia namespace theo feature (`common`, `auth`, `sets`, `study`, `classes`, `account`, `admin`, `marketing`, `errors`).
+- Bundle client chỉ có sẵn `vi` (`lib/i18n/messages-vi.ts`). Trang mở bằng tiếng Anh thì root layout truyền bộ `en` cho `I18nProvider`; đổi sang tiếng Anh ở client thì `loadLocale` tải `messages-en.ts` trước khi `changeLanguage`. Server và test dùng `resources` đủ hai ngôn ngữ. Riêng `errors` và `validation` có đủ hai ngôn ngữ ở client qua `lib/i18n/error-messages.ts` (bổ sung 2026-11-27 để giảm khoảng 70 KB JS mỗi trang).
 - Ngôn ngữ lưu trong cookie `vocab.locale` (`vi` hoặc `en`, một năm, `SameSite=Lax`). Không có cookie thì dùng `vi`. Không thêm tiền tố `/en` vào URL để giữ nguyên toàn bộ route, link và test hiện có.
 - Server component lấy chuỗi qua `getT(namespace)` trong `lib/i18n/server.ts`: đọc cookie, tạo instance i18next riêng cho mỗi request bằng `createInstance()`. Client component dùng `useTranslation(namespace)` dưới `I18nProvider` do root layout truyền ngôn ngữ xuống. Root layout đặt `<html lang>` theo ngôn ngữ.
 - Đổi ngôn ngữ: ghi cookie, client đổi ngay bằng `i18n.changeLanguage`, rồi `router.refresh()` để server component render lại. Nút đổi ở header (cả trang giới thiệu) và trong Tài khoản.
