@@ -77,7 +77,7 @@
     "range": "{{from}}–{{to}} of {{total}}"
   },
   "loading": {
-    "slowServer": "The server is starting up, this can take about 30 seconds."
+    "slowServer": "The server is starting up, this can take about 90 seconds."
   },
   "offline": {
     "title": "You are offline",
