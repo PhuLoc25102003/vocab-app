@@ -202,6 +202,6 @@ export class StudyService {
     if (!session) {
       throw sessionNotFound();
     }
-    return ok({ session, wrongCardIds });
+    return ok({ session, wrongCardIds, xpEarned: await this.study.sumSessionXp(id) });
   }
 }

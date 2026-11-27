@@ -156,6 +156,14 @@ export class StatsRepository extends BaseRepository {
     return { total: total._sum.amount ?? 0, since: recent._sum.amount ?? 0 };
   }
 
+  async updateDailyGoalXp(userId: string, dailyGoalXp: number): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { dailyGoalXp },
+      select: { id: true },
+    });
+  }
+
   async findDailyGoalXp(userId: string): Promise<number | null> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

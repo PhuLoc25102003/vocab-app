@@ -7,6 +7,7 @@ import {
   levelFromXp,
   startOfStudyDay,
   toStudyDay,
+  type UpdateDailyGoalInput,
 } from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
@@ -32,6 +33,11 @@ export class StatsService {
       todayXp: sums.since,
       dailyGoalXp: dailyGoalXp ?? DEFAULT_DAILY_GOAL_XP,
     });
+  }
+
+  async updateDailyGoal(viewer: SetViewer, { dailyGoalXp }: UpdateDailyGoalInput) {
+    await this.stats.updateDailyGoalXp(viewer.id, dailyGoalXp);
+    return this.xp(viewer);
   }
 
   async overview(viewer: SetViewer) {

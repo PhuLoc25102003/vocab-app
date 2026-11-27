@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { resources } from '@/lib/i18n/config';
 import { encouragement, StudyResult } from './study-result';
 
+vi.mock('./session-xp', () => ({
+  SessionXp: ({ xpEarned }: { xpEarned: number }) => <p>+{xpEarned} XP</p>,
+}));
+
 describe('StudyResult', () => {
   it('hiện phần trăm, thanh tỉ lệ và lời khích lệ', () => {
     render(
@@ -10,6 +14,7 @@ describe('StudyResult', () => {
         result={{
           session: { correct: 3, total: 4 } as never,
           wrongCardIds: ['c2'],
+          xpEarned: 0,
         }}
         questions={[
           { id: 'c1', cardId: 'c1', mode: 'MCQ', prompt: 'apple', expected: 'quả táo' },

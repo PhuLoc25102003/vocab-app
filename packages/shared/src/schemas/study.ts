@@ -90,7 +90,12 @@ export const submitAnswersResponseSchema = z.object({
 export type StartedSession = z.infer<typeof startSessionResponseSchema>['data'];
 
 export const finishSessionResponseSchema = z.object({
-  data: z.object({ session: studySessionSchema, wrongCardIds: z.array(z.string()) }),
+  data: z.object({
+    session: studySessionSchema,
+    wrongCardIds: z.array(z.string()),
+    /** Tổng XP của cả phiên. Khách, phiên offline và bản cũ của API trả 0. */
+    xpEarned: z.number().default(0),
+  }),
 });
 export type SessionResult = z.infer<typeof finishSessionResponseSchema>['data'];
 

@@ -21,7 +21,7 @@ function backend(startImpl: StudyBackend['start']): StudyBackend & { submitted: 
     submit: vi.fn(async (_id, answers) => {
       submitted.push(...answers);
     }),
-    finish: vi.fn(async () => ({ session: {} as never, wrongCardIds: [] })),
+    finish: vi.fn(async () => ({ session: {} as never, wrongCardIds: [], xpEarned: 0 })),
   };
 }
 

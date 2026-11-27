@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Trans, useTranslation } from 'react-i18next';
+import { SessionXp } from './session-xp';
 
 interface StudyResultProps {
   result: SessionResult;
@@ -77,6 +78,7 @@ export function StudyResult({
           />
         </p>
         <p className="font-medium">{t(encouragement(percent))}</p>
+        <SessionXp xpEarned={result.xpEarned} />
       </div>
 
       {wrong.length > 0 ? (

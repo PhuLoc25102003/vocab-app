@@ -258,5 +258,35 @@
     "masteredRule": "Right on two different days",
     "hardWords": "Often missed",
     "wrongCount": "Missed {{count}} times"
+  },
+  "xp": {
+    "title": "XP progress",
+    "loading": "Loading XP",
+    "failed": "Could not load XP",
+    "level": "Level {{level}}",
+    "total": "{{xp}} XP",
+    "todayRing": "{{today}} of {{goal}} XP today",
+    "today": "today",
+    "toNextLevel": "{{xp}} XP to level {{level}}",
+    "levelBar": "Progress to level {{level}}",
+    "goalLeft": "{{xp}} XP left to hit today's goal",
+    "goalDone": "Done for today 🎉",
+    "firstXp": "Answer correctly to earn your first XP",
+    "changeGoal": "Change goal",
+    "earned": "+{{xp}} XP",
+    "levelUp": "Level {{level}} reached!",
+    "capReached": "You hit today's 500 XP cap. Your progress is still saved.",
+    "goal": {
+      "title": "Daily goal",
+      "description": "How much XP you aim for each day. Each correct answer earns 10 XP.",
+      "option": "{{xp}} XP",
+      "names": {
+        "10": "Relaxed",
+        "20": "Steady",
+        "50": "Intense"
+      },
+      "saved": "Daily goal set to {{xp}} XP",
+      "saveFailed": "Could not change the goal, please try again"
+    }
   }
 }
