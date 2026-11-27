@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown } from 'lucide-react';
 import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +33,8 @@ interface ComboboxProps {
    * nơi danh sách nổi bị cắt. Hộp thoại chỉ cao thêm khi danh sách đang mở.
    */
   inline?: boolean;
+  /** Chờ người dùng ngừng gõ bấy nhiêu mili giây rồi mới lọc danh sách. Mặc định lọc ngay. */
+  debounceMs?: number;
 }
 
 /** Bỏ dấu, `đ` thành `d`, chữ thường: gõ "tieng viet" vẫn ra "Tiếng Việt". */
@@ -43,6 +46,15 @@ export function normalizeSearch(text: string): string {
     .replace(/Đ/g, 'D')
     .toLocaleLowerCase('vi')
     .trim();
+}
+
+function filterOptions(options: ComboboxOption[], text: string): ComboboxOption[] {
+  const needle = normalizeSearch(text);
+  return needle
+    ? options.filter((option) =>
+        normalizeSearch(`${option.label} ${option.keywords ?? ''}`).includes(needle),
+      )
+    : options;
 }
 
 /**
@@ -62,6 +74,7 @@ export function Combobox({
   disabled = false,
   onBlur,
   inline = false,
+  debounceMs = 0,
 }: ComboboxProps) {
   const { t } = useTranslation();
   const id = useId();
@@ -74,14 +87,10 @@ export function Combobox({
   const [active, setActive] = useState(0);
 
   const selected = options.find((option) => option.value === value);
-  const matches = useMemo(() => {
-    const needle = normalizeSearch(query ?? '');
-    return needle
-      ? options.filter((option) =>
-          normalizeSearch(`${option.label} ${option.keywords ?? ''}`).includes(needle),
-        )
-      : options;
-  }, [options, query]);
+  const filterText = useDebouncedValue(query ?? '', debounceMs);
+  const matches = useMemo(() => filterOptions(options, filterText), [options, filterText]);
+  /** Đang chờ debounce: danh sách chưa theo kịp chữ vừa gõ. */
+  const stale = normalizeSearch(filterText) !== normalizeSearch(query ?? '');
   const activeOption = open ? matches[Math.min(active, matches.length - 1)] : undefined;
   const optionId = (index: number) => `${id}-option-${index}`;
 
@@ -123,7 +132,9 @@ export function Combobox({
         if (open) {
           // Không gửi form khi đang chọn trong danh sách.
           event.preventDefault();
-          if (activeOption) choose(activeOption);
+          // Bấm Enter trước khi hết thời gian chờ thì lọc ngay theo chữ đang có.
+          const option = stale ? filterOptions(options, query ?? '')[0] : activeOption;
+          if (option) choose(option);
         }
         break;
       case 'Escape':

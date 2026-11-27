@@ -237,6 +237,10 @@ Dùng `AppNav` trong `components/common/app-nav.tsx`: cố định đáy màn h�
 
 Ô chọn có thể quá 8 lựa chọn (bộ từ, lớp, ngôn ngữ) dùng `Combobox` trong `components/common/combobox.tsx`, không đặt thêm một ô "Tìm…" cạnh ô chọn. Ô nhập chính là ô chọn: bấm hoặc focus thì mở danh sách và bôi đen chữ để gõ đè, gõ thì lọc không phân biệt dấu và hoa thường, phím lên xuống đổi mục (`aria-activedescendant`), Enter chọn mà không gửi form, Esc đóng danh sách và giữ giá trị cũ (không đóng modal), không khớp thì ghi "Không có kết quả". Danh sách nền `surface`, viền `border`, `shadow-raised`, cao tối đa 256 px rồi cuộn, mục cao tối thiểu 44 px, mục đang trỏ nền `primary-soft`, mục đã chọn có dấu tích `primary`, có thể có dòng phụ `text-muted` (ví dụ "12 thẻ · Riêng tư"). Ô chọn ngắn, cố định giữ `Select`.
 
+- `keywords` trên mỗi mục: chữ tìm được nhưng không hiện, ví dụ tên và email giáo viên của lớp để ô "Tìm theo tên lớp hoặc giáo viên" tìm đúng.
+- `inline`: danh sách nằm trong luồng trang thay vì nổi lên. Dùng trong hộp thoại có thân cuộn được (danh sách nổi bị cắt), hộp thoại chỉ cao thêm khi danh sách mở, không chừa sẵn khoảng trống.
+- `debounceMs`: chờ ngừng gõ rồi mới lọc (hộp thoại Xếp lớp dùng 250 ms); bấm Enter trước khi hết thời gian chờ vẫn chọn theo chữ vừa gõ. Hook dùng chung `useDebouncedValue` trong `lib/use-debounced-value.ts`.
+
 ## Ô ngày giờ
 
 Dùng `DateTimeField` trong `components/common/date-time-field.tsx`, không dùng `input type="datetime-local"` hay `type="date"` vì ô gốc hiện theo ngôn ngữ máy (`mm/dd/yyyy`, AM/PM) và màu của trình duyệt.
