@@ -2,7 +2,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   cardMastery,
   computeStreak,
+  DEFAULT_DAILY_GOAL_XP,
   ERROR_CODES,
+  levelFromXp,
   startOfStudyDay,
   toStudyDay,
 } from '@vocab/shared';
@@ -18,6 +20,19 @@ const DAY_MS = 86_400_000;
 @Injectable()
 export class StatsService {
   constructor(private readonly stats: StatsRepository) {}
+
+  async xp(viewer: SetViewer) {
+    const [sums, dailyGoalXp] = await Promise.all([
+      this.stats.sumXp(viewer.id, startOfStudyDay(new Date())),
+      this.stats.findDailyGoalXp(viewer.id),
+    ]);
+    return ok({
+      totalXp: sums.total,
+      ...levelFromXp(sums.total),
+      todayXp: sums.since,
+      dailyGoalXp: dailyGoalXp ?? DEFAULT_DAILY_GOAL_XP,
+    });
+  }
 
   async overview(viewer: SetViewer) {
     const now = new Date();

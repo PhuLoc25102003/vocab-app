@@ -143,4 +143,24 @@ export class StatsRepository extends BaseRepository {
         : [];
     });
   }
+
+  /** Tổng XP từ trước tới nay và XP từ `since`. */
+  async sumXp(userId: string, since: Date) {
+    const [total, recent] = await Promise.all([
+      this.prisma.xpEvent.aggregate({ where: { userId }, _sum: { amount: true } }),
+      this.prisma.xpEvent.aggregate({
+        where: { userId, createdAt: { gte: since } },
+        _sum: { amount: true },
+      }),
+    ]);
+    return { total: total._sum.amount ?? 0, since: recent._sum.amount ?? 0 };
+  }
+
+  async findDailyGoalXp(userId: string): Promise<number | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { dailyGoalXp: true },
+    });
+    return user?.dailyGoalXp ?? null;
+  }
 }

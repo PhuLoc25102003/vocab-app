@@ -8,7 +8,7 @@ Cập nhật lần cuối: 2026-11-27
 
 Làm trước các việc không cần người dùng xác nhận; việc cần tài khoản, quyết định hoặc phát hành để cuối và gom lại hỏi một lần.
 
-1. Giai đoạn 7, làm từ 7.1 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
+1. Giai đoạn 7, làm tiếp từ 7.2 theo thứ tự: XP và mục tiêu ngày, chuỗi, huy hiệu, bảng xếp hạng, thông báo, chế độ Mưa từ. Use case ở `docs/use-cases/08-dong-luc-va-tro-choi.md`.
 2. Phát hành `develop` vào `main` (việc 1.35), cần bạn xác nhận, các bước ở `docs/08-deploy.md`.
 3. Đo lại Lighthouse trên production (việc 1.34), sau khi phát hành.
 
@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       0 |      15 | Chưa làm   |
-| **Toàn dự án**          |                                            | **187** | **206** | **91%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |       1 |      15 | Đang làm   |
+| **Toàn dự án**          |                                            | **188** | **206** | **91%**    |
 
 ## Cách cập nhật
 
@@ -518,7 +518,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 
 ### 7A. XP, cấp độ và mục tiêu ngày
 
-- [ ] **7.1** Nền XP: bảng `XpEvent` (người dùng, số XP, nguồn, phiên học, thời điểm) và cột `User.dailyGoalXp` (mặc định 20); quy tắc tính trong `@vocab/shared` (`study/xp.ts`): đúng +10, ôn thẻ đến hạn đúng +5, mỗi 5 câu đúng liên tiếp +5, không cộng lại thẻ đã đúng trong 10 phút, trần 500 XP mỗi ngày, bảng cấp độ; server cộng XP khi kết thúc phiên trong cùng transaction, phiên offline gửi lên cũng được tính; `GET /me/xp` (tổng, cấp, XP hôm nay, mục tiêu); ngày tính theo giờ Việt Nam. Cập nhật `docs/02-database.md`, `docs/03-api.md` (UC-G1).
+- [x] **7.1** Nền XP: bảng `XpEvent` (người dùng, số XP, nguồn, phiên học, thời điểm) và cột `User.dailyGoalXp` (mặc định 20); quy tắc tính trong `@vocab/shared` (`study/xp.ts`): đúng +10, ôn thẻ đến hạn đúng +5, mỗi 5 câu đúng liên tiếp +5, không cộng lại thẻ đã đúng trong 10 phút, trần 500 XP mỗi ngày, bảng cấp độ; server cộng XP khi lưu mỗi lô đáp án trong cùng transaction và trả `xpEarned`, phiên offline gửi lên cũng được tính; `GET /stats/xp` (tổng, cấp, XP hôm nay, mục tiêu); ngày tính theo giờ Việt Nam. Cập nhật `docs/02-database.md`, `docs/03-api.md` (UC-G1).
 - [ ] **7.2** Giao diện XP: khối XP và cấp độ trên Tổng quan, vòng tròn mục tiêu ngày, đủ mục tiêu thì hiện "Hoàn thành hôm nay"; chọn mục tiêu 10, 20 hoặc 50 XP ở Tài khoản; màn kết quả hiện XP vừa nhận và hiệu ứng lên cấp (tắt khi giảm chuyển động). Cần 7.1 (UC-G1).
 
 ### 7B. Chuỗi và thẻ giữ chuỗi

@@ -2,9 +2,14 @@ import { Injectable } from '@nestjs/common';
 import {
   applyReview,
   createSrsState,
+  scoreAnswers,
+  startOfStudyDay,
+  trailingCombo,
+  XP_RULES,
   type Pagination,
   type StudyMode,
   type SrsState,
+  type XpAnswer,
 } from '@vocab/shared';
 import { BaseRepository } from '../../common/base/base.repository';
 import { toSkipTake } from '../../common/base/pagination';
@@ -140,9 +145,28 @@ export class StudyRepository extends BaseRepository {
     });
   }
 
-  async saveAnswers(userId: string, sessionId: string, answers: GradedAnswer[], now: Date) {
-    await this.prisma.$transaction(
+  /** Lưu đáp án, cập nhật lịch ôn và cộng XP trong cùng một transaction. Trả về XP được cộng. */
+  async saveAnswers(
+    userId: string,
+    sessionId: string,
+    answers: GradedAnswer[],
+    now: Date,
+  ): Promise<number> {
+    return this.prisma.$transaction(
       async (tx) => {
+        const [previous, earned] = await Promise.all([
+          tx.attempt.findMany({
+            where: { sessionId },
+            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+            take: XP_RULES.comboSize,
+            select: { isCorrect: true },
+          }),
+          tx.xpEvent.aggregate({
+            where: { userId, createdAt: { gte: startOfStudyDay(now) } },
+            _sum: { amount: true },
+          }),
+        ]);
+
         await tx.attempt.createMany({
           // Lệch từng mili giây để giữ đúng thứ tự trả lời trong cùng một lô.
           data: answers.map((answer, index) => ({
@@ -163,14 +187,32 @@ export class StudyRepository extends BaseRepository {
             lapses: true,
             dueAt: true,
             lastResult: true,
+            updatedAt: true,
           },
         });
         const states = new Map<string, SrsState>(
-          saved.map(({ cardId, ...state }) => [cardId, state]),
+          saved.map(({ cardId, updatedAt: _updatedAt, ...state }) => [cardId, state]),
         );
+        /** Lần trả lời đúng gần nhất của từng thẻ, để không cộng XP lặp lại trong 10 phút. */
+        const lastCorrectAt = new Map<string, number>(
+          saved
+            .filter(({ lastResult }) => lastResult === true)
+            .map(({ cardId, updatedAt }) => [cardId, updatedAt.getTime()]),
+        );
+        const xpAnswers: XpAnswer[] = [];
         for (const { cardId, isCorrect } of answers) {
-          const state = states.get(cardId) ?? createSrsState(now);
-          states.set(cardId, applyReview(state, isCorrect, now));
+          const known = states.get(cardId);
+          const lastCorrect = lastCorrectAt.get(cardId);
+          xpAnswers.push({
+            isCorrect,
+            wasDue: known !== undefined && known.reps > 0 && known.dueAt <= now,
+            recentlyCorrect:
+              lastCorrect !== undefined && now.getTime() - lastCorrect < XP_RULES.repeatWindowMs,
+          });
+          if (isCorrect) {
+            lastCorrectAt.set(cardId, now.getTime());
+          }
+          states.set(cardId, applyReview(known ?? createSrsState(now), isCorrect, now));
         }
 
         for (const [cardId, state] of states) {
@@ -180,6 +222,17 @@ export class StudyRepository extends BaseRepository {
             update: state,
           });
         }
+
+        const { xp } = scoreAnswers(xpAnswers, {
+          comboBefore: trailingCombo(previous.map(({ isCorrect }) => isCorrect).reverse()),
+          earnedToday: earned._sum.amount ?? 0,
+        });
+        if (xp > 0) {
+          await tx.xpEvent.create({
+            data: { userId, sessionId, amount: xp, source: 'ANSWERS', createdAt: now },
+          });
+        }
+        return xp;
       },
       { timeout: SAVE_ANSWERS_TIMEOUT_MS },
     );

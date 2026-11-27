@@ -82,6 +82,8 @@ export const submitAnswersResponseSchema = z.object({
       z.object({ questionId: z.string(), isCorrect: z.boolean(), expected: z.string() }),
     ),
     ignored: z.number(),
+    /** XP nhận được từ lô này. Bản cũ của API không có trường này. */
+    xpEarned: z.number().default(0),
   }),
 });
 

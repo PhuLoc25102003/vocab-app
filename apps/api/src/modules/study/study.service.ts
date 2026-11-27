@@ -191,10 +191,9 @@ export class StudyService {
       return isNew;
     });
 
-    if (fresh.length > 0) {
-      await this.study.saveAnswers(viewer.id, id, fresh, new Date());
-    }
-    return ok({ results, ignored: answers.length - graded.length });
+    const xpEarned =
+      fresh.length > 0 ? await this.study.saveAnswers(viewer.id, id, fresh, new Date()) : 0;
+    return ok({ results, ignored: answers.length - graded.length, xpEarned });
   }
 
   async finish(id: string) {

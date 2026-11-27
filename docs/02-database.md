@@ -58,6 +58,8 @@ model User {
   lockedAt     DateTime?
   lockReason   String?
   lockedById   String?
+  /// Mục tiêu XP mỗi ngày người học chọn: 10, 20 hoặc 50.
+  dailyGoalXp  Int       @default(20)
 
   refreshSessions RefreshSession[]
   passwordResetTokens PasswordResetToken[]
@@ -196,6 +198,28 @@ model StudySession {
   @@index([assignmentId, userId])
 }
 
+enum XpSource {
+  ANSWERS
+}
+
+/// Mỗi lần được cộng XP, ví dụ một lô đáp án đã chấm. Tổng, XP ngày và XP tuần đều cộng từ bảng này.
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  source    XpSource @default(ANSWERS)
+  /// Xoá phiên học thì XP vẫn còn, chỉ bỏ liên kết.
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session StudySession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
 model Attempt {
   id        String   @id @default(cuid())
   sessionId String
@@ -288,6 +312,8 @@ model AssignmentSubmission {
 - Import lớn dùng `createMany` trong một transaction, tối đa 2.000 thẻ một lần.
 - `Class`, `ClassMember`, `Assignment` (việc 3.1) là nền cho lớp học, chưa có API. `Class.joinCode` duy nhất toàn hệ thống, giáo viên đổi mã bằng cách ghi mã mới. Lớp lưu trữ có `archivedAt`, không xoá. `ClassMember` có khoá chính `(classId, userId)` nên một học sinh không vào một lớp hai lần. `Assignment.dueAt` lưu UTC, `null` là không có hạn. Xoá giáo viên hoặc lớp thì xoá theo thành viên và bài giao; xoá học sinh chỉ xoá tư cách thành viên; bộ từ bị xoá hẳn (sau 30 ngày soft delete) thì bài giao của bộ đó bị xoá theo.
 - Việc 5.10: `Assignment.modes` là danh sách chế độ phải làm theo thứ tự, thay cho `mode` (cột `mode` giữ đến lần deploy sau rồi mới xoá; bài cũ được backfill `[mode]`, bài mới ghi cả hai). `StudySession.assignmentId` (null được) gắn phiên học với bài giao, xoá bài giao thì `SET NULL`. `AssignmentSubmission` khoá chính `(assignmentId, userId)` nên mỗi học sinh nộp một lần; `score` là phần trăm chốt lúc nộp (null khi chỉ có Flashcard), `late` khi nộp sau `dueAt`; xoá bài giao hoặc người dùng thì xoá theo bài nộp. Migration backfill bài nộp từ phiên đã xong cùng bộ, cùng chế độ sau lúc giao của thành viên lớp: thời điểm là lần xong đầu, điểm là phiên tốt nhất.
+
+- `XpEvent` và `User.dailyGoalXp` (việc 7.1): mỗi lô đáp án được cộng XP tạo một dòng trong cùng transaction với `Attempt` và `CardProgress`. Quy tắc tính nằm ở `packages/shared/src/study/xp.ts`. Không lưu tổng XP trên `User`: tổng, XP hôm nay và XP tuần (bảng xếp hạng) đều cộng từ bảng này theo index `userId, createdAt` và `createdAt`. Phiên offline gửi lên muộn được tính vào lúc gửi lên.
 
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
