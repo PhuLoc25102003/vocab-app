@@ -28,6 +28,14 @@
   --highlight: #fde047;
   --highlight-fg: #0f172a;
   --focus: #2563eb;
+  /* Mưa từ: khung chơi luôn là bầu trời đêm ở cả hai giao diện để thẻ và tia laser nổi bật. */
+  --game-sky-top: #0b1533;
+  --game-sky-bottom: #1d3a7a;
+  --game-ink: #f1f5f9;
+  --game-ink-muted: #a5b4cf;
+  --game-panel: rgb(10 18 40 / 0.84);
+  --game-steel: #475569;
+  --game-glow: #38bdf8;
   --overlay: rgb(226 232 240 / 0.45);
 
   --glass-highlight: rgb(255 255 255 / 0.95);
@@ -107,6 +115,9 @@
   --success-soft: rgb(52 211 153 / 0.16);
   --focus: #60a5fa;
   --overlay: rgb(2 6 23 / 0.45);
+  --game-sky-top: #04070f;
+  --game-sky-bottom: #0f1f42;
+  --game-panel: rgb(6 10 22 / 0.86);
 
   --glass-highlight: rgb(255 255 255 / 0.28);
   --glass-rim: rgb(255 255 255 / 0.14);
@@ -148,6 +159,11 @@
   --color-border-strong: var(--border-strong);
   --color-rule: var(--rule);
   --color-text: var(--text);
+  --color-game-sky: var(--game-sky-top);
+  --color-game-ink: var(--game-ink);
+  --color-game-ink-muted: var(--game-ink-muted);
+  --color-game-panel: var(--game-panel);
+  --color-game-glow: var(--game-glow);
   --color-text-muted: var(--text-muted);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
