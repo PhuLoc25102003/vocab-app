@@ -25,7 +25,14 @@ const STYLES = [
  * Chế độ Mưa từ: màn bắt đầu (chọn Gõ hoặc Nói, luật chơi, điểm cao nhất), ván chơi và màn tổng
  * kết. Xong ván thì gửi mọi lượt trả lời; câu chưa kịp gặp được bỏ qua chứ không tính sai.
  */
-export function WordRainModeView({ round, onAnswer, onSkip, sessionId, setId }: StudyModeProps) {
+export function WordRainModeView({
+  round,
+  languages,
+  onAnswer,
+  onSkip,
+  sessionId,
+  setId,
+}: StudyModeProps) {
   const { t } = useTranslation('study');
   const questions = useMemo(
     () => (round ?? []).map(({ id, prompt, expected }) => ({ id, prompt, expected })),
@@ -95,6 +102,7 @@ export function WordRainModeView({ round, onAnswer, onSkip, sessionId, setId }: 
         key={game}
         questions={questions}
         style={style}
+        speechLang={languages.term}
         best={best.data?.score ?? null}
         onFinish={finish}
         onSwitchToTyping={() => setStyle('TYPE')}

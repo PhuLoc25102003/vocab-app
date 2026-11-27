@@ -49,6 +49,8 @@ import { useSpeechInput } from './use-speech-input';
 interface WordRainGameProps {
   questions: readonly RainQuestion[];
   style: WordRainStyle;
+  /** Ngôn ngữ của từ cần nói (`languages.term`). */
+  speechLang: string;
   best: number | null;
   /** Gọi một lần khi thắng hoặc hết khiên. */
   onFinish: (state: RainState) => void;
@@ -110,6 +112,7 @@ const GAME_KEYBOARD_HEIGHT = 168;
 export function WordRainGame({
   questions,
   style,
+  speechLang,
   best,
   onFinish,
   onSwitchToTyping,
@@ -197,6 +200,7 @@ export function WordRainGame({
 
   const speech = useSpeechInput({
     active: style === 'SPEAK' && hud.status === 'playing',
+    lang: speechLang,
     onTranscripts: (transcripts) => {
       for (const transcript of transcripts) {
         const next = speak(stateRef.current, transcript);

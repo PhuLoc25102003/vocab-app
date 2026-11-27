@@ -75,6 +75,24 @@ describe('gradeSpokenText', () => {
     expect(gradeSpokenText('pronunciation', 'pronounciation').isCorrect).toBe(true);
   });
 
+  it('đổi số máy nhận dạng trả về thành chữ', () => {
+    expect(gradeSpokenText('four', '4').isCorrect).toBe(true);
+    expect(gradeSpokenText('twenty one', '21').isCorrect).toBe(true);
+    expect(gradeSpokenText('12', 'twelve').isCorrect).toBe(true);
+  });
+
+  it('chấp nhận từ đồng âm mà máy không phân biệt được', () => {
+    expect(gradeSpokenText('two', 'too').isCorrect).toBe(true);
+    expect(gradeSpokenText('write', 'right').isCorrect).toBe(true);
+    expect(gradeSpokenText('flower', 'flour').isCorrect).toBe(true);
+  });
+
+  it('từ 3 chữ cái cho lệch một chữ nếu giữ chữ đầu', () => {
+    expect(gradeSpokenText('cat', 'cap').isCorrect).toBe(true);
+    expect(gradeSpokenText('cat', 'bat').isCorrect).toBe(false);
+    expect(gradeSpokenText('dog', 'cat').isCorrect).toBe(false);
+  });
+
   it('từ chối từ hoàn toàn khác hoặc chuỗi rỗng', () => {
     expect(gradeSpokenText('apple', 'orange').isCorrect).toBe(false);
     expect(gradeSpokenText('apple', '').isCorrect).toBe(false);
