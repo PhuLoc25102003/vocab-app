@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { InMemoryMailer, Mailer } from '../src/infrastructure/mail/mailer';
 import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
 import { createTestApp } from './support/app';
 import { resetDatabase } from './support/database';
@@ -12,6 +13,7 @@ const daysAgo = (days: number) => new Date(Date.now() - days * DAY_MS);
 describe('POST /internal/jobs/daily-reminders', () => {
   let app: NestFastifyApplication;
   let prisma: PrismaService;
+  let mailer: InMemoryMailer;
   let teacherId: string;
   let setId: string;
   let cardIds: string[];
@@ -50,10 +52,12 @@ describe('POST /internal/jobs/daily-reminders', () => {
   beforeAll(async () => {
     app = await createTestApp();
     prisma = app.get(PrismaService);
+    mailer = app.get(Mailer) as InMemoryMailer;
   });
 
   beforeEach(async () => {
     await resetDatabase(prisma);
+    mailer.sent.length = 0;
     teacherId = (
       await prisma.user.create({
         data: { email: 'teacher@example.com', displayName: 'teacher', role: 'TEACHER' },
@@ -100,7 +104,7 @@ describe('POST /internal/jobs/daily-reminders', () => {
     await dueCards(doneToday, 12);
 
     const { body } = await run().expect(200);
-    expect(body.data).toEqual({ daily: 2, assignments: 0 });
+    expect(body.data).toEqual({ daily: 2, assignments: 0, emails: 2 });
 
     const notes = await prisma.notification.findMany({ select: { userId: true, data: true } });
     expect(notes).toEqual(
@@ -112,7 +116,7 @@ describe('POST /internal/jobs/daily-reminders', () => {
     expect(notes).toHaveLength(2);
 
     // Chạy lại trong ngày không gửi trùng.
-    expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 0 });
+    expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 0, emails: 0 });
   });
 
   it('nhắc học sinh chưa nộp bài hết hạn trong 24 giờ, một lần mỗi bài', async () => {
@@ -146,7 +150,7 @@ describe('POST /internal/jobs/daily-reminders', () => {
       data: { assignmentId: soon.id, userId: submitted },
     });
 
-    expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 1 });
+    expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 1, emails: 1 });
     const note = await prisma.notification.findFirstOrThrow({ where: { userId: waiting } });
     expect(note).toMatchObject({
       type: 'ASSIGNMENT_DUE',
@@ -154,5 +158,49 @@ describe('POST /internal/jobs/daily-reminders', () => {
       data: { setTitle: 'Unit 5' },
     });
     expect((await run().expect(200)).body.data.assignments).toBe(0);
+  });
+
+  it('không gửi mail nhắc ôn cho người đã bật Web Push, vẫn gửi theo ngôn ngữ đã chọn', async () => {
+    const pushed = await createUser('pushed');
+    await dueCards(pushed, 10);
+    await prisma.pushSubscription.create({
+      data: { userId: pushed, endpoint: 'https://push.example.com/1', p256dh: 'p', auth: 'a' },
+    });
+    const english = await createUser('english');
+    await dueCards(english, 10);
+    await prisma.user.update({ where: { id: english }, data: { locale: 'en' } });
+
+    expect((await run().expect(200)).body.data).toMatchObject({ daily: 2, emails: 1 });
+    expect(mailer.sent).toHaveLength(1);
+    expect(mailer.sent[0]).toMatchObject({
+      to: 'english@example.com',
+      subject: '10 cards are waiting for you',
+    });
+  });
+
+  it('dừng gửi khi hết hạn mức mail trong ngày, chừa 50 mail cho quên mật khẩu', async () => {
+    const reviewer = await createUser('reviewer');
+    await dueCards(reviewer, 10);
+    await prisma.emailLog.createMany({
+      data: Array.from({ length: 250 }, () => ({ userId: teacherId })),
+    });
+    expect((await run().expect(200)).body.data).toMatchObject({ daily: 1, emails: 0 });
+  });
+
+  it('link huỷ nhận trong mail tắt mail nhắc học, token sai bị từ chối', async () => {
+    const reviewer = await createUser('reviewer');
+    await dueCards(reviewer, 10);
+    await run().expect(200);
+    const link = /token=([^\s"]+)/.exec(mailer.sent[0]!.text)![1]!;
+    const unsubscribe = (token: string) =>
+      request(app.getHttpServer())
+        .post('/api/v1/notifications/unsubscribe')
+        .send({ token: decodeURIComponent(token) });
+
+    await unsubscribe(link).expect(204);
+    const prefs = await prisma.user.findUniqueOrThrow({ where: { id: reviewer } });
+    expect(prefs.notificationPrefs).toMatchObject({ reviewEmail: false, assignmentEmail: false });
+    const bad = await unsubscribe(`${link}x`).expect(400);
+    expect(bad.body.error.code).toBe('UNSUBSCRIBE_TOKEN_INVALID');
   });
 });

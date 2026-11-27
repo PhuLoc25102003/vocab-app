@@ -86,6 +86,21 @@ export class NotificationsRepository extends BaseRepository {
     });
   }
 
+  async findPrefs(userId: string) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { notificationPrefs: true },
+    });
+  }
+
+  async savePrefs(userId: string, prefs: Record<string, boolean>): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { notificationPrefs: prefs },
+      select: { id: true },
+    });
+  }
+
   async deleteOlderThan(userId: string, before: Date): Promise<void> {
     await this.prisma.notification.deleteMany({ where: { userId, createdAt: { lt: before } } });
   }

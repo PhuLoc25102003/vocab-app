@@ -1,6 +1,23 @@
-import { Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { notificationListQuerySchema, type NotificationListQuery } from '@vocab/shared';
+import {
+  notificationListQuerySchema,
+  unsubscribeSchema,
+  type NotificationListQuery,
+  type UnsubscribeInput,
+} from '@vocab/shared';
+import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
@@ -32,6 +49,15 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Đánh dấu một thông báo đã đọc' })
   async markRead(@Param('id') id: string, @CurrentUser() user: CurrentUserData) {
     await this.notifications.markRead(user.id, id);
+  }
+
+  @Post('unsubscribe')
+  @Public()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Huỷ nhận mail nhắc học bằng token trong mail, không cần đăng nhập' })
+  @ApiZodBody(unsubscribeSchema)
+  async unsubscribe(@Body(new ZodValidationPipe(unsubscribeSchema)) dto: UnsubscribeInput) {
+    await this.notifications.unsubscribe(dto.token);
   }
 
   @Post('read-all')

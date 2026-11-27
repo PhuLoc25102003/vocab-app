@@ -30,6 +30,8 @@ const envSchema = z.object({
   RATE_LIMIT_REFRESH_PER_MINUTE: z.coerce.number().int().min(1).default(60),
   /** Để trống thì không gửi thư thật, thư được ghi log và giữ trong bộ nhớ (docs/08-deploy.md). */
   BREVO_API_KEY: z.string().trim().default(''),
+  /** Số mail tối đa mỗi ngày của gói Brevo; mail nhắc học chừa lại 50 cho quên mật khẩu. */
+  MAIL_DAILY_LIMIT: z.coerce.number().int().min(60).default(300),
   /** Địa chỉ gửi đã xác minh trong Brevo. */
   EMAIL_FROM: z.string().trim().default(''),
   /** Địa chỉ web để tạo liên kết trong thư. Để trống thì lấy origin đầu tiên của CORS_ORIGINS. */

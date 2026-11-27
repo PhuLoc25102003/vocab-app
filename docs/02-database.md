@@ -356,6 +356,8 @@ model AssignmentSubmission {
 
 - `PushSubscription` (việc 7.8): `endpoint` duy nhất vì dịch vụ đẩy cấp mỗi trình duyệt một endpoint; một người có nhiều dòng (điện thoại, máy tính). Xoá người dùng thì xoá theo.
 
+- `User.locale`, `User.notificationPrefs`, `EmailLog` (việc 7.9): `locale` ghi khi cookie ngôn ngữ khác giá trị đã lưu, `notificationPrefs` là JSON theo `notificationPrefsSchema` (thiếu khoá coi như bật), `EmailLog` đếm mail nhắc học đã gửi để giữ hạn mức Brevo free.
+
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường
