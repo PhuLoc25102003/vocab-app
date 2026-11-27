@@ -4,8 +4,10 @@ import { Logo } from '@/components/common/logo';
 import { LanguageToggle } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { AuthGate, AuthGateLoading } from '@/features/auth/components/auth-gate';
+import { SignedIn } from '@/features/auth/components/signed-in';
 import { OfflineSync } from '@/features/study/components/offline-sync';
 import { AccountMenu } from '@/features/auth/components/account-menu';
+import { NotificationBell } from '@/features/notifications/components/notification-bell';
 import { getT } from '@/lib/i18n/server';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -29,6 +31,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-1">
             <LanguageToggle />
             <ThemeToggle />
+            <SignedIn>
+              <NotificationBell />
+            </SignedIn>
             <AccountMenu />
           </div>
         </header>

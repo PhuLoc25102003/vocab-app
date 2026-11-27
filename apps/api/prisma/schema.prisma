@@ -68,6 +68,7 @@ model User {
   xpEvents            XpEvent[]
   streakFreezeDays    StreakFreezeDay[]
   badges              UserBadge[]
+  notifications       Notification[]
 }
 
 model RefreshSession {
@@ -242,6 +243,31 @@ model UserBadge {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, code])
+}
+
+enum NotificationType {
+  ASSIGNMENT_NEW
+  ASSIGNMENT_DUE
+  REVIEW_DUE
+  BADGE_EARNED
+  STREAK_FROZEN
+}
+
+/// Thông báo trong chuông. Web dựng câu từ `type` và `data` theo ngôn ngữ đang dùng.
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  data      Json
+  /// Trang mở khi bấm, ví dụ `/classes/assignments/<id>`.
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
 }
 
 model Attempt {

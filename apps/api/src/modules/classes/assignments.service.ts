@@ -13,11 +13,15 @@ import {
 import { ok, paginated } from '../../common/base/pagination';
 import type { CurrentUserData } from '../../common/decorators/current-user.decorator';
 import { AppError } from '../../common/errors/app-error';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AssignmentsRepository } from './assignments.repository';
 
 @Injectable()
 export class AssignmentsService {
-  constructor(private readonly assignments: AssignmentsRepository) {}
+  constructor(
+    private readonly assignments: AssignmentsRepository,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   /**
    * Giáo viên chỉ giao bộ của mình, ADMIN giao được mọi bộ. Bộ riêng tư thì học sinh không
@@ -54,6 +58,7 @@ export class AssignmentsService {
       dueAt: dto.dueAt ? new Date(dto.dueAt) : null,
       shareSet,
     });
+    await this.notifications.notifyNewAssignment(classId, assignment);
     return ok(assignment);
   }
 

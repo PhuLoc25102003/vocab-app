@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { BadgeRepository } from './badge.repository';
 import { BadgeService } from './badge.service';
 import { StatsController } from './stats.controller';
@@ -8,6 +9,7 @@ import { StreakRepository } from './streak.repository';
 import { StreakService } from './streak.service';
 
 @Module({
+  imports: [NotificationsModule],
   controllers: [StatsController],
   providers: [
     StatsService,

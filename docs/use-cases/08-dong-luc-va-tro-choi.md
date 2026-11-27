@@ -105,12 +105,12 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 
 ## UC-G7. Chuông thông báo trong app
 
-- **Việc:** 7.13. **Người dùng:** người đã đăng nhập. **Trạng thái:** Chưa làm.
+- **Việc:** 7.13. **Người dùng:** người đã đăng nhập. **Trạng thái:** Thiếu: đã có chuông và thông báo giao bài, huy hiệu, thẻ giữ chuỗi; "Đến giờ ôn tập" và "Bài tập sắp hết hạn" chờ job 7.7.
 - **Phải có:**
   - Nút chuông trên header cạnh ảnh đại diện, vùng bấm 44 px, có số chưa đọc (từ 10 trở lên hiện "9+") và `aria-label` đọc được số đó.
   - Danh sách mới nhất trước: icon theo loại, nội dung ngắn, thời gian tương đối, chấm báo chưa đọc. Bấm thì đánh dấu đã đọc và mở đúng trang.
   - Nút "Đánh dấu đã đọc hết".
-  - Trên máy tính mở popover dưới nút chuông; ở 360 px mở tấm đáy, không làm tràn header.
+  - Danh sách là menu nổi dưới nút chuông (dùng lại `Menu`: phím mũi tên, Esc đóng, focus về nút); ở 360 px rộng gần hết màn hình, không làm tràn header. Chuông chỉ hiện khi đã đăng nhập xong.
   - Loại thông báo: bài tập mới (giáo viên giao cho lớp), bài tập sắp hết hạn, đến giờ ôn tập, nhận huy hiệu, đã dùng thẻ giữ chuỗi.
   - Tự làm mới mỗi 60 giây và khi quay lại tab; không có WebSocket.
 - **Luồng chính:** giáo viên giao bài cho lớp 10A1, học sinh trong lớp thấy chuông có số 1, bấm vào thấy "Bài tập mới: Unit 5, hạn 20:00 thứ Sáu", bấm tiếp mở trang bài tập.

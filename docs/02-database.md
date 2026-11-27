@@ -350,6 +350,8 @@ model AssignmentSubmission {
 
 - `User.hideFromLeaderboard`, `Class.leaderboardEnabled` (việc 7.5): bảng xếp hạng không có bảng riêng, cộng XP tuần từ `XpEvent` bằng một câu SQL có `row_number()` để vừa lấy top 50 vừa lấy hạng của người gọi.
 
+- `Notification` (việc 7.13): `type` là enum, `data` là JSON nhỏ (tên bộ, tên lớp, hạn, mã huy hiệu) để web dịch câu theo ngôn ngữ. Index `userId, createdAt` cho danh sách và `userId, readAt` cho số chưa đọc. Không có job dọn: thông báo quá 90 ngày bị xoá khi người nhận mở chuông.
+
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường

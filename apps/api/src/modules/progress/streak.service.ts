@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { freezableDay, grantStreakFreezes, startOfStudyDay } from '@vocab/shared';
+import { NotificationsService } from '../notifications/notifications.service';
 import { StreakRepository } from './streak.repository';
 
 const DAY_MS = 86_400_000;
@@ -18,7 +19,10 @@ export interface StreakState {
  */
 @Injectable()
 export class StreakService {
-  constructor(private readonly streak: StreakRepository) {}
+  constructor(
+    private readonly streak: StreakRepository,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async refresh(userId: string, now = new Date()): Promise<StreakState> {
     const state = await this.streak.findFreezeState(userId);
@@ -48,6 +52,11 @@ export class StreakService {
     ]);
     const day = held > 0 ? freezableDay(studied, frozenDays, now) : null;
     if (day && (await this.streak.useFreeze(userId, day))) {
+      await this.notifications.notify([userId], {
+        type: 'STREAK_FROZEN',
+        data: { day },
+        href: '/dashboard',
+      });
       return { held: held - 1, frozenDays: [day, ...frozenDays] };
     }
     return { held, frozenDays };

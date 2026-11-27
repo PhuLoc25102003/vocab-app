@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { AssignmentsRepository } from './assignments.repository';
 import { AssignmentsService } from './assignments.service';
 import { ClassMembersRepository } from './class-members.repository';
@@ -14,6 +15,7 @@ import { TeacherOverviewRepository } from './teacher-overview.repository';
 import { TeacherOverviewService } from './teacher-overview.service';
 
 @Module({
+  imports: [NotificationsModule],
   controllers: [ClassMembershipController, ClassesController, TeacherOverviewController],
   providers: [
     ClassesService,
