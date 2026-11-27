@@ -266,7 +266,20 @@
     "unsupported": "Trình duyệt này chưa hỗ trợ thông báo đẩy. Bạn vẫn thấy nhắc học trong chuông.",
     "iosInstall": "Trên iPhone, hãy bấm Chia sẻ rồi Thêm vào màn hình chính, mở app từ biểu tượng đó để bật thông báo (iOS 16.4 trở lên).",
     "serverOff": "Máy chủ chưa bật thông báo đẩy. Bạn vẫn thấy nhắc học trong chuông.",
-    "denied": "Bạn đã chặn thông báo cho trang này. Mở cài đặt trang web của trình duyệt để cho phép lại."
+    "denied": "Bạn đã chặn thông báo cho trang này. Mở cài đặt trang web của trình duyệt để cho phép lại.",
+    "typesLabel": "Nhắc gì, qua đâu",
+    "typeReview": "Giữ chuỗi và ôn tập",
+    "typeAssignment": "Bài tập của lớp",
+    "channelPush": "Đẩy",
+    "channelEmail": "Mail",
+    "switchLabel": "{{type}}, {{channel}}",
+    "prefsSaved": "Đã lưu cài đặt thông báo",
+    "prefsFailed": "Không lưu được, thử lại nhé",
+    "test": "Gửi thử",
+    "testSent": "Đã gửi thử, kiểm tra thông báo trên thiết bị",
+    "testFailed": "Không gửi thử được",
+    "testTitle": "Thông báo thử",
+    "testBody": "Nhắc học đã hoạt động trên thiết bị này."
   },
   "unsubscribe": {
     "title": "Huỷ nhận mail nhắc học",

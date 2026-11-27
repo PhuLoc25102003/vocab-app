@@ -7,7 +7,6 @@ import {
   notificationPrefsSchema,
   PUSH_NOTIFICATION_TYPES,
   type NotificationPrefs,
-  type NotificationType,
   type Pagination,
   type PushPayload,
 } from '@vocab/shared';
@@ -20,8 +19,8 @@ import { readUnsubscribeToken } from './unsubscribe-token';
 
 const DAY_MS = 86_400_000;
 
-const pushRank = (type: NotificationType) =>
-  (PUSH_NOTIFICATION_TYPES as readonly NotificationType[]).indexOf(type);
+const pushRank = (type: PushPayload['type']) =>
+  (PUSH_NOTIFICATION_TYPES as readonly string[]).indexOf(type);
 
 /** Chọn cho mỗi người thông báo ưu tiên nhất trong các loại được đẩy. */
 function pickPushes(rows: readonly ({ userId: string } & NewNotification)[]) {

@@ -84,4 +84,29 @@ describe('NotificationSettings', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/Thêm vào màn hình chính/);
     expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   });
+
+  it('tắt mail bài tập trong bảng cài đặt', async () => {
+    push.status = 'on';
+    const prefs = {
+      reviewPush: true,
+      reviewEmail: true,
+      assignmentPush: true,
+      assignmentEmail: true,
+    };
+    vi.mocked(http).mockImplementation(async (path, init) =>
+      path === '/notifications/prefs' && init?.method === 'PUT'
+        ? { data: { ...prefs, assignmentEmail: false } }
+        : { data: prefs },
+    );
+    renderWith(<NotificationSettings />);
+
+    const toggle = await screen.findByRole('switch', { name: 'Bài tập của lớp, Mail' });
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    await userEvent.click(toggle);
+    expect(http).toHaveBeenCalledWith('/notifications/prefs', {
+      method: 'PUT',
+      body: JSON.stringify({ assignmentEmail: false }),
+    });
+    expect(screen.getByRole('button', { name: 'Gửi thử' })).toBeInTheDocument();
+  });
 });

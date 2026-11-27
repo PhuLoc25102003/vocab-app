@@ -7,14 +7,17 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   notificationListQuerySchema,
   unsubscribeSchema,
+  updateNotificationPrefsSchema,
   type NotificationListQuery,
   type UnsubscribeInput,
+  type UpdateNotificationPrefsInput,
 } from '@vocab/shared';
 import { ApiZodBody } from '../../common/decorators/api-zod-body.decorator';
 import { Public } from '../../common/decorators/public.decorator';
@@ -36,6 +39,22 @@ export class NotificationsController {
     @Query(new ZodValidationPipe(notificationListQuerySchema)) query: NotificationListQuery,
   ) {
     return this.notifications.list(user.id, query);
+  }
+
+  @Get('prefs')
+  @ApiOperation({ summary: 'Cài đặt nhắc học theo loại và kênh' })
+  async prefs(@CurrentUser() user: CurrentUserData) {
+    return { data: await this.notifications.prefs(user.id) };
+  }
+
+  @Put('prefs')
+  @ApiOperation({ summary: 'Bật tắt từng loại nhắc học theo kênh' })
+  @ApiZodBody(updateNotificationPrefsSchema)
+  updatePrefs(
+    @CurrentUser() user: CurrentUserData,
+    @Body(new ZodValidationPipe(updateNotificationPrefsSchema)) dto: UpdateNotificationPrefsInput,
+  ) {
+    return this.notifications.updatePrefs(user.id, dto);
   }
 
   @Get('unread-count')

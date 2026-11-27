@@ -31,7 +31,13 @@ export class PushRepository extends BaseRepository {
   findForUsers(userIds: readonly string[]) {
     return this.prisma.pushSubscription.findMany({
       where: { userId: { in: [...userIds] } },
-      select: { userId: true, endpoint: true, p256dh: true, auth: true },
+      select: {
+        userId: true,
+        endpoint: true,
+        p256dh: true,
+        auth: true,
+        user: { select: { notificationPrefs: true } },
+      },
     });
   }
 }

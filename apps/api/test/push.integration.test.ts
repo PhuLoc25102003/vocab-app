@@ -117,4 +117,36 @@ describe('Web Push', () => {
     });
     expect(await prisma.pushSubscription.count()).toBe(1);
   });
+
+  it('đọc và đổi cài đặt nhắc học, tắt đẩy bài tập thì không đẩy khi giao bài', async () => {
+    const initial = await as(student.token).get('/notifications/prefs').expect(200);
+    expect(initial.body.data).toEqual({
+      reviewPush: true,
+      reviewEmail: true,
+      assignmentPush: true,
+      assignmentEmail: true,
+    });
+    const updated = await request(app.getHttpServer())
+      .put('/api/v1/notifications/prefs')
+      .set('Authorization', `Bearer ${student.token}`)
+      .send({ assignmentPush: false })
+      .expect(200);
+    expect(updated.body.data).toMatchObject({ assignmentPush: false, reviewPush: true });
+
+    await as(student.token).post('/push/subscriptions').send(subscription(1)).expect(204);
+    await as(teacher.token)
+      .post(`/classes/${classId}/assignments`)
+      .send({ setId, modes: ['FLASHCARD'] })
+      .expect(201);
+    expect(sender.sent).toHaveLength(0);
+    // Thông báo trong chuông vẫn có.
+    expect(await prisma.notification.count({ where: { userId: student.id } })).toBe(1);
+  });
+
+  it('gửi thử tới mọi thiết bị của tôi', async () => {
+    await as(student.token).post('/push/subscriptions').send(subscription(1)).expect(204);
+    const { body } = await as(student.token).post('/push/test').expect(200);
+    expect(body.data).toEqual({ sent: 1 });
+    expect(JSON.parse(sender.sent[0]!.payload)).toMatchObject({ type: 'TEST', href: '/account' });
+  });
 });

@@ -1,9 +1,11 @@
 import {
   notificationListSchema,
+  notificationPrefsResponseSchema,
   pushConfigResponseSchema,
   unreadCountResponseSchema,
   xpSummaryResponseSchema,
   type NotificationList,
+  type NotificationPrefs,
   type PushConfig,
   type PushSubscriptionInput,
   type XpSummary,
@@ -65,4 +67,21 @@ export async function unsubscribeReminders(token: string): Promise<void> {
     body: JSON.stringify({ token }),
     skipAuth: true,
   });
+}
+
+export const PREFS_KEY = ['notifications', 'prefs'] as const;
+
+export async function getNotificationPrefs(): Promise<NotificationPrefs> {
+  return notificationPrefsResponseSchema.parse(await http('/notifications/prefs')).data;
+}
+
+export async function updateNotificationPrefs(
+  changes: Partial<NotificationPrefs>,
+): Promise<NotificationPrefs> {
+  const body = await http('/notifications/prefs', { method: 'PUT', body: JSON.stringify(changes) });
+  return notificationPrefsResponseSchema.parse(body).data;
+}
+
+export async function sendTestPush(): Promise<void> {
+  await http('/push/test', { method: 'POST' });
 }
