@@ -9,20 +9,67 @@ const WHITESPACE_RUN = /\s+/g;
  * nguyên, NFC chỉ gộp các cách gõ khác nhau của cùng một chữ.
  */
 export function normalizeAnswer(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFC')
-    .replace(CURLY_APOSTROPHES, "'")
-    .replace(WHITESPACE_RUN, ' ')
-    .trim();
+  return foldForeignLetters(
+    value
+      .toLowerCase()
+      .normalize('NFC')
+      .replace(CURLY_APOSTROPHES, "'")
+      .replace(CURLY_QUOTES, '"')
+      .replace(DASHES, '-')
+      .replace(ELLIPSIS, '...')
+      .replace(WHITESPACE_RUN, ' ')
+      .trim(),
+  );
 }
 
+const CURLY_QUOTES = /[“”„«»]/g;
+const DASHES = /[‐‑‒–—―−]/g;
+const ELLIPSIS = /…/g;
+const PUNCTUATION_OR_SYMBOL = /[\p{P}\p{S}]/gu;
+/** Chữ cái tiếng Việt (kể cả có dấu): giữ nguyên khi chấm, vì gõ sai dấu là sai từ. */
+const VIETNAMESE_LETTER =
+  /[a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/;
+const LIGATURES: Record<string, string> = { ß: 'ss', æ: 'ae', œ: 'oe', ø: 'o', ł: 'l', ı: 'i' };
+
+/**
+ * Chữ Latin có dấu không có trên bàn phím Việt hay Anh (ñ, ü, ç, ï, å...) quy về chữ gốc,
+ * để `naïve` gõ `naive` vẫn đúng. Chữ tiếng Việt và chữ không phải Latin giữ nguyên.
+ */
+function foldForeignLetters(text: string): string {
+  return [...text]
+    .map((char) => {
+      if (VIETNAMESE_LETTER.test(char) || !/\p{L}/u.test(char)) return char;
+      const ligature = LIGATURES[char];
+      if (ligature) return ligature;
+      const base = char.normalize('NFD').replace(/\p{M}/gu, '');
+      return /^[a-z]$/.test(base) ? base : char;
+    })
+    .join('');
+}
+
+/** Bỏ dấu câu và ký hiệu, gộp khoảng trắng. */
+function stripPunctuation(text: string): string {
+  return text.replace(PUNCTUATION_OR_SYMBOL, ' ').replace(WHITESPACE_RUN, ' ').trim();
+}
+
+/**
+ * Chấm đáp án gõ. Học sinh không phải gõ dấu câu hay ký hiệu của đáp án (`o'clock`, `e-mail`,
+ * `U.S.`, `…`): bỏ chúng ở cả hai bên rồi so; đáp án có dấu câu thì cũng bỏ qua khoảng trắng
+ * thay cho dấu đó (`well-known` gõ `wellknown` hay `well known` đều đúng).
+ */
 export function gradeText(expected: string, value: string): GradeResult {
   const answer = normalizeAnswer(value);
-  return {
-    isCorrect: answer.length > 0 && answer === normalizeAnswer(expected),
-    expected,
-  };
+  const target = normalizeAnswer(expected);
+  if (answer.length === 0) return { isCorrect: false, expected };
+  if (answer === target) return { isCorrect: true, expected };
+
+  const bareTarget = stripPunctuation(target);
+  if (!bareTarget) return { isCorrect: false, expected };
+  const bareAnswer = stripPunctuation(answer);
+  const isCorrect =
+    bareAnswer === bareTarget ||
+    (bareTarget !== target && bareAnswer.replace(/ /g, '') === bareTarget.replace(/ /g, ''));
+  return { isCorrect, expected };
 }
 
 /** Tính khoảng cách Damerau-Levenshtein giữa hai chuỗi (hỗ trợ cả hoán vị ký tự liền kề như er <-> re) */

@@ -36,6 +36,23 @@ describe('gradeText', () => {
     expect(gradeText('tiếng Việt', 'tieng viet').isCorrect).toBe(false);
   });
 
+  it('does not require punctuation or symbols missing from the keyboard', () => {
+    expect(gradeText("o'clock", 'oclock').isCorrect).toBe(true);
+    expect(gradeText('e-mail', 'email').isCorrect).toBe(true);
+    expect(gradeText('well-known', 'well known').isCorrect).toBe(true);
+    expect(gradeText('U.S.A.', 'usa').isCorrect).toBe(true);
+    expect(gradeText('wait…', 'wait').isCorrect).toBe(true);
+    expect(gradeText('rock ‘n’ roll', "rock 'n' roll").isCorrect).toBe(true);
+    expect(gradeText('ice cream', 'icecream').isCorrect).toBe(false);
+  });
+
+  it('folds foreign Latin letters but keeps Vietnamese ones strict', () => {
+    expect(gradeText('naïve', 'naive').isCorrect).toBe(true);
+    expect(gradeText('jalapeño', 'jalapeno').isCorrect).toBe(true);
+    expect(gradeText('straße', 'strasse').isCorrect).toBe(true);
+    expect(gradeText('cá', 'ca').isCorrect).toBe(false);
+  });
+
   it('never accepts a blank answer', () => {
     expect(gradeText('   ', '').isCorrect).toBe(false);
   });

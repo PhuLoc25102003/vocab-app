@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      23 |      25 | Đang làm   |
-| **Toàn dự án**          |                                            | **210** | **216** | **97%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      24 |      25 | Đang làm   |
+| **Toàn dự án**          |                                            | **211** | **216** | **98%**    |
 
 ## Cách cập nhật
 
@@ -565,7 +565,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.18** Bố cục khi bàn phím máy mở ở Viết, Nghe viết, Điền từ, Kiểm tra: `interactive-widget=resizes-content`, thu gọn khoảng cách khung học, cuộn câu hỏi và ô gõ vào vùng nhìn thấy, ẩn thanh nộp bài dính dưới của Kiểm tra khi đang gõ (#445).
 - [x] **7.19** Hộp thoại "Bộ từ học gần đây" của quản trị hiện tên chế độ theo `common:modes` (Mưa từ, Luyện nói...) thay vì mã như `WORD_RAIN` (#445).
 - [x] **7.20** Nhận lời nói đúng hơn ở Mưa từ và Luyện nói: Mưa từ nghe theo ngôn ngữ của bộ từ và giọng đã chọn trong cài đặt (trước đây luôn `en-US`); `gradeSpokenText` ở `@vocab/shared` đổi số 0 đến 100 thành chữ (`4` khớp `four`), coi từ đồng âm là một (two/too/to, write/right...), từ 3 chữ cái cho lệch một chữ nếu giữ chữ đầu (#445).
-- [ ] **7.21** Chấm đáp án gõ không bắt học sinh gõ ký tự đặc biệt không có trên bàn phím (dấu nháy cong, gạch dài, dấu chấm lửng, ký hiệu): chuẩn hoá trong `@vocab/shared` cho mọi chế độ gõ (#445).
+- [x] **7.21** Chấm đáp án gõ không bắt gõ ký tự không có trên bàn phím: `gradeText` ở `@vocab/shared` đổi nháy cong, gạch dài, dấu chấm lửng về dạng thường, bỏ dấu câu và ký hiệu khi so (`o'clock` gõ `oclock`, `e-mail` gõ `email`, `well-known` gõ `well known`), quy chữ Latin ngoại (ñ, ü, ç, ß...) về chữ gốc; chữ tiếng Việt có dấu vẫn chấm đúng dấu. Áp dụng cho mọi chế độ gõ ở cả web và API (#445).
 - [ ] **7.22** Làm mới landing page: hiện đại hơn, giới thiệu đúng các tính năng hiện có (Mưa từ, XP, chuỗi, xếp hạng, lớp học, luyện nói, offline), dùng token màu hiện tại, đủ light, dark và 360 px (#445).
 
 ## Quyết định cần chốt
