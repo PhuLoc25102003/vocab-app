@@ -139,7 +139,8 @@
     "MCQ": "Multiple choice",
     "MATCH": "Match",
     "TEST": "Test",
-    "SPEAK": "Speak"
+    "SPEAK": "Speak",
+    "WORD_RAIN": "Word Rain"
   },
   "roles": {
     "STUDENT": "Student",

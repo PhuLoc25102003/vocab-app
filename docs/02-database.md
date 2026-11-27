@@ -358,6 +358,8 @@ model AssignmentSubmission {
 
 - `User.locale`, `User.notificationPrefs`, `EmailLog` (việc 7.9): `locale` ghi khi cookie ngôn ngữ khác giá trị đã lưu, `notificationPrefs` là JSON theo `notificationPrefsSchema` (thiếu khoá coi như bật), `EmailLog` đếm mail nhắc học đã gửi để giữ hạn mức Brevo free.
 
+- `StudyMode.WORD_RAIN`, `GameHighScore` (việc 7.11): khoá chính `userId, setId, style`, mỗi người một điểm cao nhất cho mỗi bộ và kiểu chơi (`TYPE`, `SPEAK`). Xoá bộ hoặc người dùng thì xoá theo.
+
 - `PasswordResetToken` (việc 1.49a) lưu liên kết đặt lại mật khẩu. Chỉ lưu SHA-256 của token, token gốc chỉ nằm trong email. Token sống 30 phút, dùng một lần (`usedAt`). Xin liên kết mới thì xoá các token chưa dùng của người đó. Đặt lại mật khẩu thì tăng `tokenVersion` và xoá mọi `RefreshSession` trong cùng transaction. Xoá người dùng thì xoá token theo.
 
 ## Ý nghĩa một số trường

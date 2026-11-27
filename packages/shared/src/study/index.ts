@@ -8,6 +8,7 @@ export * from './modes/match';
 export * from './modes/mcq';
 export * from './modes/speak';
 export * from './modes/test';
+export * from './modes/word-rain';
 export * from './modes/write';
 export * from './registry';
 export * from './srs';

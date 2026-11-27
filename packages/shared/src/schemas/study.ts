@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { wordRainStyleSchema } from '../study/modes/word-rain';
 import { studyModeSchema } from '../study/types';
 import { paginationMetaSchema } from './pagination';
 
@@ -111,3 +112,29 @@ export const dueSetListSchema = z.object({
   }),
 });
 export type DueSetList = z.infer<typeof dueSetListSchema>;
+
+/** Điểm một ván Mưa từ, gửi sau khi kết thúc phiên. */
+export const wordRainScoreSchema = z.object({
+  style: wordRainStyleSchema,
+  score: z.number().int().min(0).max(10_000_000),
+  wave: z.number().int().min(1).max(10_000),
+});
+export type WordRainScoreInput = z.infer<typeof wordRainScoreSchema>;
+
+export const wordRainScoreResponseSchema = z.object({
+  data: z.object({
+    /** Điểm cao nhất sau khi lưu ván này. */
+    best: z.object({ score: z.number(), wave: z.number() }),
+    isRecord: z.boolean(),
+  }),
+});
+export type WordRainScoreResult = z.infer<typeof wordRainScoreResponseSchema>['data'];
+
+export const wordRainHighScoreQuerySchema = z.object({
+  style: wordRainStyleSchema.default('TYPE'),
+});
+export type WordRainHighScoreQuery = z.infer<typeof wordRainHighScoreQuerySchema>;
+
+export const wordRainHighScoreResponseSchema = z.object({
+  data: z.object({ score: z.number(), wave: z.number() }).nullable(),
+});
