@@ -6,15 +6,16 @@ Trạng thái được đối chiếu với code ở `develop` ngày 2026-11-19.
 
 ## Cách đọc
 
-| File                                                 | Nội dung                                                               |
-| ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| [01-tai-khoan.md](01-tai-khoan.md)                   | Đăng ký, đăng nhập, phiên, quyền, tài khoản                            |
-| [02-bo-tu.md](02-bo-tu.md)                           | Bộ từ, thẻ từ, trang công khai, Khám phá, nhập                         |
-| [03-hoc-tap.md](03-hoc-tap.md)                       | Phiên học, 4 chế độ, lịch ôn, thống kê                                 |
-| [04-nen-tang.md](04-nen-tang.md)                     | Nền tảng, trang giới thiệu, deploy, phát hành                          |
-| [05-lo-trinh.md](05-lo-trinh.md)                     | Giai đoạn 2, 3, 4                                                      |
-| [06-vai-tro-va-lop-hoc.md](06-vai-tro-va-lop-hoc.md) | Giai đoạn 5: tổng quan theo vai trò, giao và nộp bài, độ gọn giao diện |
-| [07-da-ngon-ngu.md](07-da-ngon-ngu.md)               | Giai đoạn 6: giao diện tiếng Việt và tiếng Anh                         |
+| File                                                     | Nội dung                                                               |
+| -------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [01-tai-khoan.md](01-tai-khoan.md)                       | Đăng ký, đăng nhập, phiên, quyền, tài khoản                            |
+| [02-bo-tu.md](02-bo-tu.md)                               | Bộ từ, thẻ từ, trang công khai, Khám phá, nhập                         |
+| [03-hoc-tap.md](03-hoc-tap.md)                           | Phiên học, 4 chế độ, lịch ôn, thống kê                                 |
+| [04-nen-tang.md](04-nen-tang.md)                         | Nền tảng, trang giới thiệu, deploy, phát hành                          |
+| [05-lo-trinh.md](05-lo-trinh.md)                         | Giai đoạn 2, 3, 4                                                      |
+| [06-vai-tro-va-lop-hoc.md](06-vai-tro-va-lop-hoc.md)     | Giai đoạn 5: tổng quan theo vai trò, giao và nộp bài, độ gọn giao diện |
+| [07-da-ngon-ngu.md](07-da-ngon-ngu.md)                   | Giai đoạn 6: giao diện tiếng Việt và tiếng Anh                         |
+| [08-dong-luc-va-tro-choi.md](08-dong-luc-va-tro-choi.md) | Giai đoạn 7: XP, chuỗi, huy hiệu, xếp hạng, nhắc học, Mưa từ           |
 
 Mỗi use case gồm: việc liên quan, người dùng, trạng thái, phải có, luồng chính, ngoại lệ, test và phần còn thiếu.
 
