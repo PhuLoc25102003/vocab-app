@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      29 |      29 | Xong       |
-| **Toàn dự án**          |                                            | **216** | **220** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      30 |      30 | Xong       |
+| **Toàn dự án**          |                                            | **217** | **221** | **98%**    |
 
 ## Cách cập nhật
 
@@ -542,6 +542,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
 - [x] **7.10** Cài đặt thông báo: nhóm "Thông báo" ở Tài khoản bật tắt từng loại (chuỗi, ôn tập, bài tập) theo từng kênh (Web Push, mail), trạng thái quyền của trình duyệt và nút gửi thử; trang huỷ nhận mở từ link trong mail không cần đăng nhập. Cần 7.8, 7.9 (UC-G5).
 - [x] **7.26** Job nhắc học không nhắc sai giờ khi lịch GitHub Actions chạy trễ: nhắc chuỗi và ôn chỉ chạy từ 18:00 đến trước 23:00 giờ Việt Nam (`DAILY_REMINDER_HOURS`), gọi ngoài khung thì bỏ qua và không ghi `ReminderLog` để lần gọi đúng giờ vẫn nhắc; nhắc bài tập sắp hết hạn chạy mọi lúc (#449). Trước đó lịch 20:00 ngày 27/11 chạy lúc 04:51 sáng hôm sau.
+- [x] **7.27** Thiết kế lại mail: khung chung `mail-layout.ts` (logo, thẻ nội dung có vạch màu, một nút chính, chân mail) dùng màu chép từ token của web, bố cục bảng và style inline cho Gmail, Outlook, điện thoại; mail nhắc học có thẻ riêng cho bài tập (đỏ), chuỗi ngày (vàng như ngọn lửa), thẻ đến hạn (xanh), mỗi phần ba cách nói đổi theo ngày và theo người, bài tập ghi còn mấy giờ; mail đặt lại mật khẩu dùng cùng khung.
 
 ### 7F. Chế độ Mưa từ
 
