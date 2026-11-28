@@ -195,10 +195,9 @@ describe('POST /internal/jobs/daily-reminders', () => {
 
     expect((await run().expect(200)).body.data).toMatchObject({ daily: 2, emails: 1 });
     expect(mailer.sent).toHaveLength(1);
-    expect(mailer.sent[0]).toMatchObject({
-      to: 'english@example.com',
-      subject: '10 cards are waiting for you',
-    });
+    expect(mailer.sent[0]).toMatchObject({ to: 'english@example.com' });
+    expect(mailer.sent[0]!.html).toContain('lang="en"');
+    expect(mailer.sent[0]!.html).toContain('10 cards due');
   });
 
   it('dừng gửi khi hết hạn mức mail trong ngày, chừa 50 mail cho quên mật khẩu', async () => {

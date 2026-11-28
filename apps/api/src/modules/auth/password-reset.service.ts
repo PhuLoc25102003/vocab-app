@@ -5,6 +5,7 @@ import { ERROR_CODES, type ForgotPasswordInput, type ResetPasswordInput } from '
 import { ok } from '../../common/base/pagination';
 import { AppError } from '../../common/errors/app-error';
 import { resolveWebOrigin, type Env } from '../../config/env';
+import { escapeHtml, renderMailLayout } from '../../infrastructure/mail/mail-layout';
 import { Mailer } from '../../infrastructure/mail/mailer';
 import { UsersRepository } from '../users/users.repository';
 import { PasswordService } from './password.service';
@@ -42,7 +43,26 @@ export class PasswordResetService {
           to: account.email,
           subject: 'Đặt lại mật khẩu Nhớ Từ',
           text: `Chào ${account.displayName},\n\nMở liên kết sau để đặt mật khẩu mới, liên kết dùng được một lần trong ${TOKEN_TTL_MINUTES} phút:\n${link}\n\nNếu bạn không yêu cầu, hãy bỏ qua thư này.`,
-          html: `<p>Chào ${escapeHtml(account.displayName)},</p><p>Bấm vào liên kết sau để đặt mật khẩu mới. Liên kết dùng được một lần trong ${TOKEN_TTL_MINUTES} phút.</p><p><a href="${link}">Đặt lại mật khẩu</a></p><p>Nếu bạn không yêu cầu, hãy bỏ qua thư này.</p>`,
+          html: renderMailLayout({
+            lang: 'vi',
+            preheader: `Liên kết đặt mật khẩu mới, dùng được trong ${TOKEN_TTL_MINUTES} phút.`,
+            greeting: `Chào ${account.displayName} 👋`,
+            heading: 'Đặt lại mật khẩu của bạn',
+            intro:
+              'Có người (hy vọng là bạn) vừa yêu cầu đặt lại mật khẩu Nhớ Từ. Bấm nút bên dưới để chọn mật khẩu mới.',
+            cards: [
+              {
+                tone: 'primary',
+                label: '🔒 Bảo mật',
+                title: `Liên kết dùng được một lần trong ${TOKEN_TTL_MINUTES} phút`,
+                detail:
+                  'Nếu bạn không yêu cầu, cứ bỏ qua thư này. Mật khẩu hiện tại vẫn giữ nguyên.',
+              },
+            ],
+            cta: { label: 'Đặt mật khẩu mới', href: link },
+            signOff: 'Hẹn gặp lại bạn trong app!\nNhớ Từ',
+            footerHtml: `Nút không bấm được? Dán liên kết này vào trình duyệt:<br><a href="${escapeHtml(link)}" style="color:inherit;word-break:break-all">${escapeHtml(link)}</a>`,
+          }),
         });
       } catch (error) {
         // Không báo lỗi cho người dùng để không lộ email có tài khoản.
@@ -71,12 +91,4 @@ export class PasswordResetService {
       this.config.get('CORS_ORIGINS', { infer: true }),
     );
   }
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }

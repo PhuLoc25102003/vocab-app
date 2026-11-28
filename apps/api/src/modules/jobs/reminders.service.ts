@@ -32,6 +32,13 @@ export const MAIL_RESERVED_FOR_AUTH = 50;
  */
 export const DAILY_REMINDER_HOURS = { from: 18, to: 23 } as const;
 
+/** Chọn mẫu câu cho mail: đổi theo ngày, khác nhau giữa người học, cùng người cùng ngày thì cố định. */
+export function mailVariant(userId: string, now: Date): number {
+  let hash = 0;
+  for (const char of `${userId}:${toStudyDay(now)}`) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  return Math.abs(hash);
+}
+
 export function inDailyReminderWindow(now: Date): boolean {
   const hour = (now.getUTCHours() + STUDY_DAY_OFFSET_HOURS) % 24;
   return hour >= DAILY_REMINDER_HOURS.from && hour < DAILY_REMINDER_HOURS.to;
@@ -147,6 +154,8 @@ export class RemindersService {
             items: wanted,
             webOrigin,
             unsubscribeToken: createUnsubscribeToken(target.id, secret),
+            variant: mailVariant(target.id, now),
+            now,
           }),
         );
         await this.reminders.logEmail(target.id);
