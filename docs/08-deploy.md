@@ -131,7 +131,12 @@ Render gói Free ngủ khi rảnh nên API không tự hẹn giờ. Workflow `.g
 3. GitHub, **Settings**, **Secrets and variables**, **Actions**: thêm `JOBS_SECRET` (cùng khoá) và `REMINDERS_API_URL` (ví dụ `https://vocab-app-rj0t.onrender.com`, không có `/api/v1`). Thiếu một trong hai thì workflow bỏ qua, không báo lỗi.
 4. Chạy thử: tab **Actions**, **Daily reminders**, **Run workflow**. Chạy lại trong ngày không gửi trùng nhờ bảng `ReminderLog`.
 
-Lịch của GitHub Actions có thể trễ vài phút đến vài chục phút khi GitHub đông.
+Lịch của GitHub Actions có thể trễ nhiều giờ (lịch 20:00 ngày 27/11 chạy lúc 04:51 sáng hôm sau). Vì vậy job chỉ nhắc chuỗi và ôn khi được gọi từ 18:00 đến trước 23:00 giờ Việt Nam; gọi ngoài khung thì bỏ qua phần này và không ghi `ReminderLog`, lần gọi đúng giờ trong ngày vẫn nhắc. Nên hẹn giờ thêm ở cron-job.org (miễn phí, chạy đúng giờ), giữ workflow GitHub làm dự phòng:
+
+1. Đăng ký cron-job.org, **Create cronjob**.
+2. URL: `https://<api>/api/v1/internal/jobs/daily-reminders`, lịch mỗi ngày 20:00, múi giờ `Asia/Ho_Chi_Minh`.
+3. **Advanced**: method `POST`, header `X-Job-Secret` bằng `JOBS_SECRET`, timeout tối đa (API đang ngủ cần khoảng 90 giây để dậy). Bật thử lại khi lỗi nếu gói cho phép.
+4. Hai nơi cùng gọi trong một tối không gửi trùng nhờ `ReminderLog`.
 
 ## Mail nhắc học (việc 7.9)
 
