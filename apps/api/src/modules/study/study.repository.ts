@@ -28,6 +28,12 @@ const SESSION_SELECT = {
 
 /** Một lô có thể ghi tới 200 thẻ, lâu hơn mức mặc định 5 giây của transaction. */
 const SAVE_ANSWERS_TIMEOUT_MS = 30_000;
+/**
+ * Số câu gần nhất đọc lại để biết chuỗi đúng liên tiếp đang dài bao nhiêu. Thưởng combo rơi vào
+ * mỗi bội số của `comboSize`, nên phải đếm đủ cả chuỗi; chỉ đọc `comboSize` câu thì chuỗi 7 bị
+ * đếm thành 5 và thưởng tới muộn.
+ */
+const COMBO_LOOKBACK = 100;
 
 const dueCardWhere = (userId: string, now: Date) => ({
   progress: { some: { userId, dueAt: { lte: now } } },
@@ -158,7 +164,7 @@ export class StudyRepository extends BaseRepository {
           tx.attempt.findMany({
             where: { sessionId },
             orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-            take: XP_RULES.comboSize,
+            take: COMBO_LOOKBACK,
             select: { isCorrect: true },
           }),
           tx.xpEvent.aggregate({

@@ -103,6 +103,28 @@ describe('XP', () => {
     expect(body.data).toMatchObject({ totalXp: 50, todayXp: 50, level: 1, xpIntoLevel: 50 });
   });
 
+  it('đếm đủ chuỗi dài hơn 5 câu qua nhiều lô để thưởng đúng ở câu thứ 10', async () => {
+    const extra = await Promise.all(
+      ['seven', 'eight', 'nine', 'ten'].map((term, index) =>
+        prisma.card.create({ data: { setId, term, definition: term, position: 6 + index } }),
+      ),
+    );
+    const ids = [...cardIds, ...extra.map(({ id }) => id)];
+    const id = await startSession();
+    // 7 câu đúng liên tiếp: thưởng ở câu thứ 5.
+    const first = await submit(
+      id,
+      ids.slice(0, 7).map((cardId) => answer(cardId, known)),
+    );
+    expect(first.body.data.xpEarned).toBe(7 * XP_RULES.correct + XP_RULES.comboBonus);
+    // Thêm 3 câu đúng là đủ 10 câu liên tiếp: thưởng lần nữa.
+    const second = await submit(
+      id,
+      ids.slice(7, 10).map((cardId) => answer(cardId, known)),
+    );
+    expect(second.body.data.xpEarned).toBe(3 * XP_RULES.correct + XP_RULES.comboBonus);
+  });
+
   it('không cộng lại khi gửi lại cùng lô hoặc trả lời đúng lại trong 10 phút', async () => {
     const id = await startSession();
     const batch = [answer(cardIds[0]!, known)];
