@@ -13,6 +13,7 @@ export const FLASHCARD_ANSWERS = { known: 'known', unknown: 'unknown' } as const
 
 export class FlashcardMode implements StudyModeStrategy {
   readonly mode = 'FLASHCARD' as const;
+  readonly selfGraded = true;
 
   buildQuestions(cards: StudyCard[], { limit }: StudyOptions): Question[] {
     return cards.slice(0, limit ?? cards.length).map(({ id, term, definition, imageUrl }) => ({

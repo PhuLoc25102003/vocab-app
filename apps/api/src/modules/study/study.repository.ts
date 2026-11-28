@@ -157,6 +157,8 @@ export class StudyRepository extends BaseRepository {
     sessionId: string,
     answers: GradedAnswer[],
     now: Date,
+    /** Chế độ tự chấm (Xem thẻ): XP tính theo `XP_RULES.selfGraded`. */
+    selfGraded = false,
   ): Promise<number> {
     return this.prisma.$transaction(
       async (tx) => {
@@ -206,7 +208,7 @@ export class StudyRepository extends BaseRepository {
             .map(({ cardId, updatedAt }) => [cardId, updatedAt.getTime()]),
         );
         const xpAnswers: XpAnswer[] = [];
-        for (const { cardId, isCorrect } of answers) {
+        for (const { cardId, isCorrect, timeMs } of answers) {
           const known = states.get(cardId);
           const lastCorrect = lastCorrectAt.get(cardId);
           xpAnswers.push({
@@ -214,6 +216,8 @@ export class StudyRepository extends BaseRepository {
             wasDue: known !== undefined && known.reps > 0 && known.dueAt <= now,
             recentlyCorrect:
               lastCorrect !== undefined && now.getTime() - lastCorrect < XP_RULES.repeatWindowMs,
+            selfGraded,
+            timeMs,
           });
           if (isCorrect) {
             lastCorrectAt.set(cardId, now.getTime());

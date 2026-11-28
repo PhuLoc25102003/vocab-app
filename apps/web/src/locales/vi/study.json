@@ -303,10 +303,11 @@
     },
     "guide": {
       "title": "Cách tính XP",
-      "correct": "Mỗi câu trả lời đúng: +{{xp}} XP.",
+      "correct": "Mỗi câu đúng ở các chế độ có chấm (Trắc nghiệm, Viết, Nghe viết, Điền từ, Ghép cặp, Nói, Kiểm tra, Mưa từ): +{{xp}} XP.",
       "due": "Câu đó là thẻ đang đến hạn ôn: thêm +{{xp}} XP.",
       "combo": "Cứ đúng liên tiếp {{size}} câu: thưởng +{{xp}} XP (câu sai làm chuỗi tính lại từ đầu).",
       "repeat": "Trả lời đúng lại cùng một thẻ trong {{minutes}} phút thì không được cộng thêm.",
+      "selfGraded": "Xem thẻ là bạn tự đánh giá, nên mỗi thẻ \"Biết rồi\" chỉ được +{{xp}} XP, không có thưởng. Lật rồi bấm ngay (dưới {{seconds}} giây) thì không có XP.",
       "cap": "Tối đa {{xp}} XP mỗi ngày. Quá mức này bạn vẫn học bình thường, tiến độ thẻ vẫn được lưu.",
       "example": "Ví dụ: đúng liền 5 câu, trong đó có 2 thẻ đến hạn = 5 × {{correct}} + 2 × {{due}} + {{combo}} = {{total}} XP.",
       "levelTitle": "Cấp độ",

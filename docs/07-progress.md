@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      32 |      32 | Xong       |
-| **Toàn dự án**          |                                            | **219** | **223** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      33 |      33 | Xong       |
+| **Toàn dự án**          |                                            | **220** | **224** | **98%**    |
 
 ## Cách cập nhật
 
@@ -545,6 +545,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.27** Thiết kế lại mail theo giao diện Liquid Glass của web: khung chung `mail-layout.ts` có logo thật (`apps/web/public/mail/logo.png` xuất từ `LogoMark` và chữ Literata), nền `--bg` có quầng sáng, thẻ kính viền sáng, mỗi việc là một ô kính có biểu tượng và con số nổi bật (giờ còn lại, số ngày chuỗi, số thẻ), nút nhuộm màu chính có vệt sáng; màu chép từ token (`MAIL_COLORS`), bố cục bảng và style inline cho Gmail, Outlook, điện thoại. Câu chữ mỗi phần có ba cách nói đổi theo ngày và theo người; mail đặt lại mật khẩu dùng cùng khung.
 - [x] **7.28** Sửa thưởng combo XP: server chỉ đọc 5 câu gần nhất nên chuỗi 7 câu đúng bị đếm thành 5 và thưởng câu thứ 10 tới muộn; nay đọc lại tối đa 100 câu.
 - [x] **7.29** XP dễ hiểu hơn: mục tiêu ngày đổi sang 50 / 100 / 200 / 300 XP (khoảng 5, 10, 20, 30 câu đúng, mặc định 100, migration chuyển người cũ theo bậc), mỗi lựa chọn ghi số câu đúng tương ứng; phần "Cách tính XP" ở Tài khoản giải thích luật cộng XP, combo, trần ngày, lên cấp và mục tiêu kèm ví dụ (số liệu lấy từ `XP_RULES`); thẻ hồ sơ ở Tài khoản hiện cấp độ, tổng XP và thanh lên cấp; link ở Tổng quan đổi thành "Mục tiêu và cách tính XP".
+- [x] **7.30** Chặn cày XP bằng Xem thẻ: chế độ tự chấm (`selfGraded` trên strategy, hiện là Xem thẻ) chỉ được `XP_RULES.selfGraded` = 2 XP mỗi thẻ "Biết rồi", không có thưởng thẻ đến hạn, không tính vào chuỗi combo; bấm dưới `selfGradedMinMs` = 1,5 giây thì không có XP. Lịch ôn của thẻ không đổi. Phần "Cách tính XP" có thêm dòng giải thích.
 
 ### 7F. Chế độ Mưa từ
 

@@ -103,7 +103,9 @@ describe('XpGuide', () => {
   it('giải thích luật XP bằng đúng các con số của server', async () => {
     renderWith(<XpGuide />);
     await userEvent.click(screen.getByText('Cách tính XP'));
-    expect(screen.getByText(`Mỗi câu trả lời đúng: +${XP_RULES.correct} XP.`)).toBeVisible();
+    expect(screen.getByText(/các chế độ có chấm.*\+10 XP\./)).toBeVisible();
+    expect(XP_RULES.correct).toBe(10);
+    expect(screen.getByText(/Xem thẻ là bạn tự đánh giá.*\+2 XP.*dưới 1,5 giây/)).toBeVisible();
     expect(screen.getByText(/Tối đa 500 XP mỗi ngày/)).toBeVisible();
     expect(screen.getByText(/= 65 XP\./)).toBeVisible();
     expect(screen.getByText(/cấp 2 lên 3 cần 150 XP/)).toBeVisible();

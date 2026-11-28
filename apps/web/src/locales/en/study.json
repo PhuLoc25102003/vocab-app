@@ -303,10 +303,11 @@
     },
     "guide": {
       "title": "How XP works",
-      "correct": "Each correct answer: +{{xp}} XP.",
+      "correct": "Each correct answer in a checked mode (Multiple choice, Write, Dictation, Cloze, Match, Speak, Test, Word rain): +{{xp}} XP.",
       "due": "If that card was due for review: +{{xp}} XP more.",
       "combo": "Every {{size}} correct answers in a row: +{{xp}} XP bonus (a wrong answer restarts the count).",
       "repeat": "Answering the same card correctly again within {{minutes}} minutes earns nothing extra.",
+      "selfGraded": "Flashcards are self-rated, so each \"I know it\" earns only +{{xp}} XP with no bonuses. Flipping and tapping right away (under {{seconds}} seconds) earns nothing.",
       "cap": "Up to {{xp}} XP per day. You can keep studying after that and your card progress is still saved.",
       "example": "Example: 5 correct in a row, 2 of them due = 5 × {{correct}} + 2 × {{due}} + {{combo}} = {{total}} XP.",
       "levelTitle": "Levels",

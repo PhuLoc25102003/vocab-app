@@ -79,6 +79,8 @@ export interface GradeResult {
 
 export interface StudyModeStrategy {
   readonly mode: StudyMode;
+  /** Người học tự chấm đáp án (không kiểm chứng được), XP tính theo `XP_RULES.selfGraded`. */
+  readonly selfGraded?: boolean;
   buildQuestions(cards: StudyCard[], options: StudyOptions): Question[];
   grade(question: Question, answer: UserAnswer): GradeResult;
 }
