@@ -345,7 +345,17 @@ function DeleteAccount({ hasPassword }: { hasPassword: boolean }) {
 }
 
 /** `children`: phần cài đặt thêm do trang ghép vào cột phải, ví dụ giọng đọc. */
-export function AccountSettings({ children }: { children?: ReactNode }) {
+/**
+ * `profileExtra` hiện dưới thẻ hồ sơ (ví dụ cấp độ), `children` là các nhóm cài đặt ở cột chính.
+ * Truyền từ trang để `auth` không phụ thuộc vào `stats`.
+ */
+export function AccountSettings({
+  children,
+  profileExtra,
+}: {
+  children?: ReactNode;
+  profileExtra?: ReactNode;
+}) {
   const { t } = useTranslation(['account', 'common']);
   const account = useQuery({ queryKey: ACCOUNT_KEY, queryFn: getAccount });
   const [editing, setEditing] = useState<'name' | 'password' | null>(null);
@@ -390,6 +400,7 @@ export function AccountSettings({ children }: { children?: ReactNode }) {
         <span className="rounded-sm bg-primary-soft px-2 text-tiny text-primary">
           {t(`common:roles.${role}`)}
         </span>
+        {profileExtra}
       </aside>
       <div className="flex min-w-0 flex-col gap-6">
         <Section id="profile-heading" title={t('profile')}>

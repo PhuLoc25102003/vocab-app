@@ -17,7 +17,7 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
   - XP chỉ do server tính từ đáp án đã chấm, client không gửi số XP.
   - Quy tắc nằm trong `@vocab/shared/study/xp.ts` để web hiện trước được số XP dự kiến mà vẫn khớp server.
   - Ngày và tuần tính theo giờ Việt Nam (`Asia/Ho_Chi_Minh`).
-  - Mục tiêu ngày chọn 10, 20 hoặc 50 XP, mặc định 20.
+  - Mục tiêu ngày chọn 50, 100, 200 hoặc 300 XP (khoảng 5, 10, 20, 30 câu đúng), mặc định 100. Trang Tài khoản có phần "Cách tính XP" giải thích luật cộng XP, lên cấp và mục tiêu, kèm ví dụ; thẻ hồ sơ hiện cấp độ, tổng XP và phần còn thiếu để lên cấp.
 - **Luồng chính:** học xong phiên, màn kết quả hiện "+N XP", thanh cấp độ chạy tới mức mới; Tổng quan hiện vòng tròn mục tiêu ngày, đủ thì hiện "Hoàn thành hôm nay".
 - **Ngoại lệ:**
   - Khách học thử không có XP, màn kết quả mời đăng ký để lưu XP.

@@ -13,9 +13,10 @@ export const XP_RULES = {
   dailyCap: 500,
 } as const;
 
-export const DAILY_GOAL_OPTIONS = [10, 20, 50] as const;
+/** Mục tiêu XP mỗi ngày, khoảng 5, 10, 20, 30 câu đúng. */
+export const DAILY_GOAL_OPTIONS = [50, 100, 200, 300] as const;
 export type DailyGoalXp = (typeof DAILY_GOAL_OPTIONS)[number];
-export const DEFAULT_DAILY_GOAL_XP: DailyGoalXp = 20;
+export const DEFAULT_DAILY_GOAL_XP: DailyGoalXp = 100;
 
 export interface XpAnswer {
   isCorrect: boolean;

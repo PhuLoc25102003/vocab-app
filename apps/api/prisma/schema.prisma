@@ -49,7 +49,7 @@ model User {
   lockReason   String?
   lockedById   String?
   /// Mục tiêu XP mỗi ngày người học chọn: 10, 20 hoặc 50.
-  dailyGoalXp  Int       @default(20)
+  dailyGoalXp  Int       @default(100)
   /// Thẻ giữ chuỗi còn lại, tối đa 2. Tài khoản mới có sẵn 1 thẻ.
   streakFreezes    Int     @default(1)
   /// Thứ Hai (YYYY-MM-DD, giờ Việt Nam) của lần cấp thẻ gần nhất, null khi chưa tính lần nào.
