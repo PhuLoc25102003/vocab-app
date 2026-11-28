@@ -198,7 +198,10 @@ export class StudyService {
     });
 
     const now = new Date();
-    const xpEarned = fresh.length > 0 ? await this.study.saveAnswers(viewer.id, id, fresh, now) : 0;
+    const xpEarned =
+      fresh.length > 0
+        ? await this.study.saveAnswers(viewer.id, id, fresh, now, strategy.selfGraded === true)
+        : 0;
     if (fresh.length > 0) {
       // Học hôm nay mà bỏ lỡ hôm qua thì dùng thẻ giữ chuỗi ngay, không chờ mở Tổng quan.
       await this.streak.refresh(viewer.id, now);

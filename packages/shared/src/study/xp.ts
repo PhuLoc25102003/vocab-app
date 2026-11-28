@@ -11,6 +11,13 @@ export const XP_RULES = {
   repeatWindowMs: 10 * 60_000,
   /** Trần XP mỗi ngày học. */
   dailyCap: 500,
+  /**
+   * Chế độ người học tự chấm (Xem thẻ: bấm "Biết rồi") không kiểm chứng được, nên mỗi câu "biết"
+   * chỉ được chừng này XP, không có thưởng thẻ đến hạn và không tính vào chuỗi.
+   */
+  selfGraded: 2,
+  /** Tự chấm nhanh hơn mức này (lật rồi bấm liền) thì không có XP. */
+  selfGradedMinMs: 1500,
 } as const;
 
 /** Mục tiêu XP mỗi ngày, khoảng 5, 10, 20, 30 câu đúng. */
@@ -24,6 +31,10 @@ export interface XpAnswer {
   wasDue: boolean;
   /** Thẻ vừa được trả lời đúng trong `repeatWindowMs`. */
   recentlyCorrect: boolean;
+  /** Đáp án do người học tự chấm (chế độ có `selfGraded`). */
+  selfGraded?: boolean;
+  /** Thời gian trả lời, chỉ dùng để chặn tự chấm quá nhanh. */
+  timeMs?: number;
 }
 
 export interface XpScore {
@@ -37,6 +48,8 @@ export interface XpScore {
  * Tính XP cho một lô đáp án theo thứ tự trả lời. `comboBefore` là số câu đúng liên tiếp ở cuối
  * các lô trước của cùng phiên, `earnedToday` là XP đã nhận trong ngày học hiện tại.
  * Câu đúng lặp lại trong 10 phút không có XP và không tính vào chuỗi, nhưng cũng không làm đứt chuỗi.
+ * Câu tự chấm "biết" chỉ được `selfGraded` XP (không có nếu trả lời dưới `selfGradedMinMs`), không
+ * có thưởng và không tính vào chuỗi.
  */
 export function scoreAnswers(
   answers: readonly XpAnswer[],
@@ -50,6 +63,12 @@ export function scoreAnswers(
       continue;
     }
     if (answer.recentlyCorrect) {
+      continue;
+    }
+    if (answer.selfGraded) {
+      if ((answer.timeMs ?? Number.POSITIVE_INFINITY) >= XP_RULES.selfGradedMinMs) {
+        raw += XP_RULES.selfGraded;
+      }
       continue;
     }
     raw += XP_RULES.correct + (answer.wasDue ? XP_RULES.dueBonus : 0);

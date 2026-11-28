@@ -15,7 +15,7 @@ const EXAMPLE = {
  * `xpForLevel` ở `@vocab/shared`, cùng nguồn với server nên không lệch khi đổi luật.
  */
 export function XpGuide({ className }: { className?: string }) {
-  const { t } = useTranslation('study');
+  const { t, i18n } = useTranslation('study');
   const exampleTotal =
     EXAMPLE.answers * XP_RULES.correct + EXAMPLE.due * XP_RULES.dueBonus + XP_RULES.comboBonus;
   const rules = [
@@ -23,6 +23,10 @@ export function XpGuide({ className }: { className?: string }) {
     t('xp.guide.due', { xp: XP_RULES.dueBonus }),
     t('xp.guide.combo', { size: XP_RULES.comboSize, xp: XP_RULES.comboBonus }),
     t('xp.guide.repeat', { minutes: XP_RULES.repeatWindowMs / 60_000 }),
+    t('xp.guide.selfGraded', {
+      xp: XP_RULES.selfGraded,
+      seconds: new Intl.NumberFormat(i18n.language).format(XP_RULES.selfGradedMinMs / 1000),
+    }),
     t('xp.guide.cap', { xp: XP_RULES.dailyCap }),
   ];
 

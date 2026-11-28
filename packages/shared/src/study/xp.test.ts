@@ -37,6 +37,13 @@ describe('scoreAnswers', () => {
     });
   });
 
+  it('câu tự chấm chỉ được ít XP, không thưởng, không tính chuỗi, quá nhanh thì không có', () => {
+    const self = (timeMs: number) => right({ selfGraded: true, wasDue: true, timeMs });
+    const answers = Array.from({ length: 5 }, () => self(XP_RULES.selfGradedMinMs));
+    expect(scoreAnswers(answers, fresh)).toEqual({ xp: 5 * XP_RULES.selfGraded, combo: 0 });
+    expect(scoreAnswers([self(XP_RULES.selfGradedMinMs - 1)], fresh).xp).toBe(0);
+  });
+
   it('không vượt trần ngày', () => {
     expect(scoreAnswers([right(), right()], { comboBefore: 0, earnedToday: 495 }).xp).toBe(5);
     expect(scoreAnswers([right()], { comboBefore: 0, earnedToday: 600 }).xp).toBe(0);
