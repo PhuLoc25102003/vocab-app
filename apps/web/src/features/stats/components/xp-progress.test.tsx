@@ -8,6 +8,7 @@ import { XP_RULES } from '@vocab/shared';
 import { AccountLevel } from './account-level';
 import { BadgeList } from './badge-list';
 import { DailyGoalSettings } from './daily-goal-settings';
+import { ProfileBadges } from './profile-badges';
 import { XpGuide } from './xp-guide';
 import { XpProgress } from './xp-progress';
 
@@ -129,15 +130,43 @@ describe('BadgeList', () => {
   it('hiện huy hiệu đã có và tiến độ huy hiệu chưa có', async () => {
     vi.mocked(http).mockResolvedValue({
       data: [
-        { code: 'streak-7', progress: 7, target: 7, earnedAt: '2026-11-20T03:00:00.000Z' },
-        { code: 'mastered-100', progress: 45, target: 100, earnedAt: null },
+        {
+          code: 'streak-7',
+          progress: 7,
+          target: 7,
+          hard: false,
+          earnedAt: '2026-11-20T03:00:00.000Z',
+        },
+        { code: 'mastered-100', progress: 45, target: 100, hard: false, earnedAt: null },
+        { code: 'streak-100', progress: 7, target: 100, hard: true, earnedAt: null },
       ],
     });
     renderWith(<BadgeList />);
 
-    expect(await screen.findByText('Đã có 1 trên 2')).toBeInTheDocument();
+    expect(await screen.findByText('Đã có 1 trên 3')).toBeInTheDocument();
     expect(screen.getByText('Một tuần bền bỉ')).toBeInTheDocument();
     expect(screen.getByText(/^Nhận ngày/)).toBeInTheDocument();
     expect(screen.getByText('45/100')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Trăm từ vững' })).toHaveAttribute(
+      'aria-valuenow',
+      '45',
+    );
+    expect(screen.getByText('Thử thách')).toBeInTheDocument();
+  });
+
+  it('thẻ hồ sơ chỉ hiện huy hiệu đã có, kèm lối xem tất cả', async () => {
+    vi.mocked(http).mockResolvedValue({
+      data: [
+        { code: 'night-owl', progress: 1, target: 1, hard: false, earnedAt: '2026-11-27' },
+        { code: 'streak-7', progress: 2, target: 7, hard: false, earnedAt: null },
+      ],
+    });
+    renderWith(<ProfileBadges />);
+    expect(await screen.findByText('Cú đêm')).toBeInTheDocument();
+    expect(screen.queryByText('Một tuần bền bỉ')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Xem tất cả huy hiệu' })).toHaveAttribute(
+      'href',
+      '#badges-title',
+    );
   });
 });

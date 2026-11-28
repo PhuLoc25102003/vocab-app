@@ -324,7 +324,7 @@
   },
   "badges": {
     "title": "Huy hiệu",
-    "description": "Nhận huy hiệu khi đạt các mốc học tập.",
+    "description": "Đạt mốc học tập là nhận huy hiệu. Huy hiệu có nhãn Thử thách dành cho người học bền bỉ.",
     "loading": "Đang tải huy hiệu",
     "failed": "Không tải được huy hiệu",
     "count": "Đã có {{earned}} trên {{total}}",
@@ -337,6 +337,10 @@
         "name": "Trăm từ vững",
         "rule": "Thuộc 100 từ"
       },
+      "mastered-500": {
+        "name": "Năm trăm từ vững",
+        "rule": "Thuộc 500 từ"
+      },
       "streak-7": {
         "name": "Một tuần bền bỉ",
         "rule": "Học 7 ngày liên tiếp"
@@ -345,9 +349,17 @@
         "name": "Tháng không nghỉ",
         "rule": "Học 30 ngày liên tiếp"
       },
+      "streak-100": {
+        "name": "Trăm ngày rực lửa",
+        "rule": "Học 100 ngày liên tiếp"
+      },
       "perfect-test": {
         "name": "Điểm tuyệt đối",
         "rule": "Làm đúng hết một bài Kiểm tra"
+      },
+      "perfect-test-10": {
+        "name": "Bất bại",
+        "rule": "Làm đúng hết 10 bài Kiểm tra"
       },
       "sets-10": {
         "name": "Nhà sưu tầm",
@@ -357,11 +369,24 @@
         "name": "Đúng hẹn",
         "rule": "Đạt mục tiêu XP trong 7 ngày"
       },
+      "goal-30": {
+        "name": "Kỷ luật thép",
+        "rule": "Đạt mục tiêu XP trong 30 ngày"
+      },
+      "word-rain-5000": {
+        "name": "Phi công át chủ bài",
+        "rule": "Đạt 5.000 điểm trong một ván Mưa từ"
+      },
       "night-owl": {
         "name": "Cú đêm",
         "rule": "Học trong khoảng 23:00 đến 4:00"
       }
-    }
+    },
+    "hard": "Thử thách",
+    "earned": "Đã đạt",
+    "profileTitle": "Huy hiệu đã có",
+    "profileNone": "Chưa có huy hiệu nào. Học đều là sẽ có!",
+    "viewAll": "Xem tất cả huy hiệu"
   },
   "wordRain": {
     "title": "Mưa từ",

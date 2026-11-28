@@ -22,6 +22,7 @@ export async function getBadges(): Promise<Badge[]> {
 }
 
 export const XP_SUMMARY_KEY = ['stats', 'xp'] as const;
+export const BADGES_KEY = ['stats', 'badges'] as const;
 
 export async function getXpSummary(): Promise<XpSummary> {
   return xpSummaryResponseSchema.parse(await http('/stats/xp')).data;

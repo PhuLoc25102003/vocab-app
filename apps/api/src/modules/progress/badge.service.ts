@@ -21,18 +21,29 @@ export class BadgeService {
     private readonly notifications: NotificationsService,
   ) {}
 
+  /**
+   * Danh sách huy hiệu kèm tiến độ. Huy hiệu đã đủ điều kiện mà chưa lưu (ví dụ học đêm nhưng
+   * không bấm kết thúc phiên nên `award` chưa chạy) được cấp luôn ở đây để luôn sáng đúng.
+   */
   async list(userId: string) {
+    const now = new Date();
     const [metrics, owned] = await Promise.all([
-      this.metrics(userId, new Date()),
+      this.metrics(userId, now),
       this.badges.findBadges(userId),
     ]);
     const earnedAt = new Map(owned.map(({ code, earnedAt }) => [code, earnedAt]));
+    const missing = earnedBadges(metrics).filter((code) => !earnedAt.has(code));
+    if (missing.length > 0) {
+      await this.grant(userId, missing, now);
+      for (const code of missing) earnedAt.set(code, now);
+    }
     return ok(
-      BADGES.map(({ code, metric, target }) => ({
-        code,
-        progress: Math.min(metrics[metric], target),
-        target,
-        earnedAt: earnedAt.get(code) ?? null,
+      BADGES.map((badge) => ({
+        code: badge.code,
+        progress: Math.min(metrics[badge.metric], badge.target),
+        target: badge.target,
+        hard: 'hard' in badge && badge.hard,
+        earnedAt: earnedAt.get(badge.code) ?? null,
       })),
     );
   }
@@ -46,16 +57,21 @@ export class BadgeService {
     const has = new Set(owned.map(({ code }) => code));
     const fresh = earnedBadges(metrics).filter((code) => !has.has(code));
     if (fresh.length > 0) {
-      await this.badges.addBadges(userId, fresh, now);
-      for (const code of fresh) {
-        await this.notifications.notify([userId], {
-          type: 'BADGE_EARNED',
-          data: { code },
-          href: '/account#badges-title',
-        });
-      }
+      await this.grant(userId, fresh, now);
     }
     return fresh;
+  }
+
+  /** Lưu huy hiệu mới và báo trong chuông, mỗi huy hiệu một thông báo. */
+  private async grant(userId: string, codes: readonly BadgeCode[], now: Date) {
+    await this.badges.addBadges(userId, codes, now);
+    for (const code of codes) {
+      await this.notifications.notify([userId], {
+        type: 'BADGE_EARNED',
+        data: { code },
+        href: '/account#badges-title',
+      });
+    }
   }
 
   private async metrics(userId: string, now: Date): Promise<BadgeMetrics> {
