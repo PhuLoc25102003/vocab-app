@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      28 |      28 | Xong       |
-| **Toàn dự án**          |                                            | **215** | **219** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      29 |      29 | Xong       |
+| **Toàn dự án**          |                                            | **216** | **220** | **98%**    |
 
 ## Cách cập nhật
 
@@ -541,6 +541,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.8** Web Push: khoá `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (thiếu thì tắt tính năng), bảng `PushSubscription`, `GET /push/config`, `POST /push/subscriptions` và `/push/subscriptions/remove`, gửi bằng thư viện `web-push`, xoá đăng ký khi dịch vụ đẩy trả 404 hoặc 410; service worker xử lý `push` và `notificationclick` mở đúng trang (Ôn hôm nay, bài tập); thẻ "Bật nhắc học mỗi tối?" ở Tổng quan chỉ hiện khi đã có XP (đã học ít nhất một phiên), chỉ hỏi quyền khi người học tự bấm; công tắc thiết bị này ở nhóm Thông báo của Tài khoản; hướng dẫn riêng cho iPhone (thêm vào màn hình chính, iOS 16.4+). Cần 7.7 (UC-G5).
 - [x] **7.9** Mail nhắc qua Brevo free: tối đa 1 mail mỗi người mỗi ngày gộp các nội dung nhắc, chỉ gửi mail chuỗi và thẻ đến hạn cho người chưa có Web Push hoạt động, bài tập sắp hết hạn luôn gửi; đếm mail đã gửi trong ngày, giữ 50 mail cho quên mật khẩu, quá hạn mức thì bỏ loại ưu tiên thấp (thứ tự: bài tập, chuỗi, thẻ đến hạn); mẫu mail hai ngôn ngữ theo ngôn ngữ của người dùng, có link huỷ nhận ký bằng token. Cần 7.7 (UC-G5).
 - [x] **7.10** Cài đặt thông báo: nhóm "Thông báo" ở Tài khoản bật tắt từng loại (chuỗi, ôn tập, bài tập) theo từng kênh (Web Push, mail), trạng thái quyền của trình duyệt và nút gửi thử; trang huỷ nhận mở từ link trong mail không cần đăng nhập. Cần 7.8, 7.9 (UC-G5).
+- [x] **7.26** Job nhắc học không nhắc sai giờ khi lịch GitHub Actions chạy trễ: nhắc chuỗi và ôn chỉ chạy từ 18:00 đến trước 23:00 giờ Việt Nam (`DAILY_REMINDER_HOURS`), gọi ngoài khung thì bỏ qua và không ghi `ReminderLog` để lần gọi đúng giờ vẫn nhắc; nhắc bài tập sắp hết hạn chạy mọi lúc (#449). Trước đó lịch 20:00 ngày 27/11 chạy lúc 04:51 sáng hôm sau.
 
 ### 7F. Chế độ Mưa từ
 

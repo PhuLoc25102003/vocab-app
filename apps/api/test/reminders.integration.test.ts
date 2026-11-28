@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { startOfStudyDay } from '@vocab/shared';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InMemoryMailer, Mailer } from '../src/infrastructure/mail/mailer';
 import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
 import { createTestApp } from './support/app';
@@ -8,7 +9,11 @@ import { resetDatabase } from './support/database';
 
 const SECRET = 'test-only-jobs-secret-at-least-32-characters';
 const DAY_MS = 86_400_000;
+const HOUR_MS = 3_600_000;
 const daysAgo = (days: number) => new Date(Date.now() - days * DAY_MS);
+/** Giờ Việt Nam `hour` của ngày học hiện tại, để job không phụ thuộc lúc chạy test. */
+const studyDayAt = (hour: number) =>
+  new Date(startOfStudyDay(new Date()).getTime() + hour * HOUR_MS);
 
 describe('POST /internal/jobs/daily-reminders', () => {
   let app: NestFastifyApplication;
@@ -56,6 +61,8 @@ describe('POST /internal/jobs/daily-reminders', () => {
   });
 
   beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
+    vi.setSystemTime(studyDayAt(20));
     await resetDatabase(prisma);
     mailer.sent.length = 0;
     teacherId = (
@@ -81,6 +88,10 @@ describe('POST /internal/jobs/daily-reminders', () => {
     });
     setId = set.id;
     cardIds = set.cards.map(({ id }) => id);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   afterAll(async () => {
@@ -117,6 +128,18 @@ describe('POST /internal/jobs/daily-reminders', () => {
 
     // Chạy lại trong ngày không gửi trùng.
     expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 0, emails: 0 });
+  });
+
+  it('gọi ngoài khung giờ (cron trễ) thì bỏ qua nhắc chuỗi và ôn, lần gọi đúng giờ vẫn nhắc', async () => {
+    const reviewer = await createUser('reviewer');
+    await dueCards(reviewer, 10);
+
+    vi.setSystemTime(studyDayAt(4));
+    expect((await run().expect(200)).body.data).toEqual({ daily: 0, assignments: 0, emails: 0 });
+    expect(await prisma.reminderLog.count()).toBe(0);
+
+    vi.setSystemTime(studyDayAt(20));
+    expect((await run().expect(200)).body.data).toEqual({ daily: 1, assignments: 0, emails: 1 });
   });
 
   it('nhắc học sinh chưa nộp bài hết hạn trong 24 giờ, một lần mỗi bài', async () => {

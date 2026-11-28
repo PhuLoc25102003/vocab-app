@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { notificationPrefsSchema, startOfStudyDay, toStudyDay } from '@vocab/shared';
+import {
+  notificationPrefsSchema,
+  startOfStudyDay,
+  STUDY_DAY_OFFSET_HOURS,
+  toStudyDay,
+} from '@vocab/shared';
 import { ok } from '../../common/base/pagination';
 import { resolveWebOrigin, type Env } from '../../config/env';
 import { Mailer } from '../../infrastructure/mail/mailer';
@@ -20,12 +25,24 @@ export const REVIEW_REMINDER_MIN_CARDS = 10;
 const ASSIGNMENT_WINDOW_MS = DAY_MS;
 /** Mail chừa lại mỗi ngày cho quên mật khẩu. */
 export const MAIL_RESERVED_FOR_AUTH = 50;
+/**
+ * Khung giờ Việt Nam được nhắc chuỗi và ôn, tính từ giờ bắt đầu đến trước giờ kết thúc. Lịch của
+ * GitHub Actions có lúc trễ nhiều giờ: lần gọi ngoài khung bỏ qua nhắc theo ngày và không ghi
+ * `ReminderLog`, để lần gọi đúng giờ trong ngày vẫn nhắc được.
+ */
+export const DAILY_REMINDER_HOURS = { from: 18, to: 23 } as const;
+
+export function inDailyReminderWindow(now: Date): boolean {
+  const hour = (now.getUTCHours() + STUDY_DAY_OFFSET_HOURS) % 24;
+  return hour >= DAILY_REMINDER_HOURS.from && hour < DAILY_REMINDER_HOURS.to;
+}
 
 export type Reminder = { userId: string } & NewNotification;
 
 /**
  * Job nhắc học chạy lúc 20:00 giờ Việt Nam (GitHub Actions gọi). Chọn người cần nhắc, ghi
- * `ReminderLog` để chạy lại không trùng, rồi tạo thông báo trong chuông.
+ * `ReminderLog` để chạy lại không trùng, rồi tạo thông báo trong chuông. Nhắc chuỗi và ôn chỉ chạy
+ * trong `DAILY_REMINDER_HOURS`; nhắc bài tập sắp hết hạn chạy mọi lúc.
  */
 @Injectable()
 export class RemindersService {
@@ -40,8 +57,12 @@ export class RemindersService {
   ) {}
 
   async runDaily(now = new Date()) {
+    const inWindow = inDailyReminderWindow(now);
+    if (!inWindow) {
+      this.logger.warn(`Gọi ngoài khung giờ nhắc (${now.toISOString()}), bỏ qua nhắc chuỗi và ôn`);
+    }
     const [daily, assignments] = await Promise.all([
-      this.pickDaily(now),
+      inWindow ? this.pickDaily(now) : Promise.resolve([]),
       this.pickAssignments(now),
     ]);
     await this.reminders.logReminders([
