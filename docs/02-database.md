@@ -58,8 +58,8 @@ model User {
   lockedAt     DateTime?
   lockReason   String?
   lockedById   String?
-  /// Mục tiêu XP mỗi ngày người học chọn: 10, 20 hoặc 50.
-  dailyGoalXp  Int       @default(20)
+  /// Mục tiêu XP mỗi ngày người học chọn: 50, 100, 200 hoặc 300.
+  dailyGoalXp  Int       @default(100)
   /// Thẻ giữ chuỗi còn lại, tối đa 2. Tài khoản mới có sẵn 1 thẻ.
   streakFreezes    Int     @default(1)
   /// Thứ Hai (YYYY-MM-DD, giờ Việt Nam) của lần cấp thẻ gần nhất, null khi chưa tính lần nào.
@@ -342,7 +342,7 @@ model AssignmentSubmission {
 - `Class`, `ClassMember`, `Assignment` (việc 3.1) là nền cho lớp học, chưa có API. `Class.joinCode` duy nhất toàn hệ thống, giáo viên đổi mã bằng cách ghi mã mới. Lớp lưu trữ có `archivedAt`, không xoá. `ClassMember` có khoá chính `(classId, userId)` nên một học sinh không vào một lớp hai lần. `Assignment.dueAt` lưu UTC, `null` là không có hạn. Xoá giáo viên hoặc lớp thì xoá theo thành viên và bài giao; xoá học sinh chỉ xoá tư cách thành viên; bộ từ bị xoá hẳn (sau 30 ngày soft delete) thì bài giao của bộ đó bị xoá theo.
 - Việc 5.10: `Assignment.modes` là danh sách chế độ phải làm theo thứ tự, thay cho `mode` (cột `mode` giữ đến lần deploy sau rồi mới xoá; bài cũ được backfill `[mode]`, bài mới ghi cả hai). `StudySession.assignmentId` (null được) gắn phiên học với bài giao, xoá bài giao thì `SET NULL`. `AssignmentSubmission` khoá chính `(assignmentId, userId)` nên mỗi học sinh nộp một lần; `score` là phần trăm chốt lúc nộp (null khi chỉ có Flashcard), `late` khi nộp sau `dueAt`; xoá bài giao hoặc người dùng thì xoá theo bài nộp. Migration backfill bài nộp từ phiên đã xong cùng bộ, cùng chế độ sau lúc giao của thành viên lớp: thời điểm là lần xong đầu, điểm là phiên tốt nhất.
 
-- `XpEvent` và `User.dailyGoalXp` (việc 7.1): mỗi lô đáp án được cộng XP tạo một dòng trong cùng transaction với `Attempt` và `CardProgress`. Quy tắc tính nằm ở `packages/shared/src/study/xp.ts`. Không lưu tổng XP trên `User`: tổng, XP hôm nay và XP tuần (bảng xếp hạng) đều cộng từ bảng này theo index `userId, createdAt` và `createdAt`. Phiên offline gửi lên muộn được tính vào lúc gửi lên.
+- `XpEvent` và `User.dailyGoalXp` (việc 7.1): mỗi lô đáp án được cộng XP tạo một dòng trong cùng transaction với `Attempt` và `CardProgress`. Quy tắc tính nằm ở `packages/shared/src/study/xp.ts`. Không lưu tổng XP trên `User`: tổng, XP hôm nay và XP tuần (bảng xếp hạng) đều cộng từ bảng này theo index `userId, createdAt` và `createdAt`. Phiên offline gửi lên muộn được tính vào lúc gửi lên. Migration `daily_goal_levels` (việc 7.29) đổi mức mục tiêu từ 10/20/50 sang 50/100/200/300 và chuyển người dùng cũ theo bậc (10 → 50, 20 → 100, 50 → 200); API cũ còn chạy trong lúc deploy vẫn đọc được giá trị mới, chỉ chưa chọn được mức mới.
 
 - `User.streakFreezes`, `User.streakFreezeWeek` và `StreakFreezeDay` (việc 7.3): không có job hẹn giờ vì Render gói Free ngủ khi rảnh. `StreakService` cấp thẻ và dùng thẻ mỗi khi người học mở Tổng quan hoặc gửi đáp án. Cấp thẻ ghi bằng `updateMany` có điều kiện `streakFreezeWeek` cũ để hai request cùng lúc không cấp hai lần. Dùng thẻ là một transaction tạo `StreakFreezeDay` (khoá chính `userId, day`) rồi trừ `streakFreezes` khi còn lớn hơn 0.
 

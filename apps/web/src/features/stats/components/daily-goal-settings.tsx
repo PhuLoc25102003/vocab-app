@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DAILY_GOAL_OPTIONS } from '@vocab/shared';
+import { DAILY_GOAL_OPTIONS, XP_RULES } from '@vocab/shared';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ErrorState } from '@/components/common/error-state';
@@ -9,6 +9,7 @@ import { LoadingState } from '@/components/common/loading-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { getXpSummary, updateDailyGoal, XP_SUMMARY_KEY } from '../api';
+import { XpGuide } from './xp-guide';
 
 /** Chọn mục tiêu XP mỗi ngày ở trang Tài khoản, cùng kiểu với phần chọn ngôn ngữ. */
 export function DailyGoalSettings() {
@@ -60,16 +61,24 @@ export function DailyGoalSettings() {
                 if (goal !== xp.data.dailyGoalXp) save.mutate({ dailyGoalXp: goal });
               }}
               className={cn(
-                'flex min-h-11 items-center gap-2 rounded-full px-4 font-medium disabled:opacity-70',
+                'flex min-h-11 items-center rounded-2xl px-4 py-2 font-medium disabled:opacity-70',
                 current === goal ? 'glass-button-tint' : 'glass-button',
               )}
             >
-              <span className="tabular-nums">{t('xp.goal.option', { xp: goal })}</span>
-              <span className="text-small opacity-80">{t(`xp.goal.names.${goal}`)}</span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="flex items-baseline gap-2">
+                  <span className="tabular-nums">{t('xp.goal.option', { xp: goal })}</span>
+                  <span className="text-small opacity-80">{t(`xp.goal.names.${goal}`)}</span>
+                </span>
+                <span className="text-tiny opacity-80">
+                  {t('xp.goal.answers', { count: goal / XP_RULES.correct })}
+                </span>
+              </span>
             </button>
           ))}
         </div>
       )}
+      <XpGuide />
     </section>
   );
 }

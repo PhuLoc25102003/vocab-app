@@ -283,21 +283,42 @@
     "goalLeft": "{{xp}} XP left to hit today's goal",
     "goalDone": "Done for today 🎉",
     "firstXp": "Answer correctly to earn your first XP",
-    "changeGoal": "Change goal",
+    "changeGoal": "Goal and how XP works",
     "earned": "+{{xp}} XP",
     "levelUp": "Level {{level}} reached!",
     "capReached": "You hit today's 500 XP cap. Your progress is still saved.",
     "goal": {
       "title": "Daily goal",
-      "description": "How much XP you aim for each day. Each correct answer earns 10 XP.",
+      "description": "How much XP you aim for each day. Hitting it turns the Overview ring green and counts toward the \"On target\" badge (7 goal days).",
       "option": "{{xp}} XP",
       "names": {
-        "10": "Relaxed",
-        "20": "Steady",
-        "50": "Intense"
+        "50": "Light",
+        "100": "Steady",
+        "200": "Serious",
+        "300": "Intense"
       },
       "saved": "Daily goal set to {{xp}} XP",
-      "saveFailed": "Could not change the goal, please try again"
+      "saveFailed": "Could not change the goal, please try again",
+      "answers": "about {{count}} correct answers"
+    },
+    "guide": {
+      "title": "How XP works",
+      "correct": "Each correct answer: +{{xp}} XP.",
+      "due": "If that card was due for review: +{{xp}} XP more.",
+      "combo": "Every {{size}} correct answers in a row: +{{xp}} XP bonus (a wrong answer restarts the count).",
+      "repeat": "Answering the same card correctly again within {{minutes}} minutes earns nothing extra.",
+      "cap": "Up to {{xp}} XP per day. You can keep studying after that and your card progress is still saved.",
+      "example": "Example: 5 correct in a row, 2 of them due = 5 × {{correct}} + 2 × {{due}} + {{combo}} = {{total}} XP.",
+      "levelTitle": "Levels",
+      "level": "Level 1 to 2 takes {{first}} XP, and each level after needs {{step}} XP more than the one before (level 2 to 3 takes {{second}} XP, 3 to 4 takes {{third}} XP...). XP is never taken away.",
+      "goalTitle": "Daily goal",
+      "goal": "Your goal is the XP you aim for each study day (from midnight). It does not change how XP is earned; it just helps you keep a steady pace."
+    },
+    "account": {
+      "title": "Level",
+      "level": "Level {{level}}",
+      "total": "{{xp}} XP total",
+      "next": "{{xp}} XP to level {{level}}"
     }
   },
   "badges": {

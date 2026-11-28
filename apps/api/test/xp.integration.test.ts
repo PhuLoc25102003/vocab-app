@@ -78,7 +78,7 @@ describe('XP', () => {
       xpIntoLevel: 0,
       xpForNextLevel: 100,
       todayXp: 0,
-      dailyGoalXp: 20,
+      dailyGoalXp: 100,
     });
   });
 
@@ -164,16 +164,16 @@ describe('XP', () => {
     expect(body.data.xpEarned).toBe(2 * XP_RULES.correct);
   });
 
-  it('đổi mục tiêu ngày, từ chối giá trị ngoài 10, 20, 50', async () => {
+  it('đổi mục tiêu ngày, từ chối giá trị ngoài 50, 100, 200, 300', async () => {
     const goal = (dailyGoalXp: unknown) =>
       server()
         .put('/api/v1/stats/xp/goal')
         .set('Authorization', `Bearer ${user.token}`)
         .send({ dailyGoalXp });
-    expect((await goal(50).expect(200)).body.data.dailyGoalXp).toBe(50);
-    expect((await summary()).body.data.dailyGoalXp).toBe(50);
-    await goal(30).expect(400);
-    await goal('20').expect(400);
+    expect((await goal(200).expect(200)).body.data.dailyGoalXp).toBe(200);
+    expect((await summary()).body.data.dailyGoalXp).toBe(200);
+    await goal(20).expect(400);
+    await goal('100').expect(400);
   });
 
   it('dừng ở trần XP của ngày', async () => {

@@ -283,21 +283,42 @@
     "goalLeft": "Còn {{xp}} XP nữa là đạt mục tiêu hôm nay",
     "goalDone": "Hoàn thành hôm nay 🎉",
     "firstXp": "Trả lời đúng để nhận XP đầu tiên",
-    "changeGoal": "Đổi mục tiêu",
+    "changeGoal": "Mục tiêu và cách tính XP",
     "earned": "+{{xp}} XP",
     "levelUp": "Lên cấp {{level}}!",
     "capReached": "Bạn đã đạt trần 500 XP hôm nay, tiến độ học vẫn được lưu.",
     "goal": {
       "title": "Mục tiêu mỗi ngày",
-      "description": "Số XP bạn muốn đạt mỗi ngày. Mỗi câu đúng được 10 XP.",
+      "description": "Số XP bạn muốn đạt mỗi ngày. Đạt mục tiêu thì vòng tròn ở Tổng quan chuyển xanh và ngày đó được tính cho huy hiệu \"Đúng hẹn\" (đạt mục tiêu 7 ngày).",
       "option": "{{xp}} XP",
       "names": {
-        "10": "Thong thả",
-        "20": "Vừa sức",
-        "50": "Chăm chỉ"
+        "50": "Nhẹ nhàng",
+        "100": "Vừa sức",
+        "200": "Chăm chỉ",
+        "300": "Bứt phá"
       },
       "saved": "Đã đổi mục tiêu thành {{xp}} XP mỗi ngày",
-      "saveFailed": "Không đổi được mục tiêu, thử lại nhé"
+      "saveFailed": "Không đổi được mục tiêu, thử lại nhé",
+      "answers": "khoảng {{count}} câu đúng"
+    },
+    "guide": {
+      "title": "Cách tính XP",
+      "correct": "Mỗi câu trả lời đúng: +{{xp}} XP.",
+      "due": "Câu đó là thẻ đang đến hạn ôn: thêm +{{xp}} XP.",
+      "combo": "Cứ đúng liên tiếp {{size}} câu: thưởng +{{xp}} XP (câu sai làm chuỗi tính lại từ đầu).",
+      "repeat": "Trả lời đúng lại cùng một thẻ trong {{minutes}} phút thì không được cộng thêm.",
+      "cap": "Tối đa {{xp}} XP mỗi ngày. Quá mức này bạn vẫn học bình thường, tiến độ thẻ vẫn được lưu.",
+      "example": "Ví dụ: đúng liền 5 câu, trong đó có 2 thẻ đến hạn = 5 × {{correct}} + 2 × {{due}} + {{combo}} = {{total}} XP.",
+      "levelTitle": "Cấp độ",
+      "level": "Cấp 1 lên cấp 2 cần {{first}} XP, mỗi cấp sau cần thêm {{step}} XP so với cấp trước (cấp 2 lên 3 cần {{second}} XP, cấp 3 lên 4 cần {{third}} XP...). XP không bao giờ bị trừ.",
+      "goalTitle": "Mục tiêu ngày",
+      "goal": "Mục tiêu là số XP bạn tự đặt cho mỗi ngày học (tính từ 0 giờ). Mục tiêu không đổi cách cộng XP, chỉ giúp bạn giữ nhịp học đều."
+    },
+    "account": {
+      "title": "Cấp độ",
+      "level": "Cấp {{level}}",
+      "total": "Tổng {{xp}} XP",
+      "next": "Còn {{xp}} XP để lên cấp {{level}}"
     }
   },
   "badges": {
