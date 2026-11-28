@@ -82,6 +82,8 @@ export const badgeSchema = z.object({
   /** Số liệu hiện tại, tối đa bằng `target`. */
   progress: z.number(),
   target: z.number(),
+  /** Mốc thử thách. Bản cũ của API không có trường này. */
+  hard: z.boolean().default(false),
   /** Lúc nhận huy hiệu, `null` khi chưa có. */
   earnedAt: z.coerce.date().nullable(),
 });

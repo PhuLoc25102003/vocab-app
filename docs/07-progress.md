@@ -25,8 +25,8 @@ Tỉ lệ tính theo số đầu việc, không phản ánh khối lượng củ
 | 4. Luyện nói và offline | Luyện phát âm, học khi mất mạng            |       6 |       6 | Xong       |
 | 5. Vai trò và lớp học   | Tổng quan theo vai trò, giao và nộp bài    |      39 |      39 | Xong       |
 | 6. Đa ngôn ngữ          | Toàn bộ giao diện tiếng Việt và tiếng Anh  |      22 |      22 | Xong       |
-| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      33 |      33 | Xong       |
-| **Toàn dự án**          |                                            | **220** | **224** | **98%**    |
+| 7. Động lực và trò chơi | XP, chuỗi, xếp hạng, nhắc học, Mưa từ      |      34 |      34 | Xong       |
+| **Toàn dự án**          |                                            | **221** | **225** | **98%**    |
 
 ## Cách cập nhật
 
@@ -546,6 +546,7 @@ Thiết kế ở mục "5a. Danh sách lớn" của `docs/use-cases/06-vai-tro-v
 - [x] **7.28** Sửa thưởng combo XP: server chỉ đọc 5 câu gần nhất nên chuỗi 7 câu đúng bị đếm thành 5 và thưởng câu thứ 10 tới muộn; nay đọc lại tối đa 100 câu.
 - [x] **7.29** XP dễ hiểu hơn: mục tiêu ngày đổi sang 50 / 100 / 200 / 300 XP (khoảng 5, 10, 20, 30 câu đúng, mặc định 100, migration chuyển người cũ theo bậc), mỗi lựa chọn ghi số câu đúng tương ứng; phần "Cách tính XP" ở Tài khoản giải thích luật cộng XP, combo, trần ngày, lên cấp và mục tiêu kèm ví dụ (số liệu lấy từ `XP_RULES`); thẻ hồ sơ ở Tài khoản hiện cấp độ, tổng XP và thanh lên cấp; link ở Tổng quan đổi thành "Mục tiêu và cách tính XP".
 - [x] **7.30** Chặn cày XP bằng Xem thẻ: chế độ tự chấm (`selfGraded` trên strategy, hiện là Xem thẻ) chỉ được `XP_RULES.selfGraded` = 2 XP mỗi thẻ "Biết rồi", không có thưởng thẻ đến hạn, không tính vào chuỗi combo; bấm dưới `selfGradedMinMs` = 1,5 giây thì không có XP. Lịch ôn của thẻ không đổi. Phần "Cách tính XP" có thêm dòng giải thích.
+- [x] **7.31** Huy hiệu rõ ràng hơn: sửa lỗi "Cú đêm" (và mọi huy hiệu) không sáng khi đạt điều kiện mà không kết thúc phiên, `GET /stats/badges` tự cấp huy hiệu còn thiếu kèm thông báo; thêm 5 mốc thử thách (`hard`): Năm trăm từ vững (500 từ), Trăm ngày rực lửa (chuỗi 100 ngày), Bất bại (10 bài Kiểm tra đúng hết), Kỷ luật thép (đạt mục tiêu 30 ngày), Phi công át chủ bài (5.000 điểm một ván Mưa từ, số liệu `wordRainBest` từ `GameHighScore`); danh sách huy hiệu thành lưới ô có thanh tiến độ và nhãn "Thử thách", thẻ hồ sơ ở Tài khoản hiện các huy hiệu đã đạt.
 
 ### 7F. Chế độ Mưa từ
 

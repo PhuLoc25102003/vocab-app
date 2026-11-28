@@ -64,8 +64,58 @@ describe('Huy hiệu', () => {
       code: 'mastered-100',
       progress: 0,
       target: 100,
+      hard: false,
       earnedAt: null,
     });
+    expect(body.data.find(({ code }: { code: string }) => code === 'streak-100')).toMatchObject({
+      hard: true,
+      target: 100,
+    });
+  });
+
+  it('huy hiệu đã đủ điều kiện mà chưa lưu thì sáng khi mở danh sách, kèm thông báo', async () => {
+    // Học lúc 23:30 giờ Việt Nam nhưng không bấm kết thúc phiên.
+    const session = await prisma.studySession.create({
+      data: { userId: user.id, setId, mode: 'FLASHCARD' },
+    });
+    await prisma.attempt.create({
+      data: {
+        sessionId: session.id,
+        cardId,
+        answer: 'known',
+        isCorrect: true,
+        timeMs: 2000,
+        createdAt: new Date('2026-11-20T16:30:00.000Z'),
+      },
+    });
+
+    const { body } = await auth(server().get('/api/v1/stats/badges')).expect(200);
+    const owl = (body.data as { code: string; earnedAt: string | null }[]).find(
+      ({ code }) => code === 'night-owl',
+    );
+    expect(owl?.earnedAt).not.toBeNull();
+    expect(await prisma.userBadge.count({ where: { userId: user.id, code: 'night-owl' } })).toBe(1);
+    expect(
+      await prisma.notification.count({ where: { userId: user.id, type: 'BADGE_EARNED' } }),
+    ).toBe(1);
+
+    // Mở lại không cấp hay báo trùng.
+    await auth(server().get('/api/v1/stats/badges')).expect(200);
+    expect(
+      await prisma.notification.count({ where: { userId: user.id, type: 'BADGE_EARNED' } }),
+    ).toBe(1);
+  });
+
+  it('điểm Mưa từ cao nhất từ 5.000 cho huy hiệu word-rain-5000', async () => {
+    await prisma.gameHighScore.create({
+      data: { userId: user.id, setId, style: 'TYPE', score: 5000, wave: 9 },
+    });
+    const { body } = await auth(server().get('/api/v1/stats/badges')).expect(200);
+    expect(
+      (body.data as { code: string; earnedAt: string | null }[]).find(
+        ({ code }) => code === 'word-rain-5000',
+      )?.earnedAt,
+    ).not.toBeNull();
   });
 
   it('kết thúc phiên Kiểm tra đúng hết thì nhận huy hiệu một lần', async () => {

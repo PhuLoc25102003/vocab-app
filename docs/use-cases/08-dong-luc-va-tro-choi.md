@@ -40,7 +40,9 @@ Góp ý ngày 2026-11-27: học sinh thấy ôn từ nhàm chán, cần lý do q
 - **Việc:** 7.4. **Người dùng:** người đã đăng nhập. **Trạng thái:** Đủ.
 - **Phải có:** danh sách huy hiệu và điều kiện trong shared, mỗi huy hiệu chỉ nhận một lần, hiện ở Tài khoản cả huy hiệu chưa có kèm điều kiện và tiến độ.
 - **Luồng chính:** học xong phiên đạt điều kiện, màn kết quả hiện thẻ "Huy hiệu mới", Tài khoản thêm huy hiệu đó.
-- **Ngoại lệ:** nhiều huy hiệu cùng lúc thì gộp một thông báo; xét lại không tạo bản trùng (khoá duy nhất).
+- **Ngoại lệ:** nhiều huy hiệu cùng lúc thì gộp một thông báo; xét lại không tạo bản trùng (khoá duy nhất). Đủ điều kiện mà không kết thúc phiên (thoát giữa chừng) thì huy hiệu được cấp khi mở Tài khoản.
+- **Hiển thị:** thẻ hồ sơ ở Tài khoản có hàng huy hiệu đã đạt và lối xuống danh sách; danh sách là lưới ô, đã đạt thì sáng kèm ngày nhận, chưa đạt có thanh tiến độ, mốc khó gắn nhãn "Thử thách".
+- **Mốc thử thách:** thuộc 500 từ, học 100 ngày liên tiếp, 10 bài Kiểm tra đúng hết, đạt mục tiêu 30 ngày, 5.000 điểm một ván Mưa từ.
 - **Test:** unit điều kiện từng huy hiệu; integration xét huy hiệu sau phiên.
 
 ## UC-G4. Bảng xếp hạng
